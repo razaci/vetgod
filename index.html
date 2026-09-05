@@ -509,6 +509,44 @@ header{border-bottom:1px solid #2d668a;box-shadow:0 12px 35px #0009}
 @media(min-width:760px){.funding-kpis{grid-template-columns:repeat(5,minmax(0,1fr))}.fund-actions{grid-template-columns:repeat(4,minmax(0,1fr))}}
 </style>
 
+
+<style id="selectableCodexPetCss">
+.codex-card{cursor:pointer;transition:.16s transform,.16s border-color,.16s filter}
+.codex-card:active{transform:scale(.985)}.codex-card:hover{border-color:#658293;filter:brightness(1.06)}
+.codex-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.codex-detail{padding:12px;border:1px solid #546a77;border-radius:18px;background:linear-gradient(135deg,#07141c,#111925);margin:10px 0}
+.codex-detail-grid{display:grid;gap:10px}.codex-detail img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:15px;border:1px solid #5b6970}
+.codex-detail h2{margin:0 0 5px}.codex-detail .big-actions{display:grid;grid-template-columns:1fr;gap:7px;margin-top:10px}
+.selected-pet-hero{position:relative;overflow:hidden;border:1px solid #5e6b75;border-radius:20px;background:#071118;margin:10px 0}
+.selected-pet-hero>img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
+.selected-pet-copy{padding:12px}.selected-pet-copy h2{margin:0 0 4px}
+.selected-pet-switcher{display:flex;gap:6px;overflow-x:auto;padding:8px 0}
+.selected-pet-chip{min-width:150px;text-align:left;padding:7px;border:1px solid #405863;border-radius:12px;background:#0a151c;color:#eef7f7}
+.selected-pet-chip.active{border-color:#9bc7ba;background:#11221f}
+.pet-care-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:8px 0}
+.pet-care-big{min-height:54px!important;font-weight:900!important}
+.pet-life-columns{display:grid;gap:10px}
+.pet-empty-guide{padding:18px;border:1px dashed #526b76;border-radius:17px;background:#08131a;text-align:center}
+@media(min-width:760px){
+ .codex-detail-grid{grid-template-columns:1.15fr 1fr}.codex-detail .big-actions{grid-template-columns:repeat(2,1fr)}
+ .pet-care-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.pet-life-columns{grid-template-columns:1.1fr .9fr}
+}
+</style>
+
+
+<style id="connectedHospitalCss">
+.case-command{border:1px solid #4d6875;border-radius:17px;background:linear-gradient(135deg,#07131a,#111925);padding:11px;margin:9px 0}
+.case-command h3{margin:0 0 6px}.case-path{display:flex;gap:5px;overflow-x:auto;padding:6px 0}
+.path-step{min-width:104px;padding:7px;border:1px solid #344b56;border-radius:11px;background:#081219;font-size:9px;text-align:center}
+.path-step.done{border-color:#597d68;background:#0c1912}.path-step.now{border-color:#9a8259;background:#1b160b;box-shadow:0 0 14px rgba(255,213,130,.10)}.path-step.locked{opacity:.46}
+.case-score{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:8px 0}.case-score div{padding:7px;border:1px solid #334d58;border-radius:10px;background:#071118;text-align:center}.case-score b{display:block;font-size:15px}.case-score span{font-size:8px;color:#9fb3bc}
+.case-next{padding:9px;border-left:3px solid #d1a86d;background:#171107;border-radius:0 10px 10px 0;font-size:10px;line-height:1.5}
+.hospital-loop{padding:11px;border:1px solid #526570;border-radius:15px;background:#08131b;margin:8px 0}.hospital-loop b{color:#ffe0a9}
+.outcome-badge{display:inline-block;padding:4px 7px;border-radius:999px;border:1px solid #526771;font-size:9px;margin:2px}
+.case-bonus{padding:8px;border:1px solid #55755f;background:#0b1810;border-radius:12px;margin:6px 0;font-size:10px}
+.case-warning{padding:8px;border:1px solid #8b6268;background:#170c10;border-radius:12px;margin:6px 0;font-size:10px}
+</style>
+
 </head>
 <body style="--fxsheet:url('data:image/png;base64,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')"><div id="fxLayer"></div>
 <div class="app">
@@ -520,7 +558,7 @@ header{border-bottom:1px solid #2d668a;box-shadow:0 12px 35px #0009}
     <button class="tab" data-tab="map">HOSPITAL MAP</button><button class="tab" data-tab="funding">FUNDING</button><button class="tab" data-tab="surgery">SURGERY</button>
     <button class="tab" data-tab="recovery">RECOVERY</button>
     <button class="tab" data-tab="care">CARE</button>
-    <button class="tab" data-tab="pets">MY PETS</button><button class="tab" data-tab="carefx">CARE FX</button>
+    <button class="tab" data-tab="mypet">MY PET</button><button class="tab" data-tab="petlife">PET LIFE</button>
     <button class="tab" data-tab="nursery">NURSERY</button><button class="tab" data-tab="codex">200 ANIMALS</button><button class="tab" data-tab="lives">WALL OF LIVES</button>
   </div>
 </header>
@@ -580,6 +618,17 @@ header{border-bottom:1px solid #2d668a;box-shadow:0 12px 35px #0009}
   <div id="careList" class="grid cards3"></div>
 </section>
 
+
+<section class="screen" id="mypet">
+  <div class="zone-banner"><div class="zone-kicker">SELECTED COMPANION</div><div class="zone-title">❤️ My Pet · Daily Care</div><div class="zone-copy">This page follows one animal at a time. Select any companion from your sanctuary—or choose one directly from the 200 Animals roster—then feed, water, groom, play, rest, train, comfort and simply spend time together.</div></div>
+  <div id="myPetScreen"></div>
+</section>
+
+<section class="screen" id="petlife">
+  <div class="zone-banner"><div class="zone-kicker">LIFE WITH YOUR SELECTED ANIMAL</div><div class="zone-title">🐾 Pet Life · Bond, Home & Memories</div><div class="zone-copy">The selected pet is the same animal shown in My Pet. This is the deeper side: attachment, routines, keepsakes, habitat, achievements, work, training, memories and the choice to make this their permanent home.</div></div>
+  <div id="petLifeScreen"></div>
+</section>
+
 <section class="screen" id="pets"><div class="zone-banner"><div class="zone-kicker">MAIN GAME</div><div class="zone-title">🐾 Personal Pet Sanctuary · Main Hub</div><div class="zone-copy">Each pet now has habitat, wellness, enrichment, and daily-care logic based on its animal group.</div></div>
   <div class="hero"><h2>My Companions · Celestial Sanctuary</h2><div class="sub">Your adopted companions live here permanently. Their needs slowly change. Care for everyone at once, or open any pet and manage detailed individual needs, bond, training, enrichment, habitat, grooming, and wellness.</div></div>
   <div class="section-title"><h2>Companion Constellation</h2><button class="btn good" onclick="careAllPets()">Care for All Companions</button></div>
@@ -624,7 +673,7 @@ header{border-bottom:1px solid #2d668a;box-shadow:0 12px 35px #0009}
 
 <section class="screen" id="codex"><div class="zone-banner"><div class="zone-kicker">COLLECTION META</div><div class="zone-title">📚 200-Animal Codex</div><div class="zone-copy">Discover, treat, adopt, and raise animals to complete the collection.</div></div>
  <div class="hero"><h2>200 Animal Veterinary Codex</h2><div class="sub">A complete collection of the game's 200 real-animal profiles. Each species has its own embedded Base64 portrait, scientific name, animal group, and care focus. Clinical values and treatments are fictional game mechanics, not veterinary instructions.</div></div>
- <div class="section-title"><h2>Species Collection</h2><span class="muted" id="codexCount">200 profiles</span></div>
+ <div id="codexSelectedProfile"></div><div class="section-title"><h2>Species Collection</h2><span class="muted" id="codexCount">200 profiles</span></div>
  <div id="codexList" class="grid cards3"></div>
 </section>
 
@@ -1245,7 +1294,7 @@ function careAct(id,a){let p=G.care.find(x=>x.id===id);if(!p)return;
  if(a==='feed'){if(G.food<=0)return toast('No food left.');G.food--;p.hunger-=35;p.health+=5;p.happiness+=10}
  if(a==='groom'){p.cleanliness+=35;p.trust+=8;p.stress-=8}
  if(a==='bond'){p.trust+=18;p.happiness+=15;p.stress-=10}
- if(a==='adopt'){if(p.trust<55||p.health<65)return toast('Raise trust to 55 and health to 65 first.');fundPatient(p,FUNDING_RULES.adoptionSupport,'Sanctuary transition support');G.care=G.care.filter(x=>x.id!==id);p.bond=20;p.training=0;p.enrichment=35;p.adoptedDay=G.day;ensurePetEpic(p);ensureLove(p);G.pets.push(p);setOutcome(p,'Adopted into Vet Gods sanctuary');G.focus=p.id;G.rep+=5;log(`${p.fantasy} became your personal pet!`);showTab('pets')}
+ if(a==='adopt'){if(p.trust<55||p.health<65)return toast('Raise trust to 55 and health to 65 first.');fundPatient(p,FUNDING_RULES.adoptionSupport,'Sanctuary transition support');G.care=G.care.filter(x=>x.id!==id);p.bond=20;p.training=0;p.enrichment=35;p.adoptedDay=G.day;ensurePetEpic(p);ensureLove(p);G.pets.push(p);G.selectedPetId=p.id;G.focus=p.id;G.focusPetId=p.id;G.careFxPetId=p.id;setOutcome(p,'Adopted into Vet Gods sanctuary');G.focus=p.id;G.rep+=5;log(`${p.fantasy} became your personal pet!`);showTab('pets')}
  render();
 }
 function careAllRecovery(){G.recovery.forEach(p=>{p.pain-=15;p.hydration+=15;p.warmth+=15;p.stress-=8});G.meds=Math.max(0,G.meds-Math.min(G.meds,G.recovery.length));log('Recovery ward group care completed.');render()}
@@ -1262,7 +1311,7 @@ function petAct(id,a){let __ev=window.event;let p=G.pets.find(x=>x.id===id);if(!
  log(`${p.fantasy} received ${a} care.`);rewardFX('heart','Care',__ev);render();
 }
 function careAllPets(){if(!G.pets.length)return toast('You have no adopted pets yet.');let n=G.pets.length;G.pets.forEach(p=>{p.hunger-=22;p.hydration+=20;p.cleanliness+=18;p.happiness+=12;p.trust+=6;p.health+=3;p.stress-=8});G.food=Math.max(0,G.food-Math.min(G.food,n));G.credits=Math.max(0,G.credits-n*4);log(`Care for All Pets completed for ${n} companions.`);render()}
-function focusPet(id){G.focus=id;renderPets();window.scrollTo({top:0,behavior:'smooth'})}
+function focusPet(id){G.focus=id;G.selectedPetId=id;G.focusPetId=id;G.careFxPetId=id;renderPets();renderMyPet();renderPetLife();window.scrollTo({top:0,behavior:'smooth'})}
 
 function eligibleBreeders(){
  return G.pets.filter(p=>p.health>=70 && p.happiness>=55 && p.bond>=45 && !G.pregnancies.some(x=>x.parentA===p.id||x.parentB===p.id));
@@ -1763,11 +1812,100 @@ function renderPets(){
 }
 function renderLog(){document.getElementById('log').innerHTML=G.log.length?G.log.map(x=>`<div>${x}</div>`).join(''):'<div>No sanctuary events yet.</div>'}
 
+
+function selectedPet(){
+  G.selectedPetId??=G.focus??null;
+  let p=(G.pets||[]).find(x=>x.id===G.selectedPetId);
+  if(!p&&G.pets?.length){p=G.pets[0];G.selectedPetId=p.id}
+  return p||null;
+}
+function petSourceId(p){return p?.sourceAnimalId??p?.id}
+function selectMyPet(id,openTab){
+  let p=(G.pets||[]).find(x=>x.id===id);if(!p)return toast('That companion is not in your sanctuary.');
+  G.selectedPetId=p.id;G.focus=p.id;G.focusPetId=p.id;G.careFxPetId=p.id;
+  ensurePetEpic(p);ensureLove(p);
+  if(openTab)showTab(openTab);
+  render();
+  rewardFX('heart',`${p.callName||p.name} selected`,window.event);
+}
+function petSwitcher(){
+  if(!G.pets?.length)return '';
+  return `<div class="selected-pet-switcher">${G.pets.map(p=>`<button class="selected-pet-chip ${p.id===G.selectedPetId?'active':''}" onclick="selectMyPet(${p.id})"><b>${p.emoji||'🐾'} ${p.callName||p.name}</b><br><small>${p.name} · ${relationshipLevel(p)}</small></button>`).join('')}</div>`;
+}
+function makeDirectPetFromCodex(animalId){
+  let a=ANIMALS.find(x=>x.id===animalId);if(!a)return;
+  let existing=G.pets.find(p=>petSourceId(p)===animalId);
+  if(existing){selectMyPet(existing.id,'mypet');return toast(`${existing.callName||existing.name} is already one of your companions.`)}
+  let seed=(animalId*41+G.day*13)%100;
+  let p={...a,
+    id:900000000+animalId,
+    sourceAnimalId:animalId,
+    health:88, pain:4, hydration:84, hunger:78, stress:18, warmth:82, trust:42,
+    cleanliness:80, energy:76, happiness:70, bond:28, training:8, enrichment:58,
+    wound:0, diag:true, stabilized:true, treated:true, surgeryNeeded:false, operated:false,
+    recoveryScore:100, adoptedDay:G.day,
+    callName:a.name.split(' ')[0]
+  };
+  ensureIdentity(p);ensureOwnerCase(p);ensurePetEpic(p);ensureLove(p);
+  setOutcome(p,'Chosen as a personal Vet Gods companion');
+  addLifeEvent(p,'Selected directly from the 200 Animal roster as a personal sanctuary companion.');
+  G.pets.push(p);G.selectedPetId=p.id;G.focus=p.id;G.focusPetId=p.id;G.careFxPetId=p.id;
+  G.codexSelectedId=animalId;
+  rewardFX('level','New Companion',window.event);toast(`${p.callName} is now your selected pet.`);showTab('mypet');render();
+}
+function bringCodexAnimalToClinic(animalId){
+  let a=ANIMALS.find(x=>x.id===animalId);if(!a)return;
+  if(G.pendingIntake)return toast('Finish the current intake decision first.');
+  if(G.clinic.length>=G.clinicBeds)return toast('Clinic intake is full.');
+  let busy=[...G.clinic,...G.surgery,...G.recovery,...G.care].some(p=>petSourceId(p)===animalId||p.id===animalId);
+  if(busy)return toast(`${a.name} is already active in the hospital.`);
+  let p=mkPatient(a);p.sourceAnimalId=animalId;
+  G.codexSelectedId=animalId;
+  beginIntakeDecision(p);showTab('clinic');
+  rewardFX('scan','Selected Intake',window.event);toast(`${a.name} is coming into Vet Gods intake.`);
+}
+function openCodexAnimal(animalId){
+  G.codexSelectedId=animalId;renderCodex();
+  let box=document.getElementById('codexSelectedProfile');if(box)box.scrollIntoView({behavior:'smooth',block:'start'});
+  rewardFX('scan','Profile Opened',window.event);
+}
+function codexProfileMarkup(a){
+  if(!a)return '';
+  let owned=G.pets.find(p=>petSourceId(p)===a.id);
+  let active=[...G.clinic,...G.surgery,...G.recovery,...G.care].find(p=>petSourceId(p)===a.id||p.id===a.id);
+  let origin=a.exotic?(a.originStory||'Exotic rescue profile.'):`${a.name} is one of the real-animal profiles available to the Vet Gods hospital and sanctuary.`;
+  let rescue=a.exotic?(a.rescueArc||'Specialized rehabilitation and placement assessment.'):`Care focus: ${a.careProfile}. You can deliberately choose this species instead of waiting for a random intake.`;
+  return `<div class="codex-detail"><div class="codex-detail-grid"><img src="${a.img}"><div><div class="titleline"><div><h2>${a.emoji||'🐾'} ${a.name}</h2><div class="muted"><i>${a.species}</i> · ${a.group}</div></div><span class="badge">${a.rarity||'REAL ANIMAL'}</span></div><p>${origin}</p><div class="soft-story">${rescue}</div><div class="case-funding"><b>What do you want to do with this animal?</b><br>Bring to Clinic creates an intake patient with illness/injury, funding, diagnosis, recovery and possible critical-care events. Choose as My Pet creates a healthy personal companion and selects it immediately.</div><div class="big-actions"><button class="btn primary" onclick="bringCodexAnimalToClinic(${a.id})">🏥 BRING ${a.name.toUpperCase()} TO CLINIC</button><button class="btn good" onclick="makeDirectPetFromCodex(${a.id})">❤️ ${owned?'OPEN MY PET':'CHOOSE AS MY PET'}</button>${active?`<button class="btn" onclick="showTab('clinic')">🩺 ACTIVE IN HOSPITAL</button>`:''}${owned?`<button class="btn" onclick="selectMyPet(${owned.id},'petlife')">🐾 OPEN PET LIFE</button>`:''}</div></div></div></div>`;
+}
+function renderMyPet(){
+  let el=document.getElementById('myPetScreen');if(!el)return;let p=selectedPet();
+  if(!p){el.innerHTML=`<div class="pet-empty-guide"><h2>🐾 Choose your pet</h2><p>You do not have a selected companion yet. Open the 200 Animals roster, choose any animal, and press <b>CHOOSE AS MY PET</b>.</p><button class="btn primary" onclick="showTab('codex')">📚 OPEN 200 ANIMALS</button></div>`;return}
+  ensurePetEpic(p);ensureLove(p);
+  let mood=petMood(p),need=needState(p);
+  el.innerHTML=`${petSwitcher()}<div class="selected-pet-hero"><img src="${p.img}"><div class="selected-pet-copy"><div class="titleline"><div><h2>${p.emoji||'🐾'} ${p.callName||p.name}</h2><div class="muted">${p.name} · ${p.group} · ${p.temperament} · ${mood}</div></div><span class="badge">${relationshipLevel(p)}</span></div><div class="human-line">${ensureLove(p).lastMoment||`Today, ${p.callName||p.name} is watching to see what you do next.`}</div><div class="metric-grid"><div class="metric"><strong>${clamp(p.health)}</strong><span>HEALTH</span></div><div class="metric"><strong>${clamp(p.hunger)}</strong><span>FED</span></div><div class="metric"><strong>${clamp(p.hydration)}</strong><span>WATER</span></div><div class="metric"><strong>${clamp(p.happiness)}</strong><span>HAPPY</span></div><div class="metric"><strong>${clamp(p.bond)}</strong><span>BOND</span></div><div class="metric"><strong>${clamp(p.trust)}</strong><span>TRUST</span></div></div></div></div>
+  <div class="pet-panel"><h3>❤️ Take Care of ${p.callName||p.name}</h3><div class="muted">Current priority: <b>${need.label||need.name||groupNeeds(p).label||'Daily companionship'}</b>. Manual care builds more relationship than Care for All.</div><div class="pet-care-grid"><button class="btn pet-care-big" onclick="petAct(${p.id},'feed')">🥣 Feed</button><button class="btn pet-care-big" onclick="petAct(${p.id},'water')">💧 Water</button><button class="btn pet-care-big" onclick="petAct(${p.id},'groom')">🧼 Groom</button><button class="btn pet-care-big" onclick="petAct(${p.id},'play')">🎾 Play</button><button class="btn pet-care-big" onclick="petAct(${p.id},'enrich')">🧩 Enrich</button><button class="btn pet-care-big" onclick="petAct(${p.id},'rest')">🛏 Rest</button><button class="btn pet-care-big" onclick="petAct(${p.id},'train')">⭐ Train</button><button class="btn pet-care-big" onclick="companionAction(${p.id},'sit')">❤️ Sit Together</button></div><div class="actions"><button class="btn good" onclick="careAllOwnedPets()">💗 CARE FOR ALL PETS</button><button class="btn primary" onclick="showTab('petlife')">🐾 OPEN ${p.callName||p.name}'S PET LIFE →</button></div></div>
+  ${loveSceneMarkup(p)}`;
+}
+function renderPetLife(){
+  let el=document.getElementById('petLifeScreen');if(!el)return;let p=selectedPet();
+  if(!p){el.innerHTML=`<div class="pet-empty-guide"><h2>🐾 Pet Life is waiting</h2><p>Select a companion in the 200 Animals roster first.</p><button class="btn primary" onclick="showTab('codex')">📚 CHOOSE AN ANIMAL</button></div>`;return}
+  ensurePetEpic(p);ensureLove(p);
+  el.innerHTML=`${petSwitcher()}<div class="pet-life-columns"><div>${loveSceneMarkup(p)}</div><div>${petEpicPanel(p)}</div></div><div class="actions"><button class="btn primary" onclick="showTab('mypet')">❤️ DAILY CARE</button><button class="btn" onclick="openCareFx(${p.id})">✨ ADVANCED CARE FX</button></div>`;
+}
+
 function renderCodex(){
- let seen=new Set([...G.clinic,...G.surgery,...G.recovery,...G.care,...G.pets,...G.babies].map(x=>x.id));
+ let all=[...G.clinic,...G.surgery,...G.recovery,...G.care,...G.pets,...G.babies];
+ let seen=new Set();
+ all.forEach(x=>seen.add(x.sourceAnimalId??x.id));
  let pct=Math.round((seen.size/ANIMALS.length)*100);
- document.getElementById('codexCount').innerHTML=`${seen.size}/200 discovered · ${pct}%`;
- document.getElementById('codexList').innerHTML=`<div class="card" style="grid-column:1/-1"><div class="pad"><div class="stage-head"><span>Codex completion</span><b>${pct}%</b></div><div class="codex-progress"><i style="width:${pct}%"></i></div></div></div>`+ANIMALS.map(a=>`<div class="card"><img src="${a.img}"><div class="pad"><div class="titleline"><div><h3>${a.emoji} ${a.name}</h3><div class="muted"><i>${a.species}</i></div></div><span class="badge">${seen.has(a.id)?'DISCOVERED':'CODEX'}</span></div><div class="muted" style="margin-top:7px">${a.group}</div><div class="muted" style="margin-top:5px">Care focus: ${a.careProfile}</div></div></div>`).join('');
+ document.getElementById('codexCount').innerHTML=`${seen.size}/200 brought into your game · ${pct}%`;
+ let chosen=ANIMALS.find(a=>a.id===G.codexSelectedId)||null;
+ let detail=document.getElementById('codexSelectedProfile');if(detail)detail.innerHTML=chosen?codexProfileMarkup(chosen):`<div class="soft-story"><strong>📚 Choose any animal below.</strong><br>Tap a card to open its full profile. From there you can bring that exact animal into Clinic or make it your selected personal pet.</div>`;
+ document.getElementById('codexList').innerHTML=`<div class="card" style="grid-column:1/-1"><div class="pad"><div class="stage-head"><span>Roster used in your game</span><b>${pct}%</b></div><div class="codex-progress"><i style="width:${pct}%"></i></div></div></div>`+ANIMALS.map(a=>{
+   let owned=G.pets.some(p=>(p.sourceAnimalId??p.id)===a.id);
+   let active=[...G.clinic,...G.surgery,...G.recovery,...G.care].some(p=>(p.sourceAnimalId??p.id)===a.id);
+   return `<div class="card codex-card" onclick="openCodexAnimal(${a.id})"><img src="${a.img}"><div class="pad"><div class="titleline"><div><h3>${a.emoji} ${a.name}</h3><div class="muted"><i>${a.species}</i></div></div><span class="badge">${owned?'MY PET':active?'IN CLINIC':seen.has(a.id)?'DISCOVERED':'AVAILABLE'}</span></div><div class="muted" style="margin-top:7px">${a.group}</div><div class="muted" style="margin-top:5px">Care focus: ${a.careProfile}</div><div class="codex-actions"><button class="btn" onclick="event.stopPropagation();openCodexAnimal(${a.id})">🔎 OPEN</button><button class="btn primary" onclick="event.stopPropagation();bringCodexAnimalToClinic(${a.id})">🏥 CLINIC</button></div></div></div>`
+ }).join('');
 }
 
 
@@ -2025,7 +2163,7 @@ function getDailyObjective(){
 
 function openCareFx(id){
   G.careFxPetId=id;
-  G.focus=id;
+  G.focus=id;G.selectedPetId=id;G.focusPetId=id;
   G.careFxMode='wellness';
   G.careFxStep=0;
   showTab('carefx');
@@ -2275,12 +2413,12 @@ function render(){if(!G.firstAnimalCompleted)grantStarterResources();
  document.getElementById('surgeryList').innerHTML=G.surgery.length?G.surgery.map(p=>animalCard(p,'surgery')).join(''):'<div class="empty">No active procedures.</div>';
  document.getElementById('recoveryList').innerHTML=G.recovery.length?G.recovery.map(p=>animalCard(p,'recovery')).join(''):'<div class="empty">Recovery ward is quiet.</div>';
  document.getElementById('careList').innerHTML=G.care.length?G.care.map(p=>animalCard(p,'care')).join(''):'<div class="empty">No animals are ready for final care yet.</div>';
- renderPets();renderNursery();renderCareFx();renderCodex();renderWallOfLives();renderLog();renderDepartmentScenes();renderHospitalWorld();renderEpicPetsHeader();renderPendingIntake();renderFunding();
+ renderPets();renderNursery();renderCareFx();renderCodex();renderWallOfLives();renderLog();renderDepartmentScenes();renderHospitalWorld();renderEpicPetsHeader();renderPendingIntake();renderFunding();renderMyPet();renderPetLife();
 }
 function showTab(id){document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));}
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 function saveGame(){localStorage.setItem('petgodsSave',JSON.stringify(G));toast('Game saved locally.')}
-function loadGame(){let s=localStorage.getItem('petgodsSave');if(!s)return toast('No save found.');G=JSON.parse(s);G.firstAnimalCompleted??=false;G.starterCaseGranted??=false;G.hospitalStats??={treated:0,surgeries:0,mercy:0,referred:0,declined:0,placements:0,deaths:0};G.hospitalStats.deaths??=0;G.diagnosticFiles??={};G.caseSerial??=1000;G.sceneVariant??=0;G.pendingIntake??=null;G.intakeHistory??=[];G.referredCases??=[];G.declinedCases??=[];G.clinicBeds??=6;G.trainingQueue??=[];G.petCerts??={};G.marketOffers??={};G.marketHistory??=[];G.workingPets??=[];G.mercyFund??=FUNDING_RULES.startingMercy;G.funding??=null;ensureFunding();G.lifeChronicles??={};G.ownerProfiles??={};G.returningMoments??=[];G.clinicChapter??=1;G.ownerCases??={};G.adoptionStories??=[];G.petZone??='hub';G.petCustom??={};G.sanctuaryLevel??=1;G.sanctuaryXp??=0;G.petRoutines??={};G.careFxPetId??=null;G.careFxMode??='wellness';G.careFxStep??=0;G.careXp??=0;G.careLevel??=1;G.careFxHistory??=[];G.pregnancies=G.pregnancies||[];G.babies=G.babies||[];[...G.clinic,...G.surgery,...G.recovery,...G.care,...G.pets,...G.babies].forEach(p=>ensureIdentity(p));render();toast('Save loaded.')}
+function loadGame(){let s=localStorage.getItem('petgodsSave');if(!s)return toast('No save found.');G=JSON.parse(s);G.firstAnimalCompleted??=false;G.starterCaseGranted??=false;G.hospitalStats??={treated:0,surgeries:0,mercy:0,referred:0,declined:0,placements:0,deaths:0};G.hospitalStats.deaths??=0;G.diagnosticFiles??={};G.caseSerial??=1000;G.sceneVariant??=0;G.pendingIntake??=null;G.intakeHistory??=[];G.referredCases??=[];G.declinedCases??=[];G.clinicBeds??=6;G.trainingQueue??=[];G.petCerts??={};G.marketOffers??={};G.marketHistory??=[];G.workingPets??=[];G.mercyFund??=FUNDING_RULES.startingMercy;G.funding??=null;ensureFunding();G.lifeChronicles??={};G.ownerProfiles??={};G.returningMoments??=[];G.clinicChapter??=1;G.ownerCases??={};G.adoptionStories??=[];G.selectedPetId??=G.focus??null;G.codexSelectedId??=null;G.petZone??='hub';G.petCustom??={};G.sanctuaryLevel??=1;G.sanctuaryXp??=0;G.petRoutines??={};G.careFxPetId??=null;G.careFxMode??='wellness';G.careFxStep??=0;G.careXp??=0;G.careLevel??=1;G.careFxHistory??=[];G.pregnancies=G.pregnancies||[];G.babies=G.babies||[];[...G.clinic,...G.surgery,...G.recovery,...G.care,...G.pets,...G.babies].forEach(p=>ensureIdentity(p));render();toast('Save loaded.')}
 restartClinicFunding();if(!G.firstAnimalCompleted&&!G.pendingIntake&&!G.clinic.length)admitNew();render();
 
 let __lastHud={};
@@ -2299,6 +2437,236 @@ function installHudRewardObserver(){
  });
 }
 setTimeout(installHudRewardObserver,400);
+
+
+const CASE_STAGES=['intake','clinic','surgery','recovery','care','pet','life','wall'];
+const CASE_STAGE_NAMES={intake:'INTAKE',clinic:'CLINIC',surgery:'SURGERY',recovery:'RECOVERY',care:'CARE',pet:'MY PET',life:'PET LIFE',wall:'WALL OF LIVES'};
+function ensureCaseFlow(p){
+  if(!p)return null;
+  p.caseFlow??={};
+  let c=p.caseFlow;
+  c.stage??=(G.pets||[]).some(x=>x.id===p.id)?'pet':(G.care||[]).some(x=>x.id===p.id)?'care':(G.recovery||[]).some(x=>x.id===p.id)?'recovery':(G.surgery||[]).some(x=>x.id===p.id)?'surgery':(G.clinic||[]).some(x=>x.id===p.id)?'clinic':'intake';
+  c.completed??={intake:false,clinic:false,surgery:false,recovery:false,care:false,pet:false,life:false,wall:false};
+  c.score??=0;c.actions??=0;c.errors??=0;c.milestones??=[];c.bonuses??=0;c.expenses??=0;c.lastAction??='Case opened';
+  c.needsSurgery??=!!p.surgeryNeeded;c.disposition??='pending';c.originAnimalId??=(p.sourceAnimalId??p.id);
+  return c;
+}
+function setCaseStage(p,stage,note){
+  let c=ensureCaseFlow(p),old=c.stage;
+  if(old&&old!==stage)c.completed[old]=true;
+  c.stage=stage;c.lastAction=note||`${CASE_STAGE_NAMES[stage]} started`;
+  if(note){addLifeEvent(p,note);c.milestones.unshift(`Day ${G.day}: ${note}`);c.milestones=c.milestones.slice(0,18)}
+}
+function caseQuality(p){
+  let c=ensureCaseFlow(p),score=50;
+  score+=Math.min(18,c.actions*2)+Math.min(12,c.milestones.length);
+  score+=Math.round((p.health||0)/10)+Math.round((p.trust||0)/20);
+  score-=c.errors*8; score-=Math.round((p.pain||0)/14); score-=ensureCritical(p).nearDeathCount*2;
+  if(ensureCritical(p).deceased)score-=35;
+  return Math.max(0,Math.min(100,score));
+}
+function recordCaseAction(p,label,points=2){
+  let c=ensureCaseFlow(p);c.actions++;c.score+=points;c.lastAction=label;
+}
+function caseNextText(p){
+  let c=ensureCaseFlow(p);
+  if(ensureCritical(p).deceased)return 'This case has ended. Its story continues in the Wall of Lives.';
+  if(c.stage==='intake')return 'Review funding and accept the patient into the hospital.';
+  if(c.stage==='clinic'){
+    if(!p.diag)return 'Build diagnostic confidence, then confirm the diagnosis.';
+    if(!p.stabilized)return 'Stabilize the patient before definitive treatment.';
+    if(!p.treated)return 'Complete treatment and decide whether surgery is required.';
+    return p.surgeryNeeded?'Transfer to Surgery.':'Transfer to Recovery.';
+  }
+  if(c.stage==='surgery'){
+    if(!p.prepped)return 'Prepare the patient and operating theater.';
+    if(!p.operated)return 'Perform the procedure.';
+    if(!p.closed)return 'Close the surgical site.';
+    return 'Transfer to Recovery ICU.';
+  }
+  if(c.stage==='recovery'){
+    let score=Math.round(((p.health||0)+(p.hydration||0)+(100-(p.pain||0))+(p.warmth||0)+(100-(p.stress||0)))/5);
+    return score<68?`Raise recovery score from ${score}% to at least 68%.`:'Graduate to Care and disposition planning.';
+  }
+  if(c.stage==='care'){
+    let owner=ensureOwnerCase(p);
+    if(!owner.resolved)return 'Resolve the patient’s home, surrender, rescue, or sanctuary disposition.';
+    if(owner.adoptable)return p.trust<55||p.health<65?'Build health and trust before adoption.':'Adoption is available. This patient can become your selected pet.';
+    return 'Complete aftercare and return/transfer the patient to the resolved destination.';
+  }
+  if(c.stage==='pet')return 'Care for the selected companion. Bond and routine now affect Pet Life.';
+  if(c.stage==='life')return 'Build memories, habitat, training, achievements, and a permanent home.';
+  return 'This life is permanently recorded.';
+}
+function casePathMarkup(p){
+  let c=ensureCaseFlow(p),idx=CASE_STAGES.indexOf(c.stage),q=caseQuality(p),book=typeof caseBook==='function'?caseBook(p):{income:0,expense:0};
+  return `<div class="case-command"><h3>🧭 CASE JOURNEY · ${p.callName||p.name} · ${patientCaseNo(p)}</h3>
+  <div class="case-path">${CASE_STAGES.map((s,i)=>`<div class="path-step ${c.completed[s]?'done':s===c.stage?'now':i>idx?'locked':''}">${c.completed[s]?'✓ ':s===c.stage?'▶ ':''}${CASE_STAGE_NAMES[s]}</div>`).join('')}</div>
+  <div class="case-score"><div><b>${q}</b><span>CASE QUALITY</span></div><div><b>${c.actions}</b><span>CARE ACTIONS</span></div><div><b>+${book.income||0}</b><span>CASE FUNDING</span></div><div><b>-${book.expense||0}</b><span>CASE COST</span></div></div>
+  <div class="case-next"><b>NEXT MOVE</b><br>${caseNextText(p)}</div></div>`;
+}
+function currentHospitalCase(){
+  let pools=[...(G.clinic||[]),...(G.surgery||[]),...(G.recovery||[]),...(G.care||[])];
+  if(G.pendingIntake?.pet)return G.pendingIntake.pet;
+  return pools[0]||selectedPet()||null;
+}
+function departmentCommandMarkup(stage){
+  let pool=stage==='clinic'?G.clinic:stage==='surgery'?G.surgery:stage==='recovery'?G.recovery:stage==='care'?G.care:[];
+  if(!pool?.length)return `<div class="hospital-loop"><b>${CASE_STAGE_NAMES[stage]} CONNECTION</b><br>No active case here. Choose a species in 200 Animals or continue the patient in the previous department.</div>`;
+  let p=pool[0];return casePathMarkup(p);
+}
+function connectedFundingSummary(){
+  let p=currentHospitalCase();if(!p)return `<div class="hospital-loop"><b>CASE FUNDING LINK</b><br>Select or admit a patient to open a live case budget.</div>`;
+  let b=caseBook(p),net=(b.income||0)-(b.expense||0);
+  return `<div class="hospital-loop"><b>💰 ACTIVE CASE · ${p.callName||p.name}</b><br>${CASE_STAGE_NAMES[ensureCaseFlow(p).stage]} · funding +${b.income||0} · cost -${b.expense||0} · net ${net>=0?'+':''}${net}<div class="case-next">${caseNextText(p)}</div></div>`;
+}
+function connectedWallSummary(){
+  let total=Object.keys(G.lifeChronicles||{}).length,deaths=(G.memorials||[]).length,adopted=(G.pets||[]).length;
+  return `<div class="hospital-loop"><b>🕯 WHOLE-HOSPITAL OUTCOMES</b><br><span class="outcome-badge">${total} lives recorded</span><span class="outcome-badge">${adopted} sanctuary companions</span><span class="outcome-badge">${deaths} memorials</span><br><span class="muted">Every patient selected from 200 Animals carries the same case story here after intake, surgery, recovery, care and adoption or loss.</span></div>`;
+}
+function finalizeCaseReward(p,outcome){
+  let c=ensureCaseFlow(p);if(c.rewarded)return;c.rewarded=true;c.completed.wall=true;c.stage='wall';c.disposition=outcome;
+  let q=caseQuality(p),bonus=0;
+  if(outcome==='adopted')bonus=500+q*12;
+  else if(outcome==='survived')bonus=350+q*8;
+  else if(outcome==='placed')bonus=450+q*10;
+  else if(outcome==='died')bonus=0;
+  if(bonus){fundPatient(p,bonus,`Case completion quality grant (${q}/100)`);c.bonuses+=bonus;G.rep+=(q>=85?3:q>=70?2:1);rewardFX('level',`Case +${bonus}`,window.event);}
+  addLifeEvent(p,`Case closed with ${q}/100 quality. Outcome: ${outcome}.`);
+}
+function completeCareDisposition(id,type){
+  let p=(G.care||[]).find(x=>x.id===id);if(!p)return;
+  let oc=ensureOwnerCase(p);
+  if(type==='home'){
+    if(oc.adoptable)return toast('This patient is on an adoption/sanctuary path instead.');
+    G.care=G.care.filter(x=>x.id!==id);setOutcome(p,'Returned home after treatment');finalizeCaseReward(p,'survived');toast(`${p.callName||p.name} went home.`);
+  }else if(type==='rescue'){
+    G.care=G.care.filter(x=>x.id!==id);setOutcome(p,'Transferred to accredited rescue / sanctuary');G.hospitalStats.placements=(G.hospitalStats.placements||0)+1;finalizeCaseReward(p,'placed');toast(`${p.callName||p.name} transferred to long-term placement.`);
+  }
+  render();
+}
+function careDispositionButtons(p){
+  let oc=ensureOwnerCase(p);if(!oc.resolved)return `<div class="case-warning">Disposition is not resolved yet. Use the financial/story choices on this case first.</div>`;
+  if(oc.adoptable)return `<div class="case-bonus">❤️ This patient is eligible to become your personal companion once health and trust requirements are met.</div>`;
+  return `<div class="actions"><button class="btn good" onclick="completeCareDisposition(${p.id},'home')">🏠 DISCHARGE HOME</button><button class="btn" onclick="completeCareDisposition(${p.id},'rescue')">🤝 TRANSFER TO PARTNER</button></div>`;
+}
+function renderConnectedHospital(){
+  let targets={clinic:'clinicList',surgery:'surgeryList',recovery:'recoveryList',care:'careList'};
+  Object.entries(targets).forEach(([stage,id])=>{
+    let el=document.getElementById(id);if(!el)return;
+    let old=document.getElementById(`cmd-${stage}`);if(old)old.remove();
+    let d=document.createElement('div');d.id=`cmd-${stage}`;d.innerHTML=departmentCommandMarkup(stage);el.parentNode.insertBefore(d,el);
+  });
+  let fs=document.getElementById('fundingStatus');if(fs&&!document.getElementById('funding-connected')){
+    let d=document.createElement('div');d.id='funding-connected';fs.parentNode.insertBefore(d,fs.nextSibling);
+  }
+  let fc=document.getElementById('funding-connected');if(fc)fc.innerHTML=connectedFundingSummary();
+  let wall=document.getElementById('wallOfLives');if(wall){
+    let d=document.getElementById('wall-connected');if(!d){d=document.createElement('div');d.id='wall-connected';wall.parentNode.insertBefore(d,wall)}
+    d.innerHTML=connectedWallSummary();
+  }
+  (G.care||[]).forEach(p=>{
+    let card=[...document.querySelectorAll('#careList .card')].find(x=>x.innerHTML.includes(p.callName||p.name));
+    if(card&&!card.querySelector('.linked-disposition')){let d=document.createElement('div');d.className='linked-disposition';d.innerHTML=careDispositionButtons(p);card.appendChild(d)}
+  });
+}
+
+
+const __connectedOriginalRender=render;
+render=function(){
+  __connectedOriginalRender();
+  [...(G.clinic||[]),...(G.surgery||[]),...(G.recovery||[]),...(G.care||[]),...(G.pets||[])].forEach(ensureCaseFlow);
+  renderConnectedHospital();
+};
+
+const __connectedClinicAct=clinicAct;
+clinicAct=function(id,a){
+  let p=(G.clinic||[]).find(x=>x.id===id);if(p){ensureCaseFlow(p);recordCaseAction(p,a,2);}
+  __connectedClinicAct(id,a);
+  p=findAnyPatient(id)||p;
+  if(p){
+    if(a==='transfer')setCaseStage(p,p.surgeryNeeded?'surgery':'recovery',p.surgeryNeeded?'Clinical workup complete; transferred to Surgery.':'Clinical workup complete; transferred directly to Recovery.');
+    else ensureCaseFlow(p).stage='clinic';
+  }
+  render();
+};
+
+const __connectedSurgAct=surgAct;
+surgAct=function(id,a){
+  let p=(G.surgery||[]).find(x=>x.id===id);if(p){ensureCaseFlow(p);ensureCaseFlow(p).stage='surgery';recordCaseAction(p,a,a==='operate'?5:2);}
+  __connectedSurgAct(id,a);
+  p=findAnyPatient(id)||p;
+  if(p&&a==='transfer')setCaseStage(p,'recovery','Surgery completed; patient transferred to Recovery ICU.');
+  render();
+};
+
+const __connectedRecAct=recAct;
+recAct=function(id,a){
+  let p=(G.recovery||[]).find(x=>x.id===id);if(p){ensureCaseFlow(p);ensureCaseFlow(p).stage='recovery';recordCaseAction(p,a,2);}
+  __connectedRecAct(id,a);
+  p=findAnyPatient(id)||p;
+  if(p&&a==='transfer')setCaseStage(p,'care','Recovery threshold reached; patient graduated to Care and disposition planning.');
+  render();
+};
+
+const __connectedCareAct=careAct;
+careAct=function(id,a){
+  let p=(G.care||[]).find(x=>x.id===id);if(p){ensureCaseFlow(p);ensureCaseFlow(p).stage='care';recordCaseAction(p,a,a==='adopt'?6:2);}
+  __connectedCareAct(id,a);
+  let pet=(G.pets||[]).find(x=>x.id===id);
+  if(pet&&a==='adopt'){setCaseStage(pet,'pet','Adopted into the Vet Gods sanctuary as a personal companion.');finalizeCaseReward(pet,'adopted');G.selectedPetId=pet.id;}
+  render();
+};
+
+const __connectedPetAct=petAct;
+petAct=function(id,a){
+  let p=(G.pets||[]).find(x=>x.id===id);if(p){ensureCaseFlow(p);ensureCaseFlow(p).stage='pet';recordCaseAction(p,`pet:${a}`,1);}
+  __connectedPetAct(id,a);render();
+};
+
+const __connectedCompanionAction=companionAction;
+companionAction=function(id,type){
+  let p=(G.pets||[]).find(x=>x.id===id);if(p){ensureCaseFlow(p);ensureCaseFlow(p).stage='life';recordCaseAction(p,`bond:${type}`,2);ensureCaseFlow(p).completed.pet=true;}
+  __connectedCompanionAction(id,type);render();
+};
+
+const __connectedBringCodex=bringCodexAnimalToClinic;
+bringCodexAnimalToClinic=function(animalId){
+  __connectedBringCodex(animalId);
+  let p=G.pendingIntake?.pet;if(p){ensureCaseFlow(p);setCaseStage(p,'intake',`Selected deliberately from the 200 Animals roster for hospital intake.`);}
+  render();
+};
+
+const __connectedDirectPet=makeDirectPetFromCodex;
+makeDirectPetFromCodex=function(animalId){
+  __connectedDirectPet(animalId);
+  let p=selectedPet();if(p){ensureCaseFlow(p);setCaseStage(p,'pet','Chosen from the 200 Animals roster as a personal companion.');ensureCaseFlow(p).completed.intake=true;ensureCaseFlow(p).completed.clinic=true;ensureCaseFlow(p).completed.care=true;}
+  render();
+};
+
+const __connectedAccept=acceptPendingCase;
+acceptPendingCase=function(mode){
+  let p=G.pendingIntake?.pet;
+  __connectedAccept(mode);
+  if(p&&(G.clinic||[]).some(x=>x.id===p.id)){setCaseStage(p,'clinic','Funding review complete; patient admitted to Clinic.');recordCaseAction(p,'admission',3);}
+  render();
+};
+
+const __connectedDeath=handlePatientDeath;
+handlePatientDeath=function(p){
+  __connectedDeath(p);ensureCaseFlow(p);setCaseStage(p,'wall','Patient died in care; case transferred permanently to the Wall of Lives.');finalizeCaseReward(p,'died');render();
+};
+
+const __connectedMyPet=renderMyPet;
+renderMyPet=function(){
+  __connectedMyPet();let p=selectedPet(),el=document.getElementById('myPetScreen');if(p&&el)el.insertAdjacentHTML('afterbegin',casePathMarkup(p));
+};
+const __connectedPetLife=renderPetLife;
+renderPetLife=function(){
+  __connectedPetLife();let p=selectedPet(),el=document.getElementById('petLifeScreen');if(p&&el)el.insertAdjacentHTML('afterbegin',casePathMarkup(p));
+};
+
+render();
 
 </script>
 </body>
