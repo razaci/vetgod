@@ -3382,5 +3382,57 @@ function installCinemaHooks(){
 document.addEventListener('DOMContentLoaded',installCinemaHooks);
 
 </script>
+
+<script id="vetGodScrollFix">
+/* Preserve the player's exact screen position for ordinary gameplay buttons.
+   Navigation/tab controls are allowed to move intentionally. */
+(function(){
+  let savedY = 0;
+  let restorePending = false;
+
+  function isNavigation(el){
+    if(!el) return false;
+    const s = ((el.getAttribute('onclick')||'')+' '+(el.id||'')+' '+(el.className||'')+' '+(el.textContent||'')).toLowerCase();
+    return /gototab|showtab|switchtab|opencodexanimal|openpatient|go to required area|clinic|funding|surgery|recovery|care|200 animals|my pet|pet life|wall of lives/.test(s)
+      && /nav|tab|gototab|showtab|switchtab|go to|required area/.test(s);
+  }
+
+  document.addEventListener('pointerdown', function(e){
+    const el=e.target.closest('button,[role="button"],a');
+    if(!el || isNavigation(el)) return;
+    savedY = window.scrollY || document.documentElement.scrollTop || 0;
+    restorePending = true;
+  }, true);
+
+  document.addEventListener('click', function(e){
+    const el=e.target.closest('a[href="#"],a[href=""],button');
+    if(el && el.tagName==='A' && (el.getAttribute('href')==='#' || el.getAttribute('href')==='')){
+      e.preventDefault();
+    }
+    if(!restorePending || isNavigation(el)) return;
+    const y=savedY;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>window.scrollTo({top:y,left:0,behavior:'instant'})));
+    setTimeout(()=>window.scrollTo(0,y),40);
+    setTimeout(()=>window.scrollTo(0,y),140);
+    restorePending=false;
+  }, true);
+
+  /* Guard against full render() calls resetting scroll after an action. */
+  if(typeof window.render==='function'){
+    const originalRender=window.render;
+    window.render=function(){
+      const y=window.scrollY || 0;
+      const keep=restorePending;
+      const r=originalRender.apply(this,arguments);
+      if(keep){
+        requestAnimationFrame(()=>window.scrollTo(0,y));
+        setTimeout(()=>window.scrollTo(0,y),60);
+      }
+      return r;
+    };
+  }
+})();
+</script>
+
 </body>
 </html>
