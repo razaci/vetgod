@@ -3881,5 +3881,103 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 
+
+<script id="wallRouteFixJs">
+/* ===== ROUTING FIX: ordinary care/exam actions must never jump to Wall of Lives ===== */
+(function(){
+  const WALL_IDS = new Set(['wall','walloflives','wall-of-lives','wallScreen','walloflivesscreen']);
+
+  function looksLikeWallNav(el){
+    if(!el) return false;
+    const txt=(el.textContent||'').trim().toLowerCase();
+    const oc=(el.getAttribute('onclick')||'').toLowerCase();
+    const href=(el.getAttribute('href')||'').toLowerCase();
+    const id=(el.id||'').toLowerCase();
+    return txt==='wall of lives' || txt.includes('wall of lives') ||
+      oc.includes("gototab('wall") || oc.includes('renderwalloflives') ||
+      href==='#wall' || href.includes('wall-of-lives') || id.includes('wall');
+  }
+
+  function looksLikeCareAction(el){
+    if(!el) return false;
+    const s=((el.textContent||'')+' '+(el.getAttribute('onclick')||'')+' '+(el.id||'')+' '+(el.className||'')).toLowerCase();
+    return /take care|physical exam|exam|stabilize|diagnose|treat|feed|water|groom|bond|pain|fluids|oxygen|warm|rest|operate|prep|close|recover|intervention|patient/.test(s);
+  }
+
+  function currentVisibleSection(){
+    const secs=[...document.querySelectorAll('section')];
+    return secs.find(s=>{
+      const cs=getComputedStyle(s);
+      return cs.display!=='none' && s.offsetParent!==null;
+    }) || null;
+  }
+
+  let lastSafeSection = currentVisibleSection()?.id || 'clinic';
+
+  document.addEventListener('pointerdown',function(e){
+    const el=e.target.closest('button,a,[role="button"]');
+    if(!el) return;
+    const sec=currentVisibleSection();
+    if(sec && sec.id && !WALL_IDS.has(sec.id)) lastSafeSection=sec.id;
+    el._vgWasCareAction = looksLikeCareAction(el) && !looksLikeWallNav(el);
+  },true);
+
+  document.addEventListener('click',function(e){
+    const el=e.target.closest('button,a,[role="button"]');
+    if(!el || !el._vgWasCareAction) return;
+
+    setTimeout(()=>{
+      const wall=document.getElementById('wall');
+      const wallScreen=document.getElementById('wallScreen');
+      const wallVisible=(wall && getComputedStyle(wall).display!=='none' && wall.offsetParent!==null)
+        || (wallScreen && getComputedStyle(wallScreen).display!=='none' && wallScreen.offsetParent!==null);
+
+      if(wallVisible){
+        // restore the department/player context that existed before the care action
+        document.querySelectorAll('section').forEach(s=>s.style.display='none');
+        let target=document.getElementById(lastSafeSection);
+        if(!target){
+          const p=(typeof lvPatient==='function'?lvPatient():null);
+          let stage='';
+          try{stage=(typeof contactStageFor==='function'?contactStageFor(p):p?.caseFlow?.stage||'clinic')}catch(_){}
+          target=document.getElementById(stage) || document.getElementById(stage+'Screen') || document.getElementById('clinic');
+        }
+        if(target) target.style.display='block';
+      }
+    },0);
+  },true);
+
+  // Harden gotoTab so only explicit wall navigation can open Wall of Lives.
+  if(typeof window.gotoTab==='function'){
+    const oldGotoTab=window.gotoTab;
+    window.gotoTab=function(tab){
+      const t=String(tab||'').toLowerCase();
+      if((t==='wall'||t==='walloflives'||t==='wall-of-lives') && window.event){
+        const srcEl=window.event.target?.closest?.('button,a,[role="button"]');
+        if(srcEl && looksLikeCareAction(srcEl) && !looksLikeWallNav(srcEl)){
+          return;
+        }
+      }
+      return oldGotoTab.apply(this,arguments);
+    };
+  }
+
+  // Same protection for common show/switch tab helpers if present.
+  ['showTab','switchTab'].forEach(name=>{
+    if(typeof window[name]==='function'){
+      const old=window[name];
+      window[name]=function(tab){
+        const t=String(tab||'').toLowerCase();
+        if((t==='wall'||t==='walloflives'||t==='wall-of-lives') && window.event){
+          const srcEl=window.event.target?.closest?.('button,a,[role="button"]');
+          if(srcEl && looksLikeCareAction(srcEl) && !looksLikeWallNav(srcEl)) return;
+        }
+        return old.apply(this,arguments);
+      };
+    }
+  });
+})();
+</script>
+
 </body>
 </html>
