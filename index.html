@@ -3882,100 +3882,145 @@ document.addEventListener('DOMContentLoaded',()=>{
 </script>
 
 
-<script id="wallRouteFixJs">
-/* ===== ROUTING FIX: ordinary care/exam actions must never jump to Wall of Lives ===== */
+
+
+
+<script id="navigationHardFixJs">
+/* ===== HARD NAVIGATION FIX =====
+   Ordinary actions stay on the screen they came from.
+   Only explicit navigation controls may change screens.
+*/
 (function(){
-  const WALL_IDS = new Set(['wall','walloflives','wall-of-lives','wallScreen','walloflivesscreen']);
+  let actionSourceScreen = null;
+  let actionWasNavigation = false;
+  let restoring = false;
 
-  function looksLikeWallNav(el){
+  function activeGameScreen(){
+    return document.querySelector('.screen.active') || null;
+  }
+
+  function sourceScreenFor(el){
+    return el?.closest?.('.screen') || activeGameScreen();
+  }
+
+  function navIntent(el){
     if(!el) return false;
+    if(el.classList?.contains('tab')) return true;
+    if(el.classList?.contains('map-room')) return true;
+
+    const oc=(el.getAttribute?.('onclick')||'').toLowerCase();
+    const href=(el.getAttribute?.('href')||'').toLowerCase();
     const txt=(el.textContent||'').trim().toLowerCase();
-    const oc=(el.getAttribute('onclick')||'').toLowerCase();
-    const href=(el.getAttribute('href')||'').toLowerCase();
-    const id=(el.id||'').toLowerCase();
-    return txt==='wall of lives' || txt.includes('wall of lives') ||
-      oc.includes("gototab('wall") || oc.includes('renderwalloflives') ||
-      href==='#wall' || href.includes('wall-of-lives') || id.includes('wall');
+
+    if(
+      oc.includes('showtab(') ||
+      oc.includes('gototab(') ||
+      oc.includes('openpatient(') ||
+      oc.includes('opencodexanimal(') ||
+      oc.includes('opencriticalsave(') ||
+      oc.includes('openanimalcontact(') ||
+      href.startsWith('#')
+    ) return true;
+
+    // These are clearly department/navigation labels.
+    if(/^(clinic|hospital map|funding|surgery|recovery|care|my pet|pet life|nursery|200 animals|wall of lives)$/.test(txt))
+      return true;
+
+    if(txt.includes('go to required area') || txt.includes('open active clinic case') || txt.startsWith('open ') && txt.includes('pet life'))
+      return true;
+
+    return false;
   }
 
-  function looksLikeCareAction(el){
-    if(!el) return false;
-    const s=((el.textContent||'')+' '+(el.getAttribute('onclick')||'')+' '+(el.id||'')+' '+(el.className||'')).toLowerCase();
-    return /take care|physical exam|exam|stabilize|diagnose|treat|feed|water|groom|bond|pain|fluids|oxygen|warm|rest|operate|prep|close|recover|intervention|patient/.test(s);
-  }
+  function restoreScreen(id){
+    if(!id || restoring) return;
+    const target=document.getElementById(id);
+    if(!target || !target.classList.contains('screen')) return;
 
-  function currentVisibleSection(){
-    const secs=[...document.querySelectorAll('section')];
-    return secs.find(s=>{
-      const cs=getComputedStyle(s);
-      return cs.display!=='none' && s.offsetParent!==null;
-    }) || null;
-  }
+    restoring=true;
 
-  let lastSafeSection = currentVisibleSection()?.id || 'clinic';
+    // Clear accidental inline display overrides created by Critical Save.
+    document.querySelectorAll('.screen').forEach(s=>{
+      s.style.removeProperty('display');
+      s.classList.toggle('active',s.id===id);
+    });
+    document.querySelectorAll('.tab').forEach(t=>{
+      t.classList.toggle('active',t.dataset.tab===id);
+    });
+
+    restoring=false;
+  }
 
   document.addEventListener('pointerdown',function(e){
-    const el=e.target.closest('button,a,[role="button"]');
+    const el=e.target.closest('button,a,[role="button"],.map-room');
     if(!el) return;
-    const sec=currentVisibleSection();
-    if(sec && sec.id && !WALL_IDS.has(sec.id)) lastSafeSection=sec.id;
-    el._vgWasCareAction = looksLikeCareAction(el) && !looksLikeWallNav(el);
+
+    actionWasNavigation=navIntent(el);
+    const src=sourceScreenFor(el);
+    actionSourceScreen=src?.id || activeGameScreen()?.id || 'clinic';
+
+    // If a gameplay button physically lives on a normal screen,
+    // that screen is authoritative even if another screen was accidentally marked active.
+    if(!actionWasNavigation && src?.id){
+      actionSourceScreen=src.id;
+    }
   },true);
 
   document.addEventListener('click',function(e){
-    const el=e.target.closest('button,a,[role="button"]');
-    if(!el || !el._vgWasCareAction) return;
+    const el=e.target.closest('button,a,[role="button"],.map-room');
+    if(!el || actionWasNavigation) return;
 
-    setTimeout(()=>{
-      const wall=document.getElementById('wall');
-      const wallScreen=document.getElementById('wallScreen');
-      const wallVisible=(wall && getComputedStyle(wall).display!=='none' && wall.offsetParent!==null)
-        || (wallScreen && getComputedStyle(wallScreen).display!=='none' && wallScreen.offsetParent!==null);
+    const keep=actionSourceScreen || 'clinic';
 
-      if(wallVisible){
-        // restore the department/player context that existed before the care action
-        document.querySelectorAll('section').forEach(s=>s.style.display='none');
-        let target=document.getElementById(lastSafeSection);
-        if(!target){
-          const p=(typeof lvPatient==='function'?lvPatient():null);
-          let stage='';
-          try{stage=(typeof contactStageFor==='function'?contactStageFor(p):p?.caseFlow?.stage||'clinic')}catch(_){}
-          target=document.getElementById(stage) || document.getElementById(stage+'Screen') || document.getElementById('clinic');
-        }
-        if(target) target.style.display='block';
-      }
-    },0);
+    // render() and chained handlers can change .active after the click.
+    // Restore several times across the current render cycle.
+    requestAnimationFrame(()=>restoreScreen(keep));
+    setTimeout(()=>restoreScreen(keep),0);
+    setTimeout(()=>restoreScreen(keep),50);
+    setTimeout(()=>restoreScreen(keep),180);
   },true);
 
-  // Harden gotoTab so only explicit wall navigation can open Wall of Lives.
-  if(typeof window.gotoTab==='function'){
-    const oldGotoTab=window.gotoTab;
-    window.gotoTab=function(tab){
-      const t=String(tab||'').toLowerCase();
-      if((t==='wall'||t==='walloflives'||t==='wall-of-lives') && window.event){
-        const srcEl=window.event.target?.closest?.('button,a,[role="button"]');
-        if(srcEl && looksLikeCareAction(srcEl) && !looksLikeWallNav(srcEl)){
-          return;
-        }
-      }
-      return oldGotoTab.apply(this,arguments);
+  // Make showTab itself clear stale inline display styles.
+  if(typeof window.showTab==='function'){
+    const originalShowTab=window.showTab;
+    window.showTab=function(id){
+      document.querySelectorAll('.screen').forEach(s=>s.style.removeProperty('display'));
+      const critical=document.getElementById('criticalsave');
+      if(critical) critical.style.display='none';
+      return originalShowTab.apply(this,arguments);
     };
   }
 
-  // Same protection for common show/switch tab helpers if present.
-  ['showTab','switchTab'].forEach(name=>{
-    if(typeof window[name]==='function'){
-      const old=window[name];
-      window[name]=function(tab){
-        const t=String(tab||'').toLowerCase();
-        if((t==='wall'||t==='walloflives'||t==='wall-of-lives') && window.event){
-          const srcEl=window.event.target?.closest?.('button,a,[role="button"]');
-          if(srcEl && looksLikeCareAction(srcEl) && !looksLikeWallNav(srcEl)) return;
-        }
-        return old.apply(this,arguments);
-      };
+  // Same hardening for gotoTab.
+  if(typeof window.gotoTab==='function'){
+    const originalGotoTab=window.gotoTab;
+    window.gotoTab=function(tab,scrollTop=true){
+      document.querySelectorAll('.screen').forEach(s=>s.style.removeProperty('display'));
+      const critical=document.getElementById('criticalsave');
+      if(critical) critical.style.display='none';
+      return originalGotoTab.apply(this,arguments);
+    };
+  }
+
+  // Critical Save should not permanently set display:none on every normal section.
+  if(typeof window.openCriticalSave==='function'){
+    const originalCritical=window.openCriticalSave;
+    window.openCriticalSave=function(){
+      document.querySelectorAll('.screen').forEach(s=>s.style.removeProperty('display'));
+      return originalCritical.apply(this,arguments);
+    };
+  }
+
+  // Emergency recovery: if Lives somehow becomes active immediately after a
+  // non-navigation action, return to the action's source screen.
+  const observer=new MutationObserver(()=>{
+    if(actionWasNavigation || restoring) return;
+    const active=activeGameScreen();
+    if(active?.id==='lives' && actionSourceScreen && actionSourceScreen!=='lives'){
+      restoreScreen(actionSourceScreen);
     }
   });
+  document.querySelectorAll('.screen').forEach(s=>observer.observe(s,{attributes:true,attributeFilter:['class','style']}));
 })();
 </script>
 
