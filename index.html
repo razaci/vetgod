@@ -7398,5 +7398,246 @@ if(typeof endPetDay==='function'){
 }
 </script>
 
+
+<style id="petCareLogicFixCss">
+.pet-care-fixed-note{margin:8px 0;padding:8px 10px;border-radius:10px;border:1px solid #3f5b50;background:#112019;color:#d8f4df;font-size:11px;line-height:1.4}
+</style>
+<script id="petCareLogicFixJs">
+function petByIdAny(id){
+  return (G.pets||[]).find(p=>p.id===id)
+    || (typeof byAnyId==='function'?byAnyId(id):null)
+    || (typeof findAnyPatient==='function'?findAnyPatient(id):null);
+}
+function currentMyPet(){
+  const ids=[G.selectedPetId,G.focusPetId,G.careFxPetId,G.focus].filter(Boolean);
+  for(const id of ids){
+    const p=petByIdAny(id);
+    if(p&&(G.pets||[]).some(x=>x.id===p.id)) return p;
+  }
+  return (G.pets||[])[0]||null;
+}
+function clamp100(v){return Math.max(0,Math.min(100,Math.round(v)))}
+function ensurePetCareStats(p){
+  if(!p)return;
+  const d={health:100,hydration:75,hunger:25,trust:50,stress:25,energy:70,cleanliness:70,comfort:70,enrichment:50,social:50,sleep:70,security:60,training:20,loyalty:40};
+  Object.entries(d).forEach(([k,v])=>{if(!Number.isFinite(+p[k]))p[k]=v});
+}
+function petSatiety(p){ensurePetCareStats(p);return clamp100(100-(+p.hunger||0))}
+function directPetCare(id,a){
+  const p=petByIdAny(id)||currentMyPet(); if(!p)return;
+  ensurePetCareStats(p);
+  try{
+    if(typeof ECON_COSTS!=='undefined'&&ECON_COSTS.pet&&ECON_COSTS.pet[a]){
+      const g=economyGate(p,'pet',a); if(g&&g.ok===false)return;
+    }
+  }catch(e){}
+  switch(a){
+    case 'hydrate': case 'water':
+      p.hydration=clamp100(p.hydration+35); p.stress=clamp100(p.stress-4); p.health=clamp100(p.health+2); break;
+    case 'feed':
+      p.hunger=clamp100(p.hunger-35); p.energy=clamp100(p.energy+8); p.health=clamp100(p.health+2); break;
+    case 'rest':
+      p.energy=clamp100(p.energy+30); p.sleep=clamp100(p.sleep+25); p.stress=clamp100(p.stress-10); break;
+    case 'play':
+      p.enrichment=clamp100(p.enrichment+25); p.social=clamp100(p.social+10); p.trust=clamp100(p.trust+4); p.energy=clamp100(p.energy-8); break;
+    case 'groom':
+      p.cleanliness=clamp100(p.cleanliness+35); p.comfort=clamp100(p.comfort+8); p.stress=clamp100(p.stress-5); break;
+    case 'bond':
+      p.trust=clamp100(p.trust+10); p.loyalty=clamp100(p.loyalty+8); p.social=clamp100(p.social+10); p.stress=clamp100(p.stress-8); break;
+    case 'comfort':
+      p.comfort=clamp100(p.comfort+25); p.security=clamp100(p.security+15); p.stress=clamp100(p.stress-12); break;
+    case 'enrich':
+      p.enrichment=clamp100(p.enrichment+30); p.energy=clamp100(p.energy-5); p.trust=clamp100(p.trust+3); break;
+    case 'train':
+      p.training=clamp100(p.training+12); p.loyalty=clamp100(p.loyalty+5); p.energy=clamp100(p.energy-6); break;
+    default:return;
+  }
+  try{addPetJournal?.(p,`Care: ${a}. Hydration ${p.hydration}%, food ${petSatiety(p)}%, energy ${p.energy}%.`)}catch(e){}
+  try{persistPermanentPets?.()}catch(e){}
+  try{rewardToast?.(`🐾 ${String(a).toUpperCase()} COMPLETE`)}catch(e){}
+  try{toast?.(`${p.name||'Pet'} · Hydration ${p.hydration}% · Food ${petSatiety(p)}% · Energy ${p.energy}%`)}catch(e){}
+  try{renderMyPet?.()}catch(e){}
+  try{render?.()}catch(e){}
+}
+if(typeof petCareAction==='function'){
+  const _pca=petCareAction;
+  petCareAction=function(id,a){
+    if(['hydrate','water','feed','rest','play','groom','bond','comfort','enrich','train'].includes(a))return directPetCare(id,a);
+    return _pca.apply(this,arguments);
+  };
+}
+if(typeof petWorldInteract==='function'){
+  const _pwi=petWorldInteract;
+  petWorldInteract=function(a){
+    const p=currentMyPet();
+    if(p&&['hydrate','water','feed','rest','play','groom','bond','comfort','enrich','train'].includes(a))return directPetCare(p.id,a);
+    return _pwi.apply(this,arguments);
+  };
+}
+if(typeof petGameAction==='function'){
+  const _pga=petGameAction;
+  petGameAction=function(a){
+    const p=currentMyPet();
+    if(p&&['hydrate','water','feed','rest','play','groom','bond','comfort','enrich','train'].includes(a))return directPetCare(p.id,a);
+    return _pga.apply(this,arguments);
+  };
+}
+if(typeof petPrimaryActions==='function'){
+  const _ppa=petPrimaryActions;
+  petPrimaryActions=function(p){
+    let html=_ppa.apply(this,arguments);
+    if(p&&!/HYDRATE/i.test(html)){
+      html=html.replace('</div>',`<button onclick="directPetCare(${p.id},'hydrate')">💧 HYDRATE</button></div>`);
+    }
+    return html;
+  };
+}
+function petCareStatusNote(p){
+  if(!p)return''; ensurePetCareStats(p);
+  return `<div class="pet-care-fixed-note">💧 Hydration ${p.hydration}% · 🍲 Food ${petSatiety(p)}% · ⚡ Energy ${p.energy}% · 🧼 Clean ${p.cleanliness}%</div>`;
+}
+if(typeof renderMyPet==='function'){
+  const _rpm=renderMyPet;
+  renderMyPet=function(){
+    const r=_rpm.apply(this,arguments);
+    setTimeout(()=>{
+      const p=currentMyPet(),screen=document.getElementById('mypet');
+      if(screen&&p){
+        let note=document.getElementById('petCareStatusNote');
+        if(!note){note=document.createElement('div');note.id='petCareStatusNote';screen.insertBefore(note,screen.firstChild?.nextSibling||screen.firstChild)}
+        note.innerHTML=petCareStatusNote(p);
+      }
+    },0);
+    return r;
+  };
+}
+document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{(G.pets||[]).forEach(ensurePetCareStats);try{renderMyPet?.()}catch(e){}},1000));
+</script>
+
+
+<style id="myPetLiveTimerCss">
+.pet-life-clock{margin:9px 0;padding:10px;border-radius:12px;border:1px solid #465b52;background:#101918;color:#d9e9df;font-size:11px;line-height:1.45}
+.pet-life-clock strong{color:#ffe1a1}.pet-life-clock .clock-row{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.pet-life-clock .clock-time{font-size:15px;font-weight:1000;color:#fff}
+.pet-life-clock .clock-warning{margin-top:7px;padding:7px;border-radius:8px;background:#241818;border:1px solid #624747;color:#ffd0d0}
+.pet-life-clock .clock-ok{margin-top:7px;padding:7px;border-radius:8px;background:#142019;border:1px solid #385744;color:#d7f7df}
+</style>
+<script id="myPetLiveTimerJs">
+const PET_TIME_KEY='vetGodMyPetRealTimeV1';
+const PET_TICK_MS=15000;
+const PET_SIM_HOUR_MS=60*60*1000;
+const PET_MAX_CATCHUP_HOURS=8;
+
+function petTimerBank(){try{return JSON.parse(localStorage.getItem(PET_TIME_KEY)||'{}')||{}}catch(e){return{}}}
+function savePetTimerBank(b){try{localStorage.setItem(PET_TIME_KEY,JSON.stringify(b))}catch(e){}}
+function isMyPetScreenActive(){const s=document.getElementById('mypet');return !!(s&&s.classList.contains('active'))}
+
+function applyPetElapsedTime(p,elapsedMs){
+  if(!p||elapsedMs<=0)return false;
+  ensurePetCareStats?.(p);
+  const hours=Math.min(PET_MAX_CATCHUP_HOURS,elapsedMs/PET_SIM_HOUR_MS);
+  p.hydration=clamp100((+p.hydration||0)-10*hours);
+  p.hunger=clamp100((+p.hunger||0)+8*hours);
+  p.energy=clamp100((+p.energy||0)-6*hours);
+  p.cleanliness=clamp100((+p.cleanliness||0)-4*hours);
+  p.enrichment=clamp100((+p.enrichment||0)-5*hours);
+  p.social=clamp100((+p.social||0)-3*hours);
+  p.comfort=clamp100((+p.comfort||0)-2*hours);
+  const needy=p.hydration<50||petSatiety(p)<50||p.energy<40||p.cleanliness<45||p.enrichment<40;
+  if(needy){p.stress=clamp100((+p.stress||0)+3*hours);p.trust=clamp100((+p.trust||0)-0.6*hours)}
+  if(p.hydration<25)p.health=clamp100((+p.health||0)-3*hours);
+  if(petSatiety(p)<25)p.health=clamp100((+p.health||0)-2*hours);
+  if(p.energy<20)p.stress=clamp100((+p.stress||0)+2*hours);
+  return true;
+}
+
+function petNeedsWarning(p){
+  if(!p)return[];
+  ensurePetCareStats?.(p);
+  const needs=[];
+  if(p.hydration<55)needs.push('💧 water');
+  if(petSatiety(p)<55)needs.push('🍲 food');
+  if(p.energy<45)needs.push('😴 rest');
+  if(p.cleanliness<50)needs.push('🧼 grooming');
+  if(p.enrichment<45)needs.push('🧸 play');
+  if(p.social<45)needs.push('💗 attention');
+  return needs;
+}
+
+function petElapsedClockMarkup(p){
+  if(!p)return'';
+  const b=petTimerBank(),s=b[p.id]||{totalMs:0};
+  const total=Math.max(0,+s.totalMs||0);
+  const h=Math.floor(total/3600000),m=Math.floor((total%3600000)/60000);
+  const needs=petNeedsWarning(p);
+  return `<div class="pet-life-clock"><div class="clock-row">
+    <div><strong>⏱ LIVE PET TIME</strong><br>Real time is running while this screen is loaded.</div>
+    <div class="clock-time">${h}h ${m}m</div></div>
+    ${needs.length?`<div class="clock-warning">⚠ ${p.name||'Your pet'} needs: ${needs.join(' · ')}</div>`:
+    `<div class="clock-ok">✓ Needs are comfortable right now. The timer is still running.</div>`}</div>`;
+}
+
+function renderPetLifeClock(){
+  if(!isMyPetScreenActive())return;
+  const p=currentMyPet?.(),screen=document.getElementById('mypet');if(!p||!screen)return;
+  let host=document.getElementById('petLifeClockHost');
+  if(!host){
+    host=document.createElement('div');host.id='petLifeClockHost';
+    const hub=document.getElementById('myPetHub');
+    if(hub&&hub.parentNode)hub.parentNode.insertBefore(host,hub.nextSibling);
+    else screen.insertBefore(host,screen.firstChild);
+  }
+  host.innerHTML=petElapsedClockMarkup(p);
+}
+
+function runPetRealTimeTick(){
+  const now=Date.now(),pets=(G.pets||[]);if(!pets.length)return;
+  const b=petTimerBank();let changed=false;
+  pets.forEach(p=>{
+    if(!b[p.id])b[p.id]={last:now,totalMs:0,lastNeedEvent:0};
+    const s=b[p.id];
+    if(isMyPetScreenActive()){
+      let elapsed=Math.max(0,now-(+s.last||now));
+      elapsed=Math.min(elapsed,PET_MAX_CATCHUP_HOURS*PET_SIM_HOUR_MS);
+      if(elapsed>0){
+        applyPetElapsedTime(p,elapsed);
+        s.totalMs=(+s.totalMs||0)+elapsed;
+        changed=true;
+        const needs=petNeedsWarning(p);
+        if(needs.length&&now-(+s.lastNeedEvent||0)>30*60*1000){
+          s.lastNeedEvent=now;
+          try{toast?.(`${p.name||'Your pet'} needs attention: ${needs.join(', ')}`)}catch(e){}
+          try{addPetJournal?.(p,`Time passed. Needs attention: ${needs.join(', ')}.`)}catch(e){}
+        }
+      }
+    }
+    s.last=now;
+  });
+  savePetTimerBank(b);
+  if(changed){
+    try{persistPermanentPets?.()}catch(e){}
+    renderPetLifeClock();
+    if(isMyPetScreenActive()){try{renderMyPet?.()}catch(e){}}
+  }
+}
+
+document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{
+  const now=Date.now(),b=petTimerBank();
+  (G.pets||[]).forEach(p=>{if(!b[p.id])b[p.id]={last:now,totalMs:0,lastNeedEvent:0};else b[p.id].last=now});
+  savePetTimerBank(b);renderPetLifeClock();
+},1200));
+
+setInterval(runPetRealTimeTick,PET_TICK_MS);
+
+if(typeof renderMyPet==='function'){
+  const _timerRenderMyPet=renderMyPet;
+  renderMyPet=function(){const r=_timerRenderMyPet.apply(this,arguments);setTimeout(renderPetLifeClock,0);return r};
+}
+if(typeof directPetCare==='function'){
+  const _timerDirectPetCare=directPetCare;
+  directPetCare=function(id,a){const r=_timerDirectPetCare.apply(this,arguments);setTimeout(renderPetLifeClock,0);return r};
+}
+</script>
+
 </body>
 </html>
