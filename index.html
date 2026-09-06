@@ -7639,5 +7639,107 @@ if(typeof directPetCare==='function'){
 }
 </script>
 
+
+<script id="trustProgressionFixJs">
+/* ===== TRUST PROGRESSION FIX =====
+   Working with an animal must visibly build trust. New/legacy pets no longer
+   accidentally display 0 trust after meaningful care.
+*/
+function normalizePetTrust(p){
+  if(!p)return;
+  const worked = !!(
+    p.treated || p.stabilized || p.diagnosed || p.adopted || p.permanentPet ||
+    p.lastCareAction || (p.game&&((p.game.xp||0)>0 || (p.game.day||1)>1))
+  );
+  if(!Number.isFinite(+p.trust)) p.trust=worked?35:20;
+  if(worked && +p.trust<20) p.trust=20;
+  p.trust=clamp100(+p.trust||0);
+}
+function rewardTrustForCare(p,a){
+  normalizePetTrust(p);
+  const gain={
+    hydrate:4,water:4,feed:5,rest:3,play:8,groom:5,bond:12,
+    comfort:9,enrich:6,train:5
+  }[a]||3;
+  p.trust=clamp100(p.trust+gain);
+  p.loyalty=clamp100((+p.loyalty||0)+Math.max(1,Math.round(gain*.45)));
+  p.security=clamp100((+p.security||0)+Math.max(1,Math.round(gain*.35)));
+  return gain;
+}
+
+/* Add trust reward after the actual successful care action. */
+if(typeof directPetCare==='function'){
+  const _trustDirectPetCare=directPetCare;
+  directPetCare=function(id,a){
+    const p=petByIdAny?.(id)||currentMyPet?.();
+    if(p)normalizePetTrust(p);
+    const before=p?+p.trust||0:0;
+    const r=_trustDirectPetCare.apply(this,arguments);
+    if(p && p.lastCareAction===a){
+      const gain=rewardTrustForCare(p,a);
+      try{toast?.(`${p.name||'Pet'} trusts you more: ${before}% → ${p.trust}% (+${gain})`)}catch(e){}
+      try{persistPermanentPets?.()}catch(e){}
+      try{renderMyPet?.()}catch(e){}
+    }
+    return r;
+  };
+}
+
+/* Treatment and recovery contact also build trust. */
+function clinicalTrustGain(p,n,why){
+  if(!p)return;
+  normalizePetTrust(p);
+  p.trust=clamp100(p.trust+n);
+  p.security=clamp100((+p.security||0)+Math.ceil(n/2));
+  try{addLifeEvent?.(p,`${why}: trust increased to ${p.trust}%.`)}catch(e){}
+}
+if(typeof autoTreatPatient==='function'){
+  const _trustAutoTreat=autoTreatPatient;
+  autoTreatPatient=function(id){
+    const p=contactPatientById?.(id)||findAnyPatient?.(id)||financePatientById?.(id);
+    const before=p?!!p.treated:false;
+    const r=_trustAutoTreat.apply(this,arguments);
+    if(p&&!before&&p.treated)clinicalTrustGain(p,10,'Successful treatment');
+    return r;
+  };
+}
+if(typeof recoveryCareAction==='function'){
+  const _trustRecoveryCare=recoveryCareAction;
+  recoveryCareAction=function(id,a){
+    const p=contactPatientById?.(id)||findAnyPatient?.(id);
+    const r=_trustRecoveryCare.apply(this,arguments);
+    if(p&&['sit','blanket','water','food','stand'].includes(a))clinicalTrustGain(p,a==='sit'?7:3,'Recovery care');
+    return r;
+  };
+}
+
+/* The real-time timer should never erase earned trust quickly.
+   Replace the old hourly trust decay with a much gentler floor-aware rule. */
+if(typeof applyPetElapsedTime==='function'){
+  const _trustElapsed=applyPetElapsedTime;
+  applyPetElapsedTime=function(p,elapsedMs){
+    normalizePetTrust(p);
+    const before=p.trust;
+    const r=_trustElapsed.apply(this,arguments);
+    const hours=Math.min(PET_MAX_CATCHUP_HOURS,elapsedMs/PET_SIM_HOUR_MS);
+    /* undo aggressive old decay, then apply only severe-neglect decay */
+    if(petNeedsWarning(p).length<3){
+      p.trust=Math.max(before,p.trust);
+    }else if(p.hydration<25 && petSatiety(p)<25){
+      p.trust=Math.max(10,clamp100(before-(0.25*hours)));
+    }else{
+      p.trust=Math.max(15,clamp100(before-(0.08*hours)));
+    }
+    return r;
+  };
+}
+
+document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{
+  (G.pets||[]).forEach(normalizePetTrust);
+  try{persistPermanentPets?.()}catch(e){}
+  try{renderMyPet?.()}catch(e){}
+},1300));
+</script>
+
 </body>
 </html>
