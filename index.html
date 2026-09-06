@@ -774,6 +774,75 @@ body{background:
 @media(max-width:700px){.pet-dashboard{grid-template-columns:1fr}.pet-stat-grid{grid-template-columns:repeat(4,1fr)}.pet-actions-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 
+
+<style id="animalFocusedCss">
+.pet-world{position:relative;min-height:68vh;border-radius:22px;overflow:hidden;border:1px solid #4b6470;background:radial-gradient(circle at 50% 30%,#26424c,#081117 72%);box-shadow:0 20px 50px #000a;margin-bottom:10px}
+.pet-world-bg{position:absolute;inset:0;background:center/cover no-repeat;filter:saturate(.9) brightness(.7);transform:scale(1.03)}
+.pet-world-shade{position:absolute;inset:0;background:linear-gradient(180deg,#0001,#0000 38%,#071016ee 90%)}
+.pet-world-animal{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);width:min(76vw,520px);height:min(48vh,430px);object-fit:contain;filter:drop-shadow(0 18px 18px #000b);cursor:pointer;transition:.18s}
+.pet-world-animal:active{transform:translate(-50%,-50%) scale(.97)}
+.pet-world-name{position:absolute;top:14px;left:14px;right:14px;text-align:center;text-shadow:0 3px 10px #000}.pet-world-name h2{font-size:28px;margin:0;color:#fff}.pet-world-name div{font-size:9px;color:#c4d5dc}
+.pet-world-need{position:absolute;left:12px;right:12px;bottom:78px;background:#101b20e8;border:1px solid #516772;border-radius:13px;padding:9px;text-align:center;color:#fff;font-size:11px;font-weight:900}
+.pet-world-bars{position:absolute;left:10px;right:10px;bottom:12px;display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.pet-world-bar{background:#081116e8;border:1px solid #31454e;border-radius:9px;padding:6px 3px;text-align:center;font-size:7px;color:#9eb0b8}.pet-world-bar b{display:block;font-size:12px;color:#fff}
+.pet-hotspot{position:absolute;border-radius:999px;border:1px solid #ffffff66;background:#071016b8;color:#fff;font-size:10px;font-weight:900;padding:8px 10px;box-shadow:0 5px 15px #0008}
+.pet-hotspot.food{left:5%;top:57%}.pet-hotspot.water{right:5%;top:57%}.pet-hotspot.bed{right:6%;top:31%}.pet-hotspot.play{left:6%;top:31%}
+.pet-now-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}.pet-now-actions button{min-height:52px;border-radius:12px;border:1px solid #47616c;background:#152832;color:#f4f8f9;font-size:9px;font-weight:1000}
+.pet-more-toggle{width:100%;min-height:44px;border-radius:11px;border:1px solid #3a515d;background:#101d24;color:#dce9ed;font-weight:900}
+#petDeepDetails{display:none;margin-top:9px}#petDeepDetails.open{display:block}
+.pet-day-card{padding:10px;border-radius:12px;background:#121a20;border:1px solid #2d414b;font-size:10px;line-height:1.5;color:#c4d2d7;margin-top:8px}
+@media(max-width:650px){.pet-world{min-height:62vh}.pet-world-animal{width:82vw;height:40vh}.pet-now-actions{grid-template-columns:repeat(2,1fr)}}
+</style>
+
+
+<style id="actualPetGameCss">
+.pet-game-hud{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:8px 0}.pet-game-hud>div{background:#0a1217;border:1px solid #2a3d46;border-radius:10px;padding:7px 3px;text-align:center;font-size:7px;color:#91a5ae}.pet-game-hud b{display:block;font-size:14px;color:#fff}
+.pet-game-objective{background:#171d22;border:1px solid #465863;border-radius:13px;padding:10px;margin:8px 0}.pet-game-objective h3{margin:0 0 5px;font-size:11px;color:#f3d991}.pet-game-objective p{margin:0;font-size:10px;line-height:1.4;color:#d1dce0}
+.pet-game-goals{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:7px}.pet-goal{padding:8px 4px;border-radius:9px;background:#0b1217;border:1px solid #2a3c45;text-align:center;font-size:8px;color:#b7c6cc}.pet-goal.done{border-color:#5d7a68;background:#132019;color:#bfe6cb}.pet-goal b{display:block;font-size:15px;margin-bottom:2px}
+.pet-game-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.pet-game-actions button{min-height:54px;border-radius:12px;border:1px solid #465f6b;background:#14252e;color:#f2f7f8;font-size:9px;font-weight:1000;padding:6px}.pet-game-actions button:disabled{opacity:.35}
+.pet-game-event{padding:10px;border-radius:12px;background:#231d12;border:1px solid #5a4a26;color:#f5dfaa;font-size:10px;line-height:1.45;margin-top:8px}.pet-game-event b{color:#fff1bd}
+.pet-game-end{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}.pet-game-end button{min-height:48px;border-radius:12px;font-weight:1000;border:1px solid #63542d;background:#302813;color:#ffe59b}
+.pet-xp{height:8px;background:#070c10;border-radius:999px;overflow:hidden;border:1px solid #253842;margin-top:4px}.pet-xp i{display:block;height:100%;background:linear-gradient(90deg,#667781,#dac16f)}
+.pet-float-result{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);z-index:5;background:#081116e8;border:1px solid #7b6a3d;border-radius:13px;padding:10px 14px;color:#fff;font-weight:1000;font-size:12px;animation:petResult .9s ease forwards;pointer-events:none}@keyframes petResult{0%{opacity:0;transform:translate(-50%,-35%) scale(.85)}25%{opacity:1}100%{opacity:0;transform:translate(-50%,-80%) scale(1.05)}}
+@media(max-width:650px){.pet-game-hud{grid-template-columns:repeat(5,1fr)}.pet-game-actions{grid-template-columns:repeat(2,1fr)}.pet-game-goals{grid-template-columns:1fr}}
+</style>
+
+
+<style id="rewardAdvanceCss">
+#rewardAdvanceLayer{position:fixed;inset:0;z-index:100050;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.68);padding:16px}
+#rewardAdvanceLayer.show{display:flex}
+.reward-advance-card{width:min(92vw,520px);border-radius:20px;border:1px solid #7b6734;background:linear-gradient(180deg,#2d2411,#0b1217);padding:16px;text-align:center;color:#fff;box-shadow:0 20px 60px #000b}
+.reward-advance-icon{font-size:54px;line-height:1}.reward-advance-title{font-size:22px;font-weight:1000;color:#ffe196;margin:6px 0}.reward-advance-text{font-size:11px;line-height:1.45;color:#d7e1e5}
+.reward-advance-gains{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:12px 0}.reward-advance-gains>div{background:#111b21;border:1px solid #2e424c;border-radius:10px;padding:8px;font-size:8px;color:#9fb0b7}.reward-advance-gains b{display:block;color:#fff;font-size:14px}
+.reward-next{width:100%;min-height:50px;border-radius:12px;border:1px solid #715e2c;background:#3a3016;color:#ffe6a1;font-weight:1000;font-size:11px}
+</style>
+
+
+<style id="saveStatesCss">
+#saveStateFab{position:fixed;right:10px;top:72px;z-index:9997;border:1px solid #6c5a30;background:#302815;color:#ffe39c;border-radius:999px;padding:10px 12px;font-size:9px;font-weight:1000;box-shadow:0 8px 24px #0008}
+#saveStateOverlay{position:fixed;inset:0;z-index:100060;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.78);padding:14px}
+#saveStateOverlay.show{display:flex}
+.save-state-card{width:min(94vw,680px);max-height:88vh;overflow:auto;border-radius:20px;border:1px solid #4f6570;background:#0d151a;color:#fff;padding:14px;box-shadow:0 20px 60px #000c}
+.save-state-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.save-state-head h2{margin:0;font-size:18px;color:#ffe19a}.save-state-close{border:1px solid #40545e;background:#17242b;color:#fff;border-radius:10px;min-width:42px;min-height:42px}
+.save-slot-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}.save-slot{border:1px solid #2c414b;border-radius:13px;background:#111b21;padding:10px}.save-slot h3{margin:0 0 5px;font-size:11px;color:#f0d68d}.save-slot p{margin:2px 0;font-size:8px;color:#aebdc4;line-height:1.4}.save-slot-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:7px}.save-slot-actions button{min-height:42px;border-radius:9px;border:1px solid #405761;background:#172830;color:#eef6f8;font-size:8px;font-weight:900}.save-slot-actions button.danger{border-color:#6f3f3f;background:#2a1717;color:#ffcaca}
+.save-state-tools{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:10px}.save-state-tools button{min-height:46px;border-radius:10px;border:1px solid #6b5930;background:#302815;color:#ffe59e;font-weight:1000}
+@media(max-width:600px){.save-slot-grid{grid-template-columns:1fr}}
+</style>
+
+
+<style id="sadPetBackstoryCss">
+.pet-story-stack{display:grid;gap:8px;margin-top:10px}
+.pet-story-chapter{background:#111920;border:1px solid #2d414b;border-radius:13px;padding:10px}
+.pet-story-chapter h3{margin:0 0 5px;font-size:10px;color:#f0d48a;letter-spacing:.06em}
+.pet-story-chapter p{margin:0;font-size:9px;line-height:1.55;color:#c3d0d5}
+.pet-story-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.pet-story-tag{padding:5px 7px;border-radius:999px;background:#0b1217;border:1px solid #314650;color:#b9c8ce;font-size:7px;font-weight:900}
+.pet-memory-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:8px}
+.pet-memory{background:#0b1217;border:1px solid #273a43;border-radius:10px;padding:8px;font-size:8px;line-height:1.45;color:#aebdc4}
+.pet-memory b{display:block;color:#fff;margin-bottom:3px}
+@media(max-width:650px){.pet-memory-grid{grid-template-columns:1fr}}
+</style>
+
 </head>
 <body style="--fxsheet:url('data:image/png;base64,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')"><div id="fxLayer"></div>
 
@@ -4307,6 +4376,528 @@ setInterval(()=>{
   persistPermanentPets();
   try{renderMyPet?.()}catch(e){}
 },12000);
+</script>
+
+
+<script id="animalFocusedJs">
+function petMoodLine(p){
+ ensurePetDeep(p);
+ const food=100-(p.hunger??0);
+ if((p.health??0)<55)return `${p.name||'Your pet'} needs you close. Health is the priority.`;
+ if((p.hydration??100)<45)return `${p.name||'Your pet'} is thirsty.`;
+ if(food<45)return `${p.name||'Your pet'} is hungry.`;
+ if(p.energy<35||p.sleep<35)return `${p.name||'Your pet'} wants a quiet place to sleep.`;
+ if(p.enrichment<40)return `${p.name||'Your pet'} is bored and wants something to do.`;
+ if(p.social<40)return `${p.name||'Your pet'} wants your attention.`;
+ if(p.cleanliness<40)return `${p.name||'Your pet'} could use some grooming.`;
+ return `${p.name||'Your pet'} is doing well and wants time with you.`;
+}
+function petSceneBg(p){
+ const g=(p.group||'').toLowerCase();
+ if(/aquatic|marine|fish/.test(g))return 'radial-gradient(circle at 50% 30%,#17495a,#07131b 70%)';
+ if(/bird|raptor/.test(g))return 'radial-gradient(circle at 50% 20%,#4b4931,#10171b 72%)';
+ if(/reptile|amphibian/.test(g))return 'radial-gradient(circle at 50% 30%,#3e4a27,#0d1711 72%)';
+ if(p.exotic)return 'radial-gradient(circle at 50% 30%,#49375a,#0c1119 72%)';
+ return 'radial-gradient(circle at 50% 30%,#3b4c4e,#0a1318 72%)';
+}
+function petPrimaryActions(p){
+ ensurePetDeep(p);
+ let a=[];
+ const food=100-(p.hunger??0);
+ if((p.hydration??100)<60)a.push(['💧 WATER','water']);
+ if(food<60)a.push(['🍲 FEED','feed']);
+ if(p.energy<50||p.sleep<50)a.push(['🛏 REST','rest']);
+ if(p.enrichment<55)a.push(['🎾 PLAY','play']);
+ if(p.social<55)a.push(['🤲 BOND','bond']);
+ if(p.cleanliness<55)a.push(['🧼 GROOM','groom']);
+ for(const x of [['❤️ COMFORT','comfort'],['🌿 ENRICH','enrich'],['🎓 TRAIN','train'],['📅 ROUTINE','routine']]){
+   if(a.length>=4)break;if(!a.some(y=>y[1]===x[1]))a.push(x);
+ }
+ return a.slice(0,4);
+}
+function togglePetDetails(){document.getElementById('petDeepDetails')?.classList.toggle('open')}
+function petWorldInteract(id){
+ const p=(G.pets||[]).find(x=>x.id===id);if(!p)return;
+ petCareAction(id,'bond');try{cineToast?.(`${p.name||'Your pet'} notices you ❤️`)}catch(e){}
+}
+function petFocusedRender(){
+ ensureAllPetDeep();
+ const p=selectedPet?.()||(G.pets||[])[0];
+ const root=document.getElementById('myPetScreen')||document.getElementById('mypet');
+ if(!root)return;
+ if(!p){root.innerHTML=`<div class="card"><div class="pad"><h2>🐾 MY PET</h2><p>Save an animal to bring it home. This is where the animals you rescue become the center of the game.</p></div></div>`;return}
+ ensurePetDeep(p);
+ const food=Math.max(0,100-(p.hunger??0));
+ const mood=Math.max(0,Math.min(100,Math.round(((p.comfort||0)+(p.enrichment||0)+(p.social||0)+(100-(p.stress||0)))/4)));
+ const actions=petPrimaryActions(p);
+ const stats=petDeepStats(p);
+ root.innerHTML=`
+ <div class="pet-world" style="background:${petSceneBg(p)}">
+   <div class="pet-world-shade"></div>
+   <div class="pet-world-name"><h2>${p.emoji||'🐾'} ${p.name||p.species}</h2><div>${p.species||''} · ${p.rescueSaved?'YOU SAVED THIS ANIMAL':'MY PET'}</div></div>
+   <img class="pet-world-animal" src="${p.img||''}" onclick="petWorldInteract(${p.id})">
+   <button class="pet-hotspot play" onclick="petCareAction(${p.id},'play')">🎾 PLAY</button>
+   <button class="pet-hotspot bed" onclick="petCareAction(${p.id},'rest')">🛏 REST</button>
+   <button class="pet-hotspot food" onclick="petCareAction(${p.id},'feed')">🍲 FOOD</button>
+   <button class="pet-hotspot water" onclick="petCareAction(${p.id},'water')">💧 WATER</button>
+   <div class="pet-world-need">${petMoodLine(p)}</div>
+   <div class="pet-world-bars">
+     <div class="pet-world-bar">❤️ HEALTH<b>${Math.round(p.health??0)}</b></div>
+     <div class="pet-world-bar">🍲 FOOD<b>${Math.round(food)}</b></div>
+     <div class="pet-world-bar">💧 WATER<b>${Math.round(p.hydration??0)}</b></div>
+     <div class="pet-world-bar">😊 MOOD<b>${mood}</b></div>
+     <div class="pet-world-bar">🤝 BOND<b>${Math.round(p.loyalty??0)}</b></div>
+   </div>
+ </div>
+ <div class="pet-now-actions">${actions.map(a=>`<button onclick="petCareAction(${p.id},'${a[1]}')">${a[0]}</button>`).join('')}</div>
+ <div class="pet-day-card"><b>🌤 TODAY WITH ${String(p.name||'YOUR PET').toUpperCase()}</b><br>${petMoodLine(p)} ${p.trust>=70?'They recognize you as someone safe.':'Your repeated care is still building their trust.'}</div>
+ <div class="pet-story-box" style="margin-top:8px"><b>📖 HOW ${String(p.name||'THEY').toUpperCase()} GOT HERE</b><br>${petStoryText(p)}</div>
+ <button class="pet-more-toggle" onclick="togglePetDetails()">☰ MORE PET DETAILS · STATS · JOURNAL · TRAINING</button>
+ <div id="petDeepDetails">
+   <div class="pet-dashboard">
+    <div class="pet-panel"><h3>🫀 FULL CARE STATS</h3><div class="pet-stat-grid">${stats.map(s=>`<div class="pet-stat ${petStatClass(s[1],s[2])}" onclick="openPetStatDetail('${s[3]}',${p.id})">${s[0]}<b>${Math.round(s[1])}</b></div>`).join('')}</div></div>
+    <div class="pet-panel"><h3>❤️ RELATIONSHIP</h3><div class="cs-row"><span>Trust</span><b>${Math.round(p.trust??0)}</b></div><div class="cs-row"><span>Loyalty</span><b>${Math.round(p.loyalty??0)}</b></div><div class="cs-row"><span>Security</span><b>${Math.round(p.security??0)}</b></div><div class="cs-row"><span>Routine</span><b>${Math.round(p.routine??0)}</b></div><div class="cs-row"><span>Training</span><b>${Math.round(p.training??0)}</b></div></div>
+   </div>
+   <div class="pet-panel" style="margin-top:8px"><h3>🎮 ALL CARE ACTIONS</h3><div class="pet-actions-grid"><button onclick="petCareAction(${p.id},'feed')">🍲 FEED</button><button onclick="petCareAction(${p.id},'water')">💧 WATER</button><button onclick="petCareAction(${p.id},'groom')">🧼 GROOM</button><button onclick="petCareAction(${p.id},'play')">🎾 PLAY</button><button onclick="petCareAction(${p.id},'rest')">🛏 REST</button><button onclick="petCareAction(${p.id},'bond')">🤲 BOND</button><button onclick="petCareAction(${p.id},'comfort')">🧸 COMFORT</button><button onclick="petCareAction(${p.id},'enrich')">🌿 ENRICH</button><button onclick="petCareAction(${p.id},'train')">🎓 TRAIN</button><button onclick="petCareAction(${p.id},'routine')">📅 ROUTINE</button><button onclick="careAllMyPetsDeep()">❤️ CARE ALL</button><button onclick="selectMyPet?.(${p.id},'petlife')">🎞 PET LIFE</button></div></div>
+   <div class="pet-panel" style="margin-top:8px"><h3>📔 CARE JOURNAL</h3>${petJournalMarkup(p)}</div>
+ </div>`;
+}
+renderMyPet=petFocusedRender;
+document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{try{petFocusedRender()}catch(e){}},700));
+</script>
+
+
+<script id="actualPetGameJs">
+/* ===== MY PET IS NOW A TURN-BASED GAME ===== */
+function ensurePetGame(p){
+  ensurePetDeep(p);
+  p.game??={day:1,ap:6,maxAp:6,xp:0,level:1,coins:0,streak:0,goals:[],completed:[],event:'',eventIcon:'🐾',daysWon:0,lastAction:''};
+  if(!Array.isArray(p.game.goals)||!p.game.goals.length)makePetDay(p);
+  return p.game;
+}
+const PET_GOAL_POOL=[
+ ['feed','🍲','Feed your pet'],['water','💧','Give fresh water'],['play','🎾','Play together'],
+ ['groom','🧼','Groom your pet'],['rest','🛏','Let your pet rest'],['bond','🤲','Spend quiet time together'],
+ ['enrich','🌿','Give enrichment'],['train','🎓','Do a training session'],['comfort','🧸','Comfort your pet']
+];
+function makePetDay(p){
+ const g=p.game||{};
+ const offset=((g.day||1)*3+(p.id||0))%PET_GOAL_POOL.length;
+ g.goals=[0,1,2].map(i=>PET_GOAL_POOL[(offset+i*2)%PET_GOAL_POOL.length][0]);
+ g.completed=[];g.ap=g.maxAp||6;g.event='';g.eventIcon='🌅';
+ p.game=g;
+}
+function goalMeta(k){return PET_GOAL_POOL.find(x=>x[0]===k)||[k,'🐾',k]}
+function petGameMood(p){
+ const food=100-(p.hunger??0), values=[food,p.hydration??0,p.energy,p.cleanliness,p.comfort,p.enrichment,p.social,p.sleep,100-(p.stress??0)];
+ return Math.round(values.reduce((a,b)=>a+b,0)/values.length);
+}
+function petGameNeed(p){
+ const options=[
+  ['feed',100-(p.hunger??0),'is hungry'],['water',p.hydration??0,'needs water'],['rest',p.energy,'is tired'],
+  ['groom',p.cleanliness,'needs grooming'],['play',p.enrichment,'wants to play'],['bond',p.social,'wants attention']
+ ];
+ options.sort((a,b)=>a[1]-b[1]);return options[0];
+}
+function petGameAction(id,a){
+ const p=(G.pets||[]).find(x=>x.id===id);if(!p)return;
+ const g=ensurePetGame(p);if(g.ap<=0){g.event='You are out of actions for today. End the day to continue.';g.eventIcon='🌙';petFocusedRender();return}
+ g.ap--;
+ petCareAction(id,a);
+ if(g.goals.includes(a)&&!g.completed.includes(a)){g.completed.push(a);g.xp+=12;g.coins+=8}
+ else {g.xp+=5;g.coins+=3}
+ g.lastAction=a;
+ while(g.xp>=100){g.xp-=100;g.level++;g.maxAp=Math.min(10,g.maxAp+1);g.event=`LEVEL UP! ${p.name||'Your pet'} reached Bond Level ${g.level}. Maximum daily actions increased.`;g.eventIcon='⭐'}
+ const need=petGameNeed(p);
+ if(a===need[0]){g.xp+=8;g.coins+=5;g.event=`Perfect choice. ${p.name||'Your pet'} really needed that.`;g.eventIcon='💛'}
+ else if(!g.event){const messages=[`That helped. ${p.name||'Your pet'} seems a little more settled.`,`Small care moment, big relationship progress.`,`You spent part of the day taking care of ${p.name||'your pet'}.`,`Their trust grows through repetition, not one giant button press.`];g.event=messages[(g.day+g.ap+a.length)%messages.length];g.eventIcon='🐾'}
+ if(g.ap===3 && Math.random()<.55){
+   const events=[['🎁','Your pet found a hidden enrichment toy. +10 coins.'],['❤️','A quiet moment strengthens your bond. +10 XP.'],['🌿','The habitat feels especially calm today. Stress drops.'],['👀','Your pet follows you around the habitat, waiting to see what you do next.']];
+   const ev=events[(p.id+g.day)%events.length];g.eventIcon=ev[0];g.event=ev[1];
+   if(ev[1].includes('coins'))g.coins+=10;if(ev[1].includes('XP'))g.xp+=10;if(ev[1].includes('Stress'))p.stress=Math.max(0,(p.stress??0)-10);
+ }
+ try{save?.()}catch(e){}
+ petFocusedRender();
+ showPetActionFloat(a,p.id);
+}
+function showPetActionFloat(a,id){
+ setTimeout(()=>{const w=document.querySelector('.pet-world');if(!w)return;const d=document.createElement('div');d.className='pet-float-result';d.textContent=`${goalMeta(a)[1]} ${goalMeta(a)[2]}`;w.appendChild(d);setTimeout(()=>d.remove(),950)},30)
+}
+function petDayWon(p){const g=ensurePetGame(p);return g.goals.every(x=>g.completed.includes(x))}
+function endPetDay(id){
+ const p=(G.pets||[]).find(x=>x.id===id);if(!p)return;const g=ensurePetGame(p);
+ const won=petDayWon(p);
+ if(won){g.daysWon++;g.streak++;g.coins+=25;g.xp+=20;G.credits=(G.credits??0)+75;g.event='DAY COMPLETE! All three care goals finished. +25 Pet Coins, +20 XP, +75 clinic funds.';g.eventIcon='🏆'}
+ else {g.streak=0;g.event='Day ended with unfinished care goals. Tomorrow is a fresh start.';g.eventIcon='🌙'}
+ // overnight changes create tomorrow's challenge
+ p.hunger=Math.min(100,(p.hunger??0)+14);p.hydration=Math.max(0,(p.hydration??100)-12);p.energy=Math.min(100,p.energy+28);p.sleep=Math.min(100,p.sleep+22);
+ p.enrichment=Math.max(0,p.enrichment-8);p.social=Math.max(0,p.social-7);p.cleanliness=Math.max(0,p.cleanliness-6);
+ g.day++;makePetDay(p);g.event=won?'You completed yesterday perfectly. A new set of care goals is ready.':'A new day begins. Check what your pet needs before spending your actions.';g.eventIcon=won?'🏆':'🌅';
+ addPetJournal(p,won?'Completed a perfect care day.':'Started a new care day.');
+ try{save?.()}catch(e){};petFocusedRender();
+}
+function petGameActionButtons(p){
+ const g=ensurePetGame(p);
+ const actions=[['feed','🍲 FEED'],['water','💧 WATER'],['play','🎾 PLAY'],['groom','🧼 GROOM'],['rest','🛏 REST'],['bond','🤲 BOND'],['comfort','🧸 COMFORT'],['enrich','🌿 ENRICH'],['train','🎓 TRAIN']];
+ return actions.map(x=>`<button ${g.ap<=0?'disabled':''} onclick="petGameAction(${p.id},'${x[0]}')">${x[1]}<br><small>-1 ACTION</small></button>`).join('');
+}
+function petGamePanel(p){
+ const g=ensurePetGame(p),mood=petGameMood(p),need=petGameNeed(p),won=petDayWon(p);
+ return `<div class="pet-game-hud">
+   <div>DAY<b>${g.day}</b></div><div>ACTIONS<b>${g.ap}/${g.maxAp}</b></div><div>LEVEL<b>${g.level}</b></div><div>PET COINS<b>${g.coins}</b></div><div>STREAK<b>${g.streak}</b></div>
+ </div>
+ <div class="pet-game-objective"><h3>🎯 TODAY'S CARE MISSION</h3><p>${p.name||'Your pet'} ${need[2]}. You have ${g.ap} actions left. Complete all three goals before ending the day.</p>
+ <div class="pet-game-goals">${g.goals.map(k=>{const m=goalMeta(k),done=g.completed.includes(k);return `<div class="pet-goal ${done?'done':''}"><b>${done?'✅':m[1]}</b>${m[2]}</div>`}).join('')}</div>
+ <div style="margin-top:8px;font-size:8px;color:#9fb0b7">Bond XP ${g.xp}/100</div><div class="pet-xp"><i style="width:${g.xp}%"></i></div></div>
+ <div class="pet-game-actions">${petGameActionButtons(p)}</div>
+ ${g.event?`<div class="pet-game-event"><b>${g.eventIcon} CURRENT MOMENT</b><br>${g.event}</div>`:''}
+ <div class="pet-game-end"><button onclick="endPetDay(${p.id})">${won?'🏆 CLAIM DAY REWARD':'🌙 END DAY'}</button><button onclick="careAllMyPetsDeep();petFocusedRender()">❤️ QUICK CARE ALL PETS</button></div>`;
+}
+
+/* Final renderer: the animal remains huge, but the center of the page is now a playable daily loop. */
+petFocusedRender=function(){
+ ensureAllPetDeep();
+ const p=selectedPet?.()||(G.pets||[])[0];
+ const root=document.getElementById('myPetScreen')||document.getElementById('mypet');if(!root)return;
+ if(!p){root.innerHTML=`<div class="card"><div class="pad"><h2>🐾 MY PET GAME</h2><p>Save an animal to 100% health. That animal becomes your permanent pet and unlocks the daily care game.</p></div></div>`;return}
+ ensurePetDeep(p);ensurePetGame(p);
+ const food=Math.max(0,100-(p.hunger??0)),mood=petGameMood(p);
+ root.innerHTML=`
+ <div class="pet-world" style="background:${petSceneBg(p)}">
+  <div class="pet-world-shade"></div><div class="pet-world-name"><h2>${p.emoji||'🐾'} ${p.name||p.species}</h2><div>DAY ${p.game.day} · BOND LEVEL ${p.game.level} · ${p.rescueSaved?'RESCUED BY YOU':'MY PET'}</div></div>
+  <img class="pet-world-animal" src="${p.img||''}" onclick="petGameAction(${p.id},'bond')">
+  <button class="pet-hotspot play" onclick="petGameAction(${p.id},'play')">🎾 PLAY</button><button class="pet-hotspot bed" onclick="petGameAction(${p.id},'rest')">🛏 REST</button><button class="pet-hotspot food" onclick="petGameAction(${p.id},'feed')">🍲 FOOD</button><button class="pet-hotspot water" onclick="petGameAction(${p.id},'water')">💧 WATER</button>
+  <div class="pet-world-need">${petMoodLine(p)}</div>
+  <div class="pet-world-bars"><div class="pet-world-bar">❤️ HEALTH<b>${Math.round(p.health??0)}</b></div><div class="pet-world-bar">🍲 FOOD<b>${Math.round(food)}</b></div><div class="pet-world-bar">💧 WATER<b>${Math.round(p.hydration??0)}</b></div><div class="pet-world-bar">😊 MOOD<b>${mood}</b></div><div class="pet-world-bar">🤝 BOND<b>${Math.round(p.loyalty??0)}</b></div></div>
+ </div>
+ ${petGamePanel(p)}
+ <div class="pet-story-box" style="margin-top:8px"><b>📖 WHY YOU HAVE ${String(p.name||'THIS PET').toUpperCase()}</b><br>${petStoryText(p)}</div>
+ <button class="pet-more-toggle" onclick="togglePetDetails()">☰ OPEN PET RECORD · FULL STATS · JOURNAL</button>
+ <div id="petDeepDetails"><div class="pet-dashboard"><div class="pet-panel"><h3>🫀 FULL CARE STATS</h3><div class="pet-stat-grid">${petDeepStats(p).map(s=>`<div class="pet-stat ${petStatClass(s[1],s[2])}" onclick="openPetStatDetail('${s[3]}',${p.id})">${s[0]}<b>${Math.round(s[1])}</b></div>`).join('')}</div></div><div class="pet-panel"><h3>📔 CARE JOURNAL</h3>${petJournalMarkup(p)}</div></div></div>`;
+}
+renderMyPet=petFocusedRender;
+document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{try{petFocusedRender()}catch(e){}},900));
+</script>
+
+
+<script id="rewardAdvanceJs">
+/* ===== CLICK -> REWARD -> ADVANCE LOOP ===== */
+const RA={pending:null};
+
+function rewardInfoForAction(a,p){
+ const map={
+  feed:['🍲','FED','Food +22','Energy +6','+5 XP'],
+  water:['💧','HYDRATED','Water +24','Stress relief','+5 XP'],
+  play:['🎾','PLAYED','Fun +24','Social +7','+5 XP'],
+  groom:['🧼','GROOMED','Clean +25','Comfort +8','+5 XP'],
+  rest:['🛏','RESTED','Energy +22','Sleep +26','+5 XP'],
+  bond:['🤲','BONDED','Trust +10','Loyalty +8','+5 XP'],
+  comfort:['🧸','COMFORTED','Comfort +24','Security +12','+5 XP'],
+  enrich:['🌿','ENRICHED','Fun +22','Routine +5','+5 XP'],
+  train:['🎓','TRAINED','Training +10','Loyalty +5','+5 XP'],
+  routine:['📅','ROUTINE BUILT','Routine +18','Security +10','+5 XP']
+ };
+ return map[a]||['🐾','CARE COMPLETE','Need improved','Bond improved','+5 XP'];
+}
+function showRewardAdvance(p,a,extraText=''){
+ const g=ensurePetGame(p), info=rewardInfoForAction(a,p);
+ const goalDone=g.goals.includes(a)&&g.completed.includes(a);
+ const allDone=petDayWon(p);
+ const layer=document.getElementById('rewardAdvanceLayer'),card=document.getElementById('rewardAdvanceCard');
+ if(!layer||!card)return;
+ let nextLabel=allDone?'🏆 CLAIM DAY REWARD':(g.ap<=0?'🌙 END DAY':'➡ NEXT CARE ACTION');
+ card.innerHTML=`<div class="reward-advance-icon">${info[0]}</div>
+ <div class="reward-advance-title">${info[1]}</div>
+ <div class="reward-advance-text">${p.name||'Your pet'} responded to your care.${goalDone?' Today’s goal completed!':''}${extraText?'<br>'+extraText:''}</div>
+ <div class="reward-advance-gains"><div><b>${info[2]}</b>CARE</div><div><b>${info[3]}</b>RELATIONSHIP</div><div><b>${goalDone?'+12 XP':info[4]}</b>REWARD</div></div>
+ <button class="reward-next" onclick="advanceAfterReward(${p.id})">${nextLabel}</button>`;
+ RA.pending={id:p.id,allDone,empty:g.ap<=0};
+ layer.classList.add('show');
+}
+function advanceAfterReward(id){
+ const layer=document.getElementById('rewardAdvanceLayer');if(layer)layer.classList.remove('show');
+ const p=(G.pets||[]).find(x=>x.id===id);if(!p)return;
+ const g=ensurePetGame(p);
+ if(petDayWon(p)){endPetDay(id);return}
+ if(g.ap<=0){endPetDay(id);return}
+ petFocusedRender();
+ setTimeout(()=>{
+   const el=document.querySelector('.pet-game-objective');
+   if(el)el.scrollIntoView({behavior:'smooth',block:'center'});
+ },50);
+}
+const _petGameActionRewardBase=petGameAction;
+petGameAction=function(id,a){
+ const p=(G.pets||[]).find(x=>x.id===id);if(!p)return;
+ const g=ensurePetGame(p);
+ if(g.ap<=0){showRewardAdvance(p,a,'No actions remain today.');return}
+ const wasDone=g.goals.includes(a)&&g.completed.includes(a);
+ _petGameActionRewardBase(id,a);
+ const p2=(G.pets||[]).find(x=>x.id===id);if(!p2)return;
+ const g2=ensurePetGame(p2);
+ const justCompleted=g2.goals.includes(a)&&g2.completed.includes(a)&&!wasDone;
+ const bonus=justCompleted?'Goal cleared. Bonus XP and Pet Coins awarded.':(g2.event||'Care completed.');
+ setTimeout(()=>showRewardAdvance(p2,a,bonus),80);
+}
+const _endPetDayRewardBase=endPetDay;
+endPetDay=function(id){
+ const p=(G.pets||[]).find(x=>x.id===id);if(!p)return;
+ const won=petDayWon(p);
+ _endPetDayRewardBase(id);
+ if(won){
+   setTimeout(()=>{
+     const layer=document.getElementById('rewardAdvanceLayer'),card=document.getElementById('rewardAdvanceCard');
+     if(!layer||!card)return;
+     const p2=(G.pets||[]).find(x=>x.id===id),g=ensurePetGame(p2);
+     card.innerHTML=`<div class="reward-advance-icon">🏆</div><div class="reward-advance-title">PERFECT CARE DAY</div>
+     <div class="reward-advance-text">You completed every care goal. ${p2.name||'Your pet'} enters Day ${g.day} with a stronger bond.</div>
+     <div class="reward-advance-gains"><div><b>+25</b>PET COINS</div><div><b>+20</b>BOND XP</div><div><b>+75</b>FUNDS</div></div>
+     <button class="reward-next" onclick="document.getElementById('rewardAdvanceLayer').classList.remove('show');petFocusedRender()">🌅 START NEXT DAY</button>`;
+     layer.classList.add('show');
+   },100);
+ }
+}
+</script>
+
+
+<script id="saveStatesJs">
+/* ===== MULTI-SLOT SAVE STATES ===== */
+const SAVE_STATE_KEY='vetGodSaveStatesV1';
+const SAVE_SLOT_COUNT=6;
+
+function deepCloneSafe(v){
+  try{return JSON.parse(JSON.stringify(v))}catch(e){return null}
+}
+function getSaveStateBank(){
+  try{return JSON.parse(localStorage.getItem(SAVE_STATE_KEY)||'{}')||{}}catch(e){return {}}
+}
+function setSaveStateBank(bank){
+  try{localStorage.setItem(SAVE_STATE_KEY,JSON.stringify(bank));return true}catch(e){return false}
+}
+function captureGameState(){
+  return {
+    version:1,
+    savedAt:Date.now(),
+    G:deepCloneSafe(G),
+    selectedTab:(document.querySelector('.screen.active')||{}).id||null,
+    scrollY:window.scrollY||0
+  };
+}
+function slotName(slot){return slot===0?'AUTO SAVE':`SAVE SLOT ${slot}`}
+function summarizeState(st){
+  const g=st?.G||{};
+  const pets=(g.pets||[]);
+  const selected=(typeof g.selectedPetId!=='undefined'?pets.find(p=>p.id===g.selectedPetId):null)||pets[0];
+  return {
+    pets:pets.length,
+    pet:selected?.name||selected?.species||'No pet',
+    day:selected?.game?.day||1,
+    level:selected?.game?.level||1,
+    funds:g.credits??g.funds??0,
+    rep:g.rep??g.reputation??0
+  };
+}
+function saveToSlot(slot){
+  const bank=getSaveStateBank(), st=captureGameState();
+  bank[String(slot)]=st;
+  if(setSaveStateBank(bank)){
+    renderSaveStates();
+    try{rewardToast?.(`💾 Saved to ${slotName(slot)}`)}catch(e){}
+  }
+}
+function restoreObject(target,source){
+  Object.keys(target).forEach(k=>delete target[k]);
+  Object.keys(source||{}).forEach(k=>target[k]=source[k]);
+}
+function loadFromSlot(slot){
+  const bank=getSaveStateBank(), st=bank[String(slot)];
+  if(!st||!st.G)return;
+  try{
+    restoreObject(G,deepCloneSafe(st.G));
+    ensureAllPetDeep?.();
+    restorePermanentPets?.();
+    save?.();
+    const target=st.selectedTab||'mypet';
+    try{showTab?.(target)}catch(e){try{gotoTab?.(target)}catch(e2){}}
+    try{render?.()}catch(e){}
+    try{renderMyPet?.()}catch(e){}
+    setTimeout(()=>window.scrollTo(0,Math.max(0,st.scrollY||0)),50);
+    closeSaveStates();
+    try{rewardToast?.(`📂 Loaded ${slotName(slot)}`)}catch(e){}
+  }catch(e){console.error('Load slot failed',e)}
+}
+function deleteSaveSlot(slot){
+  const bank=getSaveStateBank();
+  delete bank[String(slot)];
+  setSaveStateBank(bank);
+  renderSaveStates();
+}
+function quickSave(){saveToSlot(1)}
+function autoSaveState(){
+  const bank=getSaveStateBank();
+  bank['0']=captureGameState();
+  setSaveStateBank(bank);
+}
+function openSaveStates(){
+  renderSaveStates();
+  document.getElementById('saveStateOverlay')?.classList.add('show');
+}
+function closeSaveStates(){document.getElementById('saveStateOverlay')?.classList.remove('show')}
+function renderSaveStates(){
+  const root=document.getElementById('saveStateContent');if(!root)return;
+  const bank=getSaveStateBank();
+  let html=`<div class="save-state-tools"><button onclick="quickSave()">⚡ QUICK SAVE TO SLOT 1</button><button onclick="autoSaveState();renderSaveStates()">♻ UPDATE AUTO SAVE</button></div><div class="save-slot-grid">`;
+  for(let slot=0;slot<=SAVE_SLOT_COUNT;slot++){
+    const st=bank[String(slot)];
+    if(st){
+      const s=summarizeState(st);
+      html+=`<div class="save-slot"><h3>${slotName(slot)}</h3>
+      <p>${new Date(st.savedAt).toLocaleString()}</p>
+      <p>🐾 ${s.pet} · Day ${s.day} · Bond Lv ${s.level}</p>
+      <p>${s.pets} pets · Funds ${s.funds} · Rep ${s.rep}</p>
+      <div class="save-slot-actions"><button onclick="loadFromSlot(${slot})">📂 LOAD</button><button onclick="saveToSlot(${slot})">💾 OVERWRITE</button><button class="danger" onclick="deleteSaveSlot(${slot})">🗑 DELETE</button></div></div>`;
+    }else{
+      html+=`<div class="save-slot"><h3>${slotName(slot)}</h3><p>Empty save state.</p><div class="save-slot-actions"><button onclick="saveToSlot(${slot})">💾 SAVE HERE</button></div></div>`;
+    }
+  }
+  html+='</div>';
+  root.innerHTML=html;
+}
+
+/* Auto-save important progress changes without replacing manual slots. */
+setInterval(autoSaveState,15000);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')autoSaveState()});
+window.addEventListener('beforeunload',autoSaveState);
+
+/* Save after core pet-game milestones too. */
+if(typeof petGameAction==='function'){
+  const _ssPetGameAction=petGameAction;
+  petGameAction=function(id,a){const r=_ssPetGameAction.apply(this,arguments);setTimeout(autoSaveState,120);return r}
+}
+if(typeof endPetDay==='function'){
+  const _ssEndPetDay=endPetDay;
+  endPetDay=function(id){const r=_ssEndPetDay.apply(this,arguments);setTimeout(autoSaveState,120);return r}
+}
+if(typeof rewardPetAt100==='function'){
+  const _ssRewardPetAt100=rewardPetAt100;
+  rewardPetAt100=function(p){const r=_ssRewardPetAt100.apply(this,arguments);setTimeout(autoSaveState,120);return r}
+}
+document.addEventListener('DOMContentLoaded',()=>setTimeout(autoSaveState,1200));
+</script>
+
+
+<script id="sadPetBackstoryJs">
+/* ===== SAD RESCUE BACKSTORIES ===== */
+const SAD_ORIGINS=[
+  "was found after being left behind when a family moved away. For days, the animal returned to the same doorway, waiting for people who never came back.",
+  "arrived from an overcrowded rescue where there had never been enough quiet, space, or one-on-one attention. The animal had learned to sleep lightly and guard every meal.",
+  "was surrendered after an owner lost housing and could no longer keep a pet. The last thing the animal knew was a familiar hand letting go of the carrier.",
+  "had been passed between several temporary homes. Each move taught the animal not to get too comfortable, because every safe room eventually disappeared.",
+  "was discovered frightened and alone after a severe storm damaged the place it had been living. No one could identify where it belonged.",
+  "came from a neglect case where basic care had been inconsistent for a long time. The animal had learned that food, warmth, and attention were never guaranteed.",
+  "was brought in after being found wandering near a road, exhausted and dehydrated. No owner came forward despite repeated attempts to find one.",
+  "had lived with an elderly owner who died unexpectedly. The animal stayed beside familiar belongings for days, confused by the sudden silence.",
+  "was surrendered after another pet in the home repeatedly frightened it. By the time it reached the hospital, even ordinary sounds caused it to freeze.",
+  "came from a failed adoption. The animal had been returned for being 'too difficult,' even though most of the behavior was fear and confusion."
+];
+const SAD_ARRIVALS=[
+  "On arrival, they would not make eye contact and kept their body as small as possible.",
+  "The first night, they refused food until the room became completely quiet.",
+  "They slept pressed against the back of the enclosure, as far from people as they could get.",
+  "Every opening door made them tense up, as if they expected another move.",
+  "They watched every hand carefully before allowing anyone close.",
+  "They ate quickly at first, as though the meal might be taken away.",
+  "They stayed awake long after the ward went dark, listening to every sound.",
+  "They did not resist care, but they also did not seem to believe anyone would stay.",
+  "The animal kept returning to the same corner whenever the room became busy.",
+  "They responded more to a calm voice than to food, which told the staff how badly they needed reassurance."
+];
+const SAD_FEAR=[
+  "being left alone after a door closes",
+  "loud voices and sudden movement",
+  "carriers and unfamiliar rooms",
+  "missing a meal",
+  "being handled by strangers",
+  "nighttime noises",
+  "raised hands",
+  "busy hallways",
+  "being separated from a familiar person",
+  "new environments"
+];
+const SAD_COMFORT=[
+  "a warm blanket",
+  "quiet music",
+  "sitting nearby without touching",
+  "fresh food placed down slowly",
+  "a predictable bedtime routine",
+  "gentle grooming",
+  "a familiar toy",
+  "soft conversation",
+  "a covered sleeping corner",
+  "being allowed to approach first"
+];
+const SAD_QUIRKS=[
+  "checks the doorway before settling down",
+  "hides one small piece of food for later",
+  "sleeps best when a light is left on",
+  "leans closer when spoken to quietly",
+  "circles the bed twice before lying down",
+  "watches your hands before looking at your face",
+  "keeps favorite toys close while resting",
+  "gets excited when the same caregiver returns",
+  "rests near the edge of the room so they can see every exit",
+  "relaxes faster when routines happen in the same order"
+];
+
+function hashPetStory(p){
+  const s=String(p.id||0)+String(p.name||'')+String(p.species||'');
+  let h=0;for(let i=0;i<s.length;i++)h=((h<<5)-h+s.charCodeAt(i))|0;
+  return Math.abs(h);
+}
+function ensureSadStory(p){
+  if(!p)return p;
+  const h=hashPetStory(p);
+  p.sadStory??={};
+  p.sadStory.before = p.sadStory.before || `${p.name||'This animal'} ${SAD_ORIGINS[h%SAD_ORIGINS.length]}`;
+  p.sadStory.arrival = p.sadStory.arrival || SAD_ARRIVALS[(h+3)%SAD_ARRIVALS.length];
+  p.sadStory.fear = p.sadStory.fear || SAD_FEAR[(h+5)%SAD_FEAR.length];
+  p.sadStory.comfort = p.sadStory.comfort || SAD_COMFORT[(h+7)%SAD_COMFORT.length];
+  p.sadStory.quirk = p.sadStory.quirk || SAD_QUIRKS[(h+9)%SAD_QUIRKS.length];
+  p.sadStory.turningPoint = p.sadStory.turningPoint || `The turning point came when ${p.name||'the animal'} stopped backing away when care began. It was a small moment, but it was the first sign that this place might not disappear too.`;
+  p.sadStory.now = p.sadStory.now || `Now ${p.name||'the animal'} is learning that meals arrive on time, beds stay in the same place, and the person caring for them comes back.`;
+  return p;
+}
+function sadStoryMarkup(p){
+  ensureSadStory(p);
+  return `<div class="pet-story-stack">
+    <div class="pet-story-chapter"><h3>💔 BEFORE THE RESCUE</h3><p>${p.sadStory.before}</p></div>
+    <div class="pet-story-chapter"><h3>🚑 THE DAY THEY ARRIVED</h3><p>${p.sadStory.arrival}</p></div>
+    <div class="pet-story-chapter"><h3>😟 WHAT THEY STILL FEAR</h3><p>${p.name||'They'} still reacts strongly to ${p.sadStory.fear}.</p></div>
+    <div class="pet-memory-grid">
+      <div class="pet-memory"><b>🤍 WHAT HELPS</b>${p.sadStory.comfort}</div>
+      <div class="pet-memory"><b>🐾 LITTLE QUIRK</b>${p.sadStory.quirk}</div>
+    </div>
+    <div class="pet-story-chapter"><h3>✨ THE FIRST TURNING POINT</h3><p>${p.sadStory.turningPoint}</p></div>
+    <div class="pet-story-chapter"><h3>🏠 WHAT YOUR CARE CHANGED</h3><p>${p.sadStory.now}</p></div>
+  </div>`;
+}
+
+/* Add sad-story block into My Pet without replacing the game loop. */
+const _sadPetRender = renderMyPet;
+renderMyPet = function(){
+  _sadPetRender.apply(this,arguments);
+  const p=selectedPet?.()||(G.pets||[])[0]; if(!p)return;
+  ensureSadStory(p);
+  const storyBox=document.querySelector('#myPetScreen .pet-story-box, #mypet .pet-story-box');
+  if(storyBox && !document.getElementById('deepSadStoryBlock')){
+    const wrap=document.createElement('div');
+    wrap.id='deepSadStoryBlock';
+    wrap.innerHTML=sadStoryMarkup(p);
+    storyBox.insertAdjacentElement('afterend',wrap);
+  }
+}
+petFocusedRender = renderMyPet;
+document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{try{(G.pets||[]).forEach(ensureSadStory);renderMyPet()}catch(e){}},1000));
 </script>
 
 </body>
