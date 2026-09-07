@@ -18488,5 +18488,68 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(renderCC,1700));
 })();
 </script>
 
+
+<style id="removeAllPersistentMenusCss">
+/* VET GOD clean-screen mode: no persistent navigation overlays */
+#vgCleanMenuToggle,
+#vgCleanMenu,
+#vgStatusLauncher,
+#hudDrawerShell,
+#moneyStatsHud,
+#hudCommandCenter,
+#vgCommandStage > #moneyStatsHud,
+.bottom-nav,
+.bottomNav,
+.bottom-dock,
+.bottomDock,
+.tabbar,
+.tab-bar,
+.nav-dock,
+.navDock,
+#bottomNav,
+#bottomDock,
+#commandDock,
+#vgBottomDock,
+#vgCommandDock,
+#persistentNav,
+#persistentMenu {
+  display:none !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
+body{padding-top:0!important;padding-bottom:0!important}
+</style>
+<script id="removeAllPersistentMenusJs">
+(function(){
+ const selectors=[
+  '#vgCleanMenuToggle','#vgCleanMenu','#vgStatusLauncher','#hudDrawerShell',
+  '#moneyStatsHud','#hudCommandCenter','#bottomNav','#bottomDock','#commandDock',
+  '#vgBottomDock','#vgCommandDock','#persistentNav','#persistentMenu',
+  '.bottom-nav','.bottomNav','.bottom-dock','.bottomDock','.tabbar','.tab-bar',
+  '.nav-dock','.navDock'
+ ];
+ function removePersistent(){
+   selectors.forEach(sel=>{
+     document.querySelectorAll(sel).forEach(el=>{
+       el.style.setProperty('display','none','important');
+       el.style.setProperty('visibility','hidden','important');
+       el.style.setProperty('pointer-events','none','important');
+     })
+   });
+   // Catch fixed/sticky menu containers recreated by older scripts.
+   document.querySelectorAll('body > nav, body > [role="navigation"]').forEach(el=>{
+     const cs=getComputedStyle(el);
+     if(cs.position==='fixed'||cs.position==='sticky'){
+       el.style.setProperty('display','none','important')
+     }
+   })
+ }
+ document.addEventListener('DOMContentLoaded',()=>setTimeout(removePersistent,500));
+ const mo=new MutationObserver(()=>removePersistent());
+ mo.observe(document.documentElement,{childList:true,subtree:true});
+ setInterval(removePersistent,3000);
+})();
+</script>
+
 </body>
 </html>
