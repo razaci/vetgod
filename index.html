@@ -2389,6 +2389,48 @@ body{scroll-padding-top:46px}
 .vgt-mini-controls span{padding:4px 7px;border-radius:999px;background:#0d1510cc;border:1px solid #415048;font-size:6px;color:#b8c5bd}
 </style>
 
+
+<style id="caseDirectorOverhaulCss">
+#caseDirector{
+  margin:8px 0 12px;border:1px solid #627064;border-radius:14px;
+  background:linear-gradient(180deg,#121914,#0b100d);color:#e8efe9;
+  overflow:hidden;box-shadow:0 12px 32px #0008
+}
+.cd-head{padding:10px;border-bottom:1px solid #39443c;background:#111812}
+.cd-kicker{font-size:6px;letter-spacing:.1em;color:#9aa89f;font-weight:900}
+.cd-title{font-size:13px;font-weight:1000;color:#fff;margin-top:2px}
+.cd-sub{font-size:7px;line-height:1.45;color:#aeb9b1;margin-top:4px}
+.cd-stagebar{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:7px;background:#0b110d}
+.cd-stage{padding:5px 2px;text-align:center;border:1px solid #334139;border-radius:6px;background:#101610;font-size:5px;color:#77847b}
+.cd-stage.done{color:#b7c4bb;border-color:#4b5d51}
+.cd-stage.active{color:#fff;border-color:#76877b;background:#1b261d;font-weight:1000}
+.cd-main{padding:10px}
+.cd-objective{
+ padding:9px;border:1px solid #56665b;border-radius:10px;background:#121a14;margin-bottom:8px
+}
+.cd-objective b{display:block;color:#fff;font-size:10px;margin-bottom:3px}
+.cd-objective span{font-size:7px;color:#b8c3bc;line-height:1.45}
+.cd-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:8px}
+.cd-stat{padding:7px;border:1px solid #37453c;border-radius:8px;background:#0d130f;font-size:6px;color:#89968e}
+.cd-stat b{display:block;color:#fff;font-size:10px}
+.cd-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.cd-actions button{
+ min-height:52px;border-radius:9px;border:1px solid #536157;background:#161f18;
+ color:#edf4ef;font-size:7px;font-weight:1000;padding:7px;text-align:left
+}
+.cd-actions button.good{background:#1a251c;border-color:#69796d}
+.cd-actions button.money{background:#211d13;border-color:#6d6350}
+.cd-actions button.danger{background:#261515;border-color:#754c4c}
+.cd-actions button:disabled{opacity:.38}
+.cd-cost{display:block;font-size:5.8px;font-weight:500;color:#a8b3ac;margin-top:2px}
+.cd-goals{display:grid;gap:5px;margin-top:8px}
+.cd-goal{padding:6px 7px;border-radius:8px;border:1px solid #354239;background:#0e1410;font-size:6.5px;color:#aeb9b1}
+.cd-goal.ok{border-color:#5b705f;color:#dce9df}
+.cd-alert{margin-top:8px;padding:7px;border:1px solid #735252;border-radius:8px;background:#211313;font-size:6.5px;color:#e8caca}
+.cd-path{margin-top:7px;padding:7px;border-left:2px solid #5c6b60;background:#0e1410;font-size:6.3px;color:#9eaaa2;line-height:1.45}
+.cd-result{padding:10px;margin-top:8px;border:1px solid #4e5d52;border-radius:9px;background:#111812;font-size:7px;line-height:1.45}
+</style>
+
 </head>
 <body style="--fxsheet:url('data:image/png;base64,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')"><div id="fxLayer"></div>
 
@@ -15161,6 +15203,328 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(renderCC,1700));
  }
  document.addEventListener('DOMContentLoaded',()=>setTimeout(render,2100));
  setInterval(render,3000);
+})();
+</script>
+
+
+<script id="caseDirectorOverhaulJs">
+(function(){
+ const KEY='vetGodCaseDirectorV2';
+ const STAGES=['INTAKE','TRIAGE','DIAGNOSTICS','FUNDING','TREATMENT','PROCEDURE','RECOVERY'];
+ const CONDITIONS=[
+  {id:'fracture',name:'Limb Fracture',severity:3,surgery:true,path:['exam','imaging','pain','fund','surgery','recovery'],cost:850,
+   exam:'Marked limb pain and reduced weight-bearing.',imaging:'Radiographs show a displaced fracture.',lab:'CBC is acceptable for anesthesia.'},
+  {id:'foreign',name:'Foreign Body',severity:3,surgery:true,path:['exam','imaging','fluids','fund','surgery','recovery'],cost:980,
+   exam:'Abdominal pain, nausea and guarded posture.',imaging:'Imaging suggests an obstructive foreign object.',lab:'Dehydration pattern with mild electrolyte changes.'},
+  {id:'wound',name:'Deep Wound',severity:2,surgery:false,path:['exam','pain','clean','bandage','recovery'],cost:340,
+   exam:'Deep contaminated wound with localized swelling.',imaging:'No fracture seen beneath the wound.',lab:'Mild inflammatory response.'},
+  {id:'infection',name:'Systemic Infection',severity:3,surgery:false,path:['exam','lab','fluids','meds','recovery'],cost:520,
+   exam:'Fever, lethargy and poor appetite.',imaging:'No major structural abnormality found.',lab:'Elevated inflammatory markers support infection.'},
+  {id:'dehydration',name:'Severe Dehydration',severity:2,surgery:false,path:['exam','fluids','feed','recovery'],cost:260,
+   exam:'Dry gums, delayed skin return and weakness.',imaging:'Imaging not immediately indicated.',lab:'Concentrated values consistent with dehydration.'},
+  {id:'respiratory',name:'Respiratory Distress',severity:4,surgery:false,path:['stabilize','exam','imaging','oxygen','fund','recovery'],cost:700,
+   exam:'Increased respiratory effort and abnormal lung sounds.',imaging:'Thoracic imaging shows a significant respiratory pattern.',lab:'Stress leukogram; oxygenation remains the urgent issue.'},
+  {id:'minor',name:'Minor Soft Tissue Injury',severity:1,surgery:false,path:['exam','pain','comfort','recovery'],cost:170,
+   exam:'Painful soft-tissue strain without instability.',imaging:'No fracture identified.',lab:'No significant laboratory abnormality.'}
+ ];
+ let CD={cases:{},activeId:null,lastTick:Date.now()};
+
+ function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(x)CD=Object.assign(CD,x)}catch(e){};CD.cases=CD.cases||{}}
+ function saveCD(){try{localStorage.setItem(KEY,JSON.stringify(CD))}catch(e){}}
+ function n(v,d=0){v=Number(v);return Number.isFinite(v)?Math.max(0,Math.min(100,v)):d}
+ function pNow(){
+   try{if(typeof currentHospitalCase==='function'){const p=currentHospitalCase();if(p)return p}}catch(e){}
+   for(const a of ['clinic','surgery','recovery','care']){try{const ar=G?.[a]||[];if(ar[0])return ar[0]}catch(e){}}
+   return null
+ }
+ function id(p){return String(p?.id||p?.name||'case')}
+ function funds(){return Math.max(0,Math.round(Number(G?.credits??G?.funds??0)||0))}
+ function setFunds(v){v=Math.max(0,Math.round(Number(v)||0));try{G.credits=v}catch(e){}try{G.funds=v}catch(e){}}
+ function conditionFor(p){
+   const key=id(p),seed=[...key].reduce((a,c)=>a+c.charCodeAt(0),0);
+   return CONDITIONS[seed%CONDITIONS.length]
+ }
+ function state(p){
+   const k=id(p);
+   if(!CD.cases[k]){
+     const c=conditionFor(p);
+     CD.cases[k]={
+       id:k,condition:c.id,stage:'INTAKE',done:[],history:[],created:Date.now(),
+       estimatedCost:c.cost,bill:0,diagnosisRevealed:false,funded:false,
+       recoveryGoals:{life:75,pain:30,hydration:65,comfort:65},
+       outcome:null,lastAction:Date.now(),mistakes:0
+     };
+     saveCD()
+   }
+   CD.activeId=k;
+   return CD.cases[k]
+ }
+ function cond(s){return CONDITIONS.find(c=>c.id===s.condition)||CONDITIONS[0]}
+ function done(s,a){return s.done.includes(a)}
+ function mark(s,a,msg){
+   if(!done(s,a))s.done.push(a);
+   s.lastAction=Date.now();
+   s.history.unshift({at:Date.now(),msg:msg||a});
+   s.history=s.history.slice(0,40);
+   saveCD()
+ }
+ function saveGame(){try{save?.()}catch(e){}try{render?.()}catch(e){}}
+ function charge(s,cost,label){
+   if(funds()>=cost){setFunds(funds()-cost);s.bill+=cost;mark(s,'paid:'+label,`${label} · $${cost}`);return true}
+   try{
+     if(typeof FUND!=='undefined'){
+       const p=pNow();
+       FUND.pending={patientId:id(p),cost,label,createdAt:Date.now()};
+     }
+   }catch(e){}
+   try{rewardToast?.(`💵 FUNDING REQUIRED · $${cost} for ${label}`)}catch(e){}
+   saveGame();return false
+ }
+ function applyStats(p,delta){
+   for(const [k,v] of Object.entries(delta)){
+     const base=n(p[k],k==='health'?70:k==='hydration'?60:k==='comfort'?55:k==='trust'?50:k==='stress'?45:30);
+     p[k]=n(base+v,base)
+   }
+ }
+ function revealDiagnostics(p,s,type){
+   const c=cond(s);
+   p.diagnostics=p.diagnostics||{};
+   if(type==='exam')p.diagnostics.physical=c.exam;
+   if(type==='imaging')p.diagnostics.imaging=c.imaging;
+   if(type==='lab')p.diagnostics.lab=c.lab;
+   if(type==='imaging'||type==='lab')s.diagnosisRevealed=true;
+ }
+ function pathRemaining(s){const c=cond(s);return c.path.filter(x=>!done(s,x))}
+ function nextRequired(s){return pathRemaining(s)[0]||null}
+ function stageFor(p,s){
+   const c=cond(s),next=nextRequired(s);
+   if(s.outcome)return'RECOVERY';
+   if(!done(s,'intake'))return'INTAKE';
+   if(n(p.health,70)<40||n(p.pain,30)>82)return'TRIAGE';
+   if(!done(s,'exam') || ((c.path.includes('imaging')&&!done(s,'imaging'))||(c.path.includes('lab')&&!done(s,'lab'))))return'DIAGNOSTICS';
+   if(c.path.includes('fund')&&!done(s,'fund'))return'FUNDING';
+   if(['pain','fluids','meds','clean','bandage','oxygen','comfort','feed'].some(x=>c.path.includes(x)&&!done(s,x)))return'TREATMENT';
+   if(c.surgery&&!done(s,'surgery'))return'PROCEDURE';
+   return'RECOVERY'
+ }
+ function syncStage(p,s){
+   s.stage=stageFor(p,s);
+   p.currentArea=s.stage==='PROCEDURE'?'surgery':s.stage==='RECOVERY'?'recovery':'clinic';
+   p.stage=s.stage;
+   p.needsSurgery=cond(s).surgery&&!done(s,'surgery')
+ }
+ function recommendation(p,s){
+   const c=cond(s),stage=stageFor(p,s),next=nextRequired(s);
+   if(stage==='INTAKE')return['ACCEPT THE CASE','Start intake and establish the patient baseline.'];
+   if(stage==='TRIAGE'){
+     if(n(p.health,70)<40)return['STABILIZE LIFE','Life is too low for routine diagnostics. Fluids/support are required first.'];
+     return['CONTROL PAIN','Pain is too high to proceed safely.'];
+   }
+   if(stage==='DIAGNOSTICS'){
+     if(!done(s,'exam'))return['RUN PHYSICAL EXAM','The exam is the first required diagnostic step.'];
+     if(c.path.includes('imaging')&&!done(s,'imaging'))return['RUN IMAGING','Imaging is required to define the treatment path.'];
+     if(c.path.includes('lab')&&!done(s,'lab'))return['RUN LAB WORK','Laboratory results are required before treatment.'];
+   }
+   if(stage==='FUNDING')return['SECURE CASE FUNDING',`Treatment plan estimate: $${c.cost}. Use hospital credits or fight for funding.`];
+   if(stage==='TREATMENT')return['COMPLETE TREATMENT',`Next required step: ${(next||'care').toUpperCase()}.`];
+   if(stage==='PROCEDURE')return['PERFORM SURGERY','The diagnosis requires surgery before recovery.'];
+   const g=s.recoveryGoals;
+   if(n(p.health,70)<g.life)return['RECOVERY: BUILD LIFE',`Life must reach ${g.life}.`];
+   if(n(p.pain,30)>g.pain)return['RECOVERY: CONTROL PAIN',`Pain must fall below ${g.pain}.`];
+   if(n(p.hydration,60)<g.hydration)return['RECOVERY: HYDRATE',`Hydration must reach ${g.hydration}.`];
+   if(n(p.comfort,55)<g.comfort)return['RECOVERY: COMFORT',`Comfort must reach ${g.comfort}.`];
+   return['READY FOR OUTCOME','Recovery goals are complete. Discharge the patient or continue optional care.']
+ }
+ function recoveryReady(p,s){
+   const g=s.recoveryGoals;
+   return n(p.health,70)>=g.life&&n(p.pain,30)<=g.pain&&n(p.hydration,60)>=g.hydration&&n(p.comfort,55)>=g.comfort
+ }
+
+ function action(name){
+   const p=pNow();if(!p)return;
+   const s=state(p),c=cond(s),stage=stageFor(p,s);
+   const allowed=(need)=>done(s,need)||c.path.includes(need);
+   let ok=true,cost=0,label=name,delta={},msg='';
+
+   if(name==='intake'){mark(s,'intake','Patient accepted into hospital.');applyStats(p,{trust:3,stress:-2});}
+   else if(name==='stabilize'){
+     cost=70;label='Emergency Stabilization';
+     if(charge(s,cost,label)){applyStats(p,{health:12,stress:-8,comfort:5});mark(s,'stabilize','Emergency stabilization completed.')}
+   }
+   else if(name==='exam'){
+     cost=75;label='Physical Exam';
+     if(charge(s,cost,label)){revealDiagnostics(p,s,'exam');mark(s,'exam',c.exam);applyStats(p,{trust:3,stress:2})}
+   }
+   else if(name==='imaging'){
+     if(!done(s,'exam'))ok=false;
+     else {cost=160;label='Diagnostic Imaging';if(charge(s,cost,label)){revealDiagnostics(p,s,'imaging');mark(s,'imaging',c.imaging)}}
+   }
+   else if(name==='lab'){
+     if(!done(s,'exam'))ok=false;
+     else {cost=125;label='Laboratory Work';if(charge(s,cost,label)){revealDiagnostics(p,s,'lab');mark(s,'lab',c.lab)}}
+   }
+   else if(name==='fund'){
+     const need=Math.max(0,c.cost-(s.bill||0));
+     if(need===0||funds()>=need){if(need){setFunds(funds()-need);s.bill+=need}mark(s,'fund',`Treatment plan funded · $${need}`);s.funded=true}
+     else {try{if(typeof FUND!=='undefined')FUND.pending={patientId:id(p),cost:need,label:'Complete Treatment Plan',createdAt:Date.now()}}catch(e){};ok=false}
+   }
+   else if(name==='pain'){cost=45;label='Pain Control';if(charge(s,cost,label)){applyStats(p,{pain:-24,comfort:8,stress:-6});mark(s,'pain','Pain control administered.')}}
+   else if(name==='fluids'){cost=60;label='IV Fluids';if(charge(s,cost,label)){applyStats(p,{hydration:24,health:5,comfort:4});mark(s,'fluids','IV fluids administered.')}}
+   else if(name==='meds'){cost=85;label='Medication';if(charge(s,cost,label)){applyStats(p,{health:9,pain:-8,stress:-4});mark(s,'meds','Required medication administered.')}}
+   else if(name==='clean'){cost=55;label='Wound Cleaning';if(charge(s,cost,label)){applyStats(p,{pain:-6,health:5});mark(s,'clean','Wound cleaned and prepared.')}}
+   else if(name==='bandage'){if(!done(s,'clean'))ok=false;else{cost=45;label='Bandaging';if(charge(s,cost,label)){applyStats(p,{comfort:7,health:3});mark(s,'bandage','Protective bandage applied.')}}}
+   else if(name==='oxygen'){cost=90;label='Oxygen Support';if(charge(s,cost,label)){applyStats(p,{health:10,stress:-10});mark(s,'oxygen','Oxygen support stabilized breathing.')}}
+   else if(name==='comfort'){cost=30;label='Comfort Care';if(charge(s,cost,label)){applyStats(p,{comfort:15,trust:8,stress:-10,pain:-3});mark(s,'comfort','Comfort care completed.')}}
+   else if(name==='feed'){cost=18;label='Nutrition';if(charge(s,cost,label)){applyStats(p,{comfort:6,health:3});mark(s,'feed','Patient accepted food.')}}
+   else if(name==='surgery'){
+     if(!c.surgery||!s.funded)ok=false;
+     else {cost=250;label='Surgical Procedure';if(charge(s,cost,label)){applyStats(p,{health:10,pain:12,stress:5});mark(s,'surgery','Required operation completed.');p.surgeryComplete=true;p.needsSurgery=false}}
+   }
+   else if(name==='recoverycare'){
+     cost=35;label='Recovery Nursing';
+     if(charge(s,cost,label)){applyStats(p,{health:7,pain:-7,hydration:6,comfort:8,stress:-6});mark(s,'recoverycare','Recovery nursing round completed.')}
+   }
+   else if(name==='discharge'){
+     if(!recoveryReady(p,s))ok=false;
+     else{
+       s.outcome='DISCHARGED';mark(s,'discharge','Patient discharged home after meeting recovery goals.');
+       p.caseOutcome='Discharged home';p.caseClosed=true;
+       try{archiveLifeChronicle?.(p,'Discharged home')}catch(e){}
+       const k=id(p);['clinic','surgery','recovery','care'].forEach(a=>{try{G[a]=(G[a]||[]).filter(x=>id(x)!==k)}catch(e){}});
+       try{rewardToast?.(`🏠 ${p.name||'Patient'} went home!`)}catch(e){}
+     }
+   }
+
+   if(!ok){
+     s.mistakes=(s.mistakes||0)+1;
+     applyStats(p,{stress:4,trust:-2});
+     try{rewardToast?.('⚠ That step is not available yet. Follow the current objective.')}catch(e){}
+   }
+   syncStage(p,s);saveCD();saveGame();renderDirector()
+ }
+ window.caseDirectorAction=action;
+
+ function buttons(p,s){
+   const c=cond(s),st=stageFor(p,s),r=[];
+   const btn=(a,icon,title,sub,cls='')=>`<button class="${cls}" onclick="caseDirectorAction('${a}')">${icon} ${title}<span class="cd-cost">${sub}</span></button>`;
+   if(st==='INTAKE')r.push(btn('intake','🐾','ACCEPT PATIENT','Begin case','good'));
+   if(st==='TRIAGE'){
+     r.push(btn('stabilize','🚨','STABILIZE','$70 · raises Life','good'));
+     r.push(btn('pain','💊','PAIN CONTROL','$45'));
+     r.push(btn('fluids','💧','IV FLUIDS','$60'));
+     r.push(btn('comfort','❤️','CALM / COMFORT','$30'));
+   }
+   if(st==='DIAGNOSTICS'){
+     r.push(btn('exam','🩺','PHYSICAL EXAM','$75',done(s,'exam')?'':'good'));
+     if(done(s,'exam'))r.push(btn('imaging','📡','IMAGING','$160'));
+     if(done(s,'exam'))r.push(btn('lab','🧪','LAB WORK','$125'));
+   }
+   if(st==='FUNDING'){
+     r.push(btn('fund','💵','PAY / FUND PLAN',`Need $${Math.max(0,c.cost-s.bill)}`,'money'));
+     r.push(`<button class="money" onclick="try{gotoTab('funding')}catch(e){}">👥 FIGHT FOR FUNDING<span class="cd-cost">Open Funding War Room</span></button>`);
+     r.push(`<button class="danger" onclick="sendPatientHomeForFunding?.()">🏠 SEND HOME<span class="cd-cost">Close case without treatment</span></button>`);
+   }
+   if(st==='TREATMENT'){
+     const next=nextRequired(s);
+     const defs={
+       pain:['💊','PAIN CONTROL','$45'],fluids:['💧','IV FLUIDS','$60'],meds:['💉','MEDICATION','$85'],
+       clean:['🧼','CLEAN WOUND','$55'],bandage:['🩹','BANDAGE','$45'],oxygen:['🫁','OXYGEN','$90'],
+       comfort:['❤️','COMFORT CARE','$30'],feed:['🥣','NUTRITION','$18']
+     };
+     if(defs[next])r.push(btn(next,defs[next][0],defs[next][1],defs[next][2],'good'));
+     r.push(btn('pain','💊','OPTIONAL PAIN CARE','$45'));
+     r.push(btn('fluids','💧','OPTIONAL FLUIDS','$60'));
+     r.push(btn('comfort','❤️','OPTIONAL COMFORT','$30'));
+   }
+   if(st==='PROCEDURE'){
+     r.push(btn('surgery','🩺','PERFORM SURGERY','$250 · required','good'));
+     r.push(btn('pain','💊','PAIN CONTROL','$45'));
+     r.push(btn('fluids','💧','IV SUPPORT','$60'));
+   }
+   if(st==='RECOVERY'){
+     r.push(btn('recoverycare','🛏','RECOVERY ROUND','$35 · improves several stats','good'));
+     r.push(btn('pain','💊','PAIN CONTROL','$45'));
+     r.push(btn('fluids','💧','IV FLUIDS','$60'));
+     r.push(btn('comfort','❤️','COMFORT','$30'));
+     if(recoveryReady(p,s))r.push(btn('discharge','🏠','DISCHARGE HOME','Recovery goals complete','good'));
+   }
+   return r.join('')
+ }
+ function renderDirector(){
+   document.getElementById('caseDirector')?.remove();
+   const p=pNow();if(!p)return;
+   const s=state(p);syncStage(p,s);const c=cond(s),rec=recommendation(p,s);
+   const a=(s.stage==='PROCEDURE'?'surgery':s.stage==='RECOVERY'?'recovery':'clinic');
+   const root=document.getElementById(a)||document.getElementById('clinic');if(!root)return;
+   const el=document.createElement('section');el.id='caseDirector';
+   const idx=STAGES.indexOf(s.stage);
+   el.innerHTML=`
+    <div class="cd-head"><div class="cd-kicker">CASE DIRECTOR · CANONICAL GAME LOOP</div>
+      <div class="cd-title">${p.name||'PATIENT'} · ${s.diagnosisRevealed?c.name:'DIAGNOSIS PENDING'}</div>
+      <div class="cd-sub">One case. One stage. One next objective. Estimated case plan $${c.cost} · spent $${s.bill||0} · hospital $${funds()}.</div>
+    </div>
+    <div class="cd-stagebar">${STAGES.map((x,i)=>`<div class="cd-stage ${i<idx?'done':i===idx?'active':''}">${x}</div>`).join('')}</div>
+    <div class="cd-main">
+      <div class="cd-objective"><b>🎯 ${rec[0]}</b><span>${rec[1]}</span></div>
+      <div class="cd-grid">
+        <div class="cd-stat"><b>${Math.round(n(p.health,70))}</b>LIFE</div>
+        <div class="cd-stat"><b>${Math.round(n(p.pain,30))}</b>PAIN</div>
+        <div class="cd-stat"><b>${Math.round(n(p.hydration,60))}</b>HYDRATION</div>
+        <div class="cd-stat"><b>$${funds()}</b>FUNDS</div>
+      </div>
+      <div class="cd-actions">${buttons(p,s)}</div>
+      ${s.stage==='RECOVERY'?`<div class="cd-goals">
+       <div class="cd-goal ${n(p.health,70)>=s.recoveryGoals.life?'ok':''}">LIFE ≥ ${s.recoveryGoals.life} · current ${Math.round(n(p.health,70))}</div>
+       <div class="cd-goal ${n(p.pain,30)<=s.recoveryGoals.pain?'ok':''}">PAIN ≤ ${s.recoveryGoals.pain} · current ${Math.round(n(p.pain,30))}</div>
+       <div class="cd-goal ${n(p.hydration,60)>=s.recoveryGoals.hydration?'ok':''}">HYDRATION ≥ ${s.recoveryGoals.hydration} · current ${Math.round(n(p.hydration,60))}</div>
+       <div class="cd-goal ${n(p.comfort,55)>=s.recoveryGoals.comfort?'ok':''}">COMFORT ≥ ${s.recoveryGoals.comfort} · current ${Math.round(n(p.comfort,55))}</div>
+      </div>`:''}
+      <div class="cd-path">Treatment path: ${c.path.map(x=>`${done(s,x)?'✓':'○'} ${x.toUpperCase()}`).join(' → ')}</div>
+      ${s.mistakes?`<div class="cd-alert">⚠ ${s.mistakes} out-of-sequence decision${s.mistakes===1?'':'s'} recorded. Mistakes increase stress and reduce trust instead of instantly ending the case.</div>`:''}
+    </div>`;
+   const theater=document.getElementById('vgLivingTheater');
+   if(theater&&theater.parentNode===root)root.insertBefore(el,theater);
+   else root.insertBefore(el,root.firstChild);
+ }
+
+ function deteriorate(){
+   const p=pNow();if(!p)return;
+   const s=state(p);if(s.outcome)return;
+   const now=Date.now(),mins=(now-(s.lastAction||now))/60000;
+   if(mins<2)return;
+   const c=cond(s),sev=c.severity;
+   applyStats(p,{
+     health:-(sev>=3?3:1),
+     pain:sev>=2?2:1,
+     stress:2,
+     hydration:-2
+   });
+   s.lastAction=now;
+   s.history.unshift({at:now,msg:'Patient deteriorated while waiting.'});
+   if(n(p.health,70)<=0){s.outcome='DIED';try{handlePatientDeath?.(p)}catch(e){}}
+   saveCD();saveGame()
+ }
+
+ // Make old transfer buttons obey the director instead of bypassing it.
+ window.transferActiveToSurgery=function(){
+   const p=pNow();if(!p)return;
+   const s=state(p);
+   if(stageFor(p,s)!=='PROCEDURE'){try{rewardToast?.('⚠ Surgery is not the current required stage.')}catch(e){};return}
+   try{gotoTab?.('surgery')}catch(e){}
+   renderDirector()
+ };
+ window.transferActiveToRecovery=function(){
+   const p=pNow();if(!p)return;
+   const s=state(p);
+   if(stageFor(p,s)!=='RECOVERY'){try{rewardToast?.('⚠ Finish the required treatment/procedure first.')}catch(e){};return}
+   try{gotoTab?.('recovery')}catch(e){}
+   renderDirector()
+ };
+
+ load();
+ if(typeof render==='function'){const old=render;render=function(){const r=old.apply(this,arguments);setTimeout(renderDirector,0);return r}}
+ document.addEventListener('DOMContentLoaded',()=>setTimeout(renderDirector,2300));
+ setInterval(()=>{deteriorate();renderDirector()},15000);
 })();
 </script>
 
