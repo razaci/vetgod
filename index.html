@@ -10953,5 +10953,137 @@ if(typeof render==='function'){
 }
 </script>
 
+
+<style id="recoverySingleColumnFixCss">
+/* Recovery must read top-to-bottom on mobile and desktop. */
+#recovery .grid,
+#recovery .recovery-grid,
+#recovery .recovery-actions,
+#recovery .recovery-controls,
+#recovery .patient-actions,
+#recovery .care-actions,
+#recovery .action-grid,
+#recovery .button-grid,
+#recovery .two-col,
+#recovery .two-column,
+#recovery .cols-2{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  gap:7px !important;
+  width:100% !important;
+}
+
+/* Recovery patient cards should not split their content beside controls. */
+#recovery .card,
+#recovery .patient-card,
+#recovery .recovery-card,
+#recovery .recovery-patient,
+#recovery .case-card{
+  grid-template-columns:1fr !important;
+  max-width:100% !important;
+  min-width:0 !important;
+}
+
+/* Force direct children that were used as left/right columns to stack. */
+#recovery .card > div,
+#recovery .patient-card > div,
+#recovery .recovery-card > div,
+#recovery .recovery-patient > div,
+#recovery .case-card > div{
+  min-width:0 !important;
+  max-width:100% !important;
+}
+
+/* Recovery visuals stay above the text instead of occupying a competing column. */
+#recovery img{
+  max-width:100% !important;
+}
+#recovery .patient-visual,
+#recovery .recovery-visual,
+#recovery .pet-visual,
+#recovery .case-visual{
+  width:100% !important;
+  max-width:100% !important;
+}
+
+/* Recovery buttons become clean stacked rows. */
+#recovery button{
+  max-width:100% !important;
+}
+#recovery .recovery-actions button,
+#recovery .recovery-controls button,
+#recovery .patient-actions button,
+#recovery .care-actions button,
+#recovery .action-grid button,
+#recovery .button-grid button{
+  width:100% !important;
+  min-height:44px !important;
+  height:auto !important;
+  padding:10px 12px !important;
+  margin:0 !important;
+  white-space:normal !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
+  line-height:1.25 !important;
+}
+
+/* Pain & Comfort panel inside Recovery also becomes strictly vertical. */
+#recovery .pain-comfort-system,
+#recovery .pain-comfort-system .pc-grid,
+#recovery .pain-comfort-system .pc-actions,
+#recovery .pain-comfort-system .protocol-grid{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  width:100% !important;
+  gap:7px !important;
+}
+#recovery .pain-comfort-system button{
+  width:100% !important;
+}
+
+/* Any inline/flex recovery sections should wrap vertically rather than overlap. */
+#recovery .flex,
+#recovery .row,
+#recovery .split,
+#recovery .side-by-side{
+  flex-direction:column !important;
+  align-items:stretch !important;
+}
+</style>
+
+<script id="recoverySingleColumnRuntimeFix">
+function enforceRecoverySingleColumn(){
+  const root=document.getElementById('recovery');
+  if(!root)return;
+
+  // Catch generated two-column layouts even when legacy class names differ.
+  root.querySelectorAll('[style*="grid-template-columns"],[style*="display:grid"],[style*="display: grid"]').forEach(el=>{
+    const s=(el.getAttribute('style')||'').toLowerCase();
+    if(s.includes('grid-template-columns')){
+      el.style.setProperty('grid-template-columns','1fr','important');
+    }
+  });
+
+  // Catch generated horizontal flex groups used for patient/actions.
+  root.querySelectorAll('[style*="display:flex"],[style*="display: flex"]').forEach(el=>{
+    const txt=(el.textContent||'').toLowerCase();
+    if(txt.includes('recovery') || txt.includes('pain') || txt.includes('comfort') || txt.includes('patient')){
+      el.style.setProperty('flex-direction','column','important');
+      el.style.setProperty('align-items','stretch','important');
+    }
+  });
+}
+document.addEventListener('DOMContentLoaded',()=>setTimeout(enforceRecoverySingleColumn,500));
+document.addEventListener('click',()=>setTimeout(enforceRecoverySingleColumn,0),true);
+if(typeof render==='function'){
+  const _recoveryColRender=render;
+  render=function(){
+    const r=_recoveryColRender.apply(this,arguments);
+    setTimeout(enforceRecoverySingleColumn,0);
+    return r;
+  };
+}
+</script>
+
 </body>
 </html>
