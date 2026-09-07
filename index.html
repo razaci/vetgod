@@ -15700,8 +15700,9 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(renderCC,1700));
 <script id="treatZonePaidFlashJs">
 (function(){
  const COSTS={
-   head:55, neck:60, chest:90, abdomen:85, leftLeg:70, rightLeg:70,
-   leftRear:70, rightRear:70, skin:45, wound:65, pain:50, general:40
+   head:5,neck:5,chest:5,abdomen:5,
+   leftLeg:5,rightLeg:5,leftRear:5,rightRear:5,
+   skin:5,wound:5,pain:5,general:5
  };
  let flashTimer=null;
 
@@ -15727,7 +15728,7 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(renderCC,1700));
    if(s.includes('pain'))return'pain';
    return'general'
  }
- function costFor(label){return COSTS[zoneKey(label)]||COSTS.general}
+ function costFor(label){return 5}
  function ensureFlash(){
    let f=document.getElementById('tzSpendFlash');
    if(!f){
@@ -16746,6 +16747,28 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(renderCC,1700));
  window.VetCaseBrain={state:()=>{const p=pNow();return p?st(p):null},condition:()=>{const p=pNow();return p?condition(p):null},releaseReady:()=>{const p=pNow();return p?releaseReady(p,st(p)):false},render:renderBrain};
  document.addEventListener('DOMContentLoaded',()=>setTimeout(renderBrain,2800));
  setInterval(()=>{tick();renderBrain()},12000);
+})();
+</script>
+
+
+<script id="treatZoneFiveDollarConsistencyGuard">
+(function(){
+ function fix(){
+   document.querySelectorAll('.tz-cost-badge').forEach(x=>x.textContent='$5');
+   document.querySelectorAll('button').forEach(b=>{
+     const t=(b.textContent||'').toLowerCase();
+     if(!(t.includes('treat zone')||t.includes('treat area')||t.includes('treat selected')))return;
+     const badge=b.querySelector('.afford-badge');
+     if(badge){
+       let bal=0;
+       try{bal=Math.max(0,Math.round(Number(G?.credits??G?.funds??0)||0))}catch(e){}
+       badge.textContent=bal>=5?`✓ You have $${bal}`:`⚠ Need $${5-bal} more`;
+       badge.className='afford-badge '+(bal>=5?'afford-ok':'afford-bad');
+     }
+   });
+ }
+ document.addEventListener('DOMContentLoaded',()=>setTimeout(fix,1800));
+ setInterval(fix,3000);
 })();
 </script>
 
