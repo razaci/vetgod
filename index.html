@@ -20073,5 +20073,170 @@ button,input,select,textarea{
 })();
 </script>
 
+
+<style id="singleMyPetsHomeCss">
+/* Hide duplicate legacy My Pets home blocks if they survive old renderers */
+#mypet .vg-legacy-mypets-home,
+#mypet [data-legacy-mypets-home="1"],
+#mypet #myPetsLifeSim,
+#mypet #myPetsOfflineHome,
+#mypet #myPetFullLifeSim,
+#mypet #myPetLivingWorld,
+#mypet #offlineMyPetsIntake,
+#mypet #canonicalPetRoster:not(:first-of-type){
+  display:none!important;
+}
+</style>
+
+<script id="singleMyPetsHomeJs">
+(function(){
+  const ROOT_ID='mypet';
+  const CANONICAL_IDS=['myPetsHardResetHub','mylivinghome','myPetCommandCenter','canonicalPetRoster'];
+  let rendering=false;
+
+  function root(){return document.getElementById(ROOT_ID)}
+  function normalizeOwnedOrder(){
+    try{
+      const stores=[
+        'vetGodHardOwnedPetsV1',
+        'vetGodCanonicalOwnedPetsV1',
+        'vetGodMyPetsRosterV1'
+      ];
+      let master=null;
+      for(const k of stores){
+        try{
+          const x=JSON.parse(localStorage.getItem(k)||'null');
+          const arr=x?.pets||x?.owned||x;
+          if(Array.isArray(arr) && arr.length){
+            master=arr;
+            break;
+          }
+        }catch(e){}
+      }
+      if(!master)return;
+
+      const order=master.map(p=>String(p?.id??p?.caseId??p?.name??''));
+      ['pets','myPets','companions'].forEach(k=>{
+        if(!Array.isArray(G?.[k]))return;
+        G[k].sort((a,b)=>{
+          const ia=order.indexOf(String(a?.id??a?.caseId??a?.name??''));
+          const ib=order.indexOf(String(b?.id??b?.caseId??b?.name??''));
+          return (ia<0?9999:ia)-(ib<0?9999:ib);
+        });
+      });
+    }catch(e){}
+  }
+
+  function removeDuplicateHomes(){
+    const r=root(); if(!r)return;
+    const seen=new Set();
+
+    // Remove exact duplicate canonical blocks.
+    CANONICAL_IDS.forEach(id=>{
+      const nodes=[...r.querySelectorAll('#'+id)];
+      nodes.forEach((n,i)=>{ if(i>0)n.remove() });
+    });
+
+    // Remove blocks that look like legacy duplicate "working home" panels.
+    const candidates=[...r.querySelectorAll('section,article,div')];
+    candidates.forEach(el=>{
+      const txt=(el.textContent||'').trim().toLowerCase();
+      if(!txt)return;
+      const isWorkingHome =
+        txt.includes('my pets · working home') ||
+        txt.includes('my pets working home') ||
+        txt.includes('living home') ||
+        txt.includes('offline') && txt.includes('my pet');
+      if(!isWorkingHome)return;
+
+      // Keep only the first top-level useful home panel.
+      const signature=txt.slice(0,120);
+      if(seen.has(signature)){
+        if(!CANONICAL_IDS.includes(el.id)) el.remove();
+      }else{
+        seen.add(signature);
+      }
+    });
+  }
+
+  function suppressLegacyRenderers(){
+    const names=[
+      'renderMyPetFullLifeSim',
+      'renderMyPetLivingWorld',
+      'renderMyPetsLifeSim',
+      'renderOfflineMyPetsIntake',
+      'renderCanonicalMyPetsIntake'
+    ];
+    names.forEach(name=>{
+      try{
+        const fn=window[name];
+        if(typeof fn==='function' && !fn.__singleHomeSuppressed){
+          const noop=function(){ return null };
+          noop.__singleHomeSuppressed=true;
+          window[name]=noop;
+        }
+      }catch(e){}
+    });
+  }
+
+  function renderCanonical(){
+    if(rendering)return;
+    rendering=true;
+    try{
+      normalizeOwnedOrder();
+      suppressLegacyRenderers();
+
+      // Prefer the newest interactive home.
+      try{ window.MyPetsLivingHome?.render?.() }catch(e){}
+      try{
+        if(typeof window.renderHub==='function') window.renderHub();
+      }catch(e){}
+      try{
+        if(typeof window.renderCanonicalPetRoster==='function') window.renderCanonicalPetRoster();
+      }catch(e){}
+
+      removeDuplicateHomes();
+    }finally{
+      setTimeout(()=>rendering=false,60);
+    }
+  }
+  window.renderSingleMyPetsHome=renderCanonical;
+
+  // Prevent old scripts from repeatedly adding competing homes.
+  const observer=new MutationObserver(()=>{
+    const r=root(); if(!r)return;
+    if(rendering)return;
+    setTimeout(()=>{
+      removeDuplicateHomes();
+      suppressLegacyRenderers();
+    },0);
+  });
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    setTimeout(()=>{
+      const r=root();
+      if(r)observer.observe(r,{childList:true,subtree:true});
+      renderCanonical();
+    },2200);
+  });
+
+  // Only refresh on deliberate My Pet interactions, not on constant timers.
+  document.addEventListener('click',e=>{
+    const b=e.target?.closest?.('button');
+    if(!b)return;
+    const r=root();
+    if(r && r.contains(b)){
+      setTimeout(renderCanonical,120);
+    }
+  },true);
+
+  // Periodic cleanup only; no full rerender to avoid popping.
+  setInterval(()=>{
+    suppressLegacyRenderers();
+    removeDuplicateHomes();
+  },5000);
+})();
+</script>
+
 </body>
 </html>
