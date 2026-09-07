@@ -12652,5 +12652,230 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(renderMyPetsPopulati
 })();
 </script>
 
+
+<script id="clinicPatientFlowFixJs">
+(function(){
+  const FLOW_KEY='vetGodPatientFlowV1';
+  let FLOW={history:[]};
+
+  function flowLoad(){
+    try{
+      const x=JSON.parse(localStorage.getItem(FLOW_KEY)||'null');
+      if(x)FLOW=Object.assign(FLOW,x);
+    }catch(e){}
+    FLOW.history=FLOW.history||[];
+  }
+  function flowSave(){try{localStorage.setItem(FLOW_KEY,JSON.stringify(FLOW))}catch(e){}}
+
+  function ensureArray(name){
+    if(!Array.isArray(G[name]))G[name]=[];
+    return G[name];
+  }
+  function pid(p){return String(p?.id||p?.name||'')}
+  function same(a,b){return pid(a)===pid(b)}
+
+  function removeFromArea(area,p){
+    const arr=ensureArray(area);
+    G[area]=arr.filter(x=>!same(x,p));
+  }
+  function addToArea(area,p){
+    const arr=ensureArray(area);
+    if(!arr.some(x=>same(x,p)))arr.push(p);
+  }
+  function removeFromHospitalAreas(p){
+    ['clinic','surgery','recovery','care'].forEach(a=>removeFromArea(a,p));
+  }
+  function logTransfer(p,from,to,reason){
+    FLOW.history.unshift({
+      id:pid(p),name:p?.name||'Patient',from,to,reason:reason||'',at:Date.now()
+    });
+    FLOW.history=FLOW.history.slice(0,60);
+    flowSave();
+  }
+  function activePatient(){
+    try{
+      if(typeof resolveTreatPatient==='function' && CASECHAIN?.activeId){
+        const p=resolveTreatPatient(CASECHAIN.activeId);
+        if(p)return p;
+      }
+    }catch(e){}
+    const pools=['clinic','surgery','recovery','care'];
+    for(const a of pools){
+      const arr=ensureArray(a);
+      if(arr[0])return arr[0];
+    }
+    return null;
+  }
+
+  function movePatient(p,to,reason){
+    if(!p)return false;
+    const from = ensureArray('surgery').some(x=>same(x,p)) ? 'surgery'
+      : ensureArray('recovery').some(x=>same(x,p)) ? 'recovery'
+      : ensureArray('clinic').some(x=>same(x,p)) ? 'clinic'
+      : ensureArray('care').some(x=>same(x,p)) ? 'care'
+      : 'unknown';
+
+    removeFromHospitalAreas(p);
+    addToArea(to,p);
+
+    p.currentArea=to;
+    p.zone=to;
+    p.stage=to;
+    p.lastTransferAt=Date.now();
+
+    if(to==='surgery'){
+      p.needsSurgery=true;
+      p.surgeryComplete=false;
+      p.recoveryComplete=false;
+      p.treatmentComplete=true;
+    }
+    if(to==='recovery'){
+      p.needsSurgery=false;
+      p.surgeryComplete = from==='surgery' ? true : !!p.surgeryComplete;
+      p.treatmentComplete=true;
+      p.recoveryComplete=false;
+    }
+
+    logTransfer(p,from,to,reason);
+    try{save?.()}catch(e){}
+    try{
+      rewardToast?.(`🏥 ${p.name||'Patient'} moved ${from.toUpperCase()} → ${to.toUpperCase()}`);
+      fxFlash?.('good');
+    }catch(e){}
+    return true;
+  }
+
+  window.flowClinicToSurgery=function(p){
+    p=p||activePatient();
+    if(!p)return false;
+    return movePatient(p,'surgery','Treatment complete — surgery required');
+  };
+
+  window.flowClinicToRecovery=function(p){
+    p=p||activePatient();
+    if(!p)return false;
+    return movePatient(p,'recovery','Treatment complete — no surgery required');
+  };
+
+  window.flowSurgeryToRecovery=function(p){
+    p=p||activePatient();
+    if(!p)return false;
+    p.surgeryComplete=true;
+    return movePatient(p,'recovery','Surgery complete');
+  };
+
+  function needsSurgery(p){
+    if(!p)return false;
+    if(p.needsSurgery===true || p.surgeryRequired===true || p.requiresSurgery===true)return true;
+    const vals=[
+      p.plan,p.treatmentPlan,p.recommendedTreatment,p.procedure,p.caseType,p.diagnosis,p.nextStep
+    ].filter(Boolean).join(' ').toLowerCase();
+    return /\bsurger|operation|operate|fracture repair|foreign body|spay|neuter|mass removal|wound repair\b/.test(vals);
+  }
+
+  function clinicTreatmentDone(p){
+    if(!p)return;
+    if(needsSurgery(p))flowClinicToSurgery(p);
+    else flowClinicToRecovery(p);
+    try{render?.()}catch(e){}
+  }
+
+  function surgeryDone(p){
+    if(!p)return;
+    flowSurgeryToRecovery(p);
+    try{render?.()}catch(e){}
+  }
+
+  window.completeClinicTreatmentAndMove=function(p){clinicTreatmentDone(p||activePatient())};
+  window.completeSurgeryAndMove=function(p){surgeryDone(p||activePatient())};
+
+  /* Catch existing game buttons without depending on old handler names. */
+  document.addEventListener('click',function(e){
+    const b=e.target.closest('button');
+    if(!b)return;
+    const t=(b.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();
+
+    if(
+      t.includes('complete treatment') ||
+      t.includes('treatment complete') ||
+      t.includes('finish treatment') ||
+      t.includes('send to surgery') ||
+      t.includes('move to surgery') ||
+      t.includes('send to recovery') ||
+      t.includes('move to recovery')
+    ){
+      const p=activePatient();
+      if(!p)return;
+      setTimeout(()=>{
+        if(t.includes('surgery'))flowClinicToSurgery(p);
+        else if(t.includes('recovery'))flowClinicToRecovery(p);
+        else clinicTreatmentDone(p);
+        try{render?.()}catch(err){}
+      },0);
+    }
+
+    if(
+      t.includes('complete surgery') ||
+      t.includes('surgery complete') ||
+      t.includes('finish surgery') ||
+      t.includes('close surgery') ||
+      t.includes('send to recovery')
+    ){
+      const inSurgery=ensureArray('surgery')[0];
+      if(!inSurgery)return;
+      setTimeout(()=>{
+        flowSurgeryToRecovery(inSurgery);
+        try{render?.()}catch(err){}
+      },0);
+    }
+  },true);
+
+  /* Repair duplicate placement on load: prefer furthest-progressed area. */
+  function repairDuplicates(){
+    const all=[];
+    ['clinic','surgery','recovery','care'].forEach(a=>{
+      ensureArray(a).forEach(p=>all.push(p));
+    });
+    const ids=[...new Set(all.map(pid).filter(Boolean))];
+    ids.forEach(id=>{
+      const locations=['recovery','surgery','clinic','care'].filter(a=>ensureArray(a).some(p=>pid(p)===id));
+      if(locations.length<=1)return;
+      const keep=locations[0]; // progress priority above
+      ['clinic','surgery','recovery','care'].forEach(a=>{
+        if(a!==keep)G[a]=ensureArray(a).filter(p=>pid(p)!==id);
+      });
+      const p=ensureArray(keep).find(x=>pid(x)===id);
+      if(p){p.currentArea=keep;p.zone=keep;p.stage=keep}
+    });
+    try{save?.()}catch(e){}
+  }
+
+  function renderFlowStatus(){
+    const root=document.getElementById('clinic');if(!root)return;
+    document.getElementById('patientFlowStatus')?.remove();
+    const p=ensureArray('clinic')[0];
+    if(!p)return;
+    const box=document.createElement('div');
+    box.id='patientFlowStatus';
+    box.style.cssText='margin:8px 0;padding:8px;border:1px solid #46584e;border-radius:10px;background:#0d1410;color:#bac8c0;font-size:8px';
+    box.innerHTML=`<b style="color:#fff">PATIENT FLOW</b><br>${p.name||'Patient'} is currently in CLINIC.<br>${needsSurgery(p)?'Next destination after treatment: <b>SURGERY</b>.':'Next destination after treatment: <b>RECOVERY</b>.'}`;
+    root.insertBefore(box,root.firstChild);
+  }
+
+  flowLoad();
+  repairDuplicates();
+
+  if(typeof render==='function'){
+    const _flowRender=render;
+    render=function(){
+      const r=_flowRender.apply(this,arguments);
+      setTimeout(renderFlowStatus,0);
+      return r;
+    };
+  }
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(renderFlowStatus,1700));
+})();
+</script>
+
 </body>
 </html>
