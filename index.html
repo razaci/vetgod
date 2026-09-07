@@ -17433,5 +17433,219 @@ button,input,select,textarea{
 })();
 </script>
 
+
+<style id="oneTapCardPlayCss">
+#vgOneTapPlay{margin:8px 0 14px;padding:10px;border:1px solid rgba(143,255,226,.38);border-radius:12px;background:linear-gradient(180deg,#0b1512,#08100e);color:#fff}
+.vgot-head{font-size:8.2px;font-weight:1000;letter-spacing:.08em}.vgot-sub{font-size:5.2px;line-height:1.45;opacity:.8;margin-top:4px}
+.vgot-card{margin-top:8px;padding:10px;border:1px solid rgba(140,255,227,.32);border-radius:11px;background:linear-gradient(180deg,#13211c,#0d1714);min-height:118px;display:flex;flex-direction:column;justify-content:space-between}
+.vgot-card b{font-size:7px}.vgot-card span{display:block;font-size:5.3px;line-height:1.5;opacity:.86;margin-top:4px}
+.vgot-card button,.vgot-choice{width:100%;min-height:48px;margin-top:9px;border-radius:9px;font-size:6px;font-weight:1000;padding:7px;background:#173128;color:#fff;border:1px solid rgba(151,255,229,.42)}
+.vgot-choicegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}.vgot-choice{min-height:88px;margin-top:0}
+.vgot-choice small{display:block;font-size:4.6px;opacity:.72;margin-top:4px}.vgot-result{margin-top:8px;padding:9px;border:1px solid rgba(255,230,170,.28);border-radius:9px;background:#18150f}
+.vgot-result b{font-size:6.4px}.vgot-result span{font-size:5.2px;display:block;margin-top:3px}.vgot-strip{display:flex;gap:4px;overflow-x:auto;margin-top:7px}.vgot-chip{flex:0 0 auto;padding:4px 6px;border:1px solid #37453d;border-radius:999px;font-size:4.8px;opacity:.82}
+@media(max-width:520px){.vgot-choicegrid{grid-template-columns:1fr}}
+</style>
+<script id="oneTapCardPlayJs">
+(function(){
+const K='vetGodOneTapCardPlayV1';let S={lastResult:null,combo:0,plays:0};
+function load(){try{Object.assign(S,JSON.parse(localStorage.getItem(K)||'{}'))}catch(e){}}function saveS(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}}
+function A(n){try{if(!Array.isArray(G?.[n]))G[n]=[];return G[n]}catch(e){return[]}}function I(p){return String(p?.id??p?.caseId??p?.name??'')}
+function T(m){try{rewardToast?.(m)}catch(e){};try{window.toast?.(m)}catch(e){}}function active(){for(const n of ['clinic','care','surgery','recovery']){const a=A(n);if(a.length)return{p:a[0],area:n}}return null}
+function plan(p){const t=String(p?.condition||p?.diagnosis||'').toLowerCase();if(/fracture|broken/.test(t))return[['STABILIZE LIMB','Secure the injury.'],['PAIN CONTROL','Get pain under control.'],['REPAIR FRACTURE','Resolve the main injury.'],['FINAL CHECK','Confirm the repair.']];if(/foreign|object/.test(t))return[['LOCALIZE OBJECT','Confirm the exact area.'],['PREP PATIENT','Prepare for removal.'],['REMOVE OBJECT','Resolve the cause.'],['CLEAN & CLOSE','Finish treatment.']];if(/wound|laceration|bleed/.test(t))return[['CONTROL BLEEDING','Stop the bleeding.'],['CLEAN WOUND','Prepare the wound.'],['CLOSE WOUND','Complete definitive care.'],['BANDAGE & CHECK','Confirm stability.']];return[['STABILIZE','Get the patient safe.'],['TREAT PRIMARY PROBLEM','Resolve the main condition.'],['SUPPORT & COMFORT','Finish supportive care.'],['FINAL CHECK','Confirm completion.']]}
+function st(p){return p.oneTap||(p.oneTap={index:0,done:false})}
+window.vgotPlayTreatment=function(){const a=active();if(!a)return;const p=a.p,s=st(p),q=plan(p),x=q[s.index];if(!x||s.done)return;p.health=Math.min(100,Number(p.health||60)+8);p.pain=Math.max(0,Number(p.pain||40)-7);p.stress=Math.max(0,Number(p.stress||35)-5);s.index++;S.plays++;S.combo++;S.lastResult='✓ '+x[0]+' COMPLETE';try{addLifeEvent?.(p,x[0]+' completed.')}catch(e){}if(s.index>=q.length){s.done=true;p.treatmentComplete=p.problemResolved=p.caseComplete=true;S.lastResult='🏆 '+(p.name||'PATIENT')+' SUCCESSFULLY TREATED';try{G.money=Number(G.money||G.cash||0)+125}catch(e){}}T(S.lastResult);saveS();try{save?.()}catch(e){};render()}
+window.vgotSurgery=function(){const p=A('surgery')[0];if(!p)return;const q=['SCAN','ANESTHESIA','INCISION','REPAIR','CONTROL BLEEDING','CLOSE','WAKE','TRANSFER'];p.oneTapSurgery=p.oneTapSurgery||0;const x=q[p.oneTapSurgery];if(!x)return;p.oneTapSurgery++;S.plays++;S.combo++;S.lastResult='⚕ '+x+' COMPLETE';if(p.oneTapSurgery>=q.length){p.surgeryComplete=true;p.postOp=true;try{window.vgMovePatient?.(p,'Surgery','Recovery','One-tap surgery completed')}catch(e){}S.lastResult='❤️ '+(p.name||'PATIENT')+' MOVED TO RECOVERY'}T(S.lastResult);saveS();try{save?.()}catch(e){};render()}
+window.vgotRecovery=function(){const p=A('recovery')[0];if(!p)return;const q=['CHECK PAIN','WATER','FOOD','COMFORT','WALK','FINAL CHECK'];p.oneTapRecovery=p.oneTapRecovery||0;const x=q[p.oneTapRecovery];if(!x)return;if(x==='CHECK PAIN')p.pain=Math.max(0,Number(p.pain||35)-10);if(x==='WATER'){p.hydration=Math.min(100,Number(p.hydration||55)+25);p.drank=true}if(x==='FOOD'){p.hunger=Math.max(0,Number(p.hunger||40)-25);p.ate=true}if(x==='COMFORT'){p.stress=Math.max(0,Number(p.stress||35)-15);p.comfort=Math.min(100,Number(p.comfort||55)+15)}if(x==='WALK')p.mobilityChecked=true;p.oneTapRecovery++;S.plays++;S.combo++;if(p.oneTapRecovery>=q.length){p.recoveryCleared=true;S.lastResult='🏠 '+(p.name||'PATIENT')+' READY FOR HOME'}else S.lastResult='❤️ '+x+' COMPLETE';T(S.lastResult);saveS();try{save?.()}catch(e){};render()}
+window.vgotChoose=function(d){const a=active();if(!a)return;const p=a.p;if(d==='home'){p.sentHome=p.discharged=true;p.outcome='SENT HOME';try{['clinic','care','surgery','recovery'].forEach(n=>G[n]=A(n).filter(x=>I(x)!==I(p)))}catch(e){}S.lastResult='🏠 '+(p.name||'PATIENT')+' SENT HOME'}else if(d==='recovery'){try{window.vgMovePatient?.(p,a.area==='care'?'Care':'Clinic','Recovery','One-tap treatment complete')}catch(e){}S.lastResult='❤️ '+(p.name||'PATIENT')+' SENT TO RECOVERY'}else if(d==='surgery'){p.needsSurgery=p.surgeryRequired=true;try{window.vgMovePatient?.(p,a.area==='care'?'Care':'Clinic','Surgery','One-tap escalation')}catch(e){}S.lastResult='⚕ '+(p.name||'PATIENT')+' SENT TO SURGERY'}else if(d==='pet'){try{window.myPetsAdoptNow?.(I(p))}catch(e){}S.lastResult='🐾 '+(p.name||'PATIENT')+' IS NOW YOUR PET'}S.combo++;T(S.lastResult);saveS();try{save?.()}catch(e){};render()}
+window.vgotNextCase=function(){try{window.vglhdNextStory?.()}catch(e){}setTimeout(render,100)}
+function html(){const a=active();if(!a)return'<div class="vgot-card"><div><b>🏥 HOSPITAL READY</b><span>No active patient. Start the next story case with one press.</span></div><button onclick="vgotNextCase()">🚑 START NEXT CASE</button></div>';const p=a.p;if(a.area==='surgery'){const q=['SCAN','ANESTHESIA','INCISION','REPAIR','CONTROL BLEEDING','CLOSE','WAKE','TRANSFER'],x=q[Number(p.oneTapSurgery||0)]||'TRANSFER';return`<div class="vgot-card"><div><b>⚕ SURGERY · ${x}</b><span>${p.name||'Patient'} is on the table. One press advances the operation.</span></div><button onclick="vgotSurgery()">▶ DO ${x}</button></div>`}if(a.area==='recovery'){const q=['CHECK PAIN','WATER','FOOD','COMFORT','WALK','FINAL CHECK'],x=q[Number(p.oneTapRecovery||0)]||'FINAL CHECK';return`<div class="vgot-card"><div><b>❤️ RECOVERY · ${x}</b><span>${p.name||'Patient'} is recovering. One press completes the next care step.</span></div><button onclick="vgotRecovery()">▶ DO ${x}</button></div>${p.recoveryCleared?'<div class="vgot-choicegrid"><button class="vgot-choice" onclick="vgotChoose(\'home\')">🏠 SEND HOME<small>Finish the case</small></button><button class="vgot-choice" onclick="vgotChoose(\'pet\')">🐾 KEEP AS MY PET<small>Adopt this animal</small></button><button class="vgot-choice" onclick="vgotNextCase()">🚑 NEXT CASE<small>Start another rescue</small></button></div>':''}`}if(p.treatmentComplete||p.problemResolved){return`<div class="vgot-card"><div><b>🏆 ${p.name||'PATIENT'} TREATED</b><span>The problem is solved. Choose the ending with one press.</span></div><div class="vgot-choicegrid"><button class="vgot-choice" onclick="vgotChoose('home')">🏠 SEND HOME<small>Complete case</small></button><button class="vgot-choice" onclick="vgotChoose('recovery')">❤️ RECOVERY<small>Continue aftercare</small></button><button class="vgot-choice" onclick="vgotChoose('pet')">🐾 MY PET<small>Adopt animal</small></button></div></div>`}const s=st(p),q=plan(p),x=q[s.index]||q[q.length-1];return`<div class="vgot-card"><div><b>❤️ ${p.name||'PATIENT'} · ${x[0]}</b><span>${x[1]}<br>${p.condition||p.diagnosis||'Active case'}</span></div><button onclick="vgotPlayTreatment()">▶ DO ${x[0]}</button></div><div class="vgot-choicegrid"><button class="vgot-choice" onclick="vgotChoose('surgery')">⚕ SURGERY<small>Escalate immediately</small></button><button class="vgot-choice" onclick="vglhdPetAssist()">🐾 MY PET HELP<small>Calm patient</small></button><button class="vgot-choice" onclick="vglhdDelegate('recovery')">👩‍⚕️ DELEGATE<small>Staff support</small></button></div>`}
+function render(){const r=document.getElementById('clinic')||document.getElementById('care')||document.body;document.getElementById('vgOneTapPlay')?.remove();const b=document.createElement('section');b.id='vgOneTapPlay';b.innerHTML=`<div class="vgot-head">🎴 ONE-TAP PLAY</div><div class="vgot-sub">Big card → press once → result → next card.</div><div class="vgot-strip"><div class="vgot-chip">COMBO ${S.combo}</div><div class="vgot-chip">PLAYS ${S.plays}</div><div class="vgot-chip">${active()?.area?.toUpperCase()||'READY'}</div></div>${html()}${S.lastResult?`<div class="vgot-result"><b>LAST RESULT</b><span>${S.lastResult}</span></div>`:''}`;r.prepend(b)}
+window.VetGodOneTapPlay={render,state:S};load();document.addEventListener('DOMContentLoaded',()=>setTimeout(render,2200));document.addEventListener('click',e=>{if(e.target?.closest?.('button'))setTimeout(render,120)},true)
+})();
+</script>
+
+
+
+<style id="vetGodCardRevealUpgradeCss">
+#vgOneTapPlay{position:relative;isolation:isolate;overflow:hidden}
+#vgOneTapPlay.vgcr-pop{animation:vgcrPop .34s ease}
+#vgOneTapPlay .vgcr-patientbar{display:grid;grid-template-columns:1.15fr .85fr;gap:10px;margin:10px 0}
+#vgOneTapPlay .vgcr-identity,#vgOneTapPlay .vgcr-vitals{
+  border:1px solid rgba(91,208,168,.28);border-radius:14px;padding:11px;
+  background:linear-gradient(180deg,rgba(18,42,35,.92),rgba(7,18,15,.92));
+  box-shadow:inset 0 0 24px rgba(47,216,169,.04)
+}
+#vgOneTapPlay .vgcr-name{font-weight:950;font-size:17px;letter-spacing:.03em}
+#vgOneTapPlay .vgcr-meta{font-size:11px;opacity:.72;margin-top:3px;line-height:1.35}
+#vgOneTapPlay .vgcr-danger{display:inline-flex;margin-top:7px;padding:4px 8px;border-radius:999px;
+  font-size:10px;font-weight:900;border:1px solid rgba(255,210,107,.32);background:rgba(89,60,11,.22)}
+#vgOneTapPlay .vgcr-row{display:grid;grid-template-columns:42px 1fr 31px;align-items:center;gap:6px;margin:5px 0;font-size:10px}
+#vgOneTapPlay .vgcr-track{height:7px;background:#12231e;border-radius:99px;overflow:hidden;border:1px solid rgba(255,255,255,.05)}
+#vgOneTapPlay .vgcr-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#326b5a,#63dfb7);transition:width .25s ease}
+#vgOneTapPlay .vgcr-cardnum{font-size:10px;letter-spacing:.13em;opacity:.55;text-transform:uppercase;margin-bottom:5px}
+#vgOneTapPlay .vgot-card{position:relative;overflow:hidden}
+#vgOneTapPlay .vgot-card:before{
+  content:"";position:absolute;inset:-55% -20%;pointer-events:none;
+  background:linear-gradient(115deg,transparent 36%,rgba(120,255,214,.08) 47%,rgba(255,255,255,.16) 50%,rgba(120,255,214,.08) 53%,transparent 64%);
+  transform:translateX(-68%);animation:vgcrSweep 5.5s linear infinite
+}
+#vgOneTapPlay button{position:relative;overflow:hidden}
+#vgOneTapPlay button.vgcr-pressed{animation:vgcrPress .22s ease}
+#vgOneTapPlay .vgcr-receipt{margin-top:10px;padding:13px;border-radius:14px;border:1px solid rgba(240,207,122,.42);
+ background:linear-gradient(180deg,rgba(72,57,19,.24),rgba(16,14,7,.94))}
+#vgOneTapPlay .vgcr-receipt h4{margin:0 0 7px;font-size:13px;letter-spacing:.08em;color:#ffe7a0}
+#vgOneTapPlay .vgcr-receipt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+#vgOneTapPlay .vgcr-box{padding:8px;border-radius:10px;background:#0b1512;border:1px solid rgba(255,255,255,.08);text-align:center}
+#vgOneTapPlay .vgcr-box b{display:block;font-size:15px}.vgcr-box span{font-size:9px;opacity:.65}
+#vgOneTapPlay .vgcr-callout{margin:8px 0 0;font-size:11px;line-height:1.4;color:#d8eee5}
+#vgOneTapPlay .vgot-result.vgcr-flash{animation:vgcrResult .48s ease}
+@keyframes vgcrPop{0%{transform:scale(.992);filter:brightness(.78)}55%{transform:scale(1.006);filter:brightness(1.16)}100%{transform:none;filter:none}}
+@keyframes vgcrPress{0%{transform:scale(1)}50%{transform:scale(.97)}100%{transform:scale(1)}}
+@keyframes vgcrResult{0%{box-shadow:0 0 0 rgba(240,207,122,0)}45%{box-shadow:0 0 30px rgba(240,207,122,.30)}100%{box-shadow:none}}
+@keyframes vgcrSweep{0%{transform:translateX(-70%)}100%{transform:translateX(70%)}}
+@media(max-width:620px){
+  #vgOneTapPlay .vgcr-patientbar{grid-template-columns:1fr}
+  #vgOneTapPlay .vgcr-receipt-grid{grid-template-columns:repeat(3,1fr)}
+}
+</style>
+
+<script id="vetGodCardRevealUpgradeJs">
+(function(){
+'use strict';
+const ROOT='vgOneTapPlay';
+let lastSig='';
+
+function G0(){try{return window.G||window.game||window.state||{}}catch(e){return{}}}
+function arrays(){
+  const g=G0(), out=[];
+  ['clinic','care','surgery','recovery','activeCases','cases'].forEach(k=>{
+    const a=g[k]; if(Array.isArray(a)) out.push([k,a]);
+  });
+  return out;
+}
+function patient(){
+  for(const [area,a] of arrays()){
+    const p=a.find(x=>x && !x.discharged && !x.sentHome);
+    if(p)return {area,p};
+  }
+  return null;
+}
+function n(v,d){v=Number(v);return Number.isFinite(v)?v:d}
+function clamp(v){return Math.max(0,Math.min(100,Math.round(v)))}
+function personality(p){
+  return String(p.personality||p.temperament||p.behavior||'UNKNOWN').toUpperCase();
+}
+function urgency(p){
+  const h=n(p.health,60), pain=n(p.pain,40), stress=n(p.stress,35);
+  if(h<35||pain>80)return 'CRITICAL';
+  if(h<55||pain>60||stress>70)return 'HIGH RISK';
+  if(h<75||pain>35)return 'GUARDED';
+  return 'STABLE';
+}
+function bar(label,val,invert){
+  const raw=clamp(val), shown=invert?100-raw:raw;
+  return `<div class="vgcr-row"><span>${label}</span><div class="vgcr-track"><div class="vgcr-fill" style="width:${shown}%"></div></div><b>${raw}</b></div>`;
+}
+function stepNumber(root){
+  const t=(root.querySelector('.vgot-card b')?.textContent||'').trim();
+  const matches=[
+    'STABILIZE','PAIN CONTROL','REPAIR','FINAL CHECK','LOCALIZE','PREP PATIENT','REMOVE',
+    'CLEAN','CONTROL BLEEDING','CLOSE','BANDAGE','SCAN','ANESTHESIA','INCISION','WAKE',
+    'CHECK PAIN','WATER','FOOD','COMFORT','WALK'
+  ];
+  let idx=matches.findIndex(x=>t.includes(x));
+  return idx<0 ? 'ACTIVE CARD' : `ACTION CARD ${String((idx%8)+1).padStart(2,'0')}`;
+}
+function narrative(p,area){
+  const name=p.name||'This patient', cond=p.condition||p.diagnosis||p.problem||'active medical problem';
+  const pers=personality(p);
+  let extra='';
+  if(pers.includes('NERVOUS')||pers.includes('REACTIVE')) extra=' Keep movements calm; stress changes the risk profile.';
+  else if(pers.includes('STOIC')) extra=' Pain may be understated, so watch the numbers instead of behavior.';
+  else if(pers.includes('SOCIAL')) extra=' Reassurance and companion support can improve cooperation.';
+  if(area==='surgery') return `${name} is committed to the surgical pathway for ${cond}.${extra}`;
+  if(area==='recovery') return `${name} is post-treatment. Finish aftercare and prove release readiness.${extra}`;
+  return `${name} is being actively treated for ${cond}.${extra}`;
+}
+function receipt(p,area){
+  if(!(p.treatmentComplete||p.problemResolved||p.caseComplete||p.recoveryCleared||p.surgeryComplete)) return '';
+  const reward = p.treatmentComplete||p.problemResolved ? 125 : 0;
+  return `<div class="vgcr-receipt">
+    <h4>🏆 CASE PROGRESS RECEIPT</h4>
+    <div class="vgcr-receipt-grid">
+      <div class="vgcr-box"><b>${clamp(n(p.health,60))}</b><span>LIFE</span></div>
+      <div class="vgcr-box"><b>${clamp(n(p.pain,40))}</b><span>PAIN</span></div>
+      <div class="vgcr-box"><b>${reward?'+$'+reward:'READY'}</b><span>${reward?'CASE REWARD':'STATUS'}</span></div>
+    </div>
+    <div class="vgcr-callout">${p.recoveryCleared?'Release pathway unlocked. Pick the patient’s ending below.':p.surgeryComplete?'Operation complete. Continue the patient through recovery.':'Primary medical problem resolved. The case now needs a destination, not more exams.'}</div>
+  </div>`;
+}
+function decorate(){
+  const root=document.getElementById(ROOT); if(!root)return;
+  const a=patient();
+  const sig=JSON.stringify(a?[
+    a.area,a.p.id,a.p.name,a.p.health,a.p.pain,a.p.stress,a.p.treatmentComplete,
+    a.p.problemResolved,a.p.caseComplete,a.p.recoveryCleared,a.p.surgeryComplete,
+    root.querySelector('.vgot-card b')?.textContent||''
+  ]:['none',root.textContent.slice(0,80)]);
+  if(root.dataset.vgcrSig===sig)return;
+  root.dataset.vgcrSig=sig;
+
+  root.querySelectorAll('.vgcr-patientbar,.vgcr-receipt,.vgcr-cardnum').forEach(x=>x.remove());
+
+  if(a){
+    const p=a.p;
+    const head=root.querySelector('.vgot-strip');
+    if(head){
+      head.insertAdjacentHTML('afterend',`<div class="vgcr-patientbar">
+        <div class="vgcr-identity">
+          <div class="vgcr-name">🐾 ${p.name||'PATIENT'}</div>
+          <div class="vgcr-meta">${String(p.species||p.animal||'Animal').toUpperCase()} · ${String(p.condition||p.diagnosis||'ACTIVE CASE').toUpperCase()} · ${personality(p)}</div>
+          <div class="vgcr-danger">${urgency(p)} · ${String(a.area).toUpperCase()}</div>
+          <div class="vgcr-callout">${narrative(p,a.area)}</div>
+        </div>
+        <div class="vgcr-vitals">
+          ${bar('LIFE',n(p.health,60),false)}
+          ${bar('PAIN',n(p.pain,40),true)}
+          ${bar('CALM',n(p.stress,35),true)}
+        </div>
+      </div>`);
+    }
+    const card=root.querySelector('.vgot-card');
+    if(card) card.insertAdjacentHTML('afterbegin',`<div class="vgcr-cardnum">${stepNumber(root)}</div>`);
+    const r=receipt(p,a.area);
+    if(r){
+      const result=root.querySelector('.vgot-result');
+      if(result) result.insertAdjacentHTML('beforebegin',r);
+      else root.insertAdjacentHTML('beforeend',r);
+    }
+  }
+
+  root.classList.remove('vgcr-pop');
+  void root.offsetWidth;
+  root.classList.add('vgcr-pop');
+  const res=root.querySelector('.vgot-result');
+  if(res){res.classList.remove('vgcr-flash');void res.offsetWidth;res.classList.add('vgcr-flash')}
+}
+function clickFx(e){
+  const b=e.target.closest('#'+ROOT+' button'); if(!b)return;
+  b.classList.add('vgcr-pressed');
+  setTimeout(()=>b.classList.remove('vgcr-pressed'),240);
+}
+document.addEventListener('click',clickFx,true);
+
+const mo=new MutationObserver(()=>requestAnimationFrame(decorate));
+function boot(){
+  decorate();
+  const body=document.body;
+  if(body)mo.observe(body,{childList:true,subtree:true});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
+else boot();
+
+window.VetGodCardRevealUpgrade={decorate};
+})();
+</script>
+
 </body>
 </html>
