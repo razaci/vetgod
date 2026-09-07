@@ -1286,6 +1286,40 @@ body{font-size:14px;line-height:1.45}
 @media(max-width:560px){.companion-grid{grid-template-columns:1fr}}
 </style>
 
+
+<style id="endlessClinicCampaignCss">
+#campaignDirector{
+ margin:8px 0 10px;padding:11px;border-radius:16px;border:1px solid #806a42;
+ background:linear-gradient(180deg,#2b2215,#151712);box-shadow:0 8px 28px #0005
+}
+#campaignDirector .camp-head{display:flex;justify-content:space-between;gap:8px;align-items:center}
+#campaignDirector h2{margin:0;color:#ffe0a0;font-size:17px}
+#campaignDirector .camp-level{font-size:10px;font-weight:1000;color:#dce9df;background:#15221b;border:1px solid #3f604d;border-radius:999px;padding:6px 8px}
+#campaignDirector .camp-objective{margin-top:8px;padding:10px;border-radius:11px;background:#101714;border:1px solid #465348}
+#campaignDirector .camp-objective b{display:block;color:#fff;font-size:13px}
+#campaignDirector .camp-objective p{margin:4px 0 0;color:#b8c4bc;font-size:10px;line-height:1.4}
+#campaignDirector button{width:100%;min-height:50px;margin-top:8px;border-radius:11px;border:1px solid #8c7445;background:#493817;color:#ffe2a0;font-size:12px;font-weight:1000}
+#campaignDirector button.secondary{border-color:#43564c;background:#17231d;color:#e5f0e9}
+.camp-bars{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:8px}
+.camp-mini{padding:6px 3px;text-align:center;border-radius:8px;background:#111914;border:1px solid #34453b}
+.camp-mini b{display:block;font-size:12px}.camp-mini span{display:block;color:#9eada4;font-size:8px}
+.campaignScore{padding:10px;border-radius:12px;background:#121a17;border:1px solid #405149;font-size:10px;line-height:1.55}
+.campaignUpgradeGrid,.campaignStaffGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.campaignUpgradeGrid button,.campaignStaffGrid button{min-height:55px;border-radius:10px;border:1px solid #46594f;background:#18231e;color:#e9f2ec;font-size:10px;font-weight:900;padding:7px}
+.campaignEvent{padding:10px;border-radius:11px;background:#291817;border:1px solid #754842;color:#ffd5cd;font-size:10px;line-height:1.45}
+#campaignOverlay{position:fixed;inset:0;z-index:250;background:#05080bed;display:none;align-items:center;justify-content:center;padding:12px}
+#campaignOverlay.show{display:flex}
+#campaignOverlay .inner{width:min(680px,100%);max-height:90vh;overflow:auto;background:#111925;border:1px solid #536173;border-radius:18px;padding:13px}
+#campaignOverlay h2{margin:0 0 8px;color:#ffe0a0}
+#campaignOverlay button{width:100%;min-height:49px;margin-top:7px;border-radius:10px;border:1px solid #55657a;background:#1b2735;color:white;font-weight:900}
+@media(max-width:520px){.camp-bars{grid-template-columns:repeat(2,1fr)}.campaignUpgradeGrid,.campaignStaffGrid{grid-template-columns:1fr}}
+</style>
+
+
+<style id="careOpenActiveCaseFixCss">
+.care-active-case-fix{margin:8px 0;padding:9px;border-radius:11px;border:1px solid #4b5c53;background:#121b17;color:#dfe9e2;font-size:10px}
+.care-active-case-fix b{color:#ffe0a2}
+</style>
 </head>
 <body style="--fxsheet:url('data:image/png;base64,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')"><div id="fxLayer"></div>
 
@@ -8256,6 +8290,337 @@ if(typeof renderMyPet==='function'){
 }
 
 document.addEventListener('DOMContentLoaded',()=>setTimeout(renderCompanionCareCenter,1400));
+</script>
+
+
+<div id="campaignOverlay"><div class="inner" id="campaignOverlayInner"></div></div>
+
+
+<script id="endlessClinicCampaignJs">
+/* ===== ENDLESS CLINIC CAMPAIGN ===== */
+const CAMPAIGN_KEY='vetGodEndlessCampaignV1';
+const CAMP_DEPTS=[
+ ['diagnostics','Diagnostics',250],['recovery','Recovery Ward',325],['surgery','Surgery Theater',450],
+ ['companion','Companion Center',300],['nursery','Nursery',375],['exotics','Exotic Medicine',500],
+ ['emergency','Emergency Department',650],['rehab','Rehabilitation',700],['sanctuary','Sanctuary',900]
+];
+const CAMP_STAFF=[
+ ['nurse','Veterinary Nurse',120,18],['tech','Surgical Tech',180,26],['behavior','Behaviorist',160,22],
+ ['rehab','Rehab Specialist',190,25],['reception','Receptionist',130,16]
+];
+const CAMP_EVENTS=[
+ {name:'NORMAL CLINIC DAY',icon:'🏥',desc:'Steady case load. Build resources and reputation.',mult:1},
+ {name:'WINTER RESCUE',icon:'🌨️',desc:'Cold and dehydrated patients fill Recovery.',mult:1.15},
+ {name:'SHELTER EMERGENCY',icon:'🐾',desc:'Extra animals arrive and the Mercy Fund matters.',mult:1.2},
+ {name:'POWER FAILURE',icon:'⚡',desc:'Surgery and Recovery supplies cost more today.',mult:1.25},
+ {name:'CRITICAL ARRIVAL',icon:'🚑',desc:'One patient begins the day in serious condition.',mult:1.3},
+ {name:'MERCY DAY',icon:'💔',desc:'Owners have fewer resources. Clinic decisions matter.',mult:1.2}
+];
+
+function campLoad(){
+ try{return Object.assign({
+  day:1,clinicXP:0,clinicLevel:1,casesTarget:3,casesDone:0,saved:0,lost:0,perfect:0,
+  dayEarned:0,daySpent:0,event:null,upgrades:{},staff:{},discoveries:{},dayActive:false,
+  prestige:0,lastPatient:null,scoreHistory:[]
+ },JSON.parse(localStorage.getItem(CAMPAIGN_KEY)||'{}'))}catch(e){return {day:1,clinicXP:0,clinicLevel:1,casesTarget:3,casesDone:0,saved:0,lost:0,perfect:0,dayEarned:0,daySpent:0,event:null,upgrades:{},staff:{},discoveries:{},dayActive:false,prestige:0,lastPatient:null,scoreHistory:[]}}
+}
+let CAMP=campLoad();
+function campSave(){localStorage.setItem(CAMPAIGN_KEY,JSON.stringify(CAMP))}
+function campLevel(){
+ CAMP.clinicLevel=Math.min(10,1+Math.floor((+CAMP.clinicXP||0)/500));
+ return CAMP.clinicLevel;
+}
+function campName(){
+ return ['','SMALL RESCUE CLINIC','COMMUNITY CLINIC','RECOVERY HOSPITAL','SURGICAL CENTER','COMPANION HOSPITAL','EXOTIC MEDICINE CENTER','EMERGENCY HOSPITAL','REGIONAL VET CENTER','SANCTUARY HOSPITAL','VET GOD HOSPITAL'][campLevel()];
+}
+function campAllPatients(){
+ const lists=[G.clinic,G.surgery,G.recovery,G.care,G.pets].filter(Array.isArray);
+ const out=[],seen=new Set();lists.forEach(list=>list.forEach(p=>{if(p&&!seen.has(p.id)){seen.add(p.id);out.push(p)}}));
+ return out;
+}
+function campCurrentPatient(){
+ let p=null;
+ try{p=currentHospitalCase?.()}catch(e){}
+ if(!p) p=campAllPatients().find(x=>!x.campaignResolved && !(G.pets||[]).some(q=>q.id===x.id));
+ return p||null;
+}
+function campStage(p){
+ if(!p)return'none';
+ if((G.clinic||[]).some(x=>x.id===p.id))return'clinic';
+ if((G.surgery||[]).some(x=>x.id===p.id))return'surgery';
+ if((G.recovery||[]).some(x=>x.id===p.id))return'recovery';
+ if((G.care||[]).some(x=>x.id===p.id))return'care';
+ if((G.pets||[]).some(x=>x.id===p.id))return'pet';
+ return p.caseStage||p.stage||'clinic';
+}
+function campObjective(){
+ if(!CAMP.dayActive)return {title:`DAY ${CAMP.day} IS READY`,text:'Start the clinic day. New objectives, rewards and an event will be generated.',label:'☀️ START CLINIC DAY',action:'start'};
+ if(CAMP.casesDone>=CAMP.casesTarget)return {title:'CLINIC DAY COMPLETE',text:'All scheduled cases are resolved. Review the scorecard and improve the hospital.',label:'🌙 END CLINIC DAY',action:'end'};
+ const p=campCurrentPatient();
+ if(!p)return {title:`CASE ${CAMP.casesDone+1} OF ${CAMP.casesTarget}`,text:'Bring the next animal into the hospital and begin the case.',label:'🚑 NEXT PATIENT',action:'next'};
+ const st=campStage(p),name=p.name||p.callName||'Patient';
+ if(st==='clinic'){
+   if(!p.scanned&&!p.examined)return {title:`${name} NEEDS ASSESSMENT`,text:'Start by examining the patient. The result determines what happens next.',label:'🔎 AUTO SCAN',action:'scan',p};
+   if(!p.diagnosed)return {title:`${name} NEEDS A DIAGNOSIS`,text:'Identify the problem before committing resources.',label:'🧪 DIAGNOSE',action:'diagnose',p};
+   if(!p.stabilized)return {title:`${name} IS NOT STABLE`,text:'Stabilization costs resources, but delaying care has consequences.',label:'❤️ STABILIZE',action:'stabilize',p};
+   if(!p.treated)return {title:`${name} NEEDS TREATMENT`,text:'Funding and supplies determine whether treatment can proceed.',label:'💉 TREAT',action:'treat',p};
+   return {title:`MOVE ${name} FORWARD`,text:p.surgeryNeeded?'The patient is treated enough to enter Surgery.':'The patient can move into Recovery.',label:p.surgeryNeeded?'🔪 ENTER SURGERY':'🛏 SEND TO RECOVERY',action:'forward',p};
+ }
+ if(st==='surgery'){
+   if(!p.surgeryPrepped&&!p.prepped)return {title:`PREPARE ${name} FOR SURGERY`,text:'The theater is waiting.',label:'🧼 PREP SURGERY',action:'prep',p};
+   if(!p.operated&&!p.surgeryDone)return {title:`OPERATE ON ${name}`,text:'Complete the major procedure before closure.',label:'⚕️ OPERATE',action:'operate',p};
+   if(!p.closed)return {title:`CLOSE & STABILIZE`,text:'Finish the operation and prepare for Recovery.',label:'🩹 CLOSE',action:'close',p};
+   return {title:`${name} NEEDS RECOVERY`,text:'The operation is complete.',label:'🛏 SEND TO RECOVERY',action:'surgForward',p};
+ }
+ if(st==='recovery'){
+   if((+p.pain||0)>35)return {title:`CONTROL ${name}'S PAIN`,text:'Comfort and pain control improve the recovery score.',label:'💗 PAIN CARE',action:'pain',p};
+   if((+p.hydration||0)<65)return {title:`${name} NEEDS FLUIDS`,text:'Restore hydration before discharge.',label:'💧 FLUIDS',action:'fluids',p};
+   return {title:`${name} CAN LEAVE RECOVERY`,text:'Move the patient into continuing care.',label:'🐾 GRADUATE TO CARE',action:'recoverForward',p};
+ }
+ if(st==='care'){
+   return {title:`CHOOSE ${name}'S FUTURE`,text:'Adoption, companion care, home placement or completion resolves this case.',label:'🏡 RESOLVE CASE',action:'resolve',p};
+ }
+ return {title:'NEXT CASE',text:'Continue the hospital day.',label:'🚑 NEXT PATIENT',action:'next'};
+}
+function campAct(kind,id){
+ const p=id!=null?(byAnyId?.(id)||findAnyPatient?.(id)||campAllPatients().find(x=>x.id==id)):campCurrentPatient();
+ try{
+  if(kind==='start')return campStartDay();
+  if(kind==='end')return campEndDay();
+  if(kind==='next')return campNextPatient();
+  if(!p)return campNextPatient();
+  if(kind==='scan'){if(typeof clinicAct==='function')clinicAct(p.id,'scan');else revealDiagnostic?.(p.id,'exam')}
+  if(kind==='diagnose')clinicAct?.(p.id,'diagnose');
+  if(kind==='stabilize')clinicAct?.(p.id,'stabilize');
+  if(kind==='treat')clinicAct?.(p.id,'treat');
+  if(kind==='forward'){
+    if(p.surgeryNeeded) flowPutPatient?.(p,'surgery'); else flowPutPatient?.(p,'recovery');
+    try{gotoTab?.(p.surgeryNeeded?'surgery':'recovery')}catch(e){}
+  }
+  if(kind==='prep')surgAct?.(p.id,'prep');
+  if(kind==='operate')surgAct?.(p.id,'operate');
+  if(kind==='close')surgAct?.(p.id,'close');
+  if(kind==='surgForward'){flowPutPatient?.(p,'recovery');gotoTab?.('recovery')}
+  if(kind==='pain')recoveryCareAction?.(p.id,'pain');
+  if(kind==='fluids')recoveryCareAction?.(p.id,'water');
+  if(kind==='recoverForward'){flowPutPatient?.(p,'care');gotoTab?.('care')}
+  if(kind==='resolve')campResolveCase(p);
+ }catch(e){console.warn('campaign action',e)}
+ setTimeout(()=>{renderCampaignDirector();campSave()},30);
+}
+function campStartDay(){
+ CAMP.dayActive=true;CAMP.casesDone=0;CAMP.saved=0;CAMP.lost=0;CAMP.perfect=0;CAMP.dayEarned=0;CAMP.daySpent=0;
+ CAMP.casesTarget=Math.min(6,3+Math.floor((CAMP.day-1)/5));
+ CAMP.event=CAMP_EVENTS[(CAMP.day*7+CAMP.clinicLevel*3)%CAMP_EVENTS.length];
+ if(CAMP.event.name==='CRITICAL ARRIVAL'){
+   const p=campCurrentPatient();if(p){p.health=Math.min(+p.health||100,45);p.stress=Math.max(+p.stress||0,65)}
+ }
+ try{rewardToast?.(`${CAMP.event.icon} DAY ${CAMP.day}: ${CAMP.event.name}`)}catch(e){}
+ campSave();renderCampaignDirector();
+}
+function campNextPatient(){
+ let p=campAllPatients().find(x=>!x.campaignResolved && !(G.pets||[]).some(q=>q.id===x.id));
+ if(p){try{gotoTab?.(campStage(p)==='none'?'clinic':campStage(p))}catch(e){};renderCampaignDirector();return}
+ /* Reuse the game's own intake/case generators whenever available. */
+ const generators=['newPatient','generatePatient','addRandomPatient','newCase','spawnPatient','createPatient'];
+ for(const fn of generators){if(typeof window[fn]==='function'){try{window[fn]();p=campCurrentPatient();if(p)break}catch(e){}}}
+ if(!p){
+   try{gotoTab?.('clinic')}catch(e){}
+   try{toast?.('Use Intake to bring in the next animal. The campaign will pick it up automatically.')}catch(e){}
+ }
+ renderCampaignDirector();
+}
+function campResolveCase(p){
+ if(!p||p.campaignResolved)return;
+ p.campaignResolved=true;
+ const quality=Math.round(((+p.health||70)+(+p.trust||40)+(100-(+p.stress||30)))/3);
+ const reward=80+quality*2+CAMP.clinicLevel*15;
+ G.funds=(+G.funds||0)+reward;G.rep=(+G.rep||0)+(quality>=70?2:1);
+ CAMP.dayEarned+=reward;CAMP.casesDone++;CAMP.saved++;CAMP.clinicXP+=100+quality;
+ if(quality>=85){CAMP.perfect++;CAMP.clinicXP+=50}
+ CAMP.discoveries[p.id]=true;
+ try{addLifeEvent?.(p,`Clinic campaign case completed with quality ${quality}%.`)}catch(e){}
+ try{rewardToast?.(`🏆 CASE COMPLETE +$${reward} · +${100+quality} XP`)}catch(e){}
+ if(CAMP.casesDone<CAMP.casesTarget)setTimeout(campNextPatient,400);
+ renderCampaignDirector();campSave();
+}
+function campEndDay(){
+ const wages=Object.entries(CAMP.staff||{}).reduce((n,[k,v])=>{
+   const s=CAMP_STAFF.find(x=>x[0]===k);return n+(v&&s?s[3]:0)
+ },0);
+ const overhead=35+CAMP.clinicLevel*8+wages;
+ G.funds=Math.max(0,(+G.funds||0)-overhead);CAMP.daySpent+=overhead;
+ CAMP.scoreHistory.unshift({day:CAMP.day,saved:CAMP.saved,perfect:CAMP.perfect,earned:CAMP.dayEarned,spent:CAMP.daySpent,xp:CAMP.clinicXP,event:CAMP.event?.name||''});
+ CAMP.scoreHistory=CAMP.scoreHistory.slice(0,20);
+ const oldLevel=CAMP.clinicLevel;campLevel();
+ campScorecard(overhead,oldLevel<CAMP.clinicLevel);
+ CAMP.day++;CAMP.dayActive=false;CAMP.event=null;campSave();renderCampaignDirector();
+}
+function campScorecard(overhead,leveled){
+ const el=document.getElementById('campaignOverlay'),box=document.getElementById('campaignOverlayInner');if(!el||!box)return;
+ el.classList.add('show');
+ box.innerHTML=`<h2>🌙 CLINIC DAY COMPLETE</h2>
+ <div class="campaignScore">
+ Animals saved: <b>${CAMP.saved}/${CAMP.casesTarget}</b><br>
+ Perfect recoveries: <b>${CAMP.perfect}</b><br>
+ Money earned: <b>$${CAMP.dayEarned}</b><br>
+ Daily overhead + staff: <b>-$${overhead}</b><br>
+ Clinic XP: <b>${CAMP.clinicXP}</b><br>
+ 300-animal discoveries: <b>${Object.keys(CAMP.discoveries).length}/300</b><br>
+ ${leveled?`<br>⭐ <b>HOSPITAL LEVEL UP — ${campName()}</b>`:''}
+ </div>
+ <button onclick="campOpenUpgrades()">🏥 IMPROVE HOSPITAL</button>
+ <button onclick="campCloseOverlay();campStartDay()">☀️ START NEXT CLINIC DAY</button>`;
+}
+function campCloseOverlay(){document.getElementById('campaignOverlay')?.classList.remove('show')}
+function campOpenUpgrades(){
+ const box=document.getElementById('campaignOverlayInner');if(!box)return;
+ box.innerHTML=`<h2>🏥 HOSPITAL PROGRESSION</h2><p style="font-size:10px;color:#aeb9c8">Spend clinic funds on permanent departments and staff. Upgrades make the hospital itself your persistent RPG character.</p>
+ <h3>DEPARTMENTS</h3><div class="campaignUpgradeGrid">${CAMP_DEPTS.map(([k,n,c])=>`<button onclick="campBuyUpgrade('${k}',${c})">${CAMP.upgrades[k]?'✓ ':''}${n}<br>${CAMP.upgrades[k]?'BUILT':'$'+c}</button>`).join('')}</div>
+ <h3>STAFF</h3><div class="campaignStaffGrid">${CAMP_STAFF.map(([k,n,c,w])=>`<button onclick="campHire('${k}',${c})">${CAMP.staff[k]?'✓ ':''}${n}<br>${CAMP.staff[k]?'HIRED · $'+w+'/day':'HIRE $'+c}</button>`).join('')}</div>
+ <button onclick="campCloseOverlay()">RETURN TO CLINIC</button>`;
+}
+function campBuyUpgrade(k,c){
+ if(CAMP.upgrades[k])return;
+ if((+G.funds||0)<c){toast?.(`Need $${c}.`);return}
+ G.funds-=c;CAMP.upgrades[k]=true;CAMP.clinicXP+=50;campSave();campOpenUpgrades();try{rewardToast?.('🏥 DEPARTMENT BUILT')}catch(e){}
+}
+function campHire(k,c){
+ if(CAMP.staff[k])return;
+ if((+G.funds||0)<c){toast?.(`Need $${c}.`);return}
+ G.funds-=c;CAMP.staff[k]=true;CAMP.clinicXP+=25;campSave();campOpenUpgrades();try{rewardToast?.('👩‍⚕️ STAFF HIRED')}catch(e){}
+}
+function renderCampaignDirector(){
+ let host=document.getElementById('campaignDirector');
+ if(!host){
+   host=document.createElement('div');host.id='campaignDirector';
+   const app=document.querySelector('.app,#app,main,body');
+   const nav=document.querySelector('.topnav,.tabs,.nav');
+   if(nav&&nav.parentNode)nav.parentNode.insertBefore(host,nav.nextSibling);
+   else if(app&&app!==document.body)app.insertBefore(host,app.firstChild);
+   else document.body.insertBefore(host,document.body.firstChild);
+ }
+ const o=campObjective(),p=o.p,evt=CAMP.event;
+ host.innerHTML=`<div class="camp-head"><div><h2>🎯 CLINIC DIRECTOR</h2><div style="font-size:9px;color:#b8c3bb">DAY ${CAMP.day} · ${campName()}</div></div><div class="camp-level">LV ${campLevel()} · ${CAMP.clinicXP} XP</div></div>
+ <div class="camp-bars">
+  <div class="camp-mini"><b>${CAMP.casesDone}/${CAMP.casesTarget}</b><span>CASES</span></div>
+  <div class="camp-mini"><b>$${Math.round(+G.funds||0)}</b><span>FUNDS</span></div>
+  <div class="camp-mini"><b>${Object.keys(CAMP.discoveries).length}/300</b><span>DISCOVERED</span></div>
+  <div class="camp-mini"><b>${CAMP.perfect}</b><span>PERFECT</span></div>
+ </div>
+ ${evt?`<div class="campaignEvent">${evt.icon} <b>${evt.name}</b> — ${evt.desc}</div>`:''}
+ <div class="camp-objective"><b>${o.title}</b><p>${o.text}${p?`<br>${p.name||'Patient'} · Health ${Math.round(+p.health||0)} · Trust ${Math.round(+p.trust||0)}`:''}</p></div>
+ <button onclick="campAct('${o.action}',${p?.id??'null'})">${o.label}</button>
+ <button class="secondary" onclick="document.getElementById('campaignOverlay').classList.add('show');campOpenUpgrades()">🏥 HOSPITAL UPGRADES & STAFF</button>`;
+}
+if(typeof render==='function'){
+ const _campaignRender=render;
+ render=function(){const r=_campaignRender.apply(this,arguments);setTimeout(renderCampaignDirector,0);return r}
+}
+document.addEventListener('DOMContentLoaded',()=>setTimeout(renderCampaignDirector,1200));
+</script>
+
+
+<script id="careOpenActiveCaseFixJs">
+function careActivePatient(){
+  let p=null;
+  try{
+    if(typeof currentHospitalCase==='function'){
+      const c=currentHospitalCase();
+      if(c && (G.care||[]).some(x=>x.id===c.id)) p=c;
+    }
+  }catch(e){}
+  if(!p){
+    const ids=[G.focus,G.focusPatientId,G.activePatientId,G.selectedPatientId,G.currentPatientId].filter(v=>v!=null);
+    for(const id of ids){
+      const hit=(G.care||[]).find(x=>x.id==id);
+      if(hit){p=hit;break}
+    }
+  }
+  return p || (G.care||[]).find(x=>!x.campaignResolved) || (G.care||[])[0] || null;
+}
+
+function openCareActiveCase(id){
+  const p=(id!=null ? (G.care||[]).find(x=>x.id==id) : null) || careActivePatient();
+  if(!p){
+    try{toast?.('No active Care patient yet. Move a patient from Recovery into Care first.')}catch(e){}
+    return;
+  }
+
+  G.focus=p.id;
+  G.focusPatientId=p.id;
+  G.activePatientId=p.id;
+  G.selectedPatientId=p.id;
+  G.currentPatientId=p.id;
+
+  let opened=false;
+  try{if(typeof openPatientStory==='function'){openPatientStory(p.id);opened=true}}catch(e){}
+  if(!opened)try{if(typeof openAnimalContact==='function'){openAnimalContact(p.id);opened=true}}catch(e){}
+  if(!opened)try{if(typeof openCase==='function'){openCase(p.id);opened=true}}catch(e){}
+
+  if(!opened){
+    try{gotoTab?.('care')}catch(e){}
+    try{showTab?.('care')}catch(e){}
+    try{render?.()}catch(e){}
+    try{renderConnectedHospital?.()}catch(e){}
+    try{toast?.(`Opened ${p.name||p.callName||'active patient'} in Care.`)}catch(e){}
+  }
+
+  setTimeout(()=>{
+    try{
+      const target=document.querySelector(`[data-patient-id="${p.id}"],[data-id="${p.id}"],#patient-${p.id},#case-${p.id}`);
+      if(target) target.scrollIntoView({behavior:'smooth',block:'center'});
+    }catch(e){}
+  },50);
+}
+
+function installCareOpenActiveCaseFix(){
+  const care=document.getElementById('care');
+  if(!care)return;
+
+  let found=false;
+  [...care.querySelectorAll('button,a')].forEach(btn=>{
+    const t=(btn.textContent||'').trim().toLowerCase();
+    if(t.includes('open active case')){
+      found=true;
+      btn.setAttribute('data-care-open-fixed','1');
+      btn.onclick=function(ev){
+        ev?.preventDefault?.();
+        ev?.stopPropagation?.();
+        openCareActiveCase();
+        return false;
+      };
+    }
+  });
+
+  if(!found && !care.querySelector('.care-active-case-fix')){
+    const box=document.createElement('div');
+    box.className='care-active-case-fix';
+    box.innerHTML='<b>ACTIVE CARE CASE</b><br><button style="width:100%;min-height:48px;margin-top:7px;border-radius:10px;border:1px solid #806b45;background:#3a2d16;color:#ffe0a0;font-weight:1000" onclick="openCareActiveCase()">🐾 OPEN ACTIVE CASE</button>';
+    care.insertBefore(box,care.firstChild);
+  }
+}
+
+document.addEventListener('click',function(ev){
+  const el=ev.target.closest?.('button,a');
+  const care=document.getElementById('care');
+  if(!el||!care||!care.contains(el))return;
+  if((el.textContent||'').trim().toLowerCase().includes('open active case')){
+    ev.preventDefault();
+    ev.stopImmediatePropagation();
+    openCareActiveCase();
+  }
+},true);
+
+if(typeof render==='function'){
+  const _careCaseRender=render;
+  render=function(){
+    const r=_careCaseRender.apply(this,arguments);
+    setTimeout(installCareOpenActiveCaseFix,0);
+    return r;
+  };
+}
+document.addEventListener('DOMContentLoaded',()=>setTimeout(installCareOpenActiveCaseFix,1200));
 </script>
 
 </body>
