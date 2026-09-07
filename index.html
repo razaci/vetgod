@@ -13594,5 +13594,434 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{hRender();hWall
 })();
 </script>
 
+
+<script id="lifeHudActionSyncFixJs">
+(function(){
+  function lhsPatient(){
+    try{
+      if(typeof currentHospitalCase==='function'){
+        const p=currentHospitalCase();
+        if(p)return p;
+      }
+    }catch(e){}
+    try{
+      if(typeof CASECHAIN!=='undefined' && CASECHAIN.activeId && typeof resolveTreatPatient==='function'){
+        const p=resolveTreatPatient(CASECHAIN.activeId);
+        if(p)return p;
+      }
+    }catch(e){}
+    for(const a of ['clinic','surgery','recovery','care']){
+      try{
+        const arr=Array.isArray(G?.[a])?G[a]:[];
+        if(arr[0])return arr[0];
+      }catch(e){}
+    }
+    try{
+      if(typeof mprCurrentPet==='function'){
+        const p=mprCurrentPet();
+        if(p)return p;
+      }
+    }catch(e){}
+    return null;
+  }
+
+  function clamp(n){return Math.max(0,Math.min(100,Number(n)||0))}
+  function syncAliases(p){
+    if(!p)return;
+    // Normalize the fields the rest of the game may read.
+    p.health=clamp(p.health ?? p.life ?? 70);
+    p.life=p.health;
+
+    p.pain=clamp(p.pain ?? p.painLevel ?? 30);
+    p.painLevel=p.pain;
+
+    p.comfort=clamp(p.comfort ?? p.comfortLevel ?? 60);
+    p.comfortLevel=p.comfort;
+
+    p.hydration=clamp(p.hydration ?? p.hydrationLevel ?? 65);
+    p.hydrationLevel=p.hydration;
+
+    p.trust=clamp(p.trust ?? 50);
+    p.stress=clamp(p.stress ?? 40);
+  }
+
+  function persist(p){
+    syncAliases(p);
+    try{save?.()}catch(e){}
+    try{
+      if(typeof mprSave==='function')mprSave();
+    }catch(e){}
+    try{
+      if(typeof hSave==='function')hSave();
+    }catch(e){}
+    try{
+      if(typeof render==='function')render();
+    }catch(e){}
+    setTimeout(()=>{
+      try{
+        const hud=document.getElementById('lifeHud');
+        if(hud && typeof lifeHudOpen==='function'){
+          // HUD will rebuild through render wrapper; no-op here besides forcing layout.
+          hud.offsetHeight;
+        }
+      }catch(e){}
+    },40);
+  }
+
+  window.lifeHudDirectAction=function(type){
+    const p=lhsPatient();
+    if(!p)return;
+    syncAliases(p);
+
+    if(type==='fluids'){
+      p.hydration=clamp(p.hydration+22);
+      p.hydrationLevel=p.hydration;
+      p.comfort=clamp(p.comfort+6);
+      p.comfortLevel=p.comfort;
+      p.health=clamp(p.health+3);
+      p.life=p.health;
+      p.stress=clamp(p.stress-4);
+      p.lastFluidAt=Date.now();
+      p.lastTreatment='Fluids';
+    }
+
+    if(type==='support'){
+      p.comfort=clamp(p.comfort+12);
+      p.comfortLevel=p.comfort;
+      p.trust=clamp(p.trust+8);
+      p.stress=clamp(p.stress-10);
+      p.pain=clamp(p.pain-4);
+      p.painLevel=p.pain;
+      p.lastSupportAt=Date.now();
+      p.lastTreatment='Supportive Care';
+    }
+
+    if(type==='comfort'){
+      p.comfort=clamp(p.comfort+14);
+      p.comfortLevel=p.comfort;
+      p.stress=clamp(p.stress-12);
+      p.trust=clamp(p.trust+7);
+      p.pain=clamp(p.pain-5);
+      p.painLevel=p.pain;
+      p.lastTreatment='Comfort Care';
+    }
+
+    if(type==='pain'){
+      p.pain=clamp(p.pain-20);
+      p.painLevel=p.pain;
+      p.comfort=clamp(p.comfort+8);
+      p.comfortLevel=p.comfort;
+      p.stress=clamp(p.stress-6);
+      p.lastPainMedicationAt=Date.now();
+      p.medicated=true;
+      p.lastTreatment='Pain Relief';
+    }
+
+    try{
+      if(typeof addLifeEvent==='function'){
+        const label={
+          fluids:'Fluids given — hydration improved.',
+          support:'Supportive care provided — comfort and trust improved.',
+          comfort:'Comfort care provided — pain and stress reduced.',
+          pain:'Pain medication given — pain reduced.'
+        }[type];
+        if(label)addLifeEvent(p,label);
+      }
+    }catch(e){}
+
+    try{
+      const emoji=type==='fluids'?'💧':type==='pain'?'💊':'❤️';
+      rewardToast?.(`${emoji} ${p.name||'Patient'} updated · LIFE ${Math.round(p.health)} · PAIN ${Math.round(p.pain)} · COMFORT ${Math.round(p.comfort)} · HYDRATION ${Math.round(p.hydration)}`);
+      fxFlash?.('good');
+    }catch(e){}
+
+    persist(p);
+
+    setTimeout(()=>{
+      // Keep the detail panel open and show the updated numbers.
+      try{
+        if(type==='fluids')lifeHudOpen('hydration');
+        else if(type==='pain')lifeHudOpen('pain');
+        else lifeHudOpen('comfort');
+      }catch(e){}
+    },120);
+  };
+
+  // Override the HUD detail builder so its buttons always use direct synced actions.
+  const oldOpen=window.lifeHudOpen;
+  window.lifeHudOpen=function(type){
+    document.getElementById('lifeHudDetail')?.remove();
+    const p=lhsPatient(); if(!p)return;
+    syncAliases(p);
+
+    const labels={
+      health:['❤️ LIFE / HEALTH',`Life ${Math.round(p.health)}%. Overall survival condition. Treatment, hydration, comfort and recovery can improve this.`],
+      pain:['💊 PAIN',`Pain ${Math.round(p.pain)}. High pain increases stress and reduces comfort and trust.`],
+      comfort:['❤️ COMFORT',`Comfort ${Math.round(p.comfort)}. Comfort improves with pain control, warmth, support, hydration and rest.`],
+      hydration:['💧 HYDRATION',`Hydration ${Math.round(p.hydration)}%. Fluids should raise this immediately.`],
+      meds:['💊 MEDICATIONS',`Pain ${Math.round(p.pain)} · Comfort ${Math.round(p.comfort)}. Medication effects now update the live patient directly.`],
+      food:['🥣 FOOD / INTAKE',`Current patient support status. Feeding remains separate from fluids and comfort care.`]
+    };
+    const [title,desc]=labels[type]||labels.health;
+
+    let actions='';
+    if(type==='pain')actions=`<button onclick="lifeHudDirectAction('pain')">💊 GIVE PAIN RELIEF</button><button onclick="lifeHudDirectAction('comfort')">❤️ COMFORT CARE</button>`;
+    if(type==='comfort')actions=`<button onclick="lifeHudDirectAction('comfort')">❤️ GIVE COMFORT</button><button onclick="lifeHudDirectAction('support')">🤲 SUPPORT</button>`;
+    if(type==='hydration')actions=`<button onclick="lifeHudDirectAction('fluids')">💧 GIVE FLUIDS</button><button onclick="lifeHudDirectAction('support')">🤲 SUPPORT</button>`;
+    if(type==='meds')actions=`<button onclick="lifeHudDirectAction('pain')">💊 PAIN MED</button><button onclick="lifeHudDirectAction('comfort')">❤️ COMFORT CARE</button>`;
+    if(type==='health')actions=`<button onclick="lifeHudDirectAction('support')">🤲 SUPPORT PATIENT</button><button onclick="lifeHudDirectAction('fluids')">💧 GIVE FLUIDS</button>`;
+    if(type==='food')actions=`<button onclick="try{mpsAction?.('feed')}catch(e){};try{render?.()}catch(e){}">🥣 FEED</button><button onclick="lifeHudDirectAction('support')">🤲 SUPPORT</button>`;
+
+    const d=document.createElement('div');
+    d.id='lifeHudDetail';
+    d.className='lifehud-detail';
+    d.innerHTML=`<h3>${title} · ${p.name||'PATIENT'}</h3>
+      <p>${desc}</p>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:7px 0">
+        <div class="lifehud-stat"><b>${Math.round(p.health)}</b>LIFE</div>
+        <div class="lifehud-stat"><b>${Math.round(p.pain)}</b>PAIN</div>
+        <div class="lifehud-stat"><b>${Math.round(p.comfort)}</b>COMFORT</div>
+        <div class="lifehud-stat"><b>${Math.round(p.hydration)}</b>HYDRATION</div>
+      </div>
+      <div class="lifehud-actions">${actions}</div>
+      <button class="lifehud-close" onclick="document.getElementById('lifeHudDetail')?.remove()">CLOSE</button>`;
+    document.body.appendChild(d);
+  };
+
+  // Any older direct buttons that still call pcOpenFixAction for these HUD actions
+  // are intercepted and normalized into the same live patient fields.
+  document.addEventListener('click',function(e){
+    const b=e.target.closest('button');
+    if(!b)return;
+    const t=(b.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();
+    if(t==='give fluids' || t.includes('give fluids')){
+      if(!String(b.getAttribute('onclick')||'').includes('lifeHudDirectAction')){
+        e.preventDefault();e.stopImmediatePropagation();lifeHudDirectAction('fluids');
+      }
+    }
+    if(t==='support' || t.includes('support patient')){
+      if(!String(b.getAttribute('onclick')||'').includes('lifeHudDirectAction')){
+        e.preventDefault();e.stopImmediatePropagation();lifeHudDirectAction('support');
+      }
+    }
+  },true);
+
+  // Repair current patient fields once at load so HUD and care systems agree.
+  document.addEventListener('DOMContentLoaded',()=>{
+    setTimeout(()=>{
+      const p=lhsPatient();
+      if(p){syncAliases(p);persist(p)}
+    },1600);
+  });
+})();
+</script>
+
+
+<script id="lifeHudEconomyFundingJs">
+(function(){
+  const COSTS={
+    fluids:45,
+    support:20,
+    comfort:25,
+    pain:60
+  };
+
+  function econFunds(){
+    try{
+      if(typeof G!=='undefined'){
+        if(Number.isFinite(Number(G.credits)))return Number(G.credits);
+        if(Number.isFinite(Number(G.funds)))return Number(G.funds);
+        if(Number.isFinite(Number(G.money)))return Number(G.money);
+      }
+    }catch(e){}
+    return 0;
+  }
+
+  function econSetFunds(v){
+    v=Math.max(0,Math.round(Number(v)||0));
+    try{
+      if(typeof G!=='undefined'){
+        if('credits' in G)G.credits=v;
+        if('funds' in G)G.funds=v;
+        if('money' in G)G.money=v;
+        if(!('credits' in G)&&!('funds' in G)&&!('money' in G))G.credits=v;
+      }
+    }catch(e){}
+    try{save?.()}catch(e){}
+    try{render?.()}catch(e){}
+    return v;
+  }
+
+  function econToast(msg,type='money'){
+    try{
+      rewardToast?.(msg);
+      if(type==='money')fxFlash?.('money');
+      else if(type==='warn')fxFlash?.('warn');
+    }catch(e){}
+  }
+
+  function econGoFunding(){
+    setTimeout(()=>{
+      try{
+        if(typeof gotoTab==='function')gotoTab('funding');
+        else{
+          const b=[...document.querySelectorAll('button')].find(x=>(x.textContent||'').trim().toLowerCase().includes('funding'));
+          if(b)b.click();
+        }
+      }catch(e){}
+      setTimeout(()=>{
+        try{
+          document.getElementById('funding')?.scrollIntoView({behavior:'smooth',block:'start'});
+        }catch(e){}
+      },100);
+    },250);
+  }
+
+  function econPatient(){
+    try{
+      if(typeof currentHospitalCase==='function'){
+        const p=currentHospitalCase();
+        if(p)return p;
+      }
+    }catch(e){}
+    try{
+      if(typeof CASECHAIN!=='undefined'&&CASECHAIN.activeId&&typeof resolveTreatPatient==='function'){
+        const p=resolveTreatPatient(CASECHAIN.activeId);
+        if(p)return p;
+      }
+    }catch(e){}
+    for(const a of ['clinic','surgery','recovery','care']){
+      try{
+        const arr=Array.isArray(G?.[a])?G[a]:[];
+        if(arr[0])return arr[0];
+      }catch(e){}
+    }
+    return null;
+  }
+
+  function econLabel(type){
+    return {
+      fluids:'IV FLUIDS',
+      support:'SUPPORTIVE CARE',
+      comfort:'COMFORT CARE',
+      pain:'PAIN MEDICATION'
+    }[type]||String(type).toUpperCase();
+  }
+
+  window.lifeHudEconomyAction=function(type){
+    const cost=COSTS[type]||0;
+    const funds=econFunds();
+    const p=econPatient();
+
+    if(funds<cost){
+      econToast(`💸 NOT ENOUGH FUNDING · ${econLabel(type)} costs $${cost} · Available $${funds}. Routing to FUNDING.`, 'warn');
+      try{
+        if(p){
+          p.fundingHold=true;
+          p.fundingNeeded=cost-funds;
+          p.lastFundingBlock=`${econLabel(type)} blocked · needs $${cost-funds} more`;
+          if(typeof addLifeEvent==='function')addLifeEvent(p,`Funding hold: ${econLabel(type)} requires $${cost}, but only $${funds} is available.`);
+        }
+      }catch(e){}
+      try{save?.()}catch(e){}
+      econGoFunding();
+      return;
+    }
+
+    const remaining=econSetFunds(funds-cost);
+
+    econToast(`💵 ${econLabel(type)} · -$${cost} · FUNDING REMAINING $${remaining}`);
+
+    try{
+      if(p){
+        p.totalSpent=Number(p.totalSpent||0)+cost;
+        p.lastCharge={label:econLabel(type),cost,remaining,at:Date.now()};
+        p.fundingHold=false;
+        p.fundingNeeded=0;
+        if(typeof addLifeEvent==='function'){
+          addLifeEvent(p,`${econLabel(type)} provided. Cost $${cost}. Funding remaining $${remaining}.`);
+        }
+      }
+    }catch(e){}
+
+    try{
+      if(typeof lifeHudDirectAction==='function')lifeHudDirectAction(type);
+    }catch(e){}
+
+    try{save?.()}catch(e){}
+
+    if(remaining<=100){
+      econToast(`⚠️ FUNDING LOW · Only $${remaining} remains. Opening FUNDING.`, 'warn');
+      econGoFunding();
+    }
+  };
+
+  // Replace HUD action buttons with economy-aware versions after the existing panel opens.
+  const oldLifeHudOpen=window.lifeHudOpen;
+  if(typeof oldLifeHudOpen==='function'){
+    window.lifeHudOpen=function(type){
+      oldLifeHudOpen(type);
+      setTimeout(()=>{
+        const d=document.getElementById('lifeHudDetail');
+        if(!d)return;
+        [...d.querySelectorAll('button')].forEach(b=>{
+          const t=(b.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();
+          if(t.includes('give fluids')){
+            b.setAttribute('onclick',"lifeHudEconomyAction('fluids')");
+            b.innerHTML=`💧 GIVE FLUIDS · $${COSTS.fluids}`;
+          }else if(t.includes('support')){
+            b.setAttribute('onclick',"lifeHudEconomyAction('support')");
+            b.innerHTML=`🤲 SUPPORT · $${COSTS.support}`;
+          }else if(t.includes('comfort')){
+            b.setAttribute('onclick',"lifeHudEconomyAction('comfort')");
+            b.innerHTML=`❤️ COMFORT CARE · $${COSTS.comfort}`;
+          }else if(t.includes('pain relief')||t.includes('pain med')){
+            b.setAttribute('onclick',"lifeHudEconomyAction('pain')");
+            b.innerHTML=`💊 PAIN MED · $${COSTS.pain}`;
+          }
+        });
+
+        const funds=econFunds();
+        let bar=d.querySelector('.lifehud-econline');
+        if(!bar){
+          bar=document.createElement('div');
+          bar.className='lifehud-econline';
+          bar.style.cssText='margin:7px 0;padding:7px;border:1px solid #594f43;border-radius:8px;background:#17150f;color:#ded3b3;font-size:7px;font-weight:900';
+          const p=d.querySelector('p');
+          if(p)p.insertAdjacentElement('afterend',bar);
+          else d.prepend(bar);
+        }
+        bar.textContent=`💵 ACTIVE FUNDING: $${Math.round(funds)} · Treatments charge the case immediately.`;
+      },0);
+    };
+  }
+
+  // Put the current balance visibly into the sticky LIFE MONITOR.
+  function econRenderHudBalance(){
+    const hud=document.getElementById('lifeHud');
+    if(!hud)return;
+    hud.querySelector('.lifehud-funding-pill')?.remove();
+    const row=hud.querySelector('.lifehud-secondary');
+    if(!row)return;
+    const pill=document.createElement('button');
+    pill.className='lifehud-pill lifehud-funding-pill';
+    pill.textContent=`💵 FUNDING · $${Math.round(econFunds())}`;
+    pill.onclick=()=>econGoFunding();
+    row.insertBefore(pill,row.firstChild);
+  }
+
+  if(typeof render==='function'){
+    const _econRender=render;
+    render=function(){
+      const r=_econRender.apply(this,arguments);
+      setTimeout(econRenderHudBalance,0);
+      return r;
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(econRenderHudBalance,1700));
+})();
+</script>
+
 </body>
 </html>
