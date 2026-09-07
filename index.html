@@ -12502,5 +12502,155 @@ if(typeof render==='function'){
 document.addEventListener('DOMContentLoaded',()=>setTimeout(renderMyPetsPopulation,1800));
 </script>
 
+
+<script id="painComfortOpenFixJs">
+(function(){
+  function pcFindCurrentPatient(){
+    try{
+      if(typeof mprCurrentPet==='function'){
+        const p=mprCurrentPet();
+        if(p)return p;
+      }
+    }catch(e){}
+    try{
+      if(typeof mpsPet==='function'){
+        const p=mpsPet();
+        if(p)return p;
+      }
+    }catch(e){}
+    try{
+      if(typeof CASECHAIN!=='undefined' && CASECHAIN.activeId && typeof resolveTreatPatient==='function'){
+        const p=resolveTreatPatient(CASECHAIN.activeId);
+        if(p)return p;
+      }
+    }catch(e){}
+    const pools=[G?.care,G?.recovery,G?.clinic,G?.surgery].filter(Array.isArray);
+    for(const arr of pools){
+      if(arr[0])return arr[0];
+    }
+    return null;
+  }
+
+  function pcEnsureFullPanel(){
+    const p=pcFindCurrentPatient();
+    const root=document.getElementById('care')||document.getElementById('recovery')||document.getElementById('clinic');
+    if(!root)return null;
+
+    let panel=document.getElementById('painComfortFullPanel');
+    if(!panel){
+      panel=document.createElement('div');
+      panel.id='painComfortFullPanel';
+      panel.style.margin='10px 0';
+      panel.style.padding='10px';
+      panel.style.border='1px solid #52665b';
+      panel.style.borderRadius='12px';
+      panel.style.background='#0e1511';
+      root.insertBefore(panel,root.firstChild);
+    }
+
+    if(!p){
+      panel.innerHTML='<b style="color:#fff">PAIN & COMFORT CARE</b><div style="margin-top:6px;color:#aab7b0;font-size:8px">No active pet or patient is available.</div>';
+      return panel;
+    }
+
+    try{
+      if(typeof ensurePainComfort==='function')ensurePainComfort(p);
+    }catch(e){}
+
+    const pain=Number(p.pain??p.painLevel??40);
+    const comfort=Number(p.comfort??50);
+    const stress=Number(p.stress??50);
+    const trust=Number(p.trust??50);
+    const hydration=Number(p.hydration??60);
+
+    panel.innerHTML=`
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
+        <b style="color:#fff;font-size:11px">❤️ FULL PAIN & COMFORT CARE</b>
+        <button onclick="document.getElementById('painComfortFullPanel')?.remove()" style="min-height:34px">CLOSE</button>
+      </div>
+      <div style="margin-top:5px;color:#aab7b0;font-size:8px">${p.name||'Patient'} · live comfort plan</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:8px">
+        <div class="mps-need"><b>${Math.round(pain)}</b>PAIN</div>
+        <div class="mps-need"><b>${Math.round(comfort)}</b>COMFORT</div>
+        <div class="mps-need"><b>${Math.round(stress)}</b>STRESS</div>
+        <div class="mps-need"><b>${Math.round(trust)}</b>TRUST</div>
+        <div class="mps-need"><b>${Math.round(hydration)}</b>HYDRATION</div>
+      </div>
+      <div class="mps-actions" style="margin-top:9px">
+        <button onclick="pcOpenFixAction('pain')">💊 PAIN RELIEF</button>
+        <button onclick="pcOpenFixAction('blanket')">🧣 WARM BLANKET</button>
+        <button onclick="pcOpenFixAction('reposition')">🛏 REPOSITION</button>
+        <button onclick="pcOpenFixAction('fluids')">💧 FLUIDS</button>
+        <button onclick="pcOpenFixAction('quiet')">🌙 QUIET ROOM</button>
+        <button onclick="pcOpenFixAction('comfort')">❤️ FAVORITE COMFORT</button>
+      </div>
+    `;
+    return panel;
+  }
+
+  window.pcOpenFixAction=function(type){
+    const p=pcFindCurrentPatient();
+    if(!p)return;
+    const map={
+      pain:['Pain Medication','pain'],
+      blanket:['Warm Blanket','blanket'],
+      reposition:['Reposition','reposition'],
+      fluids:['Fluids','fluids'],
+      quiet:['Quiet Room','quiet'],
+      comfort:['Favorite Comfort','comfort']
+    };
+    const [label,fallback]=map[type]||[type,type];
+
+    let handled=false;
+    try{
+      if(typeof painComfortAction==='function'){
+        painComfortAction(p.id,label);
+        handled=true;
+      }
+    }catch(e){}
+    if(!handled){
+      try{
+        if(typeof painComfortAction==='function'){
+          painComfortAction(p.id,fallback);
+          handled=true;
+        }
+      }catch(e){}
+    }
+    if(!handled){
+      if(type==='pain')p.pain=Math.max(0,Number(p.pain??50)-18);
+      if(type==='blanket'){p.comfort=Math.min(100,Number(p.comfort??50)+14);p.stress=Math.max(0,Number(p.stress??50)-6)}
+      if(type==='reposition'){p.pain=Math.max(0,Number(p.pain??50)-7);p.comfort=Math.min(100,Number(p.comfort??50)+8)}
+      if(type==='fluids'){p.hydration=Math.min(100,Number(p.hydration??60)+18);p.comfort=Math.min(100,Number(p.comfort??50)+4)}
+      if(type==='quiet'){p.stress=Math.max(0,Number(p.stress??50)-16);p.comfort=Math.min(100,Number(p.comfort??50)+8)}
+      if(type==='comfort'){p.trust=Math.min(100,Number(p.trust??50)+10);p.comfort=Math.min(100,Number(p.comfort??50)+10)}
+      try{save?.()}catch(e){}
+    }
+
+    try{fxFlash?.('good');fxSpriteAt?.(innerWidth/2,innerHeight*.42,type==='pain'?'💊':type==='fluids'?'💧':type==='blanket'?'🧣':type==='quiet'?'🌙':type==='comfort'?'❤️':'🛏️',2)}catch(e){}
+    pcEnsureFullPanel();
+    try{render?.()}catch(e){}
+  };
+
+  window.openFullPainComfortCare=function(){
+    const panel=pcEnsureFullPanel();
+    if(panel){
+      panel.scrollIntoView({behavior:'smooth',block:'start'});
+      try{fxFlash?.('good')}catch(e){}
+    }
+  };
+
+  document.addEventListener('click',function(e){
+    const b=e.target.closest('button');
+    if(!b)return;
+    const t=(b.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();
+    if(t.includes('open full pain') || t.includes('full pain & comfort') || t.includes('full pain and comfort')){
+      e.preventDefault();
+      e.stopPropagation();
+      window.openFullPainComfortCare();
+    }
+  },true);
+})();
+</script>
+
 </body>
 </html>
