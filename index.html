@@ -17864,5 +17864,191 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(renderCC,1700));
 })();
 </script>
 
+
+<style id="canonicalMyPetsIntakeCss">
+#canonicalPetRoster{margin:8px 0 12px;padding:9px;border:1px solid #46524a;border-radius:10px;background:#0a100c;color:#fff}
+#canonicalPetRoster h2{font-size:9px;margin:0 0 3px;color:#fff}
+#canonicalPetRoster .cpi-note{font-size:5.5px;line-height:1.45;opacity:.82;margin-bottom:7px}
+.cpi-grid{display:grid;gap:6px}
+.cpi-card{display:grid;grid-template-columns:56px 1fr;gap:7px;align-items:center;padding:6px;border:1px solid #303a33;border-radius:8px;background:#101712}
+.cpi-card img{width:56px;height:48px;object-fit:cover;border-radius:6px;background:#121812}
+.cpi-card b{font-size:7px;color:#fff}.cpi-card span{display:block;font-size:5.2px;color:#fff;opacity:.8;margin-top:2px}
+.cpi-card button{width:100%;min-height:34px;margin-top:5px;border:1px solid #46534a;border-radius:7px;background:#151e17;color:#fff;font-size:5.5px;font-weight:1000}
+.cpi-empty{padding:8px;border:1px dashed #3a463e;border-radius:7px;font-size:5.6px;color:#fff}
+</style>
+<script id="canonicalMyPetsIntakeJs">
+(function(){
+ const KEY='vetGodCanonicalOwnedPetsV1';
+ function normId(v){return String(v??'').trim()}
+ function clonePet(p){
+   if(!p)return null;
+   const keep={};
+   Object.keys(p).forEach(k=>{
+     const v=p[k];
+     if(typeof v!=='function'&&k!=='__proto__'){
+       try{JSON.stringify(v);keep[k]=v}catch(e){}
+     }
+   });
+   keep.id=p.id??p.name??('pet_'+Date.now());
+   keep.name=p.name||p.callName||p.fantasy||p.species||'Pet';
+   keep.adopted=true;keep.permanentPet=true;keep.isMyPet=true;
+   keep.petEarnedAt=keep.petEarnedAt||Date.now();
+   return keep
+ }
+ function read(){
+   try{
+     const x=JSON.parse(localStorage.getItem(KEY)||'null');
+     if(x&&Array.isArray(x.pets))return x
+   }catch(e){}
+   return {pets:[],activeId:null}
+ }
+ function write(db){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){}}
+ function find(id){
+   const s=normId(id), pools=[];
+   try{pools.push(G?.care,G?.recovery,G?.clinic,G?.surgery,G?.pets,G?.myPets,G?.companions)}catch(e){}
+   for(const arr of pools){
+     if(!Array.isArray(arr))continue;
+     const p=arr.find(x=>normId(x?.id??x?.name)===s);if(p)return p
+   }
+   try{
+     if(Array.isArray(ANIMALS)){const a=ANIMALS.find(x=>normId(x?.id??x?.name)===s);if(a)return a}
+   }catch(e){}
+   return null
+ }
+ function syncOne(snapshot){
+   if(!snapshot)return null;
+   let p=find(snapshot.id);
+   if(!p)p=Object.assign({},snapshot);
+   else Object.keys(snapshot).forEach(k=>{if(p[k]===undefined)p[k]=snapshot[k]});
+   p.adopted=true;p.permanentPet=true;p.isMyPet=true;
+   try{
+     G.pets=Array.isArray(G.pets)?G.pets:[];
+     if(!G.pets.some(x=>normId(x?.id??x?.name)===normId(p.id)))G.pets.push(p);
+     G.myPets=Array.isArray(G.myPets)?G.myPets:[];
+     if(!G.myPets.some(x=>normId(x?.id??x?.name)===normId(p.id)))G.myPets.push(p);
+   }catch(e){}
+   return p
+ }
+ function syncAll(){
+   const db=read();db.pets.forEach(syncOne);
+   try{
+     localStorage.setItem('vetGodMyPetsRosterV1',JSON.stringify({
+       ids:db.pets.map(p=>normId(p.id)),
+       activeId:db.activeId||normId(db.pets[0]?.id)
+     }))
+   }catch(e){}
+   return db
+ }
+ function removeFromHospital(id){
+   const s=normId(id);
+   try{
+     ['clinic','surgery','recovery','care'].forEach(k=>{
+       if(Array.isArray(G?.[k]))G[k]=G[k].filter(x=>normId(x?.id??x?.name)!==s)
+     })
+   }catch(e){}
+ }
+ function own(p,opts={}){
+   if(!p)return null;
+   const snap=clonePet(p),db=read(),id=normId(snap.id);
+   const ix=db.pets.findIndex(x=>normId(x.id)===id);
+   if(ix>=0)db.pets[ix]=Object.assign({},db.pets[ix],snap);else db.pets.push(snap);
+   db.activeId=id;write(db);
+   p.adopted=true;p.permanentPet=true;p.isMyPet=true;
+   if(opts.move!==false)removeFromHospital(id);
+   const live=syncOne(snap);
+   try{
+     G.selectedPetId=live?.id??p.id;G.focus=live?.id??p.id;G.focusPetId=live?.id??p.id;G.careFxPetId=live?.id??p.id
+   }catch(e){}
+   try{persistPermanentPets?.()}catch(e){}
+   try{save?.()}catch(e){}
+   try{window.MyPetsLifeSim?.pet?.(normId(snap.id))}catch(e){}
+   return live||p
+ }
+ function openOwned(id){
+   syncAll();
+   const db=read();
+   const p=find(id)||syncOne(db.pets.find(x=>normId(x.id)===normId(id)));
+   if(!p)return;
+   try{G.selectedPetId=p.id;G.focus=p.id;G.focusPetId=p.id;G.careFxPetId=p.id}catch(e){}
+   try{mprSetActive?.(normId(p.id))}catch(e){}
+   try{gotoTab?.('mypet')}catch(e){}
+   try{showTab?.('pets')}catch(e){}
+   setTimeout(()=>{try{renderMyPet?.()}catch(e){};try{window.MyPetsLifeSim?.render?.()}catch(e){};inject()},60)
+ }
+ window.canonicalOpenOwnedPet=openOwned;
+
+ function idFromButton(b){
+   const oc=b?.getAttribute?.('onclick')||'';
+   let m=oc.match(/careAct\(\s*['"]?([^,'")]+)['"]?\s*,\s*['"]adopt['"]\s*\)/i);if(m)return m[1];
+   m=oc.match(/mapPatientAction\(\s*['"]?([^,'")]+)['"]?\s*,\s*['"]care['"]\s*,\s*['"]adopt['"]\s*\)/i);if(m)return m[1];
+   m=oc.match(/addPatientToMyPet\(\s*['"]?([^,'")]+)['"]?\s*\)/i);if(m)return m[1];
+   try{if(Array.isArray(G?.care)&&G.care.length===1)return G.care[0].id}catch(e){}
+   return null
+ }
+ function isOwnershipButton(b){
+   const t=(b?.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();
+   if(t.includes('adoption not available'))return false;
+   return t.includes('adopt surrendered')||t.includes('adopt exotic')||t.includes('adopt to my pet')||
+          t.includes('add to my pet')||t.includes('add to my pets')||t.includes('bring into my pet')||
+          t.includes('open my pet')
+ }
+
+ document.addEventListener('click',function(e){
+   const b=e.target?.closest?.('button,a');if(!b||!isOwnershipButton(b))return;
+   const label=(b.textContent||'').toLowerCase();
+   let id=idFromButton(b),p=id!=null?find(id):null;
+
+   if(label.includes('open my pet')&&!p){
+     const db=read();if(db.activeId){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation?.();openOwned(db.activeId);return}
+   }
+   if(!p){try{p=(G?.care||[])[0]||(G?.recovery||[])[0]||(G?.clinic||[])[0]}catch(err){}}
+   if(!p)return;
+
+   e.preventDefault();e.stopPropagation();e.stopImmediatePropagation?.();
+   const owned=own(p,{move:true});
+   try{
+     setOutcome?.(owned,'Adopted into Vet God sanctuary');
+     addLifeEvent?.(owned,'Adopted into My Pets. Permanent offline ownership record created.');
+     rewardToast?.('🏡 ADDED TO MY PETS');
+     toast?.(`${owned.name||'Animal'} is now in My Pets.`)
+   }catch(err){}
+   openOwned(owned.id)
+ },true);
+
+ function importLegacy(){
+   const db=read(),seen=new Set(db.pets.map(x=>normId(x.id))),c=[];
+   try{if(Array.isArray(G?.pets))c.push(...G.pets)}catch(e){}
+   try{if(Array.isArray(G?.myPets))c.push(...G.myPets)}catch(e){}
+   c.forEach(p=>{const id=normId(p?.id??p?.name);if(id&&!seen.has(id)){db.pets.push(clonePet(p));seen.add(id)}});
+   if(!db.activeId&&db.pets[0])db.activeId=normId(db.pets[0].id);
+   write(db);syncAll()
+ }
+ function inject(){
+   const root=document.getElementById('mypet')||document.getElementById('myPetScreen');if(!root)return;
+   document.getElementById('canonicalPetRoster')?.remove();
+   const db=syncAll(),box=document.createElement('div');box.id='canonicalPetRoster';
+   box.innerHTML=`<h2>🐾 MY PETS · PERMANENT OFFLINE ROSTER</h2>
+   <div class="cpi-note">Master ownership list. Adoption writes here first, so pets cannot disappear between older game systems.</div>
+   <div class="cpi-grid">${db.pets.length?db.pets.map(p=>`<div class="cpi-card">
+    ${p.img?`<img src="${p.img}">`:`<div style="width:56px;height:48px;display:grid;place-items:center;font-size:24px">${p.emoji||'🐾'}</div>`}
+    <div><b>${p.emoji||'🐾'} ${p.name||p.species||'Pet'}</b><span>${p.species||p.group||'Animal'} · PERMANENTLY OWNED</span>
+    <button onclick="canonicalOpenOwnedPet('${normId(p.id).replace(/'/g,"\\'")}')">${normId(db.activeId)===normId(p.id)?'✓ OPEN CURRENT PET':'OPEN THIS PET'}</button></div>
+   </div>`).join(''):`<div class="cpi-empty">No owned pets yet. Press any ADOPT / ADD TO MY PET button and the animal will be stored here immediately.</div>`}</div>`;
+   root.prepend(box)
+ }
+
+ window.canonicalOwnPet=function(id){const p=find(id);if(!p)return false;const o=own(p,{move:true});if(o)openOwned(o.id);return !!o};
+ window.canonicalOwnedPets=function(){return read().pets.slice()};
+
+ if(typeof renderMyPet==='function'){
+   const old=renderMyPet;
+   renderMyPet=function(){const r=old.apply(this,arguments);setTimeout(inject,0);return r};
+   try{petFocusedRender=renderMyPet}catch(e){}
+ }
+ document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{importLegacy();inject()},2200));
+ setInterval(()=>{syncAll();const root=document.getElementById('mypet')||document.getElementById('myPetScreen');if(root&&(root.classList.contains('active')||root.style.display!=='none'))inject()},5000);
+})();
+</script>
+
 </body>
 </html>
