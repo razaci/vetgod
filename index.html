@@ -123,9 +123,10 @@ const patients=[
 ];
 const defaults=()=>({health:68,pain:61,oxygen:91,hydration:46,stress:72,trust:29,mobility:35,comfort:30,hunger:56,thirst:64,energy:42});
 let state=JSON.parse(localStorage.getItem('vetgods_core_restored_v1')||'null')||{idx:0,stage:0,funds:2400,stats:defaults(),tests:{exam:false,imaging:false,lab:false},tx:{fluids:false,oxygen:false,pain:false,definitive:false,surgery:false},pets:[],log:[],rewarded:false};
+state.stats=Object.assign(defaults(),state.stats||{});state.tests=Object.assign({exam:false,imaging:false,lab:false},state.tests||{});state.tx=Object.assign({fluids:false,oxygen:false,pain:false,definitive:false,surgery:false},state.tx||{});if(!Array.isArray(state.log))state.log=[];if(!Array.isArray(state.pets))state.pets=[];if(!Number.isFinite(state.stage))state.stage=0;if(!Number.isFinite(state.funds))state.funds=2400;
 function p(){return patients[state.idx%patients.length]}
 function save(){localStorage.setItem('vetgods_core_restored_v1',JSON.stringify(state))}
-function log(msg){state.log.unshift({t:new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),msg});state.log=state.log.slice(0,7);save();render()}
+function log(msg){state.log.unshift({t:new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),msg});state.log=state.log.slice(0,7);save()}
 function spend(n){state.funds=Math.max(0,state.funds-n)}
 function clamp(){for(const k in state.stats)state.stats[k]=Math.max(0,Math.min(100,state.stats[k]))}
 
@@ -140,7 +141,7 @@ function petArt(){return `<div class="patientVisual"><div class="scanline"></div
 function kpis(){const s=state.stats;return `<div class="kpis">${[['Health',s.health],['Pain',100-s.pain],['O₂',s.oxygen],['Hydration',s.hydration],['Trust',s.trust],['Mobility',s.mobility]].map(([n,v])=>`<div class="kpi"><small>${n}</small><strong>${Math.round(n==='Pain'?100-v:v)}${n==='O₂'?'%':''}</strong><div class="mini"><i style="--v:${v}%"></i></div></div>`).join('')}</div>`}
 function telemetry(keys=['health','pain','oxygen','hydration','stress','trust','mobility','comfort']){return `<div class="readout">${keys.map(k=>{let v=state.stats[k],bad=(k==='pain'||k==='stress')&&v>45;return `<div class="meter ${bad?'danger':''}"><div class="meterhead"><span>${k[0].toUpperCase()+k.slice(1)}</span><b>${Math.round(v)}${k==='oxygen'?'%':''}</b></div><div class="meterbar"><i style="--v:${k==='pain'||k==='stress'?100-v:v}%"></i></div></div>`}).join('')}</div>`}
 function logBox(){return `<div class="log">${state.log.length?state.log.map(x=>`<div><time>${x.t}</time>${x.msg}</div>`).join(''):'<div>Hospital event log ready.</div>'}</div>`}
-function renderNav(){document.getElementById('nav').innerHTML=navItems.map(([id,label])=>`<button data-go="${id}">${label}</button>`).join('');document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go))}
+function renderNav(){document.getElementById('nav').innerHTML=navItems.map(([id,label])=>`<button data-go="${id}">${label}</button>`).join('')}
 function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.go===id));renderScreen(id)}
 function clinic(){return `<div class="hero"><div class="card pad"><div class="eyebrow">Active Rescue // ${p().species}</div><div class="h1">${p().name}</div><p class="lede">${p().breed} • ${p().condition}. The hospital never moves you automatically. Enter a department, work there, finish it, then choose where to go next.</p>${phaseStrip()}<div class="actionRow"><button class="btn primary" data-act="go" data-arg="${nextArea()}">Enter Next Department</button><button class="btn" data-act="go" data-arg="pets">Open My Pets</button></div></div><div class="card">${petArt()}</div></div>${instrumentWall(['health','pain','oxygen','hydration','stress','trust'])}<div class="grid"><div class="card pad"><div class="sectionTitle"><h2>Command Console</h2><p>Department access stays deliberate.</p></div><div class="instrumentGrid">${navItems.slice(1,7).map(([id,l],i)=>`<button class="instrument" data-act="go" data-arg="${id}"><div class="dial" style="--pct:${45+i*7}%;--accent:${i%2?'var(--teal)':'var(--cyan)'}"></div><b>${l}</b><small>${areaNote(id)}</small></button>`).join('')}</div></div><div class="card pad"><div class="sectionTitle"><h2>Digital Telemetry Backup</h2><p>Same patient data in precise bars.</p></div>${telemetry(['health','pain','oxygen','hydration','stress','trust'])}</div></div>${logBox()}`}
 function nextArea(){return ['stabilize','stabilize','diagnostics','treatment',p().surgical?'surgery':'recovery','recovery','recovery','discharge'][state.stage]||'discharge'}
@@ -183,13 +184,7 @@ function dispatchAction(act,arg){
   }
   save();render();
 }
-function wireActions(root=document){
-  root.querySelectorAll('[data-act]').forEach(b=>{
-    if(b.dataset.wired==='1')return;
-    b.dataset.wired='1';
-    b.addEventListener('click',e=>{e.preventDefault();dispatchAction(b.dataset.act,b.dataset.arg||'')});
-  });
-}
+function wireActions(root=document){/* permanent delegated action bus handles all dynamic controls */}
 
 function stabilize(){let c='';c+=control('Oxygen Support','Raise saturation + calm breathing','oxygen',77);c+=control('IV Fluids','Restore hydration gradually','fluids',62,'var(--teal)');c+=control('Pain Control','Reduce pain + stress before mobility','pain',55,'var(--amber)');return areaTemplate(`${p().name} // Stabilization`,'Department 01','Correct the dangerous basics before chasing a diagnosis.',c,['oxygen','hydration','pain','stress','health'],`<div class="actionRow"><button class="btn primary" data-act="finishStabilize">Finish Area → Diagnostics</button><button class="btn" data-act="go" data-arg="clinic">Return to Clinic</button></div>`) }
 function diagnostics(){let c='';c+=control('Physical Exam',state.tests.exam?'Completed ✓':'Check perfusion, tenderness, neuro signs','exam',72);c+=control('Imaging',state.tests.imaging?'Completed ✓':'Reveal structural injury','imaging',67,'var(--violet)');c+=control('Laboratory',state.tests.lab?'Completed ✓':'Check hydration and inflammation','lab',58,'var(--teal)');let ready=state.tests.exam&&state.tests.imaging&&state.tests.lab;return areaTemplate(`${p().name} // Diagnostics`,'Evidence Deck','Diagnosis becomes available only after evidence is collected.',c,['health','pain','hydration','stress','oxygen'],`<div class="finalGate"><div><b>${ready?'Evidence complete ✓':'Evidence incomplete'}</b><div class="subtitle">${ready?'Trauma + dehydration confirmed':'Run all three diagnostic stations'}</div></div><button class="btn primary" ${ready?'':'disabled'} data-act="lockDiagnosis">Lock Diagnosis → Treatment</button></div>`) }
@@ -255,9 +250,21 @@ function pets(){
 }
 function keepPet(){if(!state.pets.some(x=>x.caseId===state.idx)){state.pets.push(normalizePet({caseId:state.idx,name:p().name,species:p().species,breed:p().breed,emoji:p().emoji,stats:{...state.stats}}));state.petActive=state.pets.length-1;save()}else{state.petActive=state.pets.findIndex(x=>x.caseId===state.idx)}document.getElementById('rewardModal').classList.remove('show');save();go('pets')}
 function nextPatient(){state.idx=(state.idx+1)%patients.length;state.stage=0;state.stats=defaults();state.tests={exam:false,imaging:false,lab:false};state.tx={fluids:false,oxygen:false,pain:false,definitive:false,surgery:false};state.log=[];state.rewarded=false;save();document.getElementById('rewardModal').classList.remove('show');go('clinic')}
-function renderScreen(id){document.getElementById('funds').textContent='$'+state.funds.toLocaleString();const el=document.getElementById(id);if(id==='clinic')el.innerHTML=clinic();if(id==='stabilize')el.innerHTML=stabilize();if(id==='diagnostics')el.innerHTML=diagnostics();if(id==='treatment')el.innerHTML=treatment();if(id==='surgery')el.innerHTML=surgery();if(id==='recovery')el.innerHTML=recovery();if(id==='discharge')el.innerHTML=discharge();if(id==='pets')el.innerHTML=pets();wireActions(el)}
+function renderScreen(id){document.getElementById('funds').textContent='$'+state.funds.toLocaleString();const el=document.getElementById(id);if(id==='clinic')el.innerHTML=clinic();if(id==='stabilize')el.innerHTML=stabilize();if(id==='diagnostics')el.innerHTML=diagnostics();if(id==='treatment')el.innerHTML=treatment();if(id==='surgery')el.innerHTML=surgery();if(id==='recovery')el.innerHTML=recovery();if(id==='discharge')el.innerHTML=discharge();if(id==='pets')el.innerHTML=pets()}
 function render(){document.getElementById('funds').textContent='$'+state.funds.toLocaleString();const active=document.querySelector('.screen.active')?.id||'clinic';renderScreen(active)}
-document.getElementById('keepPet').onclick=keepPet;document.getElementById('nextPatient').onclick=nextPatient;renderNav();go('clinic');
+// Permanent action bus: one listener survives every screen redraw.
+document.addEventListener('click',function(e){
+  const el=e.target.closest('[data-act],[data-go]');
+  if(!el)return;
+  if(el.disabled||el.getAttribute('aria-disabled')==='true')return;
+  e.preventDefault();
+  if(el.dataset.go){go(el.dataset.go);return;}
+  if(el.dataset.act){dispatchAction(el.dataset.act,el.dataset.arg||'');}
+});
+// Reward modal controls are static and also use permanent listeners.
+document.getElementById('keepPet').addEventListener('click',keepPet);
+document.getElementById('nextPatient').addEventListener('click',nextPatient);
+renderNav();go('clinic');
 </script>
 </body>
 </html>
