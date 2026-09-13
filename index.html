@@ -47,13 +47,18 @@ button{font:inherit}.shell{max-width:1440px;margin:auto;padding:0 16px 70px}
 @media(max-width:620px){.cosmicBanner{min-height:250px}.patientVisual.pro{min-height:300px}.gaugeDeck{grid-template-columns:repeat(2,minmax(0,1fr))}.systemStrip{grid-template-columns:1fr}.petActions{grid-template-columns:1fr 1fr}}
 @media(prefers-reduced-motion:reduce){.scanline,.waveLine{animation:none}}
 
+
+/* === PANEL REFERENCE NUMBERS === */
+.card[data-panel-ref]{position:relative}
+.card[data-panel-ref]::before{content:"PANEL " attr(data-panel-ref);position:absolute;top:10px;right:10px;z-index:8;padding:5px 9px;border:1px solid rgba(56,215,255,.55);border-radius:9px;background:rgba(5,16,23,.90);color:#8cecff;font-size:10px;font-weight:900;letter-spacing:.12em;box-shadow:0 0 18px rgba(56,215,255,.12);pointer-events:none}
+.card[data-panel-ref]>.pad:first-child{padding-top:42px}
+@media(max-width:520px){.card[data-panel-ref]::before{top:7px;right:7px;font-size:9px;padding:4px 7px}}
 </style>
 </head>
 <body>
 <div class="shell">
 <header class="topbar">
  <div class="brandrow"><div class="sigil"><i>VG</i></div><div><div class="brand">VET GODS</div><div class="subtitle">Veterinary Intervention Command</div></div><div class="spacer"></div><div class="funds">CLINIC <b id="funds">$2,400</b></div></div>
- <nav class="nav" id="nav"></nav>
 </header>
 
 <main>
@@ -89,7 +94,7 @@ function petArt(){return `<div class="patientVisual"><div class="scanline"></div
 function kpis(){const s=state.stats;return `<div class="kpis">${[['Health',s.health],['Pain',100-s.pain],['O₂',s.oxygen],['Hydration',s.hydration],['Trust',s.trust],['Mobility',s.mobility]].map(([n,v])=>`<div class="kpi"><small>${n}</small><strong>${Math.round(n==='Pain'?100-v:v)}${n==='O₂'?'%':''}</strong><div class="mini"><i style="--v:${v}%"></i></div></div>`).join('')}</div>`}
 function telemetry(keys=['health','pain','oxygen','hydration','stress','trust','mobility','comfort']){return `<div class="readout">${keys.map(k=>{let v=state.stats[k],bad=(k==='pain'||k==='stress')&&v>45;return `<div class="meter ${bad?'danger':''}"><div class="meterhead"><span>${k[0].toUpperCase()+k.slice(1)}</span><b>${Math.round(v)}${k==='oxygen'?'%':''}</b></div><div class="meterbar"><i style="--v:${k==='pain'||k==='stress'?100-v:v}%"></i></div></div>`}).join('')}</div>`}
 function logBox(){return `<div class="log">${state.log.length?state.log.map(x=>`<div><time>${x.t}</time>${x.msg}</div>`).join(''):'<div>Hospital event log ready.</div>'}</div>`}
-function renderNav(){document.getElementById('nav').innerHTML=navItems.map(([id,label])=>`<button data-go="${id}">${label}</button>`).join('');document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go))}
+function renderNav(){/* Top department navigation intentionally removed. Gameplay progression controls navigation inside the active area. */}
 function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.go===id));renderScreen(id)}
 function clinic(){return `<div class="hero"><div class="card pad"><div class="eyebrow">Active Rescue // ${p().species}</div><div class="h1">${p().name}</div><p class="lede">${p().breed} • ${p().condition}. The hospital never moves you automatically. Enter a department, work there, finish it, then choose where to go next.</p>${phaseStrip()}<div class="actionRow"><button class="btn primary" onclick="go('${nextArea()}')">Enter Next Department</button><button class="btn" onclick="go('pets')">Open My Pets</button></div></div><div class="card">${petArt()}</div></div>${kpis()}<div class="grid"><div class="card pad"><div class="sectionTitle"><h2>Command Console</h2><p>Department access stays deliberate.</p></div><div class="instrumentGrid">${navItems.slice(1,7).map(([id,l],i)=>`<button class="instrument" onclick="go('${id}')"><div class="dial" style="--pct:${45+i*7}%;--accent:${i%2?'var(--teal)':'var(--cyan)'}"></div><b>${l}</b><small>${areaNote(id)}</small></button>`).join('')}</div></div><div class="card pad"><div class="sectionTitle"><h2>Live Telemetry</h2><p>No timer redraws.</p></div>${telemetry(['health','pain','oxygen','hydration','stress','trust'])}</div></div>${logBox()}`}
 function nextArea(){return ['stabilize','stabilize','diagnostics','treatment',p().surgical?'surgery':'recovery','recovery','recovery','discharge'][state.stage]||'discharge'}
@@ -198,6 +203,22 @@ pets=function(){
 };
 
 document.getElementById('keepPet').onclick=keepPet;document.getElementById('nextPatient').onclick=nextPatient;renderNav();go('clinic');
+</script>
+
+<script>
+/* Panel reference labels are presentation-only and do not alter game state or controls. */
+(function(){
+  function numberVisiblePanels(){
+    const active=document.querySelector('.screen.active');
+    if(!active)return;
+    active.querySelectorAll('.card').forEach((el,i)=>el.setAttribute('data-panel-ref',String(i+1)));
+  }
+  const obs=new MutationObserver(numberVisiblePanels);
+  const main=document.querySelector('main');
+  if(main)obs.observe(main,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
+  numberVisiblePanels();
+  window.addEventListener('load',numberVisiblePanels,{once:true});
+})();
 </script>
 </body>
 </html>
