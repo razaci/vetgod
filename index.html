@@ -466,6 +466,97 @@ button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
 }
 </style>
 
+
+<style id="vg-creature-evolution-css">
+/* ===== VET GODS CREATURE EVOLUTION ===== */
+#vgCreatureLabDock{position:fixed;right:14px;bottom:72px;z-index:106}
+#vgCreatureLabBtn{
+  min-height:48px;padding:0 14px;border-radius:13px;border:1px solid #8b6cff;
+  background:linear-gradient(180deg,#35245a,#21163a);color:#fff;font-weight:950;
+  box-shadow:0 10px 30px #0008,0 0 22px rgba(139,108,255,.15)
+}
+#vgCreatureLab{
+  position:fixed;inset:0;z-index:235;background:rgba(2,7,12,.94);display:none;
+  overflow:auto;padding:14px;-webkit-overflow-scrolling:touch
+}
+#vgCreatureLab.open{display:block}
+.vgcl-wrap{max-width:980px;margin:0 auto}
+.vgcl-top{
+  position:sticky;top:0;z-index:4;background:#071018;padding:8px 0 12px;
+  display:flex;gap:10px;align-items:center;justify-content:space-between
+}
+.vgcl-title{font-size:clamp(26px,5vw,42px);font-weight:1000;letter-spacing:-1px}
+.vgcl-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.vgcl-card{
+  border:1px solid #3c5274;border-radius:16px;background:linear-gradient(160deg,#111d31,#0a1625);
+  padding:14px;box-shadow:0 12px 32px #0005
+}
+.vgcl-card h3{margin:4px 0 8px}
+.vgcl-badge{
+  display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid #5c6f93;
+  background:#14223a;font-size:10px;font-weight:850;margin:2px
+}
+.vgcl-badge.dna{border-color:#6b5fff;background:#1c1940}
+.vgcl-badge.energy{border-color:#3dd5c6;background:#0e2d31}
+.vgcl-badge.rare{border-color:#f0c14b;background:#33270f;color:#fff2be}
+.vgcl-meter{height:9px;border-radius:999px;background:#13202e;overflow:hidden;margin-top:7px}
+.vgcl-meter i{display:block;height:100%;background:linear-gradient(90deg,#4ef0c8,#9c7cff)}
+.vgcl-petlist{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:9px;margin-top:10px}
+.vgcl-pet{
+  padding:11px;border:1px solid #304d61;border-radius:13px;background:#0b1b29;cursor:pointer
+}
+.vgcl-pet:hover{border-color:#6d8ca2}
+.vgcl-pet.selected{border-color:#9c7cff;box-shadow:0 0 20px rgba(156,124,255,.16)}
+.vgcl-face{font-size:44px}
+.vgcl-name{font-weight:950;font-size:15px}
+.vgcl-meta{font-size:11px;color:#9bb2bd}
+.vgcl-path{
+  padding:10px;border:1px solid #2e5062;border-radius:12px;background:#0b1c29;margin:8px 0
+}
+.vgcl-path.locked{opacity:.55}
+.vgcl-path.ready{border-color:#5a8d72;background:#10241e}
+.vgcl-path b{display:block;margin-bottom:3px}
+.vgcl-path small{display:block;color:#9ab3be;line-height:1.35}
+.vgcl-path button{
+  margin-top:8px;min-height:38px;width:100%;border:1px solid #4c7286;border-radius:9px;
+  background:#15384a;font-weight:850
+}
+.vgcl-path.ready button{border-color:#4f9274;background:#174b3b}
+.vgcl-forge{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center}
+.vgcl-slot{
+  min-height:120px;border:1px dashed #56677b;border-radius:14px;background:#091723;
+  display:grid;place-items:center;text-align:center;padding:10px
+}
+.vgcl-plus{font-size:28px;font-weight:1000;color:#8aa}
+.vgcl-hybrid{
+  margin-top:12px;padding:12px;border:1px solid #755fc7;border-radius:14px;
+  background:linear-gradient(135deg,#1b1740,#0d2330)
+}
+.vgcl-hybrid .big{font-size:54px}
+.vgcl-command{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.vgcl-command button{
+  min-height:42px;padding:0 12px;border-radius:9px;border:1px solid #4c7286;background:#15384a;font-weight:850
+}
+.vgcl-command button.primary{border-color:#856cff;background:#38275f}
+.vg-morph-pulse{animation:vgMorphPulse .55s ease 3}
+@keyframes vgMorphPulse{50%{transform:scale(1.02);box-shadow:0 0 0 3px rgba(156,124,255,.25),0 0 38px rgba(156,124,255,.35)}}
+.pet-card .vg-pet-evo{
+  margin:7px 0;padding:7px;border-radius:8px;border:1px solid #504b73;background:#11152b;
+  font-size:10px;line-height:1.35
+}
+.pet-card .vg-pet-evo b{color:#c6b8ff}
+.vg-pet-morph-btn{
+  width:100%;min-height:36px;border-radius:8px;border:1px solid #725bd0!important;
+  background:#2a214e!important;color:white!important;font-weight:900!important;margin-top:6px
+}
+@media(max-width:760px){
+  .vgcl-grid{grid-template-columns:1fr}
+  .vgcl-forge{grid-template-columns:1fr}
+  .vgcl-plus{transform:rotate(90deg)}
+  #vgCreatureLabDock{right:10px;bottom:126px}
+}
+</style>
+
 </head>
 <body>
 <div class="shell">
@@ -1102,7 +1193,8 @@ const UPGRADES = [
   {id:"icu", name:"ICU Monitoring Bay", cost:3000, desc:"Improves stabilization feedback and adds a stabilization reward bonus."},
   {id:"hospital", name:"Advanced Veterinary Hospital", cost:4000, desc:"Adds a permanent discharge excellence bonus and improves patient trust."},
   {id:"surgery", name:"Precision Surgery Theater", cost:6500, desc:"Smoother anesthesia/operative response and a larger surgery reward."},
-  {id:"celestial", name:"Celestial Medical Center", cost:10000, desc:"Highest-tier hospital bonus with stronger comfort/trust support."}
+  {id:"celestial", name:"Celestial Medical Center", cost:10000, desc:"Highest-tier hospital bonus with stronger comfort/trust support."},
+  {id:"divine", name:"VET GODS Divine Hospital", cost:100000, desc:"Endgame hospital tier: +25% case payouts, stronger stabilization/recovery support, +10 trust on intake, +5 hydration on stabilization actions, and premium rescue purchase discounts."}
 ];
 
 const TOOLS_CATALOG = [
@@ -2219,6 +2311,635 @@ setInterval(trackMissionsPassive, 3000);
   }
   document.addEventListener('click',()=>setTimeout(prepRewardModal,30),true);
   addEventListener('load',prepRewardModal);
+})();
+</script>
+
+
+<script id="vg-animal-fees-divine-js">
+(function(){
+'use strict';
+
+function vgAnimalPrice(a){
+  const rare = /orca|whale|elephant|rhinoceros|hippopotamus|tiger|lion|leopard|cheetah|panda|gorilla|chimpanzee|komodo|crocodile|alligator|polar bear/i.test((a.species||"")+" "+(a.breed||""));
+  const tiny = /ant|bee|beetle|firefly|butterfly|moth|mantis|dragonfly|frog|axolotl|gecko|hedgehog|squirrel/i.test((a.species||"")+" "+(a.breed||""));
+  let price = tiny ? 250 : rare ? 2500 : 900;
+  const idx = (typeof ANIMALS!=="undefined" ? ANIMALS.indexOf(a) : 0);
+  price += Math.max(0,idx) * 25;
+  if(state && state.ownedUpgrades && state.ownedUpgrades.divine) price = Math.round(price * 0.5);
+  return Math.max(100, price);
+}
+
+function vgOwnedAnimal(a){
+  state.animalPurchases = state.animalPurchases || {};
+  return !!state.animalPurchases[a.name];
+}
+
+window.vgPurchaseAnimal = function(name){
+  if(typeof ANIMALS==="undefined") return;
+  const a = ANIMALS.find(x=>x.name===name);
+  if(!a) return;
+  state.animalPurchases = state.animalPurchases || {};
+  if(state.animalPurchases[name]){
+    if(typeof toast==="function") toast(name+" is already owned.");
+    return;
+  }
+  const price = vgAnimalPrice(a);
+  if((state.funds||0) < price){
+    if(typeof toast==="function") toast("Not enough clinic funds • need $"+price.toLocaleString());
+    return;
+  }
+  state.funds -= price;
+  state.animalPurchases[name]=true;
+  if(typeof state.idx==="number") state.idx = ANIMALS.indexOf(a);
+  if(typeof save==="function") save();
+  if(typeof render==="function") render();
+  if(typeof renderRoster==="function") renderRoster();
+  if(typeof toast==="function") toast("🐾 "+name+" purchased • -$"+price.toLocaleString());
+};
+
+function patchAnimalRoster(){
+  const panel=document.getElementById("vgRosterPanel");
+  if(!panel) return;
+  const cards=panel.querySelectorAll(".vgr-card");
+  cards.forEach(card=>{
+    if(card.dataset.purchasePatched==="1") return;
+    const nameEl=card.querySelector("b");
+    const btn=card.querySelector("button");
+    if(!nameEl||!btn) return;
+    const name=nameEl.textContent.trim();
+    if(typeof ANIMALS==="undefined") return;
+    const a=ANIMALS.find(x=>x.name===name);
+    if(!a) return;
+    const price=vgAnimalPrice(a);
+    const owned=vgOwnedAnimal(a);
+    const fee=document.createElement("div");
+    fee.style.cssText="margin-top:7px;font-size:11px;color:#ffd166;font-weight:800";
+    fee.textContent = owned ? "✓ OWNED" : ("Purchase Fee • $"+price.toLocaleString());
+    btn.textContent = owned ? "OPEN ANIMAL" : ("BUY • $"+price.toLocaleString());
+    btn.onclick=function(e){
+      e.preventDefault();e.stopPropagation();
+      if(owned){
+        const idx=ANIMALS.indexOf(a);
+        if(idx>=0){ state.idx=idx; if(typeof save==="function")save(); if(typeof go==="function")go("clinic"); if(typeof render==="function")render(); }
+      }else{
+        vgPurchaseAnimal(name);
+      }
+    };
+    card.appendChild(fee);
+    card.dataset.purchasePatched="1";
+  });
+}
+
+function divineActive(){ return !!(state && state.ownedUpgrades && state.ownedUpgrades.divine); }
+
+// Upgrade benefits that layer safely over the existing engine.
+const oldScore = window.vgScoreBreakdown;
+if(typeof oldScore==="function"){
+  window.vgScoreBreakdown=function(){
+    const b=oldScore();
+    if(divineActive() && Array.isArray(b)){
+      b.push(["Divine Hospital Network", 2500]);
+    }
+    return b;
+  };
+}
+
+const oldNewPatient = window.nextPatient;
+if(typeof oldNewPatient==="function"){
+  window.nextPatient=function(){
+    oldNewPatient();
+    if(divineActive() && state && state.stats){
+      state.stats.trust = Math.min(100,(state.stats.trust||0)+10);
+      if(typeof toast==="function") toast("✨ DIVINE HOSPITAL • Patient trust +10");
+      if(typeof save==="function") save();
+      if(typeof render==="function") render();
+    }
+  };
+}
+
+// Stabilization bonus: when hydration rises after an action, Divine Hospital adds a small assist.
+document.addEventListener("click",function(e){
+  const btn=e.target.closest("button");
+  if(!btn || !divineActive() || !state || !state.stats) return;
+  const label=(btn.textContent||"").toLowerCase();
+  if(/fluid|hydrate|water|iv/.test(label)){
+    setTimeout(function(){
+      state.stats.hydration=Math.min(100,(state.stats.hydration||0)+5);
+      if(typeof save==="function") save();
+      if(typeof render==="function") render();
+    },20);
+  }
+},true);
+
+function patchShopText(){
+  const cards=document.querySelectorAll(".shop-card");
+  cards.forEach(c=>{
+    if(/VET GODS Divine Hospital/i.test(c.textContent||"")){
+      c.style.borderColor="#d6b45a";
+      c.style.boxShadow="0 0 28px rgba(240,193,75,.13)";
+    }
+  });
+}
+
+const oldOpenRoster=window.openRoster;
+if(typeof oldOpenRoster==="function"){
+  window.openRoster=function(){
+    oldOpenRoster();
+    setTimeout(patchAnimalRoster,30);
+    setTimeout(patchAnimalRoster,150);
+  };
+}
+
+const oldRenderRoster=window.renderRoster;
+if(typeof oldRenderRoster==="function"){
+  window.renderRoster=function(){
+    const r=oldRenderRoster.apply(this,arguments);
+    setTimeout(patchAnimalRoster,10);
+    return r;
+  };
+}
+
+addEventListener("load",function(){
+  state.animalPurchases = state.animalPurchases || {};
+  setTimeout(patchAnimalRoster,120);
+  setTimeout(patchShopText,120);
+});
+document.addEventListener("click",()=>setTimeout(()=>{patchAnimalRoster();patchShopText();},50),true);
+
+})();
+</script>
+
+
+<script id="vg-creature-evolution-js">
+(function(){
+'use strict';
+
+const VG_TRAITS = {
+  "Canine":["Guardian","Pack","Speed"],
+  "Feline":["Night","Agility","Hunter"],
+  "Avian":["Flight","Sky","Sight"],
+  "Polar bear":["Arctic","Guardian","Giant"],
+  "Orca":["Aquatic","Echo","Power"],
+  "Humpback whale":["Aquatic","Song","Giant"],
+  "Beluga whale":["Aquatic","Echo","Arctic"],
+  "Bottlenose dolphin":["Aquatic","Speed","Social"],
+  "Harbor seal":["Aquatic","Arctic","Playful"],
+  "Sea lion":["Aquatic","Power","Social"],
+  "Green sea turtle":["Aquatic","Armor","Ancient"],
+  "Manta ray":["Aquatic","Glide","Mystic"],
+  "Reef shark":["Aquatic","Hunter","Speed"],
+  "African elephant":["Giant","Guardian","Memory"],
+  "Asian elephant":["Giant","Guardian","Memory"],
+  "Giraffe":["Giant","Sight","Grace"],
+  "Zebra":["Speed","Herd","Storm"],
+  "White rhinoceros":["Armor","Giant","Power"],
+  "Hippopotamus":["Aquatic","Power","Armor"],
+  "Tiger":["Hunter","Power","Night"],
+  "Black leopard":["Night","Hunter","Shadow"],
+  "Lion":["Guardian","Power","Solar"],
+  "Cheetah":["Speed","Hunter","Solar"],
+  "Red panda":["Forest","Agility","Mystic"],
+  "Giant panda":["Forest","Guardian","Calm"],
+  "Brown bear":["Guardian","Forest","Power"],
+  "Fennec fox":["Desert","Sight","Speed"],
+  "Arctic fox":["Arctic","Night","Speed"],
+  "Gray wolf":["Pack","Night","Guardian"],
+  "Orangutan":["Forest","Mind","Strength"],
+  "Gorilla":["Strength","Guardian","Mind"],
+  "Chimpanzee":["Mind","Agility","Social"],
+  "Sloth":["Forest","Calm","Ancient"],
+  "Pangolin":["Armor","Earth","Mystic"],
+  "Kangaroo":["Speed","Power","Desert"],
+  "Koala":["Forest","Calm","Dream"],
+  "Bat":["Flight","Night","Echo"],
+  "Horse":["Speed","Bond","Storm"],
+  "Ostrich":["Speed","Desert","Power"],
+  "Flamingo":["Water","Grace","Solar"],
+  "Macaw":["Flight","Color","Social"],
+  "Snowy owl":["Flight","Arctic","Night"],
+  "Bald eagle":["Flight","Sight","Guardian"],
+  "Peregrine falcon":["Flight","Speed","Sight"],
+  "Penguin":["Arctic","Aquatic","Social"],
+  "Iguana":["Reptile","Solar","Armor"],
+  "Chameleon":["Reptile","Color","Shadow"],
+  "Komodo dragon":["Reptile","Power","Venom"],
+  "Python":["Reptile","Coil","Shadow"],
+  "Cobra":["Reptile","Venom","Royal"],
+  "Rattlesnake":["Reptile","Venom","Desert"],
+  "Tortoise":["Armor","Ancient","Earth"],
+  "Alligator":["Aquatic","Armor","Power"],
+  "Crocodile":["Aquatic","Armor","Ancient"],
+  "Axolotl":["Aquatic","Healing","Mystic"],
+  "Poison dart frog":["Venom","Color","Mystic"],
+  "Goliath frog":["Water","Power","Leap"],
+  "Blue morpho butterfly":["Flight","Color","Mystic"],
+  "Monarch butterfly":["Flight","Solar","Mystic"],
+  "Atlas moth":["Flight","Night","Mystic"],
+  "Orchid mantis":["Hunter","Color","Precision"],
+  "Goliath beetle":["Armor","Power","Earth"],
+  "Hercules beetle":["Armor","Power","Titan"],
+  "Firefly":["Flight","Light","Mystic"],
+  "Dragonfly":["Flight","Speed","Water"],
+  "Tarantula":["Venom","Night","Hunter"],
+  "Orb-weaver spider":["Web","Night","Precision"],
+  "Emperor scorpion":["Venom","Armor","Desert"],
+  "Honey bee":["Flight","Hive","Solar"],
+  "Leafcutter ant":["Hive","Earth","Strength"]
+};
+
+const VG_PATHS = {
+  Arctic:[
+    {name:"Glacier Form",emoji:"❄️🐾",cost:500,req:p=>p.bond>=45,desc:"A heavier cold-adapted guardian form."},
+    {name:"Aurora Form",emoji:"🌌🐾",cost:900,req:p=>p.trust>=75&&p.bond>=65,desc:"Rare luminous form unlocked by deep trust."}
+  ],
+  Aquatic:[
+    {name:"Tide Form",emoji:"🌊🐾",cost:450,req:p=>p.bond>=40,desc:"Fast water-attuned rescue form."},
+    {name:"Abyss Form",emoji:"🌑🌊",cost:950,req:p=>p.trust>=70&&p.energy>=55,desc:"Deep-water evolution with stronger instincts."}
+  ],
+  Flight:[
+    {name:"Sky Form",emoji:"🪽✨",cost:450,req:p=>p.bond>=40,desc:"Aerial evolution with heightened movement."},
+    {name:"Stormwing Form",emoji:"⚡🪽",cost:900,req:p=>p.trust>=70&&p.energy>=60,desc:"Rare high-energy aerial morph."}
+  ],
+  Armor:[
+    {name:"Bulwark Form",emoji:"🛡️🐾",cost:500,req:p=>p.bond>=45,desc:"Protective armored evolution."},
+    {name:"Titan Shell",emoji:"💎🛡️",cost:1000,req:p=>p.trust>=75&&p.health>=80,desc:"Massive endgame defensive form."}
+  ],
+  Venom:[
+    {name:"Toxin Form",emoji:"☣️🐾",cost:500,req:p=>p.bond>=45,desc:"Controlled venom-specialist evolution."},
+    {name:"Royal Venom Form",emoji:"👑☣️",cost:950,req:p=>p.trust>=72,desc:"Rare refined venom lineage."}
+  ],
+  Speed:[
+    {name:"Rush Form",emoji:"💨🐾",cost:450,req:p=>p.bond>=40,desc:"High-speed agile evolution."},
+    {name:"Lightning Form",emoji:"⚡🐾",cost:900,req:p=>p.trust>=72&&p.energy>=65,desc:"Rare acceleration morph."}
+  ],
+  Guardian:[
+    {name:"Guardian Form",emoji:"🛡️✨",cost:500,req:p=>p.bond>=45,desc:"Bond-centered protective evolution."},
+    {name:"Celestial Guardian",emoji:"🌠🛡️",cost:1000,req:p=>p.trust>=80&&p.bond>=75,desc:"Top-tier sanctuary protector."}
+  ],
+  Night:[
+    {name:"Moon Form",emoji:"🌙🐾",cost:500,req:p=>p.bond>=45,desc:"Quiet night-adapted form."},
+    {name:"Shadow Form",emoji:"🌑✨",cost:950,req:p=>p.trust>=75,desc:"Rare stealth evolution."}
+  ],
+  Forest:[
+    {name:"Grove Form",emoji:"🌿🐾",cost:450,req:p=>p.bond>=40,desc:"Nature-linked companion form."},
+    {name:"Ancient Grove",emoji:"🌳✨",cost:900,req:p=>p.trust>=72&&p.health>=75,desc:"Rare old-growth evolution."}
+  ],
+  default:[
+    {name:"Ascended Form",emoji:"✨🐾",cost:500,req:p=>p.bond>=45,desc:"A stronger bonded evolution."},
+    {name:"Mythic Form",emoji:"🌟🐾",cost:1000,req:p=>p.trust>=78&&p.bond>=70,desc:"Rare mythic evolution."}
+  ]
+};
+
+function ensureCreatureState(){
+  state.morphLab = state.morphLab || {selected:null,forgeA:null,forgeB:null,hybridSeq:1};
+  state.hybrids = state.hybrids || [];
+  (state.pets||[]).forEach((pet,i)=>{
+    pet.morphEnergy = pet.morphEnergy==null ? 250 : pet.morphEnergy;
+    pet.evolutionStage = pet.evolutionStage || 0;
+    pet.formName = pet.formName || "";
+    pet.dna = pet.dna || getTraits(pet);
+    pet.trainingLevel = pet.trainingLevel || 0;
+    pet.createdHybrid = !!pet.createdHybrid;
+    if(pet.bond==null) pet.bond=50;
+    if(pet.trust==null) pet.trust=50;
+    if(pet.energy==null) pet.energy=60;
+    if(pet.health==null) pet.health=90;
+  });
+}
+
+function getTraits(pet){
+  const hay=((pet.species||"")+" "+(pet.breed||"")).toLowerCase();
+  for(const [k,v] of Object.entries(VG_TRAITS)){
+    if(hay.includes(k.toLowerCase())) return v.slice();
+  }
+  const fallback=["Bond","Instinct","Adaptation"];
+  if(/water|seal|whale|dolphin|shark|ray|otter/.test(hay)) fallback[0]="Aquatic";
+  if(/owl|eagle|falcon|bird|macaw|swan|crane|penguin/.test(hay)) fallback[0]="Flight";
+  if(/snake|cobra|python|spider|scorpion/.test(hay)) fallback[0]="Venom";
+  return fallback;
+}
+
+function petLabel(p){ return (p.formName?p.formName+" • ":"")+(p.name||"Pet"); }
+function pathsFor(p){
+  const t=(p.dna&&p.dna[0])||"default";
+  return VG_PATHS[t] || VG_PATHS.default;
+}
+function divine(){return !!(state.ownedUpgrades&&state.ownedUpgrades.divine);}
+function morphCost(path){return divine()?Math.round(path.cost*.75):path.cost;}
+
+function openLabFor(name){
+  ensureCreatureState();
+  state.morphLab.selected=name||state.morphLab.selected||(state.pets[0]&&state.pets[0].name)||null;
+  renderCreatureLab();
+  const panel=document.getElementById("vgCreatureLab");
+  if(panel){panel.classList.add("open");panel.scrollTop=0;}
+}
+window.openCreatureLab=openLabFor;
+
+function closeLab(){
+  const panel=document.getElementById("vgCreatureLab");
+  if(panel) panel.classList.remove("open");
+}
+window.closeCreatureLab=closeLab;
+
+function selectedPet(){
+  return (state.pets||[]).find(p=>p.name===state.morphLab.selected) || (state.pets||[])[0] || null;
+}
+
+function renderCreatureLab(){
+  ensureCreatureState();
+  const panel=document.getElementById("vgCreatureLab");
+  if(!panel) return;
+  const pets=state.pets||[];
+  const sel=selectedPet();
+
+  panel.innerHTML=`
+  <div class="vgcl-wrap">
+    <div class="vgcl-top">
+      <div>
+        <div class="eyebrow">CREATURE LAB</div>
+        <div class="vgcl-title">Morph • Evolve • Combine</div>
+      </div>
+      <button class="btn" onclick="closeCreatureLab()">Close</button>
+    </div>
+
+    <div class="vgcl-card">
+      <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
+        <div><b>Sanctuary Creature Program</b><div class="vgcl-meta">Care builds Morph Energy. Bond and trust reveal stronger forms.</div></div>
+        <div><span class="vgcl-badge rare">${divine()?'DIVINE GENETICS ACTIVE':'GENETICS WING'}</span></div>
+      </div>
+    </div>
+
+    <div class="vgcl-grid">
+      <div class="vgcl-card">
+        <div class="eyebrow">MY CREATURES</div>
+        <h3>Select a companion</h3>
+        <div class="vgcl-petlist">
+          ${pets.length?pets.map(p=>`
+            <div class="vgcl-pet ${sel&&sel.name===p.name?'selected':''}" onclick="vgSelectMorphPet('${esc(p.name)}')">
+              <div class="vgcl-face">${p.emoji||'🐾'}</div>
+              <div class="vgcl-name">${escHTML(petLabel(p))}</div>
+              <div class="vgcl-meta">${escHTML(p.species||'Creature')} • Stage ${p.evolutionStage||0}</div>
+              <div style="margin-top:5px">${(p.dna||[]).map(t=>`<span class="vgcl-badge dna">${escHTML(t)}</span>`).join('')}</div>
+              <div class="vgcl-meta" style="margin-top:5px">Morph Energy ${p.morphEnergy||0}</div>
+            </div>`).join(''):'<div class="notice">No pets yet. Rescue or purchase an animal and keep it in My Pets first.</div>'}
+        </div>
+      </div>
+
+      <div class="vgcl-card">
+        <div class="eyebrow">MORPH CHAMBER</div>
+        ${sel?morphPanel(sel):'<div class="notice">Choose a pet to inspect its evolution paths.</div>'}
+      </div>
+    </div>
+
+    <div class="vgcl-card" style="margin-top:12px">
+      <div class="eyebrow">GENE FORGE</div>
+      <h3>Create a new hybrid creature</h3>
+      <div class="vgcl-meta">Both parents stay in My Pets. The new creature is added permanently.</div>
+      ${forgePanel(pets)}
+    </div>
+  </div>`;
+}
+
+function morphPanel(p){
+  const ps=pathsFor(p);
+  return `
+    <div style="display:flex;gap:10px;align-items:center">
+      <div class="vgcl-face">${p.emoji||'🐾'}</div>
+      <div>
+        <div class="vgcl-name">${escHTML(petLabel(p))}</div>
+        <div class="vgcl-meta">${escHTML(p.species||'Creature')} • Bond ${Math.round(p.bond||0)} • Trust ${Math.round(p.trust||0)}</div>
+      </div>
+    </div>
+    <div style="margin-top:8px">
+      ${(p.dna||[]).map(t=>`<span class="vgcl-badge dna">${escHTML(t)}</span>`).join('')}
+      <span class="vgcl-badge energy">⚡ ${p.morphEnergy||0} Morph Energy</span>
+    </div>
+    <div class="vgcl-meter"><i style="width:${Math.min(100,(p.morphEnergy||0)/10)}%"></i></div>
+    <div style="margin-top:10px">
+      ${ps.map((path,i)=>{
+        const ready=path.req(p) && (p.morphEnergy||0)>=morphCost(path) && (p.evolutionStage||0)<=i;
+        const already=(p.evolutionStage||0)>i;
+        return `<div class="vgcl-path ${ready?'ready':'locked'}">
+          <b>${path.emoji} ${escHTML(path.name)}</b>
+          <small>${escHTML(path.desc)}</small>
+          <small>Cost ${morphCost(path)} energy • ${already?'Completed':'Requires stronger bond/trust if locked'}</small>
+          <button ${ready?'':'disabled'} onclick="vgMorphPet('${esc(p.name)}',${i})">${already?'EVOLVED':ready?'MORPH NOW':'LOCKED'}</button>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="vgcl-command">
+      <button onclick="vgTrainCreature('${esc(p.name)}')">🏋️ Train</button>
+      <button onclick="vgAdventureCreature('${esc(p.name)}')">🧭 Adventure</button>
+      <button onclick="vgCareCreature('${esc(p.name)}')">💚 Bond Care</button>
+    </div>`;
+}
+
+function forgePanel(pets){
+  const A=pets.find(p=>p.name===state.morphLab.forgeA);
+  const B=pets.find(p=>p.name===state.morphLab.forgeB);
+  const compat=A&&B?compatibility(A,B):0;
+  const mutation=A&&B?mutationChance(A,B):0;
+  return `
+    <div class="vgcl-forge" style="margin-top:12px">
+      <div class="vgcl-slot">${A?slotHTML(A):'SELECT PARENT A'}</div>
+      <div class="vgcl-plus">+</div>
+      <div class="vgcl-slot">${B?slotHTML(B):'SELECT PARENT B'}</div>
+    </div>
+    <div class="vgcl-command">
+      <button onclick="vgChooseForge('A')">Choose A</button>
+      <button onclick="vgChooseForge('B')">Choose B</button>
+      <button onclick="vgClearForge()">Clear</button>
+    </div>
+    ${A&&B?`
+      <div class="vgcl-hybrid">
+        <b>DNA Compatibility</b> ${compat}% • <b>Mutation Chance</b> ${mutation}%<br>
+        <div style="margin-top:5px">${sharedTraits(A,B).map(t=>`<span class="vgcl-badge dna">${escHTML(t)}</span>`).join('')}</div>
+        <div class="vgcl-command"><button class="primary" onclick="vgCreateHybrid()">🧬 CREATE NEW CREATURE • 750⚡ TOTAL</button></div>
+      </div>`:''}`;
+}
+
+function slotHTML(p){
+  return `<div><div class="vgcl-face">${p.emoji||'🐾'}</div><b>${escHTML(petLabel(p))}</b><div class="vgcl-meta">${escHTML((p.dna||[]).join(' • '))}</div></div>`;
+}
+
+function compatibility(a,b){
+  const aa=new Set(a.dna||[]), bb=new Set(b.dna||[]);
+  let shared=0;aa.forEach(x=>{if(bb.has(x))shared++;});
+  return Math.min(98,55+shared*14+Math.round(((a.bond||50)+(b.bond||50))/20));
+}
+function mutationChance(a,b){
+  let n=8+Math.round(((a.trust||50)+(b.trust||50))/20);
+  if(divine()) n+=12;
+  if((a.evolutionStage||0)>0)n+=5;
+  if((b.evolutionStage||0)>0)n+=5;
+  return Math.min(45,n);
+}
+function sharedTraits(a,b){
+  const aa=a.dna||[], bb=b.dna||[];
+  const same=aa.filter(x=>bb.includes(x));
+  return same.length?same:Array.from(new Set([...aa.slice(0,2),...bb.slice(0,2)])).slice(0,3);
+}
+function esc(s){return String(s).replace(/\\/g,"\\\\").replace(/'/g,"\\'");}
+function escHTML(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+
+window.vgSelectMorphPet=function(name){state.morphLab.selected=name;renderCreatureLab();}
+window.vgMorphPet=function(name,pathIndex){
+  const p=(state.pets||[]).find(x=>x.name===name); if(!p)return;
+  const path=pathsFor(p)[pathIndex]; if(!path)return;
+  const cost=morphCost(path);
+  if(!path.req(p) || (p.morphEnergy||0)<cost)return;
+  p.morphEnergy-=cost;
+  p.evolutionStage=Math.max(p.evolutionStage||0,pathIndex+1);
+  p.formName=path.name;
+  p.emoji=path.emoji;
+  p.health=Math.min(100,(p.health||80)+8);
+  p.trust=Math.min(100,(p.trust||50)+6);
+  p.bond=Math.min(100,(p.bond||50)+8);
+  if(!p.dna.includes("Evolved"))p.dna.push("Evolved");
+  if(typeof toast==="function")toast("✨ MORPH COMPLETE • "+p.name+" → "+path.name);
+  if(typeof save==="function")save();
+  renderCreatureLab();
+  setTimeout(()=>{const c=document.querySelector(".vgcl-card");if(c)c.classList.add("vg-morph-pulse");},20);
+  if(typeof render==="function")render();
+}
+window.vgTrainCreature=function(name){
+  const p=state.pets.find(x=>x.name===name);if(!p)return;
+  p.trainingLevel=(p.trainingLevel||0)+1;p.morphEnergy=(p.morphEnergy||0)+90;p.energy=Math.max(0,(p.energy||60)-6);p.bond=Math.min(100,(p.bond||50)+2);
+  if(typeof toast==="function")toast("🏋️ Training • +90 Morph Energy");
+  if(typeof save==="function")save();renderCreatureLab();if(typeof render==="function")render();
+}
+window.vgAdventureCreature=function(name){
+  const p=state.pets.find(x=>x.name===name);if(!p)return;
+  const gain=120+Math.floor(Math.random()*81);
+  p.morphEnergy=(p.morphEnergy||0)+gain;p.energy=Math.max(0,(p.energy||60)-12);p.trust=Math.min(100,(p.trust||50)+3);p.bond=Math.min(100,(p.bond||50)+3);
+  if(Math.random()<.15 && !p.dna.includes("Mystic"))p.dna.push("Mystic");
+  if(typeof toast==="function")toast("🧭 Adventure • +"+gain+" Morph Energy");
+  if(typeof save==="function")save();renderCreatureLab();if(typeof render==="function")render();
+}
+window.vgCareCreature=function(name){
+  const p=state.pets.find(x=>x.name===name);if(!p)return;
+  p.morphEnergy=(p.morphEnergy||0)+55;p.bond=Math.min(100,(p.bond||50)+5);p.trust=Math.min(100,(p.trust||50)+4);p.health=Math.min(100,(p.health||90)+2);
+  if(typeof money==="function")money(-15);
+  if(typeof toast==="function")toast("💚 Bond Care • +55 Morph Energy");
+  if(typeof save==="function")save();renderCreatureLab();if(typeof render==="function")render();
+}
+window.vgChooseForge=function(slot){
+  const pets=state.pets||[];if(!pets.length)return;
+  const current=slot==="A"?state.morphLab.forgeA:state.morphLab.forgeB;
+  let idx=Math.max(-1,pets.findIndex(p=>p.name===current));
+  for(let i=1;i<=pets.length;i++){
+    const p=pets[(idx+i)%pets.length];
+    const other=slot==="A"?state.morphLab.forgeB:state.morphLab.forgeA;
+    if(p.name!==other){
+      if(slot==="A")state.morphLab.forgeA=p.name;else state.morphLab.forgeB=p.name;
+      break;
+    }
+  }
+  renderCreatureLab();
+}
+window.vgClearForge=function(){state.morphLab.forgeA=null;state.morphLab.forgeB=null;renderCreatureLab();}
+window.vgCreateHybrid=function(){
+  const A=state.pets.find(p=>p.name===state.morphLab.forgeA),B=state.pets.find(p=>p.name===state.morphLab.forgeB);
+  if(!A||!B||A===B)return;
+  if((A.morphEnergy||0)+(B.morphEnergy||0)<750){
+    if(typeof toast==="function")toast("Gene Forge needs 750 total Morph Energy.");
+    return;
+  }
+  const takeA=Math.min(A.morphEnergy||0,375), takeB=750-takeA;
+  if((B.morphEnergy||0)<takeB){ if(typeof toast==="function")toast("Parents need more Morph Energy."); return; }
+  A.morphEnergy-=takeA;B.morphEnergy-=takeB;
+  const mut=Math.random()*100<mutationChance(A,B);
+  const traits=Array.from(new Set([...(A.dna||[]).slice(0,2),...(B.dna||[]).slice(0,2)])).slice(0,4);
+  if(mut && !traits.includes("Rare Mutation"))traits.push("Rare Mutation");
+  const seq=state.morphLab.hybridSeq++;
+  const name=hybridName(A,B,seq,mut);
+  const hybrid={
+    name,
+    species:"Hybrid Creature",
+    breed:(A.species||"Animal")+" × "+(B.species||"Animal"),
+    sex:"Unknown",
+    emoji:mut?"🌟🧬":"🧬🐾",
+    health:92,pain:0,hydration:90,trust:55,energy:75,bond:50,happiness:70,fun:65,hygiene:80,training:0,
+    morphEnergy:200,evolutionStage:0,formName:"",dna:traits,trainingLevel:0,createdHybrid:true,
+    memories:["Created in the VET GODS Gene Forge from "+A.name+" and "+B.name+"."],
+    condition:"Stable hybrid companion"
+  };
+  state.pets.push(hybrid);state.hybrids.push({name,parentA:A.name,parentB:B.name,mutated:mut,traits});
+  state.morphLab.selected=name;
+  if(typeof toast==="function")toast((mut?"🌟 RARE MUTATION! ":"🧬 NEW CREATURE • ")+name);
+  if(typeof save==="function")save();renderCreatureLab();if(typeof render==="function")render();
+}
+function hybridName(a,b,seq,mut){
+  const A=(a.name||"A").replace(/[^A-Za-z]/g,""),B=(b.name||"B").replace(/[^A-Za-z]/g,"");
+  const left=A.slice(0,Math.max(2,Math.ceil(A.length/2)));
+  const right=B.slice(Math.floor(B.length/2));
+  return (mut?"Nova ":"")+left+right+"-"+seq;
+}
+
+function ensureLabUI(){
+  if(!document.getElementById("vgCreatureLab")){
+    const panel=document.createElement("div");panel.id="vgCreatureLab";document.body.appendChild(panel);
+  }
+  if(!document.getElementById("vgCreatureLabDock")){
+    const d=document.createElement("div");d.id="vgCreatureLabDock";
+    d.innerHTML='<button id="vgCreatureLabBtn">🧬 CREATURE LAB</button>';
+    document.body.appendChild(d);
+    document.getElementById("vgCreatureLabBtn").onclick=()=>openLabFor();
+  }
+}
+function patchPetCards(){
+  ensureCreatureState();
+  const cards=document.querySelectorAll(".pet-card");
+  cards.forEach(card=>{
+    if(card.dataset.vgEvoPatched==="1")return;
+    const title=card.querySelector("b,h3,h2");
+    if(!title)return;
+    const name=title.textContent.trim();
+    const p=(state.pets||[]).find(x=>x.name===name);if(!p)return;
+    const box=document.createElement("div");
+    box.className="vg-pet-evo";
+    box.innerHTML=`<b>${p.formName?escHTML(p.formName):"BASE FORM"}</b><br>${(p.dna||[]).slice(0,3).map(escHTML).join(" • ")}<br>⚡ ${p.morphEnergy||0} Morph Energy • Stage ${p.evolutionStage||0}`;
+    const btn=document.createElement("button");
+    btn.className="vg-pet-morph-btn";btn.textContent="🧬 MORPH / DNA LAB";
+    btn.onclick=()=>openLabFor(p.name);
+    card.appendChild(box);card.appendChild(btn);card.dataset.vgEvoPatched="1";
+  });
+}
+function rewardPetCareEnergy(){
+  const old=window.petAction;
+  if(typeof old==="function" && !old.__vgMorphWrapped){
+    const wrapped=function(){
+      const args=[...arguments];
+      let before=(state.pets||[]).map(p=>({n:p.name,b:p.bond,t:p.trust,e:p.energy}));
+      const r=old.apply(this,args);
+      ensureCreatureState();
+      (state.pets||[]).forEach((p,i)=>{
+        const prev=before[i];
+        if(prev && (p.bond!==prev.b || p.trust!==prev.t || p.energy!==prev.e)){
+          p.morphEnergy=(p.morphEnergy||0)+18;
+        }
+      });
+      if(typeof save==="function")save();
+      return r;
+    };
+    wrapped.__vgMorphWrapped=true;window.petAction=wrapped;
+  }
+}
+const oldRender=window.render;
+if(typeof oldRender==="function"){
+  window.render=function(){
+    const r=oldRender.apply(this,arguments);
+    setTimeout(()=>{patchPetCards();},20);
+    return r;
+  };
+}
+addEventListener("load",function(){
+  ensureCreatureState();ensureLabUI();rewardPetCareEnergy();
+  setTimeout(()=>{patchPetCards();},120);
+});
+document.addEventListener("click",()=>setTimeout(patchPetCards,40),true);
+
 })();
 </script>
 
