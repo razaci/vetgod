@@ -4006,5 +4006,551 @@ addEventListener("load",()=>{ensure();setTimeout(inject,150)});
 })();
 </script>
 
+
+<style id="vg-morph-main-css">
+#vgMorphMain{position:fixed;inset:0;z-index:220;background:#050d14;display:none;overflow:auto;padding:12px}
+#vgMorphMain.open{display:block}
+.vmm-wrap{max-width:1100px;margin:0 auto;padding-bottom:40px}
+.vmm-top{position:sticky;top:0;z-index:5;background:linear-gradient(180deg,#071018 70%,transparent);padding:10px 0 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.vmm-title{font-size:clamp(22px,5vw,36px);font-weight:1000;letter-spacing:-.5px}
+.vmm-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:12px;margin-top:10px}
+.vmm-card{border:1px solid #2e5568;border-radius:16px;background:linear-gradient(165deg,#0d2130,#0a1822);padding:14px}
+.vmm-card h3{font-size:15px;margin:0 0 8px}
+.vmm-eyebrow{font-size:10px;letter-spacing:.14em;color:#6eb8d0;font-weight:800;text-transform:uppercase;margin-bottom:4px}
+.vmm-face{font-size:72px;text-align:center;line-height:1;margin:8px 0;filter:drop-shadow(0 8px 20px rgba(58,212,255,.25))}
+.vmm-face.pulse{animation:vmmPulse .6s ease 2}
+@keyframes vmmPulse{50%{transform:scale(1.12);filter:drop-shadow(0 0 28px #3ad4ff)}}
+.vmm-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:10px 0}
+.vmm-stat{padding:8px 6px;border:1px solid #254656;border-radius:10px;background:#081820;text-align:center}
+.vmm-stat small{display:block;font-size:9px;color:#6e96a5;letter-spacing:.06em;text-transform:uppercase}
+.vmm-stat b{display:block;font-size:18px;margin:2px 0}
+.vmm-stat button{width:100%;min-height:28px;margin-top:4px;border-radius:7px;border:1px solid #3a6a80;background:#143848;font-size:11px;font-weight:800;color:#dff}
+.vmm-stat button:disabled{opacity:.35}
+.vmm-bar{height:8px;border-radius:99px;background:#142a34;overflow:hidden;margin:4px 0 8px}
+.vmm-bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#4ef0c8,#3ad4ff);transition:width .3s}
+.vmm-path{display:grid;gap:8px;margin-top:8px}
+.vmm-path-item{padding:11px;border:1px solid #2a4e60;border-radius:12px;background:#0b1c28;display:grid;grid-template-columns:48px 1fr auto;gap:10px;align-items:center}
+.vmm-path-item.ready{border-color:#3ad4ff;box-shadow:0 0 18px rgba(58,212,255,.15)}
+.vmm-path-item.done{border-color:#3a8a6a;background:#0c221c;opacity:.85}
+.vmm-path-item.locked{opacity:.4}
+.vmm-path-item .ico{font-size:28px;text-align:center}
+.vmm-path-item b{display:block;font-size:13px}
+.vmm-path-item small{font-size:11px;color:#8fb0bd;line-height:1.35}
+.vmm-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.vmm-actions button,.vmm-btn{
+  min-height:42px;padding:0 14px;border-radius:10px;border:1px solid #3a7a90;
+  background:#153848;color:#eefaff;font-weight:850;font-size:13px;cursor:pointer
+}
+.vmm-btn.primary{background:linear-gradient(180deg,#1a5a70,#123848);border-color:#4ab0d0}
+.vmm-btn.good{background:linear-gradient(180deg,#1a5040,#12352e);border-color:#3a8a76}
+.vmm-btn.warn{background:linear-gradient(180deg,#4a3820,#332616);border-color:#8a6c34}
+.vmm-btn:disabled{opacity:.4;cursor:not-allowed}
+.vmm-tags{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0}
+.vmm-tag{padding:4px 8px;border-radius:999px;border:1px solid #3a5a6e;background:#122a38;font-size:11px}
+.vmm-tag.mut{border-color:#8a6cb0;background:#1a1430;color:#d4b8ff}
+.vmm-tag.dna{border-color:#3a8a76;background:#0e2820;color:#9dff7b}
+.vmm-tag.form{border-color:#c0a040;background:#2a2210;color:#ffd166}
+.vmm-feature{padding:10px;border:1px solid #2a4a5c;border-radius:11px;background:#0a1a24;margin-bottom:7px}
+.vmm-feature.locked{opacity:.45}
+.vmm-feature b{display:block;margin-bottom:2px}
+.vmm-log{max-height:140px;overflow:auto;font-size:12px;color:#9ab4be;margin-top:8px}
+.vmm-log div{padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.vmm-petlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;max-height:280px;overflow:auto}
+.vmm-pet{padding:10px;border:1px solid #2a4a5c;border-radius:12px;background:#0b1c28;cursor:pointer;text-align:center;transition:.15s}
+.vmm-pet:hover,.vmm-pet.sel{border-color:#3ad4ff;box-shadow:0 0 14px rgba(58,212,255,.2)}
+.vmm-pet .f{font-size:36px}
+.vmm-pet small{display:block;font-size:10px;color:#7a9eab;margin-top:3px}
+.vmm-hub{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin:12px 0}
+.vmm-hub-btn{padding:14px;border:1px solid #2e5568;border-radius:14px;background:#0d2130;text-align:left;cursor:pointer;transition:.15s}
+.vmm-hub-btn:hover{border-color:#4ab5ce;transform:translateY(-2px)}
+.vmm-hub-btn b{display:block;font-size:14px;margin-bottom:4px}
+.vmm-hub-btn small{font-size:11px;color:#8fb0bd}
+.vmm-form-preview{text-align:center;padding:16px;border-radius:14px;background:radial-gradient(circle at 50% 40%,rgba(58,212,255,.18),transparent 55%),#07141c;border:1px solid #2a5568;margin-bottom:10px}
+.vmm-form-preview .big{font-size:80px;margin:6px 0}
+.vmm-points{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.vmm-chip{padding:6px 11px;border-radius:999px;border:1px solid #3a6a80;background:#102838;font-size:12px;font-weight:800}
+.vmm-chip b{color:#9dff7b}
+@media(max-width:820px){.vmm-grid{grid-template-columns:1fr}.vmm-stats{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:480px){.vmm-stats{grid-template-columns:repeat(2,1fr)}}
+#vgMorphMainBtn{
+  position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:110;
+  min-height:52px;padding:0 22px;border-radius:16px;border:2px solid #3ad4ff;
+  background:linear-gradient(180deg,#1a5070,#0e3048);color:#fff;font-weight:1000;font-size:15px;
+  letter-spacing:.06em;box-shadow:0 0 30px rgba(58,212,255,.35),0 12px 40px #000a;
+}
+#vgMorphMainBtn:hover{box-shadow:0 0 40px rgba(58,212,255,.55),0 12px 40px #000a}
+</style>
+
+<script id="vg-morph-main-js">
+(function(){
+'use strict';
+
+const FORM_TREE = [
+  {id:"awakened", name:"Awakened Form", stage:1, cost:280, emoji:"✨",
+   req:p=>(p.bond||0)>=40 && (p.morphEnergy||0)>=280,
+   desc:"First genetic awakening. Unlocks core build spending and basic features.",
+   boost:{power:4,instinct:4}, feature:"Awakened Instinct"},
+  {id:"guardian", name:"Guardian Form", stage:1, cost:320, emoji:"🛡️",
+   req:p=>(p.bond||0)>=45 && ((p.dna||[]).includes("Guardian")||(p.dna||[]).includes("Armor")||(p.armor||20)>=25),
+   desc:"Defensive morph path. Raises Armor and unlocks Titan traits.",
+   boost:{armor:8,power:2}, feature:"Guardian Aura"},
+  {id:"hunter", name:"Hunter Form", stage:1, cost:320, emoji:"⚡",
+   req:p=>(p.bond||0)>=45 && ((p.dna||[]).includes("Hunter")||(p.dna||[]).includes("Speed")||(p.speed||20)>=25),
+   desc:"Predatory morph path. Raises Speed and Instinct.",
+   boost:{speed:8,instinct:4}, feature:"Predator Focus"},
+  {id:"mystic", name:"Mystic Form", stage:1, cost:340, emoji:"🌌",
+   req:p=>(p.bond||0)>=50 && ((p.dna||[]).includes("Mystic")||(p.dna||[]).includes("Night")||(p.adaptation||20)>=25),
+   desc:"Arcane morph path. Raises Adaptation and mutation affinity.",
+   boost:{adaptation:8,instinct:3}, feature:"Echo Field"},
+  {id:"prime", name:"Prime Evolution", stage:2, cost:520, emoji:"🌟",
+   req:p=>(p.evolutionStage||0)>=1 && (p.morphEnergy||0)>=520 && sumStats(p)>=100,
+   desc:"Balanced second-stage evolution. Requires invested core stats.",
+   boost:{power:5,speed:5,armor:5,instinct:5,adaptation:5}, feature:"Prime Resonance"},
+  {id:"titan", name:"Titan Evolution", stage:2, cost:560, emoji:"🏔️",
+   req:p=>(p.evolutionStage||0)>=1 && (p.armor||20)>=40,
+   desc:"Heavy defensive evolution. Dominates survival challenges.",
+   boost:{armor:12,power:6}, feature:"Titan Hide"},
+  {id:"specter", name:"Specter Evolution", stage:2, cost:560, emoji:"👻",
+   req:p=>(p.evolutionStage||0)>=1 && ((p.mutations||[]).length>=1 || (p.adaptation||20)>=40),
+   desc:"Mutation-aligned evolution. Unlocks deeper feature slots.",
+   boost:{adaptation:10,instinct:8,speed:4}, feature:"Phase Shift"},
+  {id:"apex", name:"Apex Evolution", stage:2, cost:600, emoji:"👑",
+   req:p=>(p.evolutionStage||0)>=1 && (p.power||20)>=40 && (p.instinct||20)>=35,
+   desc:"Combat apex form. Highest offensive ceiling.",
+   boost:{power:12,instinct:8,speed:4}, feature:"Apex Strike"},
+  {id:"genesis", name:"Genesis Form", stage:3, cost:900, emoji:"🧬",
+   req:p=>(p.evolutionStage||0)>=2 && (p.level||1)>=3 && sumStats(p)>=140,
+   desc:"Ultimate morph. Creature becomes a true expedition partner.",
+   boost:{power:8,speed:8,armor:8,instinct:8,adaptation:8}, feature:"Genesis Core"},
+  {id:"mythic", name:"Mythic Form", stage:3, cost:1000, emoji:"🔮",
+   req:p=>(p.evolutionStage||0)>=2 && (p.mutations||[]).length>=2 && (p.abilities||[]).length>=2,
+   desc:"Legendary morph requiring mutations and unlocked abilities.",
+   boost:{adaptation:15,instinct:10,power:6}, feature:"Mythic Signature"}
+];
+
+const FEATURE_CATALOG = [
+  {id:"Awakened Instinct", cost:1, desc:"+5 Instinct baseline when starting battles.", apply:p=>{p.instinct=Math.min(100,(p.instinct||20)+5)}},
+  {id:"Guardian Aura", cost:1, desc:"+8 Armor and stronger shields in card battles.", apply:p=>{p.armor=Math.min(100,(p.armor||20)+8)}},
+  {id:"Predator Focus", cost:1, desc:"+8 Speed. First attack each battle gains bonus.", apply:p=>{p.speed=Math.min(100,(p.speed||20)+8)}},
+  {id:"Echo Field", cost:1, desc:"+8 Adaptation. Better mutation success rate.", apply:p=>{p.adaptation=Math.min(100,(p.adaptation||20)+8)}},
+  {id:"Prime Resonance", cost:2, desc:"All core stats +3 permanently.", apply:p=>{["power","speed","armor","instinct","adaptation"].forEach(k=>p[k]=Math.min(100,(p[k]||20)+3))}},
+  {id:"Titan Hide", cost:2, desc:"+15 Armor. Massive damage reduction.", apply:p=>{p.armor=Math.min(100,(p.armor||20)+15)}},
+  {id:"Phase Shift", cost:2, desc:"+10 Adaptation. Chance to ignore a threat phase.", apply:p=>{p.adaptation=Math.min(100,(p.adaptation||20)+10)}},
+  {id:"Apex Strike", cost:2, desc:"+12 Power. Unlocks high-cost battle cards.", apply:p=>{p.power=Math.min(100,(p.power||20)+12)}},
+  {id:"Genesis Core", cost:3, desc:"All stats +6. Creature is expedition-ready.", apply:p=>{["power","speed","armor","instinct","adaptation"].forEach(k=>p[k]=Math.min(100,(p[k]||20)+6))}},
+  {id:"Mythic Signature", cost:3, desc:"Rarity becomes MYTHIC. +10 all stats.", apply:p=>{["power","speed","armor","instinct","adaptation"].forEach(k=>p[k]=Math.min(100,(p[k]||20)+10));p.rarity="MYTHIC"}},
+  {id:"Regeneration Node", cost:2, desc:"Passive HP recovery between turns.", apply:p=>{p.health=Math.min(100,(p.health||90)+10)}},
+  {id:"Bond Amplifier", cost:1, desc:"Care and Train give +20% more Morph Energy.", apply:p=>{p._bondAmp=true}},
+  {id:"Gene Stability", cost:2, desc:"Hybrids inherit stronger parent stats.", apply:p=>{p._geneStable=true}},
+  {id:"Morph Battery", cost:1, desc:"Max Morph Energy capacity effectively higher.", apply:p=>{p.morphEnergy=(p.morphEnergy||0)+150}}
+];
+
+const MUTATION_POOL = [
+  "Crystal Hide","Bioluminescence","Echo Sense","Feathered Mane","Plasma Veins",
+  "Shadow Cloak","Tidal Gills","Solar Plates","Venom Sac","Mind Lattice",
+  "Frost Core","Storm Quills","Iron Bone","Dream Antenna","Void Whiskers",
+  "Aether Wings","Living Armor","Pulse Heart","Spectral Eyes","Root Tendrils"
+];
+
+function sumStats(p){
+  return ["power","speed","armor","instinct","adaptation"].reduce((n,k)=>n+(Number(p[k])||20),0);
+}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function toast(m){if(typeof window.toast==="function")window.toast(m)}
+function save(){if(typeof window.save==="function")window.save()}
+
+function ensurePet(p){
+  if(!p)return null;
+  p.morphEnergy=p.morphEnergy==null?250:p.morphEnergy;
+  p.morphPoints=p.morphPoints==null?3:p.morphPoints;
+  p.abilityPoints=p.abilityPoints==null?1:p.abilityPoints;
+  p.featurePoints=p.featurePoints==null?1:p.featurePoints;
+  p.power=p.power==null?20:p.power;
+  p.speed=p.speed==null?20:p.speed;
+  p.armor=p.armor==null?20:p.armor;
+  p.instinct=p.instinct==null?20:p.instinct;
+  p.adaptation=p.adaptation==null?20:p.adaptation;
+  p.evolutionStage=p.evolutionStage||0;
+  p.mutations=p.mutations||[];
+  p.abilities=p.abilities||[];
+  p.features=p.features||[];
+  p.formsUnlocked=p.formsUnlocked||[];
+  p.formName=p.formName||"";
+  p.rarity=p.rarity||"COMMON";
+  p.level=p.level||1;
+  p.bond=p.bond==null?50:p.bond;
+  p.trust=p.trust==null?50:p.trust;
+  return p;
+}
+
+function activePet(){
+  state.morphLab=state.morphLab||{selected:null};
+  state.unifiedJourney=state.unifiedJourney||{};
+  const pets=state.pets||[];
+  let p=pets.find(x=>x.name===state.morphLab.selected)
+    ||pets.find(x=>x.name===state.unifiedJourney.active)
+    ||pets[0]||null;
+  if(p){
+    ensurePet(p);
+    state.morphLab.selected=p.name;
+    state.unifiedJourney.active=p.name;
+  }
+  return p;
+}
+
+function computeRarity(p){
+  let score=(p.evolutionStage||0)*2+(p.mutations||[]).length+(p.features||[]).length+(p.createdHybrid?2:0);
+  return score>=8?"MYTHIC":score>=6?"LEGENDARY":score>=4?"RARE":score>=2?"UNCOMMON":"COMMON";
+}
+
+function pathStatus(p,f){
+  if((p.formsUnlocked||[]).includes(f.id) || ((p.evolutionStage||0)>=f.stage && p.formName===f.name))return "done";
+  if((p.evolutionStage||0)<f.stage-1)return "locked";
+  if(f.req(p) && (p.morphEnergy||0)>=f.cost)return "ready";
+  return "locked";
+}
+
+window.vmmSelect=function(name){
+  state.morphLab=state.morphLab||{};
+  state.morphLab.selected=name;
+  state.unifiedJourney=state.unifiedJourney||{};
+  state.unifiedJourney.active=name;
+  save();renderMorphMain();
+};
+
+window.vmmSpendStat=function(stat){
+  const p=activePet();if(!p)return;
+  if((p.morphPoints||0)<1){toast("No Morph Points. Convert energy or clear story objectives.");return}
+  p[stat]=Math.min(100,(Number(p[stat])||20)+5);
+  p.morphPoints--;
+  pushLog(p,stat.toUpperCase()+" +5 (Morph Point spent)");
+  toast((p.formName||p.name)+" • "+stat.toUpperCase()+" +5");
+  save();renderMorphMain();
+};
+
+window.vmmConvert=function(){
+  const p=activePet();if(!p)return;
+  if((p.morphEnergy||0)<250){toast("Need 250 Morph Energy.");return}
+  p.morphEnergy-=250;p.morphPoints=(p.morphPoints||0)+1;
+  pushLog(p,"Converted 250⚡ → 1 Morph Point");
+  toast("⚡ → 1 Morph Point");
+  save();renderMorphMain();
+};
+
+window.vmmCare=function(){
+  const p=activePet();if(!p)return;
+  const amp=p._bondAmp?1.2:1;
+  p.trust=Math.min(100,(p.trust||50)+5);
+  p.bond=Math.min(100,(p.bond||50)+6);
+  const gain=Math.round(55*amp);
+  p.morphEnergy=(p.morphEnergy||0)+gain;
+  pushLog(p,"Care • +"+gain+" Morph Energy, Trust & Bond up");
+  toast("💚 CARE • +"+gain+"⚡");
+  save();renderMorphMain();
+};
+
+window.vmmTrain=function(){
+  const p=activePet();if(!p)return;
+  const amp=p._bondAmp?1.2:1;
+  p.trainingLevel=(p.trainingLevel||0)+1;
+  p.bond=Math.min(100,(p.bond||50)+3);
+  const gain=Math.round(90*amp);
+  p.morphEnergy=(p.morphEnergy||0)+gain;
+  pushLog(p,"Train • +"+gain+" Morph Energy");
+  toast("🏋️ TRAIN • +"+gain+"⚡");
+  save();renderMorphMain();
+};
+
+window.vmmMorph=function(formId){
+  const p=activePet();if(!p)return;
+  const f=FORM_TREE.find(x=>x.id===formId);if(!f)return;
+  const st=pathStatus(p,f);
+  if(st==="done"){toast("Already unlocked.");return}
+  if(st==="locked"){toast("Requirements not met or not enough Morph Energy.");return}
+  if((p.morphEnergy||0)<f.cost){toast("Need "+f.cost+" Morph Energy.");return}
+
+  p.morphEnergy-=f.cost;
+  p.formsUnlocked=p.formsUnlocked||[];
+  if(!p.formsUnlocked.includes(f.id))p.formsUnlocked.push(f.id);
+  p.evolutionStage=Math.max(p.evolutionStage||0,f.stage);
+  p.formName=f.name;
+  p.emoji=f.emoji;
+  p.rarity=computeRarity(p);
+
+  Object.keys(f.boost||{}).forEach(k=>{
+    p[k]=Math.min(100,(Number(p[k])||20)+(f.boost[k]||0));
+  });
+
+  if(f.feature && !(p.features||[]).includes(f.feature)){
+    p.features=p.features||[];
+    p.features.push(f.feature);
+    p.featurePoints=(p.featurePoints||0)+1;
+    const cat=FEATURE_CATALOG.find(x=>x.id===f.feature);
+    if(cat&&cat.apply)cat.apply(p);
+  }
+
+  p.morphPoints=(p.morphPoints||0)+1;
+  p.abilityPoints=(p.abilityPoints||0)+1;
+  state.morphCore=state.morphCore||{totalMorphs:0};
+  state.morphCore.totalMorphs=(state.morphCore.totalMorphs||0)+1;
+
+  pushLog(p,"MORPHED → "+f.name+" • Stage "+p.evolutionStage);
+  toast("✨ MORPH COMPLETE • "+(p.name)+" → "+f.name);
+  save();
+  renderMorphMain();
+  setTimeout(()=>{
+    const el=document.querySelector(".vmm-face");
+    if(el)el.classList.add("pulse");
+  },30);
+};
+
+window.vmmMutate=function(){
+  const p=activePet();if(!p)return;
+  const cost=600;
+  if((p.morphEnergy||0)<cost){toast("Need 600 Morph Energy to mutate.");return}
+  p.morphEnergy-=cost;
+  p.mutations=p.mutations||[];
+  const pool=MUTATION_POOL.filter(m=>!p.mutations.includes(m));
+  if(!pool.length){toast("All mutations discovered.");p.morphEnergy+=cost;return}
+  const pick=pool[Math.floor(Math.random()*pool.length)];
+  p.mutations.push(pick);
+  p.featurePoints=(p.featurePoints||0)+1;
+  p.morphPoints=(p.morphPoints||0)+1;
+  p.rarity=computeRarity(p);
+  const stats=["power","speed","armor","instinct","adaptation"];
+  const sk=stats[Math.floor(Math.random()*stats.length)];
+  p[sk]=Math.min(100,(p[sk]||20)+3);
+  pushLog(p,"MUTATION • "+pick);
+  toast("🧬 MUTATION • "+pick);
+  save();renderMorphMain();
+};
+
+window.vmmUnlockFeature=function(fid){
+  const p=activePet();if(!p)return;
+  const cat=FEATURE_CATALOG.find(x=>x.id===fid);if(!cat)return;
+  if((p.features||[]).includes(fid)){toast("Already owned.");return}
+  if((p.featurePoints||0)<cat.cost){toast("Need "+cat.cost+" Feature Points.");return}
+  if(cat.cost>=2 && (p.evolutionStage||0)<1){toast("Morph at least once first.");return}
+  if(cat.cost>=3 && (p.evolutionStage||0)<2){toast("Reach Stage 2 first.");return}
+  p.featurePoints-=cat.cost;
+  p.features=p.features||[];
+  p.features.push(fid);
+  if(cat.apply)cat.apply(p);
+  p.rarity=computeRarity(p);
+  pushLog(p,"FEATURE UNLOCKED • "+fid);
+  toast("⚡ FEATURE • "+fid);
+  save();renderMorphMain();
+};
+
+window.vmmOpenLab=function(){
+  if(typeof openCreatureLab==="function")openCreatureLab();
+};
+
+function pushLog(p,msg){
+  state.morphMainLog=state.morphMainLog||[];
+  state.morphMainLog.unshift((p.formName||p.name)+": "+msg);
+  if(state.morphMainLog.length>40)state.morphMainLog.length=40;
+}
+
+function renderMorphMain(){
+  const root=document.getElementById("vgMorphMain");
+  if(!root||!root.classList.contains("open"))return;
+  const pets=state.pets||[];
+  const p=activePet();
+
+  if(!pets.length){
+    root.innerHTML=`<div class="vmm-wrap">
+      <div class="vmm-top"><div class="vmm-title">🧬 MORPH GAME</div><button class="vmm-btn" onclick="vmmClose()">Close</button></div>
+      <div class="vmm-card"><h3>No companions yet</h3>
+      <p>Finish treating a patient and choose <b>Keep in My Pets</b>. That animal becomes your morph companion.</p>
+      <button class="vmm-btn primary" onclick="vmmClose()">Back to Hospital</button></div></div>`;
+    return;
+  }
+
+  const allRelevant=FORM_TREE.filter(f=>f.stage<=(p.evolutionStage||0)+1 || (p.formsUnlocked||[]).includes(f.id));
+
+  root.innerHTML=`<div class="vmm-wrap">
+  <div class="vmm-top">
+    <div>
+      <div class="vmm-eyebrow">MAIN GAMEPLAY HUB</div>
+      <div class="vmm-title">🧬 MORPH GAME</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="vmm-btn" onclick="vmmOpenLab()">Classic Lab</button>
+      <button class="vmm-btn" onclick="vmmClose()">Close</button>
+    </div>
+  </div>
+
+  <div class="vmm-hub">
+    <div class="vmm-hub-btn" onclick="document.getElementById('vmm-chamber')?.scrollIntoView({behavior:'smooth'})"><b>🧬 Morph Chamber</b><small>Evolve forms & spend points</small></div>
+    <div class="vmm-hub-btn" onclick="document.getElementById('vmm-features')?.scrollIntoView({behavior:'smooth'})"><b>⚡ Features</b><small>Unlock permanent traits</small></div>
+    <div class="vmm-hub-btn" onclick="document.getElementById('vmm-mutate')?.scrollIntoView({behavior:'smooth'})"><b>✨ Mutate</b><small>Discover new biology</small></div>
+    <div class="vmm-hub-btn" onclick="typeof vgccOpen==='function'&&vgccOpen()"><b>🃏 Story Deck</b><small>Linked progression</small></div>
+  </div>
+
+  <div class="vmm-grid">
+    <div>
+      <div class="vmm-card">
+        <div class="vmm-eyebrow">COMPANIONS</div>
+        <div class="vmm-petlist">
+          ${pets.map(x=>`<div class="vmm-pet ${p&&p.name===x.name?'sel':''}" onclick="vmmSelect('${esc(x.name)}')">
+            <div class="f">${x.emoji||'🐾'}</div>
+            <b style="font-size:12px">${esc(x.formName||x.name)}</b>
+            <small>St ${x.evolutionStage||0} • ${x.morphEnergy||0}⚡</small>
+          </div>`).join('')}
+        </div>
+      </div>
+
+      <div class="vmm-card" style="margin-top:10px" id="vmm-chamber">
+        <div class="vmm-form-preview">
+          <div class="vmm-eyebrow">ACTIVE FORM</div>
+          <div class="vmm-face">${p.emoji||'🐾'}</div>
+          <b style="font-size:20px">${esc(p.formName||p.name)}</b>
+          <div style="color:#8fb0bd;font-size:13px;margin-top:4px">${esc(p.name)} • ${esc(p.species||'Creature')} • ${esc(p.rarity||'COMMON')}</div>
+          <div class="vmm-points">
+            <span class="vmm-chip">⚡ <b>${p.morphEnergy||0}</b> Energy</span>
+            <span class="vmm-chip">MP <b>${p.morphPoints||0}</b></span>
+            <span class="vmm-chip">FP <b>${p.featurePoints||0}</b></span>
+            <span class="vmm-chip">Stage <b>${p.evolutionStage||0}</b></span>
+            <span class="vmm-chip">Lv <b>${p.level||1}</b></span>
+          </div>
+          <div class="vmm-bar"><i style="width:${Math.min(100,(p.morphEnergy||0)/12)}%"></i></div>
+          <div class="vmm-tags">
+            ${(p.dna||[]).map(d=>`<span class="vmm-tag dna">${esc(d)}</span>`).join('')}
+            ${(p.mutations||[]).map(m=>`<span class="vmm-tag mut">${esc(m)}</span>`).join('')}
+            ${p.formName?`<span class="vmm-tag form">${esc(p.formName)}</span>`:''}
+          </div>
+        </div>
+
+        <div class="vmm-eyebrow">CORE STATS — spend Morph Points</div>
+        <div class="vmm-stats">
+          ${["power","speed","armor","instinct","adaptation"].map(k=>`
+            <div class="vmm-stat">
+              <small>${k}</small>
+              <b>${p[k]||20}</b>
+              <button onclick="vmmSpendStat('${k}')" ${(p.morphPoints||0)<1?"disabled":""}>+5</button>
+            </div>`).join('')}
+        </div>
+        <div class="vmm-actions">
+          <button class="vmm-btn" onclick="vmmCare()">💚 CARE (+Energy)</button>
+          <button class="vmm-btn" onclick="vmmTrain()">🏋️ TRAIN (+Energy)</button>
+          <button class="vmm-btn warn" onclick="vmmConvert()">250⚡ → 1 MP</button>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="vmm-card">
+        <div class="vmm-eyebrow">MORPH PATHS</div>
+        <h3>Choose a form to evolve into</h3>
+        <p style="font-size:12px;color:#8fb0bd;margin-bottom:8px">Morphing spends Morph Energy, changes the creature's form (name + icon), boosts stats, and unlocks features.</p>
+        <div class="vmm-path">
+          ${allRelevant.map(f=>{
+            const st=pathStatus(p,f);
+            return `<div class="vmm-path-item ${st}">
+              <div class="ico">${f.emoji}</div>
+              <div>
+                <b>${esc(f.name)} <span style="opacity:.6">· Stage ${f.stage}</span></b>
+                <small>${esc(f.desc)}</small>
+                <small style="display:block;margin-top:3px">Cost ${f.cost}⚡ • ${st==="ready"?"READY":st==="done"?"UNLOCKED":"LOCKED"}</small>
+              </div>
+              <button class="vmm-btn ${st==="ready"?"primary":""}" ${st!=="ready"?"disabled":""} onclick="vmmMorph('${f.id}')">${st==="done"?"✓":"MORPH"}</button>
+            </div>`;
+          }).join('')||'<div class="notice">Build bond and Morph Energy to reveal forms.</div>'}
+        </div>
+      </div>
+
+      <div class="vmm-card" style="margin-top:10px" id="vmm-mutate">
+        <div class="vmm-eyebrow">MUTATION FORGE</div>
+        <h3>Discover permanent traits</h3>
+        <p style="font-size:12px;color:#8fb0bd">Spend 600⚡ to roll a unique mutation. Mutations raise rarity and grant Feature Points.</p>
+        <div class="vmm-tags">${(p.mutations||[]).length?(p.mutations.map(m=>`<span class="vmm-tag mut">${esc(m)}</span>`).join('')):'No mutations yet.'}</div>
+        <div class="vmm-actions">
+          <button class="vmm-btn primary" onclick="vmmMutate()">🧬 MUTATE • 600⚡</button>
+        </div>
+      </div>
+
+      <div class="vmm-card" style="margin-top:10px" id="vmm-features">
+        <div class="vmm-eyebrow">FEATURE MATRIX</div>
+        <h3>Permanent creature features</h3>
+        <p style="font-size:12px;color:#8fb0bd">Feature Points (FP) come from morphs and mutations. Spend them on lasting powers.</p>
+        <div style="margin-top:8px">
+          ${FEATURE_CATALOG.map(f=>{
+            const owned=(p.features||[]).includes(f.id);
+            return `<div class="vmm-feature ${owned?"":"locked"}">
+              <b>${esc(f.id)} ${owned?"✓":""}</b>
+              <small style="color:#8fb0bd">${esc(f.desc)}</small>
+              ${owned?"":`<div style="margin-top:6px"><button class="vmm-btn" ${(p.featurePoints||0)<f.cost?"disabled":""} onclick="vmmUnlockFeature('${esc(f.id)}')">UNLOCK • ${f.cost} FP</button></div>`}
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+
+      <div class="vmm-card" style="margin-top:10px">
+        <div class="vmm-eyebrow">MORPH LOG</div>
+        <div class="vmm-log">${(state.morphMainLog||[]).slice(0,12).map(x=>`<div>${esc(x)}</div>`).join('')||'<div>Morph activity will appear here.</div>'}</div>
+      </div>
+    </div>
+  </div>
+</div>`;
+}
+
+window.vmmOpen=function(){
+  ensureShell();
+  const p=activePet();
+  if(p)ensurePet(p);
+  const root=document.getElementById("vgMorphMain");
+  root.classList.add("open");
+  renderMorphMain();
+};
+window.vmmClose=function(){
+  const root=document.getElementById("vgMorphMain");
+  if(root)root.classList.remove("open");
+};
+
+function ensureShell(){
+  if(!document.getElementById("vgMorphMain")){
+    const d=document.createElement("div");d.id="vgMorphMain";document.body.appendChild(d);
+  }
+  if(!document.getElementById("vgMorphMainBtn")){
+    const b=document.createElement("button");
+    b.id="vgMorphMainBtn";
+    b.textContent="🧬 MORPH GAME";
+    b.onclick=()=>vmmOpen();
+    document.body.appendChild(b);
+  }
+}
+
+const _oldKeep=window.keepPet;
+if(typeof _oldKeep==="function"){
+  window.keepPet=function(){
+    const before=(state.pets||[]).map(x=>x.name);
+    _oldKeep();
+    const added=(state.pets||[]).find(x=>!before.includes(x.name))||(state.pets||[]).slice(-1)[0];
+    if(added){
+      ensurePet(added);
+      state.morphLab=state.morphLab||{};
+      state.morphLab.selected=added.name;
+      state.unifiedJourney=state.unifiedJourney||{};
+      state.unifiedJourney.active=added.name;
+      setTimeout(()=>{vmmOpen();toast("🐾 "+added.name+" is ready to morph!");},100);
+    }
+  };
+}
+
+const _oldVguMorph=window.vguMorph;
+window.vguMorph=function(){
+  const p=activePet();
+  if(p){state.morphLab.selected=p.name}
+  vmmOpen();
+};
+
+addEventListener("load",()=>{
+  ensureShell();
+  (state.pets||[]).forEach(ensurePet);
+});
+})();
+</script>
+
 </body>
 </html>
