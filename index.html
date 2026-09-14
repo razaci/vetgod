@@ -586,6 +586,95 @@ button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
 @media(max-width:760px){.vgm-dashboard{grid-template-columns:1fr}.vgm-points{grid-template-columns:1fr 1fr}.vgm-upgrades{grid-template-columns:1fr}#vgMorphCoreBtn{bottom:8px}}
 </style>
 
+
+<style id="vg-storypath-css">
+#vgStoryBtn{
+ position:fixed;left:14px;bottom:14px;z-index:161;min-height:52px;padding:0 16px;
+ border-radius:16px;border:1px solid #63b4ff;background:linear-gradient(180deg,#1f4260,#112838);
+ color:white;font-weight:1000;box-shadow:0 12px 34px #0008
+}
+#vgStoryPath{
+ position:fixed;inset:0;z-index:240;background:rgba(2,7,12,.95);display:none;overflow:auto;
+ padding:14px;-webkit-overflow-scrolling:touch
+}
+#vgStoryPath.open{display:block}
+.vgs-wrap{max-width:980px;margin:auto}
+.vgs-top{position:sticky;top:0;z-index:5;background:#071018;padding:8px 0 12px;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.vgs-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.vgs-card{border:1px solid #38566c;border-radius:16px;background:linear-gradient(150deg,#0f1d2b,#0b1522);padding:14px}
+.vgs-companion{display:flex;gap:12px;align-items:center}.vgs-face{font-size:58px}
+.vgs-node{padding:11px;margin:8px 0;border:1px solid #385b74;border-radius:12px;background:#0c1b28}
+.vgs-node.current{border-color:#8c78ff;box-shadow:0 0 22px #8b75ff22}
+.vgs-node.done{opacity:.65}.vgs-node.locked{opacity:.35}
+.vgs-node button{width:100%;min-height:40px;margin-top:7px;border-radius:8px;border:1px solid #4c7286;background:#17394b;font-weight:850}
+.vgs-result{padding:12px;border-radius:12px;background:#10142b;border:1px solid #6a5db5;margin-top:10px}
+.vgs-choice{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.vgs-choice button{min-height:44px;border-radius:9px;border:1px solid #6755c7;background:#28204d;font-weight:900}
+.vgs-log{max-height:300px;overflow:auto;font-size:11px;line-height:1.45}
+.vgs-statline{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #233747;padding:5px 0}
+.vgs-reward{color:#ffd166;font-weight:900}
+@media(max-width:760px){.vgs-grid{grid-template-columns:1fr}.vgs-choice{grid-template-columns:1fr}#vgStoryBtn{bottom:70px}}
+</style>
+
+
+<style id="vg-morph-adventure-css">
+#vgAdventureCoreBtn{position:fixed;right:14px;bottom:14px;z-index:164;min-height:52px;padding:0 15px;border-radius:16px;border:1px solid #ffb84f;background:linear-gradient(#573b19,#30200e);color:#fff;font-weight:1000;box-shadow:0 12px 32px #0008}
+#vgAdventureCore{position:fixed;inset:0;z-index:250;background:rgba(2,6,11,.96);display:none;overflow:auto;padding:12px;-webkit-overflow-scrolling:touch}
+#vgAdventureCore.open{display:block}.vga-wrap{max-width:1040px;margin:auto}.vga-top{position:sticky;top:0;z-index:6;background:#071018;padding:8px 0 12px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.vga-tabs{display:flex;gap:6px;overflow:auto;padding:5px 0}.vga-tabs button{white-space:nowrap;min-height:38px;border-radius:9px;border:1px solid #40596d;background:#102435;font-weight:850}.vga-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.vga-card{border:1px solid #3b5266;border-radius:15px;background:linear-gradient(150deg,#101d2b,#0a1521);padding:13px}.vga-region{padding:12px;border:1px solid #3b5266;border-radius:12px;margin:7px 0;background:#0c1a27}.vga-region.current{border-color:#ffb84f}.vga-region.locked{opacity:.4}.vga-team{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.vga-slot{min-height:100px;border:1px dashed #596d7c;border-radius:11px;display:grid;place-items:center;text-align:center;padding:7px}.vga-face{font-size:40px}.vga-move{padding:9px;border:1px solid #42566c;border-radius:10px;background:#101b2c;margin:6px 0}.vga-move button{width:100%;min-height:38px;margin-top:5px}.vga-codex{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:7px}.vga-entry{padding:9px;border:1px solid #344b5d;border-radius:10px;background:#0b1925}.vga-entry.unknown{filter:grayscale(1);opacity:.45}.vga-big{font-size:50px}.vga-xp{height:8px;background:#142333;border-radius:99px;overflow:hidden}.vga-xp i{display:block;height:100%;background:linear-gradient(90deg,#ffb84f,#9b7cff)}.vga-battlelog{max-height:190px;overflow:auto;font-size:11px;line-height:1.45;background:#07131d;padding:9px;border-radius:9px}.vga-boss{border-color:#a75cff;box-shadow:0 0 25px #a75cff22}.vga-silhouette{font-size:46px;filter:brightness(0);opacity:.7}
+@media(max-width:760px){.vga-grid{grid-template-columns:1fr}.vga-team{grid-template-columns:1fr 1fr 1fr}#vgAdventureCoreBtn{right:8px;bottom:128px}}
+</style>
+
+
+<style id="vg-card-campaign-css">
+#vgCardCampaignBtn{position:fixed;left:50%;top:70px;transform:translateX(-50%);z-index:170;min-height:48px;padding:0 17px;border-radius:14px;border:1px solid #f0c14b;background:linear-gradient(#5b4215,#2b210e);color:#fff;font-weight:1000;box-shadow:0 10px 28px #0009}
+#vgCardCampaign{position:fixed;inset:0;z-index:270;background:rgba(2,6,10,.97);display:none;overflow:auto;padding:12px;-webkit-overflow-scrolling:touch}
+#vgCardCampaign.open{display:block}.vgcc-wrap{max-width:1040px;margin:auto}.vgcc-top{position:sticky;top:0;z-index:8;background:#071018;padding:8px 0 12px;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.vgcc-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:12px}.vgcc-card{border:1px solid #40596b;border-radius:17px;background:linear-gradient(150deg,#101d2b,#09131e);padding:14px;box-shadow:0 12px 30px #0005}
+.vgcc-storycard{min-height:330px;border:1px solid #79662c;border-radius:19px;background:radial-gradient(circle at 50% 15%,#3a3020,#111a24 48%,#09121b);padding:18px;display:flex;flex-direction:column;justify-content:space-between}
+.vgcc-art{font-size:86px;text-align:center;filter:drop-shadow(0 8px 18px #000)}.vgcc-title{font-size:25px;font-weight:1000}.vgcc-flavor{font-size:13px;line-height:1.5;color:#c5d2d8}
+.vgcc-hand{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.vgcc-action{padding:11px;border:1px solid #435a72;border-radius:12px;background:#101b2d;cursor:pointer}.vgcc-action:hover{border-color:#a68cff}.vgcc-action b{display:block}.vgcc-action small{color:#9eb1bd}
+.vgcc-action button{width:100%;min-height:39px;margin-top:7px;border-radius:8px;border:1px solid #6d59c4;background:#29204c;font-weight:900}.vgcc-action.locked{opacity:.4}
+.vgcc-progress{display:flex;gap:5px;margin:8px 0}.vgcc-progress i{height:7px;flex:1;border-radius:99px;background:#1a2936}.vgcc-progress i.on{background:#f0c14b}.vgcc-loot{color:#ffd166;font-weight:900}
+.vgcc-morphgate{border-color:#8f6cff;background:linear-gradient(145deg,#231944,#0d2030)}.vgcc-log{max-height:200px;overflow:auto;font-size:11px;line-height:1.45}
+@media(max-width:760px){.vgcc-grid{grid-template-columns:1fr}.vgcc-hand{grid-template-columns:1fr}#vgCardCampaignBtn{top:auto;bottom:188px}}
+</style>
+
+
+<style id="vg-full-cardgame-css">
+#vgccGameShell{display:grid;grid-template-columns:1fr 1.15fr;gap:12px;margin-top:10px}
+.vgcc-board{border:1px solid #4c6174;border-radius:16px;background:linear-gradient(155deg,#0e1825,#08111a);padding:12px}
+.vgcc-zone{border:1px solid #30485d;border-radius:12px;background:#0a1621;padding:10px;margin-bottom:9px}
+.vgcc-bars{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.vgcc-bar{height:10px;border-radius:99px;background:#162432;overflow:hidden}
+.vgcc-bar i{display:block;height:100%;background:linear-gradient(90deg,#f0c14b,#8a70ff)}
+.vgcc-enemybar i{background:linear-gradient(90deg,#ff8a66,#b94d65)}
+.vgcc-hand2{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.vgcc-playcard{border:1px solid #52657a;border-radius:12px;background:linear-gradient(160deg,#132236,#0b1724);padding:10px;min-height:150px;display:flex;flex-direction:column;justify-content:space-between}
+.vgcc-playcard .cost{float:right;font-size:18px;font-weight:1000}
+.vgcc-playcard button{width:100%;min-height:38px;margin-top:8px}
+.vgcc-playcard.disabled{opacity:.4}
+.vgcc-status{display:flex;flex-wrap:wrap;gap:6px}
+.vgcc-chip{padding:5px 8px;border:1px solid #43596c;border-radius:99px;background:#102333;font-size:11px;font-weight:800}
+.vgcc-turnlog{height:170px;overflow:auto;background:#06101a;border-radius:9px;padding:8px;font-size:11px;line-height:1.45}
+.vgcc-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.vgcc-actions button{min-height:42px}
+.vgcc-end{padding:22px;text-align:center;border:1px solid #7866d7;border-radius:16px;background:linear-gradient(145deg,#211740,#0e1a2a)}
+@media(max-width:780px){#vgccGameShell{grid-template-columns:1fr}.vgcc-hand2{grid-template-columns:1fr}.vgcc-actions{grid-template-columns:1fr 1fr}}
+</style>
+
+
+<style id="vg-unified-loop-css">
+.vgu-console{border:1px solid #7d6ae0;border-radius:16px;background:linear-gradient(145deg,#1b1732,#0c1d2a);padding:14px;margin:10px 0;box-shadow:0 0 30px #7964df22}
+.vgu-path{display:flex;gap:5px;overflow:auto;margin:8px 0 12px}.vgu-path span{white-space:nowrap;padding:7px 9px;border:1px solid #3b5267;border-radius:99px;font-size:10px;font-weight:900}.vgu-path span.on{border-color:#f0c14b;background:#392f16}
+.vgu-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.vgu-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.vgu-actions button{min-height:44px}
+.vgu-req{border:1px solid #415b6d;border-radius:11px;padding:10px;background:#0a1722;margin:8px 0}.vgu-req.ready{border-color:#58c890;background:#10271f}.vgu-req b{display:block}
+.vgu-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}.vgu-stat{padding:7px;border:1px solid #334b5c;border-radius:9px;text-align:center;background:#091722}.vgu-stat b{display:block;font-size:16px}
+.vgu-reveal{padding:13px;border:1px solid #c7a74b;border-radius:12px;background:#2a2414;margin:9px 0}.vgu-reveal b{color:#ffe083}
+.vgu-return{width:100%;min-height:44px;margin-top:8px;border-radius:9px;border:1px solid #8b72ff;background:#2c2258;color:#fff;font-weight:1000}
+@media(max-width:760px){.vgu-grid{grid-template-columns:1fr}.vgu-stats{grid-template-columns:repeat(3,1fr)}}
+</style>
+
 </head>
 <body>
 <div class="shell">
@@ -3112,6 +3201,808 @@ function mainButton(){
  document.body.appendChild(b);
 }
 addEventListener("load",()=>{coreInit();mainButton();});
+})();
+</script>
+
+
+<script id="vg-storypath-js">
+(function(){
+'use strict';
+
+const STORY=[
+ {id:"signal",title:"The Broken Signal",text:"A rescue beacon flickers beyond the sanctuary perimeter.",need:p=>(p.power||0)+(p.instinct||0)>=45,check:"POWER + INSTINCT 45",reward:{energy:120,points:1,funds:300}},
+ {id:"ravine",title:"Ravine Crossing",text:"A collapsed route blocks access to stranded animals.",need:p=>(p.speed||0)+(p.adaptation||0)>=50,check:"SPEED + ADAPTATION 50",reward:{energy:160,points:1,funds:450}},
+ {id:"night",title:"The Night Trail",text:"Something is moving in the dark around the field camp.",need:p=>(p.instinct||0)>=30 || (p.abilities||[]).includes("Night Sight"),check:"INSTINCT 30 or Night Sight",reward:{energy:180,ability:1,funds:500}},
+ {id:"storm",title:"Storm Shelter",text:"A violent storm traps a rescue crew with injured wildlife.",need:p=>(p.armor||0)+(p.power||0)>=55,check:"ARMOR + POWER 55",reward:{energy:220,points:2,funds:700}},
+ {id:"ruins",title:"Ruins of the Old Lab",text:"The abandoned morph lab contains unstable genetics equipment.",need:p=>(p.adaptation||0)>=35 && (p.evolutionStage||0)>=1,check:"ADAPTATION 35 + MORPH STAGE 1",reward:{energy:260,points:2,funds:900}},
+ {id:"guardian",title:"Guardian Trial",text:"Your companion must protect evacuees during a regional crisis.",need:p=>(p.power||0)+(p.armor||0)+(p.bond||0)>=120,check:"POWER + ARMOR + BOND 120",reward:{energy:320,ability:1,funds:1200}},
+ {id:"rift",title:"The Morph Rift",text:"A strange energy field is changing wildlife nearby.",need:p=>(p.evolutionStage||0)>=2 && (p.mutations||[]).length>=1,check:"MORPH STAGE 2 + 1 MUTATION",reward:{energy:450,points:3,funds:1800}},
+ {id:"sanctuary",title:"Sanctuary Defense",text:"Your trained creature leads the final defense of the sanctuary network.",need:p=>(p.power||0)+(p.speed||0)+(p.armor||0)+(p.instinct||0)+(p.adaptation||0)>=160,check:"TOTAL CORE STATS 160",reward:{energy:600,points:4,ability:2,funds:3000}}
+];
+
+function initStory(){
+ state.storyPath=state.storyPath||{activePet:null,step:0,completed:[],branch:"",log:[],runs:0};
+}
+function pet(){initStory();return (state.pets||[]).find(p=>p.name===state.storyPath.activePet)||(state.pets||[])[0]||null;}
+function esc(s){return String(s).replace(/\\/g,"\\\\").replace(/'/g,"\\'")}
+function eh(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function openStory(){
+ initStory();if(!state.storyPath.activePet&&state.pets&&state.pets[0])state.storyPath.activePet=state.pets[0].name;
+ renderStory();document.getElementById("vgStoryPath").classList.add("open");
+}
+window.openStoryPath=openStory;
+window.closeStoryPath=()=>document.getElementById("vgStoryPath").classList.remove("open");
+
+window.vgsCyclePet=function(){
+ const pets=state.pets||[];if(!pets.length)return;
+ let i=pets.findIndex(x=>x.name===state.storyPath.activePet);state.storyPath.activePet=pets[(i+1)%pets.length].name;
+ renderStory();
+}
+window.vgsRunNode=function(i){
+ const p=pet(),n=STORY[i];if(!p||!n)return;
+ if(i!==state.storyPath.step)return;
+ if(!n.need(p)){
+  state.storyPath.log.unshift("FAILED • "+n.title+" • Need "+n.check);
+  p.morphEnergy=(p.morphEnergy||0)+25;
+  if(typeof toast==="function")toast("Story challenge failed • train or morph your creature");
+  save&&save();renderStory();return;
+ }
+ p.morphEnergy=(p.morphEnergy||0)+(n.reward.energy||0);
+ p.morphPoints=(p.morphPoints||0)+(n.reward.points||0);
+ p.abilityPoints=(p.abilityPoints||0)+(n.reward.ability||0);
+ state.funds=(state.funds||0)+(n.reward.funds||0);
+ state.storyPath.completed.push(n.id);state.storyPath.step++;state.storyPath.runs++;
+ state.storyPath.log.unshift("SUCCESS • "+n.title+" • +"+n.reward.energy+" Morph Energy • +$"+n.reward.funds);
+ if(i===2 && !state.storyPath.branch) state.storyPath.branch="guardian";
+ if(typeof toast==="function")toast("📖 STORY CLEARED • "+n.title);
+ if(typeof save==="function")save();if(typeof render==="function")render();renderStory();
+}
+window.vgsChooseBranch=function(b){
+ state.storyPath.branch=b;
+ state.storyPath.log.unshift("STORY PATH CHOSEN • "+(b==="guardian"?"Guardian Route":"Explorer Route"));
+ if(typeof save==="function")save();renderStory();
+}
+function rewardsText(r){let a=[];if(r.energy)a.push("+"+r.energy+"⚡");if(r.points)a.push("+"+r.points+" Morph Point");if(r.ability)a.push("+"+r.ability+" AP");if(r.funds)a.push("+$"+r.funds);return a.join(" • ")}
+function renderStory(){
+ initStory();const panel=document.getElementById("vgStoryPath");if(!panel)return;const p=pet();
+ panel.innerHTML=`<div class="vgs-wrap">
+ <div class="vgs-top"><div><div class="eyebrow">STORY PATH</div><div style="font-size:30px;font-weight:1000">Companion Expeditions</div></div><button class="btn" onclick="closeStoryPath()">Close</button></div>
+ <div class="vgs-grid">
+  <div class="vgs-card">
+   <div class="eyebrow">ACTIVE COMPANION</div>
+   ${p?`<div class="vgs-companion"><div class="vgs-face">${p.emoji||"🐾"}</div><div><b style="font-size:20px">${eh(p.formName||p.name)}</b><div>${eh(p.name)} • ${eh(p.rarity||"COMMON")}</div><div>${(p.dna||[]).join(" • ")}</div></div></div>
+   <div class="vgs-statline"><span>Power</span><b>${p.power||0}</b></div><div class="vgs-statline"><span>Speed</span><b>${p.speed||0}</b></div><div class="vgs-statline"><span>Armor</span><b>${p.armor||0}</b></div><div class="vgs-statline"><span>Instinct</span><b>${p.instinct||0}</b></div><div class="vgs-statline"><span>Adaptation</span><b>${p.adaptation||0}</b></div>
+   <button class="btn" style="width:100%;margin-top:8px" onclick="vgsCyclePet()">Switch Companion</button>`:'<div>No My Pets creature available yet.</div>'}
+   ${p&&state.storyPath.step>=3?`<div class="vgs-result"><b>Story Specialization</b><div class="vgs-choice"><button onclick="vgsChooseBranch('guardian')">🛡 Guardian Route</button><button onclick="vgsChooseBranch('explorer')">🧭 Explorer Route</button></div><small>Current: ${state.storyPath.branch||"Unchosen"}</small></div>`:''}
+  </div>
+  <div class="vgs-card">
+   <div class="eyebrow">EXPEDITION MAP</div>
+   ${STORY.map((n,i)=>{let cls=i<state.storyPath.step?"done":i===state.storyPath.step?"current":"locked";return `<div class="vgs-node ${cls}"><b>${i+1}. ${n.title}</b><div>${n.text}</div><small>Check: ${n.check}</small><div class="vgs-reward">${rewardsText(n.reward)}</div><button ${i===state.storyPath.step?"":"disabled"} onclick="vgsRunNode(${i})">${i<state.storyPath.step?"COMPLETED":i===state.storyPath.step?"BEGIN CHALLENGE":"LOCKED"}</button></div>`}).join("")}
+  </div>
+ </div>
+ <div class="vgs-card" style="margin-top:12px"><div class="eyebrow">FIELD LOG</div><div class="vgs-log">${state.storyPath.log.length?state.storyPath.log.map(x=>"<div>"+eh(x)+"</div>").join(""):"No expeditions completed yet."}</div></div>
+ </div>`;
+}
+function ensureUI(){
+ if(!document.getElementById("vgStoryPath")){const d=document.createElement("div");d.id="vgStoryPath";document.body.appendChild(d)}
+ if(!document.getElementById("vgStoryBtn")){const b=document.createElement("button");b.id="vgStoryBtn";b.textContent="📖 STORY PATH";b.onclick=openStory;document.body.appendChild(b)}
+}
+addEventListener("load",()=>{initStory();ensureUI()});
+})();
+</script>
+
+
+<script id="vg-morph-point-spend-fix">
+(function(){
+'use strict';
+
+/*
+ Fixes Morph Point spending after evolution (including Tide Form).
+ Root protection:
+ - resolve the active creature by stable pet name first
+ - fall back to current selected object / displayed form
+ - normalize missing morph stats/points
+ - refresh both Creature Lab and Story Path after spending
+*/
+function vgResolveMorphPet(){
+  if(!window.state || !Array.isArray(state.pets)) return null;
+
+  const selected = state.morphLab && state.morphLab.selected;
+  if(selected){
+    let p = state.pets.find(x => x && x.name === selected);
+    if(p) return p;
+
+    // Fallback if another UI accidentally stored a form name instead of the pet name.
+    p = state.pets.find(x => x && x.formName === selected);
+    if(p){
+      state.morphLab.selected = p.name;
+      return p;
+    }
+  }
+
+  // Story companion fallback.
+  const storyName = state.storyPath && state.storyPath.activePet;
+  if(storyName){
+    const p = state.pets.find(x => x && x.name === storyName);
+    if(p){
+      state.morphLab = state.morphLab || {};
+      state.morphLab.selected = p.name;
+      return p;
+    }
+  }
+
+  const p = state.pets[0] || null;
+  if(p){
+    state.morphLab = state.morphLab || {};
+    state.morphLab.selected = p.name;
+  }
+  return p;
+}
+
+function vgNormalizeMorphPet(p){
+  if(!p) return;
+  if(!Number.isFinite(Number(p.morphPoints))) p.morphPoints = 3;
+  p.morphPoints = Math.max(0, Number(p.morphPoints));
+
+  ["power","speed","armor","instinct","adaptation"].forEach(k=>{
+    if(!Number.isFinite(Number(p[k]))) p[k] = 20;
+    p[k] = Math.max(0, Math.min(100, Number(p[k])));
+  });
+
+  if(!Number.isFinite(Number(p.abilityPoints))) p.abilityPoints = 1;
+  if(!Number.isFinite(Number(p.morphEnergy))) p.morphEnergy = 0;
+}
+
+window.vgmSpend = function(stat){
+  const allowed = ["power","speed","armor","instinct","adaptation"];
+  if(!allowed.includes(stat)) return;
+
+  const p = vgResolveMorphPet();
+  if(!p){
+    if(typeof toast === "function") toast("No active morph creature selected.");
+    return;
+  }
+
+  vgNormalizeMorphPet(p);
+
+  if(p.morphPoints < 1){
+    if(typeof toast === "function") toast("No Morph Points available • convert Morph Energy or earn more in Story Path.");
+    return;
+  }
+
+  if(p[stat] >= 100){
+    if(typeof toast === "function") toast(stat.toUpperCase()+" is already maxed.");
+    return;
+  }
+
+  p.morphPoints -= 1;
+  p[stat] = Math.min(100, p[stat] + 5);
+
+  // Keep selection anchored to the original pet identity even after morphing.
+  state.morphLab = state.morphLab || {};
+  state.morphLab.selected = p.name;
+
+  if(typeof save === "function") save();
+
+  if(typeof toast === "function"){
+    toast("🧬 "+(p.formName || p.name)+" • "+stat.toUpperCase()+" +5 • "+p.morphPoints+" Morph Point"+(p.morphPoints===1?"":"s")+" left");
+  }
+
+  if(typeof renderCreatureLab === "function") renderCreatureLab();
+  if(typeof renderStory === "function"){
+    try{ renderStory(); }catch(e){}
+  }
+  if(typeof render === "function"){
+    try{ render(); }catch(e){}
+  }
+};
+
+// Also repair selections on load/open so evolved names never break spending.
+function repairSelection(){
+  const p = vgResolveMorphPet();
+  if(p){
+    vgNormalizeMorphPet(p);
+    if(typeof save === "function") save();
+  }
+}
+addEventListener("load", repairSelection);
+
+document.addEventListener("click", function(e){
+  const b = e.target.closest && e.target.closest("button");
+  if(!b) return;
+  const t = (b.textContent || "").toLowerCase();
+  if(t.includes("morph game") || t.includes("creature lab") || t.includes("spend 1 morph point")){
+    setTimeout(repairSelection, 0);
+  }
+}, true);
+
+})();
+</script>
+
+
+<script id="vg-morph-adventure-js">
+(function(){
+'use strict';
+const REGIONS=[
+ ["Tidal Reach","🌊","Aquatic","Flooded ruins, reefs and coastal rescues."],
+ ["Frozen Expanse","❄️","Arctic","Ice fields, blizzards and lost rescue teams."],
+ ["Verdant Wilds","🌿","Forest","Ancient forest routes and hidden creatures."],
+ ["Ember Basin","🌋","Power","Volcanic terrain and unstable habitats."],
+ ["Nocturne Zone","🌙","Night","Dark expeditions where instinct matters."],
+ ["Storm Frontier","⚡","Speed","Lightning fields and high-speed rescues."],
+ ["Genesis Ruins","🧬","Evolved","Endgame genetics region and mythic discoveries."]
+];
+const MOVES=[
+ ["Guard","Guardian",12],["Tidal Rush","Aquatic",16],["Frost Veil","Arctic",15],["Sky Strike","Flight",16],["Night Sight","Night",13],["Venom Control","Venom",17],["Armor Wall","Armor",16],["Storm Dash","Speed",17],["Wild Instinct","Instinct",14],["Adapt","Adaptation",12]
+];
+function init(){
+ state.adventureCore=state.adventureCore||{tab:"TEAM",team:[],region:0,encounter:null,log:[],codex:{},research:0,bosses:[],discoveries:0};
+ (state.pets||[]).forEach(p=>{
+  p.level=p.level||1;p.xp=p.xp||0;p.equippedMoves=p.equippedMoves||[];
+  p.traitSlots=p.traitSlots||{head:null,body:null,aura:null};
+  state.adventureCore.codex[p.name]=true;
+ });
+}
+function eh(x){return String(x??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function teamPets(){return state.adventureCore.team.map(n=>(state.pets||[]).find(p=>p.name===n)).filter(Boolean)}
+function active(){return teamPets()[0]||(state.pets||[])[0]}
+function gainXP(p,n){
+ p.xp=(p.xp||0)+n;
+ while(p.xp>=p.level*100){p.xp-=p.level*100;p.level++;p.morphPoints=(p.morphPoints||0)+2;p.abilityPoints=(p.abilityPoints||0)+1;if(typeof toast==="function")toast("⬆ "+p.name+" LEVEL "+p.level+" • +2 Morph Points");}
+}
+function availableMoves(p){
+ let dna=p.dna||[];let arr=MOVES.filter(m=>dna.includes(m[1]));
+ if(!arr.length)arr=[MOVES[8],MOVES[9]];
+ return arr;
+}
+function render(){
+ init();const root=document.getElementById("vgAdventureCore");if(!root)return;
+ root.innerHTML=`<div class="vga-wrap"><div class="vga-top"><div><div class="eyebrow">MORPH ADVENTURE</div><div style="font-size:30px;font-weight:1000">Creature Expedition Network</div></div><button class="btn" onclick="vgacClose()">Close</button></div>
+ <div class="vga-tabs">${["TEAM","REGIONS","ENCOUNTER","CODEX","RESEARCH"].map(t=>`<button onclick="vgacTab('${t}')">${t}</button>`).join("")}</div>
+ ${body()}</div>`;
+}
+function body(){
+ let a=state.adventureCore;
+ if(a.tab==="TEAM")return teamHTML();
+ if(a.tab==="REGIONS")return regionsHTML();
+ if(a.tab==="ENCOUNTER")return encounterHTML();
+ if(a.tab==="CODEX")return codexHTML();
+ return researchHTML();
+}
+function teamHTML(){
+ let pets=state.pets||[],tp=teamPets();
+ return `<div class="vga-grid"><div class="vga-card"><h3>Expedition Team</h3><div class="vga-team">${[0,1,2].map(i=>`<div class="vga-slot">${tp[i]?`<div><div class="vga-face">${tp[i].emoji||"🐾"}</div><b>${eh(tp[i].formName||tp[i].name)}</b><small>Lv ${tp[i].level}</small></div>`:"EMPTY"}</div>`).join("")}</div><button class="btn" style="width:100%;margin-top:8px" onclick="vgacAutoTeam()">BUILD TEAM FROM MY PETS</button></div>
+ <div class="vga-card"><h3>Creature Training</h3>${pets.slice(0,12).map(p=>`<div class="vga-move"><b>${eh(p.name)} • Lv ${p.level}</b><div class="vga-xp"><i style="width:${Math.min(100,p.xp/(p.level*100)*100)}%"></i></div><small>XP ${p.xp}/${p.level*100} • Morph Points ${p.morphPoints||0}</small><button class="btn" onclick="vgacSelectTeam('${eh(p.name)}')">ADD / SWAP TEAM</button></div>`).join("")}</div></div>`;
+}
+function regionsHTML(){
+ let unlocked=Math.min(REGIONS.length,1+Math.floor((state.adventureCore.discoveries||0)/2));
+ return `<div class="vga-grid">${REGIONS.map((r,i)=>`<div class="vga-region ${i===state.adventureCore.region?"current":""} ${i>=unlocked?"locked":""}"><div class="vga-big">${r[1]}</div><b>${r[0]}</b><p>${r[3]}</p><small>Favored DNA: ${r[2]}</small><button class="btn" style="width:100%" ${i>=unlocked?"disabled":""} onclick="vgacEnterRegion(${i})">ENTER REGION</button></div>`).join("")}</div>`;
+}
+function makeEncounter(){
+ let r=REGIONS[state.adventureCore.region],boss=Math.random()<.18;
+ return {name:boss?"REGION GUARDIAN":"Field Crisis",hp:boss?90:55,max:boss?90:55,threat:boss?18:10,turn:1,boss,region:r[0],dna:r[2]};
+}
+function encounterHTML(){
+ let e=state.adventureCore.encounter,p=active();
+ if(!e)return `<div class="vga-card"><h3>No active encounter</h3><p>Choose a region and begin an expedition.</p></div>`;
+ let moves=p?availableMoves(p):[];
+ return `<div class="vga-grid"><div class="vga-card ${e.boss?"vga-boss":""}"><div class="eyebrow">${e.region}</div><h2>${e.boss?"👑 ":""}${e.name}</h2><div>Challenge ${e.hp}/${e.max}</div><div class="vga-xp"><i style="width:${e.hp/e.max*100}%"></i></div><p>Your creature must use its DNA, stats and trained moves to solve the encounter.</p><div class="vga-battlelog">${state.adventureCore.log.slice(0,15).map(x=>"<div>"+eh(x)+"</div>").join("")}</div></div>
+ <div class="vga-card"><h3>${p?eh(p.formName||p.name):"No Companion"}</h3>${moves.map(m=>`<div class="vga-move"><b>${m[0]}</b><small> ${m[1]} DNA • Power ${m[2]}</small><button class="btn" onclick="vgacMove('${m[0]}')">USE MOVE</button></div>`).join("")}<button class="btn" style="width:100%" onclick="vgacSwap()">SWAP CREATURE</button></div></div>`;
+}
+function codexHTML(){
+ let pets=state.pets||[];
+ return `<div class="vga-card"><h3>Creature Codex • ${Object.keys(state.adventureCore.codex).length} discovered</h3><div class="vga-codex">${pets.map((p,i)=>`<div class="vga-entry"><div class="vga-big">${p.emoji||"🐾"}</div><b>#${String(i+1).padStart(3,"0")} ${eh(p.formName||p.name)}</b><small>${eh((p.dna||[]).join(" • "))}<br>Lv ${p.level} • ${eh(p.rarity||"COMMON")}</small></div>`).join("")}${Array.from({length:8},(_,i)=>`<div class="vga-entry unknown"><div class="vga-silhouette">❓</div><b>#??? UNKNOWN FORM</b><small>Discover through morphing and expeditions.</small></div>`).join("")}</div></div>`;
+}
+function researchHTML(){
+ let r=state.adventureCore.research;
+ return `<div class="vga-grid"><div class="vga-card"><h3>Genetics Research</h3><div style="font-size:38px;font-weight:1000">${r} RP</div><p>Earn Research Points from expeditions and bosses.</p></div><div class="vga-card"><h3>Research Tree</h3>${[["Trait Slot Expansion",5],["Advanced Morph Analysis",10],["Rare DNA Scanner",15],["Hybrid Stabilization",20],["Celestial Morph Research",35]].map(x=>`<div class="vga-move"><b>${x[0]}</b><small> • ${x[1]} RP</small><button class="btn" onclick="vgacResearch('${x[0]}',${x[1]})">RESEARCH</button></div>`).join("")}</div></div>`;
+}
+window.vgacTab=t=>{state.adventureCore.tab=t;render()}
+window.vgacClose=()=>document.getElementById("vgAdventureCore").classList.remove("open")
+window.vgacAutoTeam=()=>{state.adventureCore.team=(state.pets||[]).slice(0,3).map(p=>p.name);save&&save();render()}
+window.vgacSelectTeam=name=>{let t=state.adventureCore.team;t=t.filter(x=>x!==name);if(t.length>=3)t.shift();t.push(name);state.adventureCore.team=t;save&&save();render()}
+window.vgacEnterRegion=i=>{if(!teamPets().length){if(typeof toast==="function")toast("Build an expedition team first.");return}state.adventureCore.region=i;state.adventureCore.encounter=makeEncounter();state.adventureCore.tab="ENCOUNTER";state.adventureCore.log.unshift("Entered "+REGIONS[i][0]+".");render()}
+window.vgacMove=name=>{
+ let e=state.adventureCore.encounter,p=active();if(!e||!p)return;let m=availableMoves(p).find(x=>x[0]===name);if(!m)return;
+ let favored=(p.dna||[]).includes(e.dna),stat=Math.round(((p.power||20)+(p.instinct||20)+(p.adaptation||20))/30);
+ let dmg=m[2]+stat+(favored?8:0)+Math.floor(Math.random()*7);e.hp=Math.max(0,e.hp-dmg);state.adventureCore.log.unshift(p.name+" used "+name+" • challenge -"+dmg);
+ if(e.hp<=0){let xp=e.boss?180:90,rp=e.boss?5:2;teamPets().forEach(x=>{gainXP(x,xp);x.morphEnergy=(x.morphEnergy||0)+(e.boss?180:80)});state.adventureCore.research+=rp;state.adventureCore.discoveries++;state.funds=(state.funds||0)+(e.boss?1800:650);state.adventureCore.log.unshift("EXPEDITION COMPLETE • +"+xp+" XP • +"+rp+" RP");state.adventureCore.encounter=null;if(typeof toast==="function")toast("🏆 Expedition complete • new rewards earned");save&&save();render();return}
+ e.turn++;gainXP(p,15);save&&save();render();
+}
+window.vgacSwap=()=>{let t=state.adventureCore.team;if(t.length>1){t.push(t.shift());state.adventureCore.team=t;render()}}
+window.vgacResearch=(name,cost)=>{if(state.adventureCore.research<cost){if(typeof toast==="function")toast("Need more Research Points.");return}state.adventureCore.research-=cost;state.adventureCore[name]=true;if(typeof toast==="function")toast("🔬 RESEARCHED • "+name);save&&save();render()}
+function ensure(){
+ init();
+ if(!document.getElementById("vgAdventureCore")){let d=document.createElement("div");d.id="vgAdventureCore";document.body.appendChild(d)}
+ if(!document.getElementById("vgAdventureCoreBtn")){let b=document.createElement("button");b.id="vgAdventureCoreBtn";b.textContent="⚔️ EXPEDITIONS";b.onclick=()=>{render();document.getElementById("vgAdventureCore").classList.add("open")};document.body.appendChild(b)}
+}
+addEventListener("load",ensure);
+})();
+</script>
+
+
+<script id="vg-card-campaign-js">
+(function(){
+'use strict';
+const CH=[
+ {t:"A Cry Beyond the Gate",art:"🌧️🐾",text:"A frightened animal is found outside the hospital during a storm. Stabilize it, earn its trust, and bring it into My Pets.",gate:p=>(p.trust||0)>=45,reward:[120,1,250]},
+ {t:"The First Bond",art:"💚🐾",text:"Care and training reveal that this animal carries unusual adaptive DNA. Build its bond before attempting a morph.",gate:p=>(p.bond||0)>=55&&(p.morphEnergy||0)>=300,reward:[180,1,350]},
+ {t:"Morph Chamber",art:"🧬✨",text:"The genetics chamber responds to your companion. A first evolved form is required before the trail opens.",gate:p=>(p.evolutionStage||0)>=1,reward:[220,2,500],morph:true},
+ {t:"Choose the Build",art:"🎛️🧬",text:"Shape the new form. Its Power, Speed, Armor, Instinct and Adaptation will determine how later cards resolve.",gate:p=>((p.power||0)+(p.speed||0)+(p.armor||0)+(p.instinct||0)+(p.adaptation||0))>=110,reward:[240,2,550]},
+ {t:"Mutation Signal",art:"🌌🔬",text:"A strange genetic signal appears. Discover at least one permanent mutation.",gate:p=>(p.mutations||[]).length>=1,reward:[280,2,650],morph:true},
+ {t:"Build the Team",art:"🐾🐾🐾",text:"One creature cannot cover every challenge. Prepare an expedition team.",gate:p=>(state.adventureCore&&state.adventureCore.team&&state.adventureCore.team.length>=2),reward:[300,1,700]},
+ {t:"Into Tidal Reach",art:"🌊🗺️",text:"Your first field route begins. Use creature abilities to solve a live regional crisis.",gate:p=>(state.adventureCore&&state.adventureCore.discoveries>=1),reward:[350,2,900],adventure:true},
+ {t:"Hidden Form",art:"❓🌟",text:"The expedition data reveals a morph branch that was invisible in the laboratory.",gate:p=>(p.evolutionStage||0)>=2||(p.mutations||[]).length>=2,reward:[450,3,1200],morph:true},
+ {t:"Guardian of the Route",art:"👑⚡",text:"A regional guardian blocks the path. Develop your creature and complete more expeditions.",gate:p=>(p.level||1)>=3&&(state.adventureCore&&state.adventureCore.discoveries>=2),reward:[600,3,1800],adventure:true},
+ {t:"Genesis Door",art:"🧬🚪",text:"The final card opens toward the Genesis Ruins. Your creature is no longer simply a rescued animal—it has become your expedition partner.",gate:p=>(p.level||1)>=4&&(p.evolutionStage||0)>=2,reward:[900,5,3000],adventure:true}
+];
+function init(){
+ state.cardCampaign=state.cardCampaign||{chapter:0,log:[],claimed:[],cardPoints:0};
+}
+function pet(){return (state.pets||[]).find(p=>state.morphLab&&p.name===state.morphLab.selected)||(state.pets||[])[0]||null}
+function eh(x){return String(x??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function open(){init();render();document.getElementById("vgCardCampaign").classList.add("open")}
+window.vgccOpen=open;window.vgccClose=()=>document.getElementById("vgCardCampaign").classList.remove("open");
+function actionCards(p,ch){
+ let cards=[
+ ["CARE CARD","💚","Trust +4 • Bond +4 • +45 Morph Energy",()=>{p.trust=Math.min(100,(p.trust||50)+4);p.bond=Math.min(100,(p.bond||50)+4);p.morphEnergy=(p.morphEnergy||0)+45;}],
+ ["TRAIN CARD","🏋️","+80 Morph Energy • +1 training",()=>{p.morphEnergy=(p.morphEnergy||0)+80;p.trainingLevel=(p.trainingLevel||0)+1;p.bond=Math.min(100,(p.bond||50)+2);}],
+ ["MORPH LAB","🧬","Open the main Morph Game",()=>{vgccClose();if(typeof openCreatureLab==="function")openCreatureLab();}],
+ ["EXPEDITION","⚔️","Open regional adventure gameplay",()=>{vgccClose();const b=document.getElementById("vgAdventureCoreBtn");if(b)b.click();}]
+ ];
+ return cards;
+}
+window.vgccPlay=function(i){
+ let p=pet();if(!p)return;let a=actionCards(p,CH[state.cardCampaign.chapter])[i];if(!a)return;a[3]();state.cardCampaign.cardPoints++;if(typeof save==="function")save();render();
+}
+window.vgccComplete=function(){
+ let p=pet(),i=state.cardCampaign.chapter,ch=CH[i];if(!p||!ch)return;
+ if(!ch.gate(p)){if(typeof toast==="function")toast("CARD OBJECTIVE NOT READY • use the action cards below");return}
+ if(!state.cardCampaign.claimed.includes(i)){
+   p.morphEnergy=(p.morphEnergy||0)+ch.reward[0];p.morphPoints=(p.morphPoints||0)+ch.reward[1];state.funds=(state.funds||0)+ch.reward[2];
+   state.cardCampaign.claimed.push(i);state.cardCampaign.log.unshift("CLEARED • "+ch.t+" • +"+ch.reward[0]+"⚡ +"+ch.reward[1]+" MP +$"+ch.reward[2]);
+ }
+ state.cardCampaign.chapter=Math.min(CH.length,state.cardCampaign.chapter+1);
+ if(typeof toast==="function")toast("🃏 STORY CARD CLEARED • "+ch.t);
+ if(typeof save==="function")save();if(typeof render==="function")render();render();
+}
+function render(){
+ init();let root=document.getElementById("vgCardCampaign"),p=pet(),i=state.cardCampaign.chapter,ch=CH[Math.min(i,CH.length-1)];
+ if(!root)return;
+ let actions=p?actionCards(p,ch):[];
+ root.innerHTML=`<div class="vgcc-wrap"><div class="vgcc-top"><div><div class="eyebrow">MAIN STORY DECK</div><div style="font-size:30px;font-weight:1000">Rescue → Morph → Adventure</div></div><button class="btn" onclick="vgccClose()">Close</button></div>
+ <div class="vgcc-progress">${CH.map((_,x)=>`<i class="${x<i?"on":""}"></i>`).join("")}</div>
+ ${i>=CH.length?`<div class="vgcc-storycard"><div class="vgcc-art">🏆🧬</div><div><div class="vgcc-title">THE FIRST DECK IS COMPLETE</div><div class="vgcc-flavor">Your sanctuary, morph laboratory and expedition network are now connected. Continue developing creatures and exploring regions.</div></div></div>`:
+ `<div class="vgcc-grid">
+ <div class="vgcc-storycard ${ch.morph?"vgcc-morphgate":""}"><div><div class="eyebrow">STORY CARD ${i+1} / ${CH.length}</div><div class="vgcc-art">${ch.art}</div></div><div><div class="vgcc-title">${ch.t}</div><div class="vgcc-flavor">${ch.text}</div><div class="vgcc-loot">CLEAR REWARD • +${ch.reward[0]}⚡ • +${ch.reward[1]} Morph Point • +$${ch.reward[2]}</div><button class="btn" style="width:100%;margin-top:10px" onclick="vgccComplete()">COMPLETE STORY CARD</button></div></div>
+ <div><div class="vgcc-card"><div class="eyebrow">ACTIVE CREATURE</div>${p?`<div style="font-size:48px">${p.emoji||"🐾"}</div><b>${eh(p.formName||p.name)}</b><div>Lv ${p.level||1} • Stage ${p.evolutionStage||0} • ${p.morphEnergy||0}⚡ • ${p.morphPoints||0} MP</div>`:"No creature in My Pets yet."}</div>
+ <div class="vgcc-card" style="margin-top:10px"><div class="eyebrow">PLAY A CARD</div><div class="vgcc-hand">${actions.map((a,x)=>`<div class="vgcc-action"><b>${a[1]} ${a[0]}</b><small>${a[2]}</small><button onclick="vgccPlay(${x})">PLAY CARD</button></div>`).join("")}</div></div></div></div>`}
+ <div class="vgcc-card" style="margin-top:12px"><div class="eyebrow">STORY DECK LOG</div><div class="vgcc-log">${state.cardCampaign.log.length?state.cardCampaign.log.map(x=>"<div>"+eh(x)+"</div>").join(""):"The first card is waiting."}</div></div></div>`;
+}
+function ensure(){
+ init();
+ if(!document.getElementById("vgCardCampaign")){let d=document.createElement("div");d.id="vgCardCampaign";document.body.appendChild(d)}
+ if(!document.getElementById("vgCardCampaignBtn")){let b=document.createElement("button");b.id="vgCardCampaignBtn";b.textContent="🃏 MAIN STORY DECK";b.onclick=open;document.body.appendChild(b)}
+}
+addEventListener("load",ensure);
+})();
+</script>
+
+
+<script id="vg-full-cardgame-js">
+(function(){
+'use strict';
+
+const CARD_LIBRARY = {
+  care:{name:"Care Pulse",icon:"💚",cost:1,desc:"Restore 10 HP and gain 6 Bond.",play(g,p){g.hp=Math.min(g.maxHp,g.hp+10);p.bond=Math.min(100,(p.bond||50)+6);log(g,"Care Pulse restored 10 HP.");}},
+  train:{name:"Training Burst",icon:"🏋️",cost:1,desc:"Gain 8 Power this battle and 20 Morph Energy.",play(g,p){g.tempPower+=8;p.morphEnergy=(p.morphEnergy||0)+20;log(g,"Training Burst +8 Power.");}},
+  strike:{name:"Instinct Strike",icon:"⚡",cost:1,desc:"Deal damage from Power + Instinct.",play(g,p){let d=12+Math.floor(((p.power||20)+(p.instinct||20)+g.tempPower)/12);hit(g,d,"Instinct Strike");}},
+  guard:{name:"Guardian Wall",icon:"🛡️",cost:1,desc:"Gain 16 shield.",play(g,p){g.shield+=16;log(g,"Guardian Wall +16 shield.");}},
+  adapt:{name:"Adaptive Shift",icon:"🧬",cost:1,desc:"Gain 1 energy and draw 1 card.",play(g,p){g.energy+=1;draw(g,1);log(g,"Adaptive Shift generated energy.");}},
+  rush:{name:"Tidal Rush",icon:"🌊",cost:2,desc:"Deal 24 damage. +8 if Aquatic DNA.",play(g,p){let d=24+((p.dna||[]).includes("Aquatic")?8:0);hit(g,d,"Tidal Rush");}},
+  frost:{name:"Frost Veil",icon:"❄️",cost:2,desc:"Gain 12 shield and weaken enemy next turn.",play(g,p){g.shield+=12;g.enemyWeak=6;log(g,"Frost Veil reduced incoming threat.");}},
+  mutate:{name:"Mutation Spark",icon:"✨",cost:2,desc:"Deal 18 damage and gain 1 Morph Point after victory.",play(g,p){hit(g,18,"Mutation Spark");g.bonusMorph+=1;}},
+  combo:{name:"Bond Combo",icon:"🐾",cost:2,desc:"Damage scales with Bond. Stronger after Care.",play(g,p){let d=14+Math.floor((p.bond||50)/5);hit(g,d,"Bond Combo");}},
+  surge:{name:"Morph Surge",icon:"🌌",cost:3,desc:"Deal 34 damage. Requires evolved form.",req:p=>(p.evolutionStage||0)>=1,play(g,p){hit(g,34,"Morph Surge");}},
+  heal:{name:"Sanctuary Heal",icon:"🏥",cost:2,desc:"Restore 22 HP.",play(g,p){g.hp=Math.min(g.maxHp,g.hp+22);log(g,"Sanctuary Heal restored 22 HP.");}},
+  scout:{name:"Explorer Scan",icon:"🧭",cost:1,desc:"Draw 2 cards. Next attack +5.",play(g,p){draw(g,2);g.nextBonus+=5;log(g,"Explorer Scan found an opening.");}}
+};
+
+function log(g,t){g.log.unshift(t);}
+function hit(g,d,label){d+=g.nextBonus||0;g.nextBonus=0;g.enemyHp=Math.max(0,g.enemyHp-d);log(g,label+" dealt "+d+" challenge damage.");}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function draw(g,n){
+  for(let i=0;i<n;i++){
+    if(!g.deck.length){g.deck=shuffle(g.discard.splice(0));log(g,"Discard reshuffled into draw pile.");}
+    if(g.deck.length)g.hand.push(g.deck.pop());
+  }
+}
+function activePet(){
+  return (state.pets||[]).find(p=>state.morphLab&&p.name===state.morphLab.selected)||(state.pets||[])[0]||null;
+}
+function buildDeck(p){
+  let d=["care","train","strike","strike","guard","adapt","combo","heal","scout"];
+  if((p.dna||[]).includes("Aquatic"))d.push("rush");
+  if((p.dna||[]).includes("Arctic"))d.push("frost");
+  if((p.mutations||[]).length)d.push("mutate");
+  if((p.evolutionStage||0)>=1)d.push("surge");
+  return shuffle(d);
+}
+function chapterData(i){
+  const names=[
+    ["Storm Rescue","🌧️","A frightened creature is trapped during a storm.",55,9],
+    ["Bond Trial","💚","The animal must trust you enough to push through the route.",65,10],
+    ["Morph Chamber Crisis","🧬","An unstable morph field surges through the chamber.",78,12],
+    ["Stat Gauntlet","🎛️","A sequence of tests measures your evolving build.",85,13],
+    ["Mutation Echo","✨","A mutation event becomes unstable and must be controlled.",92,14],
+    ["Team Route","🐾🐾","Multiple threats force your creature to adapt.",100,15],
+    ["Tidal Reach","🌊","A regional field crisis unfolds across flooded ruins.",112,16],
+    ["Hidden Form","❓","A strange form awakens under pressure.",125,17],
+    ["Guardian Battle","👑","A powerful regional guardian blocks the route.",145,19],
+    ["Genesis Door","🚪","The final expedition challenge tests everything learned.",170,21]
+  ];
+  const x=names[Math.min(i,names.length-1)];
+  return {name:x[0],icon:x[1],text:x[2],hp:x[3],threat:x[4]};
+}
+function ensureState(){
+  state.cardCampaign=state.cardCampaign||{chapter:0,log:[],claimed:[],cardPoints:0};
+  state.cardBattle=state.cardBattle||null;
+}
+function startBattle(){
+  ensureState();const p=activePet();if(!p)return;
+  const c=chapterData(state.cardCampaign.chapter);
+  const maxHp=60+Math.floor((p.health||80)/2)+Math.floor((p.armor||20)/3);
+  const g={
+    chapter:state.cardCampaign.chapter,enemy:c.name,enemyIcon:c.icon,enemyText:c.text,
+    enemyHp:c.hp,enemyMax:c.hp,threat:c.threat,hp:maxHp,maxHp,shield:0,energy:3,maxEnergy:3,
+    deck:buildDeck(p),hand:[],discard:[],turn:1,log:[],tempPower:0,enemyWeak:0,nextBonus:0,bonusMorph:0,
+    finished:false,win:false
+  };
+  draw(g,5);state.cardBattle=g;log(g,"Battle started: "+c.name);save&&save();renderCardGame();
+}
+function enemyTurn(g,p){
+  let dmg=Math.max(0,g.threat-(g.enemyWeak||0)+Math.floor(Math.random()*5));
+  g.enemyWeak=0;
+  let blocked=Math.min(g.shield,dmg);g.shield-=blocked;dmg-=blocked;g.hp=Math.max(0,g.hp-dmg);
+  log(g,"Threat phase: "+(dmg?dmg+" HP lost":"fully blocked")+".");
+  if(g.hp<=0){g.finished=true;g.win=false;log(g,"The expedition failed.");return;}
+  g.turn++;g.energy=g.maxEnergy;draw(g,2);
+}
+function resolveWin(g,p){
+  g.finished=true;g.win=true;
+  const xp=80+g.chapter*20,me=100+g.chapter*35,cash=300+g.chapter*175;
+  p.xp=(p.xp||0)+xp;p.morphEnergy=(p.morphEnergy||0)+me;p.morphPoints=(p.morphPoints||0)+g.bonusMorph;
+  state.funds=(state.funds||0)+cash;
+  if(!state.cardCampaign.claimed.includes(g.chapter)){
+    state.cardCampaign.claimed.push(g.chapter);
+    state.cardCampaign.chapter=Math.min(10,state.cardCampaign.chapter+1);
+  }
+  state.cardCampaign.log.unshift("CARD BATTLE CLEARED • "+g.enemy+" • +"+xp+" XP +"+me+"⚡ +$"+cash);
+  log(g,"VICTORY • rewards secured.");
+  save&&save();
+}
+window.vgccBattlePlay=function(idx){
+  const g=state.cardBattle,p=activePet();if(!g||g.finished||!p)return;
+  const key=g.hand[idx],c=CARD_LIBRARY[key];if(!c)return;
+  if(c.req && !c.req(p)){if(typeof toast==="function")toast("This card needs a morphed form.");return}
+  if(g.energy<c.cost){if(typeof toast==="function")toast("Not enough card energy.");return}
+  g.energy-=c.cost;g.hand.splice(idx,1);c.play(g,p);g.discard.push(key);
+  if(g.enemyHp<=0){resolveWin(g,p);renderCardGame();return}
+  save&&save();renderCardGame();
+}
+window.vgccEndTurn=function(){
+  const g=state.cardBattle,p=activePet();if(!g||g.finished||!p)return;
+  g.discard.push(...g.hand.splice(0));enemyTurn(g,p);if(!g.finished)draw(g,5-Math.min(5,g.hand.length));
+  save&&save();renderCardGame();
+}
+window.vgccRestart=function(){startBattle()}
+window.vgccStartBattle=startBattle;
+
+function renderCardGame(){
+  ensureState();const host=document.getElementById("vgccGameHost");if(!host)return;
+  const p=activePet(),g=state.cardBattle;
+  if(!p){host.innerHTML='<div class="vgcc-end">No active creature yet. Rescue and keep an animal first.</div>';return}
+  if(!g){
+    const c=chapterData(state.cardCampaign.chapter);
+    host.innerHTML=`<div class="vgcc-end"><div style="font-size:72px">${c.icon}</div><h2>${c.name}</h2><p>${c.text}</p><p>This is now a real card battle. Draw from your creature deck, spend energy, block threat, deal challenge damage, and survive to advance the story.</p><button class="btn" onclick="vgccStartBattle()">START CARD BATTLE</button></div>`;return;
+  }
+  if(g.finished){
+    host.innerHTML=`<div class="vgcc-end"><div style="font-size:76px">${g.win?"🏆":"💥"}</div><h2>${g.win?"VICTORY":"EXPEDITION FAILED"}</h2><p>${g.win?"The chapter is cleared and the next story card is unlocked.":"Tune your morph, stats and deck, then try again."}</p><button class="btn" onclick="vgccRestart()">${g.win?"PLAY NEXT CHAPTER":"RETRY BATTLE"}</button></div>`;return;
+  }
+  host.innerHTML=`<div id="vgccGameShell">
+  <div class="vgcc-board">
+   <div class="vgcc-zone"><div class="eyebrow">STORY ENCOUNTER • TURN ${g.turn}</div><div style="font-size:58px">${g.enemyIcon}</div><h2>${g.enemy}</h2><p>${g.enemyText}</p><div>Challenge ${g.enemyHp}/${g.enemyMax}</div><div class="vgcc-bar vgcc-enemybar"><i style="width:${g.enemyHp/g.enemyMax*100}%"></i></div></div>
+   <div class="vgcc-zone"><div class="eyebrow">ACTIVE CREATURE</div><h3>${p.emoji||"🐾"} ${p.formName||p.name}</h3><div class="vgcc-bars"><div><small>HP ${g.hp}/${g.maxHp}</small><div class="vgcc-bar"><i style="width:${g.hp/g.maxHp*100}%"></i></div></div><div><small>ENERGY ${g.energy}/${g.maxEnergy}</small><div class="vgcc-bar"><i style="width:${g.energy/g.maxEnergy*100}%"></i></div></div></div><div class="vgcc-status"><span class="vgcc-chip">Shield ${g.shield}</span><span class="vgcc-chip">Power +${g.tempPower}</span><span class="vgcc-chip">Deck ${g.deck.length}</span><span class="vgcc-chip">Discard ${g.discard.length}</span></div></div>
+   <div class="vgcc-zone"><div class="eyebrow">BATTLE LOG</div><div class="vgcc-turnlog">${g.log.map(x=>"<div>"+x+"</div>").join("")}</div></div>
+  </div>
+  <div class="vgcc-board"><div class="eyebrow">YOUR HAND</div><div class="vgcc-hand2">${g.hand.map((k,i)=>{const c=CARD_LIBRARY[k];let locked=(c.req&&!c.req(p));return `<div class="vgcc-playcard ${locked||g.energy<c.cost?"disabled":""}"><div><span class="cost">${c.cost}⚡</span><div style="font-size:32px">${c.icon}</div><b>${c.name}</b><p>${c.desc}</p></div><button class="btn" onclick="vgccBattlePlay(${i})">${locked?"MORPH REQUIRED":"PLAY CARD"}</button></div>`}).join("")}</div><div class="vgcc-actions"><button class="btn" onclick="vgccEndTurn()">END TURN</button><button class="btn" onclick="vgccRestart()">RESTART</button><button class="btn" onclick="vgccClose()">EXIT DECK</button></div></div>
+  </div>`;
+}
+
+function injectHost(){
+  const panel=document.getElementById("vgCardCampaign");if(!panel)return;
+  if(!document.getElementById("vgccGameHost")){
+    const wrap=panel.querySelector(".vgcc-wrap");
+    if(wrap){
+      const h=document.createElement("div");h.id="vgccGameHost";
+      wrap.insertBefore(h,wrap.children[2]||null);
+    }
+  }
+}
+const oldOpen=window.vgccOpen;
+window.vgccOpen=function(){
+  if(oldOpen)oldOpen();
+  setTimeout(()=>{injectHost();renderCardGame();},0);
+};
+const oldRender=window.renderCardGame;
+addEventListener("load",()=>{ensureState();setTimeout(injectHost,0)});
+})();
+</script>
+
+
+<script id="vg-unified-game-loop-js">
+(function(){
+'use strict';
+
+const UREQ=[
+ {label:"Rescue Bond", test:p=>(p.trust||0)>=45, progress:p=>"Trust "+Math.round(p.trust||0)+"/45", hint:"Care for your rescued companion."},
+ {label:"Build the Bond", test:p=>(p.bond||0)>=55&&(p.morphEnergy||0)>=300, progress:p=>"Bond "+Math.round(p.bond||0)+"/55 • Energy "+Math.round(p.morphEnergy||0)+"/300", hint:"Use Care and Train."},
+ {label:"First Morph", test:p=>(p.evolutionStage||0)>=1, progress:p=>"Evolution Stage "+(p.evolutionStage||0)+"/1", hint:"Enter Morph Lab and complete the first available form."},
+ {label:"Shape the Build", test:p=>sumStats(p)>=110, progress:p=>"Core Stats "+sumStats(p)+"/110", hint:"Spend Morph Points on your five core stats."},
+ {label:"Mutation Signal", test:p=>(p.mutations||[]).length>=1, progress:p=>"Mutations "+(p.mutations||[]).length+"/1", hint:"Earn 600 Morph Energy and discover a mutation."},
+ {label:"Build a Team", test:p=>((state.adventureCore&&state.adventureCore.team)||[]).length>=2, progress:p=>"Team "+(((state.adventureCore&&state.adventureCore.team)||[]).length)+"/2", hint:"Use Build Team."},
+ {label:"First Expedition", test:p=>((state.adventureCore&&state.adventureCore.discoveries)||0)>=1, progress:p=>"Field Discoveries "+((state.adventureCore&&state.adventureCore.discoveries)||0)+"/1", hint:"Win a Story Deck card battle."},
+ {label:"Hidden Form", test:p=>(p.evolutionStage||0)>=2||(p.mutations||[]).length>=2, progress:p=>"Stage "+(p.evolutionStage||0)+"/2 • Mutations "+(p.mutations||[]).length+"/2", hint:"Morph again or discover another mutation."},
+ {label:"Guardian Route", test:p=>(p.level||1)>=3&&((state.adventureCore&&state.adventureCore.discoveries)||0)>=2, progress:p=>"Level "+(p.level||1)+"/3 • Discoveries "+((state.adventureCore&&state.adventureCore.discoveries)||0)+"/2", hint:"Win more Story Deck battles."},
+ {label:"Genesis Door", test:p=>(p.level||1)>=4&&(p.evolutionStage||0)>=2, progress:p=>"Level "+(p.level||1)+"/4 • Stage "+(p.evolutionStage||0)+"/2", hint:"Finish your evolved build and continue battling."}
+];
+const REW=[
+ [120,1,250],[180,1,350],[220,2,500],[240,2,550],[280,2,650],
+ [300,1,700],[350,2,900],[450,3,1200],[600,3,1800],[900,5,3000]
+];
+
+function sumStats(p){return ["power","speed","armor","instinct","adaptation"].reduce((n,k)=>n+(Number(p[k])||20),0)}
+function ensure(){
+ state.unifiedJourney=state.unifiedJourney||{active:null,reveal:"",battleWins:{},returnMode:null};
+ state.cardCampaign=state.cardCampaign||{chapter:0,log:[],claimed:[],cardPoints:0};
+ state.morphLab=state.morphLab||{selected:null,forgeA:null,forgeB:null,hybridSeq:1};
+ state.adventureCore=state.adventureCore||{tab:"TEAM",team:[],region:0,encounter:null,log:[],codex:{},research:0,bosses:[],discoveries:0};
+ const pets=state.pets||[];
+ if(!state.unifiedJourney.active && pets[0]) state.unifiedJourney.active=pets[0].name;
+ let p=pets.find(x=>x.name===state.unifiedJourney.active)||pets.find(x=>x.name===state.morphLab.selected)||pets[0]||null;
+ if(p){
+   state.unifiedJourney.active=p.name;
+   state.morphLab.selected=p.name;
+   if(p.trust==null)p.trust=Number(p.stats&&p.stats.trust)||50;
+   if(p.bond==null)p.bond=Number(p.stats&&p.stats.bond)||50;
+   if(p.health==null)p.health=Number(p.stats&&p.stats.health)||90;
+   if(p.energy==null)p.energy=60;
+   if(p.morphEnergy==null)p.morphEnergy=250;
+   if(p.morphPoints==null)p.morphPoints=3;
+   ["power","speed","armor","instinct","adaptation"].forEach(k=>{if(p[k]==null)p[k]=20});
+   if(p.evolutionStage==null)p.evolutionStage=0;
+   p.mutations=p.mutations||[];
+   p.abilities=p.abilities||[];
+ }
+ return p;
+}
+function active(){return ensure()}
+function saveSafe(){if(typeof save==="function")save()}
+function toastSafe(x){if(typeof toast==="function")toast(x)}
+function esc(x){return String(x??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+
+window.vguSelect=function(name){
+ state.unifiedJourney=state.unifiedJourney||{};
+ state.unifiedJourney.active=name;
+ state.morphLab=state.morphLab||{};
+ state.morphLab.selected=name;
+ saveSafe(); refresh();
+};
+
+window.vguCare=function(){
+ const p=active();if(!p)return;
+ p.trust=Math.min(100,(p.trust||50)+5);p.bond=Math.min(100,(p.bond||50)+6);p.morphEnergy=(p.morphEnergy||0)+55;
+ state.cardCampaign.cardPoints=(state.cardCampaign.cardPoints||0)+1;
+ state.unifiedJourney.reveal="💚 Care resolved: trust, bond and Morph Energy increased.";
+ toastSafe("CARE RESOLVED • +Trust +Bond +55 Morph Energy");saveSafe();refresh();
+};
+window.vguTrain=function(){
+ const p=active();if(!p)return;
+ p.trainingLevel=(p.trainingLevel||0)+1;p.bond=Math.min(100,(p.bond||50)+3);p.morphEnergy=(p.morphEnergy||0)+90;
+ state.unifiedJourney.reveal="🏋️ Training resolved: +90 Morph Energy and stronger bond.";
+ toastSafe("TRAINING RESOLVED • +90 Morph Energy");saveSafe();refresh();
+};
+window.vguSpend=function(stat){
+ const p=active();if(!p)return;
+ if((p.morphPoints||0)<1){toastSafe("No Morph Points • earn them by clearing Story Cards.");return}
+ p[stat]=Math.min(100,(Number(p[stat])||20)+5);p.morphPoints--;
+ state.unifiedJourney.reveal="🎛️ Build changed: "+stat.toUpperCase()+" +5.";
+ saveSafe();refresh();
+};
+window.vguMutate=function(){
+ const p=active();if(!p)return;
+ state.morphLab.selected=p.name;
+ if(typeof vgmMutate==="function"){vgmMutate();state.unifiedJourney.reveal="✨ Mutation attempt resolved in the active creature.";saveSafe();setTimeout(refresh,20)}
+};
+window.vguBuildTeam=function(){
+ const p=active();if(!p)return;
+ let names=[p.name,...(state.pets||[]).filter(x=>x.name!==p.name).slice(0,2).map(x=>x.name)];
+ state.adventureCore.team=names.slice(0,3);
+ state.unifiedJourney.reveal="🐾 Expedition team assembled: "+state.adventureCore.team.join(", ")+".";
+ toastSafe("EXPEDITION TEAM READY");saveSafe();refresh();
+};
+window.vguMorph=function(){
+ const p=active();if(!p)return;
+ state.morphLab.selected=p.name;state.unifiedJourney.returnMode="morph";
+ if(typeof openCreatureLab==="function")openCreatureLab(p.name);
+};
+window.vguBattle=function(){
+ const p=active();if(!p)return;
+ if(!state.adventureCore.team||state.adventureCore.team.length<2) vguBuildTeam();
+ state.unifiedJourney.returnMode=null;
+ if(typeof vgccStartBattle==="function"){vgccStartBattle();setTimeout(refresh,20)}
+};
+
+window.vguAdvance=function(){
+ const p=active();if(!p){toastSafe("Rescue and keep an animal first.");return}
+ let i=Math.min(Number(state.cardCampaign.chapter)||0,9),r=UREQ[i];
+ if(!r.test(p)){
+   state.unifiedJourney.reveal="OBJECTIVE NOT READY • "+r.progress(p)+" • "+r.hint;
+   toastSafe(r.progress(p)+" • "+r.hint);saveSafe();refresh();return;
+ }
+ if(!state.cardCampaign.claimed.includes(i)){
+   const rw=REW[i];p.morphEnergy=(p.morphEnergy||0)+rw[0];p.morphPoints=(p.morphPoints||0)+rw[1];state.funds=(state.funds||0)+rw[2];
+   state.cardCampaign.claimed.push(i);
+   state.cardCampaign.log.unshift("CLEARED • "+r.label+" • +"+rw[0]+" Morph Energy • +"+rw[1]+" MP • +$"+rw[2]);
+   state.unifiedJourney.reveal="🏆 "+r.label+" COMPLETE • The next story card has been revealed.";
+ }
+ state.cardCampaign.chapter=Math.min(10,i+1);saveSafe();refresh();
+};
+
+function consoleHTML(){
+ const p=active(),i=Math.min(Number(state.cardCampaign.chapter)||0,9),req=UREQ[i];
+ if(!p)return `<div class="vgu-console"><b>STORY DECK LOCKED</b><p>Finish a patient and choose <b>Keep in My Pets</b>. That rescued animal becomes your active companion automatically.</p></div>`;
+ const ready=req.test(p);
+ return `<div class="vgu-console">
+   <div class="eyebrow">ONE CONTINUOUS GAME • ACTIVE COMPANION</div>
+   <div style="display:flex;gap:10px;align-items:center"><div style="font-size:52px">${p.emoji||"🐾"}</div><div><b style="font-size:21px">${esc(p.formName||p.name)}</b><div>${esc(p.name)} • Level ${p.level||1} • Stage ${p.evolutionStage||0} • ${p.morphEnergy||0}⚡ • ${p.morphPoints||0} MP</div></div></div>
+   <div class="vgu-path"><span class="on">1 RESCUE</span><span class="${i>=1?"on":""}">2 BOND</span><span class="${i>=2?"on":""}">3 MORPH</span><span class="${i>=5?"on":""}">4 TEAM</span><span class="${i>=6?"on":""}">5 ADVENTURE</span><span class="${i>=9?"on":""}">6 GENESIS</span></div>
+   ${state.unifiedJourney.reveal?`<div class="vgu-reveal"><b>STORY REVEAL</b><div>${esc(state.unifiedJourney.reveal)}</div></div>`:""}
+   <div class="vgu-grid">
+    <div>
+      <div class="vgu-req ${ready?"ready":""}"><b>STORY OBJECTIVE ${i+1}: ${req.label}</b><div>${req.progress(p)}</div><small>${ready?"READY TO COMPLETE":req.hint}</small></div>
+      <button class="btn good" style="width:100%;min-height:46px" onclick="vguAdvance()">${ready?"COMPLETE OBJECTIVE → REVEAL NEXT CARD":"CHECK OBJECTIVE"}</button>
+      <div style="margin-top:9px" class="vgu-stats">
+       ${["power","speed","armor","instinct","adaptation"].map(k=>`<div class="vgu-stat"><small>${k}</small><b>${p[k]||20}</b><button class="btn" style="padding:3px 6px;min-height:28px" onclick="vguSpend('${k}')">+5</button></div>`).join("")}
+      </div>
+    </div>
+    <div>
+      <div class="eyebrow">DO WHAT THE STORY NEEDS</div>
+      <div class="vgu-actions">
+       <button class="btn" onclick="vguCare()">💚 CARE</button>
+       <button class="btn" onclick="vguTrain()">🏋️ TRAIN</button>
+       <button class="btn" onclick="vguMorph()">🧬 MORPH / EVOLVE</button>
+       <button class="btn" onclick="vguMutate()">✨ MUTATE</button>
+       <button class="btn" onclick="vguBuildTeam()">🐾 BUILD TEAM</button>
+       <button class="btn primary" onclick="vguBattle()">🃏 PLAY STORY BATTLE</button>
+      </div>
+      <small style="display:block;margin-top:8px">These actions operate on <b>${esc(p.name)}</b>. No separate creature selection is required.</small>
+    </div>
+   </div>
+ </div>`;
+}
+function inject(){
+ const panel=document.getElementById("vgCardCampaign");if(!panel)return;
+ const wrap=panel.querySelector(".vgcc-wrap");if(!wrap)return;
+ let old=wrap.querySelector("#vguConsole");if(old)old.remove();
+ let d=document.createElement("div");d.id="vguConsole";d.innerHTML=consoleHTML();
+ const top=wrap.querySelector(".vgcc-top"); if(top)top.insertAdjacentElement("afterend",d); else wrap.prepend(d);
+}
+function refresh(){setTimeout(()=>{inject();if(typeof renderCardGame==="function")renderCardGame()},0)}
+
+const oldOpen=window.vgccOpen;
+window.vgccOpen=function(){ensure();if(oldOpen)oldOpen();setTimeout(inject,10)};
+
+const oldPlay=window.vgccPlay;
+window.vgccPlay=function(i){
+ if(i===0){vguCare();return}
+ if(i===1){vguTrain();return}
+ if(i===2){vguMorph();return}
+ if(i===3){vguBattle();return}
+ if(oldPlay)oldPlay(i);
+};
+
+window.vgccComplete=function(){vguAdvance()};
+
+// Make the visible Morph Game always use the same active companion.
+const oldOpenLab=window.openCreatureLab;
+if(typeof oldOpenLab==="function"){
+ window.openCreatureLab=function(name){
+   const p=ensure();const chosen=name||state.unifiedJourney.active||(p&&p.name);
+   if(chosen){state.unifiedJourney.active=chosen;state.morphLab.selected=chosen}
+   return oldOpenLab(chosen);
+ };
+}
+
+// Fix point spending regardless of display-form name or stale selection.
+window.vgmSpend=function(stat){
+ const p=active(); if(!p){toastSafe("No rescued companion yet.");return}
+ if((p.morphPoints||0)<1){toastSafe("No Morph Points • clear Story Deck objectives to earn more.");return}
+ p[stat]=Math.min(100,(Number(p[stat])||20)+5);p.morphPoints--;
+ state.morphLab.selected=p.name;saveSafe();
+ toastSafe((p.formName||p.name)+" • "+stat.toUpperCase()+" +5");
+ if(typeof renderCreatureLab==="function")renderCreatureLab();
+ refresh();
+};
+
+// Any creature selected in Morph Lab becomes the same Story Deck companion.
+const oldSelect=window.vgSelectMorphPet;
+window.vgSelectMorphPet=function(name){
+ state.unifiedJourney=state.unifiedJourney||{};state.unifiedJourney.active=name;
+ state.morphLab=state.morphLab||{};state.morphLab.selected=name;
+ if(oldSelect)oldSelect(name);saveSafe();
+};
+
+// Returning from Morph Lab returns to Story Deck ONLY when it was launched by the Story Deck.
+const oldCloseLab=window.closeCreatureLab;
+if(typeof oldCloseLab==="function"){
+ window.closeCreatureLab=function(){
+   if(oldCloseLab)oldCloseLab();
+   if(state.unifiedJourney&&state.unifiedJourney.returnMode==="morph"){
+     state.unifiedJourney.returnMode=null;
+     state.unifiedJourney.reveal="🧬 Morph Lab closed • your active companion remains selected. Continue the Story Deck.";
+     saveSafe();setTimeout(()=>window.vgccOpen&&window.vgccOpen(),20);
+   }
+ };
+}
+
+// Rescue completion now establishes a canonical active companion.
+const oldKeep=window.keepPet;
+if(typeof oldKeep==="function"){
+ window.keepPet=function(){
+   const before=(state.pets||[]).map(x=>x.name);
+   oldKeep();
+   const added=(state.pets||[]).find(x=>!before.includes(x.name))||(state.pets||[])[state.pets.length-1];
+   if(added){
+     state.unifiedJourney=state.unifiedJourney||{};
+     state.unifiedJourney.active=added.name;
+     state.morphLab=state.morphLab||{};state.morphLab.selected=added.name;
+     if(added.trust==null)added.trust=Number(added.stats&&added.stats.trust)||50;
+     if(added.bond==null)added.bond=Number(added.stats&&added.stats.bond)||50;
+     if(added.morphEnergy==null)added.morphEnergy=250;
+     if(added.morphPoints==null)added.morphPoints=3;
+     ["power","speed","armor","instinct","adaptation"].forEach(k=>{if(added[k]==null)added[k]=20});
+     state.unifiedJourney.reveal="🐾 "+added.name+" joined My Pets and is now your active Morph/Story companion.";
+     saveSafe();
+     setTimeout(()=>window.vgccOpen&&window.vgccOpen(),80);
+   }
+ };
+}
+
+// Convert completed Story Deck battles into real expedition discoveries and progression.
+const oldBattlePlay=window.vgccBattlePlay;
+if(typeof oldBattlePlay==="function"){
+ window.vgccBattlePlay=function(idx){
+   const before=state.cardBattle&&state.cardBattle.finished;
+   const chapter=Number(state.cardCampaign&&state.cardCampaign.chapter)||0;
+   const r=oldBattlePlay(idx);
+   if(!before && state.cardBattle&&state.cardBattle.finished&&state.cardBattle.win){
+     state.unifiedJourney=state.unifiedJourney||{battleWins:{}};
+     state.unifiedJourney.battleWins=state.unifiedJourney.battleWins||{};
+     if(!state.unifiedJourney.battleWins[chapter]){
+       state.unifiedJourney.battleWins[chapter]=true;
+       state.adventureCore=state.adventureCore||{discoveries:0,team:[]};
+       state.adventureCore.discoveries=(state.adventureCore.discoveries||0)+1;
+       const p=active();if(p){p.level=Math.max(p.level||1,1)+1}
+     }
+     state.unifiedJourney.reveal="⚔️ Expedition concluded successfully • a new field discovery was recorded and the story advanced.";
+     saveSafe();refresh();
+   }
+   return r;
+ };
+}
+
+addEventListener("load",()=>{ensure();setTimeout(inject,150)});
 })();
 </script>
 
