@@ -814,6 +814,49 @@ body>#vgMorphCoreBtn,body>#vgMorphMainBtn,body>#vgAnimalsEmergencyBtn{
 }
 </style>
 
+
+<style id="vg-morph-vet-story-logic-css">
+/* Main Story Deck now uses Morph Vet Exotics progression instead of card battles */
+#vgCardCampaign{position:fixed;inset:0;z-index:10040;background:rgba(2,7,12,.96);display:none;overflow:auto;padding:14px}
+#vgCardCampaign.open{display:block}
+.mvstory-wrap{max-width:1000px;margin:auto}
+.mvstory-top{position:sticky;top:0;z-index:6;background:#061019;padding:8px 0 12px;display:flex;gap:10px;align-items:center;justify-content:space-between}
+.mvstory-title{font-size:clamp(25px,6vw,42px);font-weight:1000;letter-spacing:-1px}
+.mvstory-progress{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin:10px 0}
+.mvstory-progress i{height:6px;border-radius:99px;background:#18303d;border:1px solid #294b5c}
+.mvstory-progress i.done{background:#55e39c;border-color:#55e39c}
+.mvstory-progress i.now{background:#60dbff;border-color:#60dbff;box-shadow:0 0 12px #60dbff88}
+.mvstory-hero{overflow:hidden;border:1px solid #304e66;border-radius:20px;background:linear-gradient(145deg,#0e2030,#15182d);box-shadow:0 18px 50px #0008}
+.mvstory-hero img{width:100%;aspect-ratio:16/8.5;object-fit:cover;display:block;background:#07141d}
+.mvstory-pad{padding:15px}
+.mvstory-tag{display:inline-block;padding:5px 9px;border-radius:999px;border:1px solid #5770a0;background:#171f3b;color:#d8e3ff;font-size:10px;font-weight:900}
+.mvstory-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.mvstory-stat{padding:10px;border:1px solid #294b5c;border-radius:12px;background:#071721;text-align:center}
+.mvstory-stat small{display:block;color:#7d9aa6;font-size:9px;letter-spacing:.1em}
+.mvstory-stat b{display:block;font-size:22px}
+.mvstory-bar{height:7px;border-radius:99px;background:#122832;overflow:hidden;margin-top:6px}
+.mvstory-bar i{display:block;height:100%;background:linear-gradient(90deg,#55e39c,#60dbff);transition:width .25s ease}
+.mvstory-care{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mvstory-care button{min-height:46px;border-radius:11px;border:1px solid #376178;background:#123247;color:#fff;font-weight:900;padding:8px}
+.mvstory-care button.done{background:#12382c;border-color:#4a8d70;color:#b9f4d4}
+.mvstory-care button:disabled{opacity:.72}
+.mvstory-morph{width:100%;min-height:52px;margin-top:10px;border-radius:12px;border:1px solid #8569d6;background:linear-gradient(135deg,#1e7799,#6740b5);color:#fff;font-weight:1000;font-size:14px}
+.mvstory-morph:disabled{opacity:.38}
+.mvstory-log{margin-top:10px;padding:10px;min-height:80px;max-height:180px;overflow:auto;border:1px solid #244150;border-radius:11px;background:#06131b;font:12px/1.5 ui-monospace,monospace;color:#a8c1ca}
+.mvstory-complete{padding:14px;border:1px solid #6e5c2e;border-radius:14px;background:linear-gradient(145deg,#27200e,#111a23);margin-top:10px}
+.mvstory-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}
+.mvstory-actions button,.mvstory-link{min-height:44px;border-radius:10px;border:1px solid #45677a;background:#123043;color:#fff;font-weight:900;padding:8px;text-decoration:none;display:flex;align-items:center;justify-content:center;text-align:center}
+.mvstory-link{border-color:#8a6b2e;background:#35280e;color:#ffe6a0}
+.mvstory-collection{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin-top:12px}
+.mvstory-colcard{padding:10px;border:1px solid #2d5063;border-radius:12px;background:#091b27}
+.mvstory-colcard img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:9px}
+.mvstory-disclaimer{font-size:10px;color:#7895a1;line-height:1.5;padding:10px;border:1px solid #263f4c;border-radius:10px;background:#06121a;margin-top:10px}
+@media(max-width:560px){
+ .mvstory-care,.mvstory-actions{grid-template-columns:1fr}
+ .mvstory-stats{grid-template-columns:repeat(3,1fr)}
+}
+</style>
+
 </head>
 <body>
 <div class="shell">
@@ -5180,6 +5223,223 @@ const obs=new MutationObserver(()=>{
   window.__vgtccTimer=setTimeout(()=>{moveButtons();hardenExoticButton()},20);
 });
 obs.observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+
+<script id="vg-morph-vet-story-logic-js">
+(function(){
+'use strict';
+
+const MV_ANIMALS=[{"id":"fox","base":"Red Fox","morph":"Emberveil Vulpin","emoji":"\ud83e\udd8a","type":"Thermal / Forest","care":["Hydration check","Paw inspection","Calm handling","Temperature scan"],"supplies":{"Travel carrier":"fox pet carrier","Enrichment toys":"fox enrichment toys","Food supplies":"fox diet food","Habitat supplies":"fox habitat supplies"}},{"id":"rabbit","base":"Domestic Rabbit","morph":"Moonhop Auroran","emoji":"\ud83d\udc07","type":"Lunar / Meadow","care":["Dental check","Hydration check","Gut motility scan","Gentle grooming"],"supplies":{"Travel carrier":"rabbit travel carrier","Enrichment toys":"rabbit chew toys","Food supplies":"rabbit hay pellets","Habitat supplies":"rabbit enclosure supplies"}},{"id":"gecko","base":"Leopard Gecko","morph":"Prismtail Geckora","emoji":"\ud83e\udd8e","type":"Prism / Desert","care":["Heat gradient check","Skin shed check","Hydration check","Tail reserve scan"],"supplies":{"Travel container":"reptile travel carrier gecko","Enrichment":"gecko climbing decor","Food supplies":"leopard gecko feeder supplies","Habitat":"leopard gecko terrarium supplies"}},{"id":"parrot","base":"Parrot","morph":"Stormcrest Aviar","emoji":"\ud83e\udd9c","type":"Sky / Echo","care":["Beak check","Feather condition","Respiratory scan","Social comfort"],"supplies":{"Travel carrier":"parrot travel carrier","Exotic toys":"parrot enrichment toys","Food supplies":"parrot food pellets","Perches":"parrot perch supplies"}},{"id":"axolotl","base":"Axolotl","morph":"Glowgill Axion","emoji":"\ud83e\udee7","type":"Aqua / Bio-light","care":["Water chemistry","Gill check","Temperature check","Body condition"],"supplies":{"Travel container":"axolotl transport container","Tank decor":"axolotl aquarium decor","Food supplies":"axolotl food","Water care":"axolotl aquarium water conditioner"}},{"id":"hedgehog","base":"African Pygmy Hedgehog","morph":"Starspine Hedra","emoji":"\ud83e\udd94","type":"Stellar / Burrow","care":["Foot check","Quill inspection","Hydration check","Weight scan"],"supplies":{"Travel carrier":"hedgehog travel carrier","Exotic toys":"hedgehog toys enrichment","Food supplies":"hedgehog food","Habitat":"hedgehog enclosure supplies"}}];
+const MV_ART={"fox":"data:image/svg+xml;base64,CiAgICA8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjY0MCIgaGVpZ2h0PSI0MjAiPgogICAgICA8ZGVmcz4KICAgICAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImIiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmOWU1NyIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzdhMWYyNyIvPgogICAgICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICAgICAgPGZpbHRlciBpZD0iZ2xvdyI+PGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iOCIgcmVzdWx0PSJiIi8+PGZlTWVyZ2U+PGZlTWVyZ2VOb2RlIGluPSJiIi8+PGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+PC9mZU1lcmdlPjwvZmlsdGVyPgogICAgICA8L2RlZnM+CiAgICAgIDxyZWN0IHdpZHRoPSI2NDAiIGhlaWdodD0iNDIwIiByeD0iMzIiIGZpbGw9IiMwOTEwMWQiLz4KICAgICAgPGNpcmNsZSBjeD0iMzIwIiBjeT0iMTkwIiByPSIxMjUiIGZpbGw9InVybCgjYikiIG9wYWNpdHk9Ii4yMiIvPgogICAgICA8ZWxsaXBzZSBjeD0iMzIwIiBjeT0iMjM1IiByeD0iMTQ1IiByeT0iOTAiIGZpbGw9InVybCgjYikiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogICAgICA8Y2lyY2xlIGN4PSIyNTAiIGN5PSIxNjAiIHI9IjU4IiBmaWxsPSJ1cmwoI2IpIi8+CiAgICAgIDxjaXJjbGUgY3g9IjM5MCIgY3k9IjE2MCIgcj0iNTgiIGZpbGw9InVybCgjYikiLz4KICAgICAgPGNpcmNsZSBjeD0iMjc1IiBjeT0iMjA1IiByPSIxMSIgZmlsbD0iI2ZmZiIvPgogICAgICA8Y2lyY2xlIGN4PSIzNjUiIGN5PSIyMDUiIHI9IjExIiBmaWxsPSIjZmZmIi8+CiAgICAgIDxjaXJjbGUgY3g9IjI3NSIgY3k9IjIwNSIgcj0iNSIgZmlsbD0iIzExMSIvPgogICAgICA8Y2lyY2xlIGN4PSIzNjUiIGN5PSIyMDUiIHI9IjUiIGZpbGw9IiMxMTEiLz4KICAgICAgPHBhdGggZD0iTTI2MCAyODAgUTMyMCAzMjUgMzgwIDI4MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgICA8cGF0aCBkPSJNMjA1IDE0MCBMMTUwIDcwIEwyNDUgMTEwIFoiIGZpbGw9InVybCgjYikiLz4KICAgICAgPHBhdGggZD0iTTQzNSAxNDAgTDQ5MCA3MCBMMzk1IDExMCBaIiBmaWxsPSJ1cmwoI2IpIi8+CiAgICAgIDxjaXJjbGUgY3g9IjMyMCIgY3k9IjI0MCIgcj0iMTc1IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZjllNTciIHN0cm9rZS1vcGFjaXR5PSIuMzUiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWRhc2hhcnJheT0iMTAgMTIiLz4KICAgICAgPHRleHQgeD0iMzIwIiB5PSIzODUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMzAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZmlsbD0iI2ZmZiI+RW1iZXJ2ZWlsIFZ1bHBpbjwvdGV4dD4KICAgIDwvc3ZnPg==","rabbit":"data:image/svg+xml;base64,CiAgICA8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjY0MCIgaGVpZ2h0PSI0MjAiPgogICAgICA8ZGVmcz4KICAgICAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImIiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2Q0ZTZmZiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzdmOGRmZiIvPgogICAgICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICAgICAgPGZpbHRlciBpZD0iZ2xvdyI+PGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iOCIgcmVzdWx0PSJiIi8+PGZlTWVyZ2U+PGZlTWVyZ2VOb2RlIGluPSJiIi8+PGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+PC9mZU1lcmdlPjwvZmlsdGVyPgogICAgICA8L2RlZnM+CiAgICAgIDxyZWN0IHdpZHRoPSI2NDAiIGhlaWdodD0iNDIwIiByeD0iMzIiIGZpbGw9IiMwOTEwMWQiLz4KICAgICAgPGNpcmNsZSBjeD0iMzIwIiBjeT0iMTkwIiByPSIxMjUiIGZpbGw9InVybCgjYikiIG9wYWNpdHk9Ii4yMiIvPgogICAgICA8ZWxsaXBzZSBjeD0iMzIwIiBjeT0iMjM1IiByeD0iMTQ1IiByeT0iOTAiIGZpbGw9InVybCgjYikiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogICAgICA8Y2lyY2xlIGN4PSIyNTAiIGN5PSIxNjAiIHI9IjU4IiBmaWxsPSJ1cmwoI2IpIi8+CiAgICAgIDxjaXJjbGUgY3g9IjM5MCIgY3k9IjE2MCIgcj0iNTgiIGZpbGw9InVybCgjYikiLz4KICAgICAgPGNpcmNsZSBjeD0iMjc1IiBjeT0iMjA1IiByPSIxMSIgZmlsbD0iI2ZmZiIvPgogICAgICA8Y2lyY2xlIGN4PSIzNjUiIGN5PSIyMDUiIHI9IjExIiBmaWxsPSIjZmZmIi8+CiAgICAgIDxjaXJjbGUgY3g9IjI3NSIgY3k9IjIwNSIgcj0iNSIgZmlsbD0iIzExMSIvPgogICAgICA8Y2lyY2xlIGN4PSIzNjUiIGN5PSIyMDUiIHI9IjUiIGZpbGw9IiMxMTEiLz4KICAgICAgPHBhdGggZD0iTTI2MCAyODAgUTMyMCAzMjUgMzgwIDI4MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgICA8cGF0aCBkPSJNMjA1IDE0MCBMMTUwIDcwIEwyNDUgMTEwIFoiIGZpbGw9InVybCgjYikiLz4KICAgICAgPHBhdGggZD0iTTQzNSAxNDAgTDQ5MCA3MCBMMzk1IDExMCBaIiBmaWxsPSJ1cmwoI2IpIi8+CiAgICAgIDxjaXJjbGUgY3g9IjMyMCIgY3k9IjI0MCIgcj0iMTc1IiBmaWxsPSJub25lIiBzdHJva2U9IiNkNGU2ZmYiIHN0cm9rZS1vcGFjaXR5PSIuMzUiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWRhc2hhcnJheT0iMTAgMTIiLz4KICAgICAgPHRleHQgeD0iMzIwIiB5PSIzODUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMzAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZmlsbD0iI2ZmZiI+TW9vbmhvcCBBdXJvcmFuPC90ZXh0PgogICAgPC9zdmc+","gecko":"data:image/svg+xml;base64,CiAgICA8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjY0MCIgaGVpZ2h0PSI0MjAiPgogICAgICA8ZGVmcz4KICAgICAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImIiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZDc2ZSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzZhY2JiOCIvPgogICAgICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICAgICAgPGZpbHRlciBpZD0iZ2xvdyI+PGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iOCIgcmVzdWx0PSJiIi8+PGZlTWVyZ2U+PGZlTWVyZ2VOb2RlIGluPSJiIi8+PGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+PC9mZU1lcmdlPjwvZmlsdGVyPgogICAgICA8L2RlZnM+CiAgICAgIDxyZWN0IHdpZHRoPSI2NDAiIGhlaWdodD0iNDIwIiByeD0iMzIiIGZpbGw9IiMwOTEwMWQiLz4KICAgICAgPGNpcmNsZSBjeD0iMzIwIiBjeT0iMTkwIiByPSIxMjUiIGZpbGw9InVybCgjYikiIG9wYWNpdHk9Ii4yMiIvPgogICAgICA8ZWxsaXBzZSBjeD0iMzIwIiBjeT0iMjM1IiByeD0iMTQ1IiByeT0iOTAiIGZpbGw9InVybCgjYikiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogICAgICA8Y2lyY2xlIGN4PSIyNTAiIGN5PSIxNjAiIHI9IjU4IiBmaWxsPSJ1cmwoI2IpIi8+CiAgICAgIDxjaXJjbGUgY3g9IjM5MCIgY3k9IjE2MCIgcj0iNTgiIGZpbGw9InVybCgjYikiLz4KICAgICAgPGNpcmNsZSBjeD0iMjc1IiBjeT0iMjA1IiByPSIxMSIgZmlsbD0iI2ZmZiIvPgogICAgICA8Y2lyY2xlIGN4PSIzNjUiIGN5PSIyMDUiIHI9IjExIiBmaWxsPSIjZmZmIi8+CiAgICAgIDxjaXJjbGUgY3g9IjI3NSIgY3k9IjIwNSIgcj0iNSIgZmlsbD0iIzExMSIvPgogICAgICA8Y2lyY2xlIGN4PSIzNjUiIGN5PSIyMDUiIHI9IjUiIGZpbGw9IiMxMTEiLz4KICAgICAgPHBhdGggZD0iTTI2MCAyODAgUTMyMCAzMjUgMzgwIDI4MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgICA8cGF0aCBkPSJNMjA1IDE0MCBMMTUwIDcwIEwyNDUgMTEwIFoiIGZpbGw9InVybCgjYikiLz4KICAgICAgPHBhdGggZD0iTTQzNSAxNDAgTDQ5MCA3MCBMMzk1IDExMCBaIiBmaWxsPSJ1cmwoI2IpIi8+CiAgICAgIDxjaXJjbGUgY3g9IjMyMCIgY3k9IjI0MCIgcj0iMTc1IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmQ3NmUiIHN0cm9rZS1vcGFjaXR5PSIuMzUiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWRhc2hhcnJheT0iMTAgMTIiLz4KICAgICAgPHRleHQgeD0iMzIwIiB5PSIzODUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMzAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZmlsbD0iI2ZmZiI+UHJpc210YWlsIEdlY2tvcmE8L3RleHQ+CiAgICA8L3N2Zz4=","parrot":"data:image/svg+xml;base64,CiAgICA8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjY0MCIgaGVpZ2h0PSI0MjAiPgogICAgICA8ZGVmcz4KICAgICAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImIiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzZmZTBmZiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzRmNjZkOCIvPgogICAgICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICAgICAgPGZpbHRlciBpZD0iZ2xvdyI+PGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iOCIgcmVzdWx0PSJiIi8+PGZlTWVyZ2U+PGZlTWVyZ2VOb2RlIGluPSJiIi8+PGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+PC9mZU1lcmdlPjwvZmlsdGVyPgogICAgICA8L2RlZnM+CiAgICAgIDxyZWN0IHdpZHRoPSI2NDAiIGhlaWdodD0iNDIwIiByeD0iMzIiIGZpbGw9IiMwOTEwMWQiLz4KICAgICAgPGNpcmNsZSBjeD0iMzIwIiBjeT0iMTkwIiByPSIxMjUiIGZpbGw9InVybCgjYikiIG9wYWNpdHk9Ii4yMiIvPgogICAgICA8ZWxsaXBzZSBjeD0iMzIwIiBjeT0iMjM1IiByeD0iMTQ1IiByeT0iOTAiIGZpbGw9InVybCgjYikiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogICAgICA8Y2lyY2xlIGN4PSIyNTAiIGN5PSIxNjAiIHI9IjU4IiBmaWxsPSJ1cmwoI2IpIi8+CiAgICAgIDxjaXJjbGUgY3g9IjM5MCIgY3k9IjE2MCIgcj0iNTgiIGZpbGw9InVybCgjYikiLz4KICAgICAgPGNpcmNsZSBjeD0iMjc1IiBjeT0iMjA1IiByPSIxMSIgZmlsbD0iI2ZmZiIvPgogICAgICA8Y2lyY2xlIGN4PSIzNjUiIGN5PSIyMDUiIHI9IjExIiBmaWxsPSIjZmZmIi8+CiAgICAgIDxjaXJjbGUgY3g9IjI3NSIgY3k9IjIwNSIgcj0iNSIgZmlsbD0iIzExMSIvPgogICAgICA8Y2lyY2xlIGN4PSIzNjUiIGN5PSIyMDUiIHI9IjUiIGZpbGw9IiMxMTEiLz4KICAgICAgPHBhdGggZD0iTTI2MCAyODAgUTMyMCAzMjUgMzgwIDI4MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgICA8cGF0aCBkPSJNMjA1IDE0MCBMMTUwIDcwIEwyNDUgMTEwIFoiIGZpbGw9InVybCgjYikiLz4KICAgICAgPHBhdGggZD0iTTQzNSAxNDAgTDQ5MCA3MCBMMzk1IDExMCBaIiBmaWxsPSJ1cmwoI2IpIi8+CiAgICAgIDxjaXJjbGUgY3g9IjMyMCIgY3k9IjI0MCIgcj0iMTc1IiBmaWxsPSJub25lIiBzdHJva2U9IiM2ZmUwZmYiIHN0cm9rZS1vcGFjaXR5PSIuMzUiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWRhc2hhcnJheT0iMTAgMTIiLz4KICAgICAgPHRleHQgeD0iMzIwIiB5PSIzODUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMzAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZmlsbD0iI2ZmZiI+U3Rvcm1jcmVzdCBBdmlhcjwvdGV4dD4KICAgIDwvc3ZnPg==","axolotl":"data:image/svg+xml;base64,CiAgICA8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjY0MCIgaGVpZ2h0PSI0MjAiPgogICAgICA8ZGVmcz4KICAgICAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImIiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzdlZThmZiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzdkNWNmZiIvPgogICAgICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICAgICAgPGZpbHRlciBpZD0iZ2xvdyI+PGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iOCIgcmVzdWx0PSJiIi8+PGZlTWVyZ2U+PGZlTWVyZ2VOb2RlIGluPSJiIi8+PGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+PC9mZU1lcmdlPjwvZmlsdGVyPgogICAgICA8L2RlZnM+CiAgICAgIDxyZWN0IHdpZHRoPSI2NDAiIGhlaWdodD0iNDIwIiByeD0iMzIiIGZpbGw9IiMwOTEwMWQiLz4KICAgICAgPGNpcmNsZSBjeD0iMzIwIiBjeT0iMTkwIiByPSIxMjUiIGZpbGw9InVybCgjYikiIG9wYWNpdHk9Ii4yMiIvPgogICAgICA8ZWxsaXBzZSBjeD0iMzIwIiBjeT0iMjM1IiByeD0iMTQ1IiByeT0iOTAiIGZpbGw9InVybCgjYikiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogICAgICA8Y2lyY2xlIGN4PSIyNTAiIGN5PSIxNjAiIHI9IjU4IiBmaWxsPSJ1cmwoI2IpIi8+CiAgICAgIDxjaXJjbGUgY3g9IjM5MCIgY3k9IjE2MCIgcj0iNTgiIGZpbGw9InVybCgjYikiLz4KICAgICAgPGNpcmNsZSBjeD0iMjc1IiBjeT0iMjA1IiByPSIxMSIgZmlsbD0iI2ZmZiIvPgogICAgICA8Y2lyY2xlIGN4PSIzNjUiIGN5PSIyMDUiIHI9IjExIiBmaWxsPSIjZmZmIi8+CiAgICAgIDxjaXJjbGUgY3g9IjI3NSIgY3k9IjIwNSIgcj0iNSIgZmlsbD0iIzExMSIvPgogICAgICA8Y2lyY2xlIGN4PSIzNjUiIGN5PSIyMDUiIHI9IjUiIGZpbGw9IiMxMTEiLz4KICAgICAgPHBhdGggZD0iTTI2MCAyODAgUTMyMCAzMjUgMzgwIDI4MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgICA8cGF0aCBkPSJNMjA1IDE0MCBMMTUwIDcwIEwyNDUgMTEwIFoiIGZpbGw9InVybCgjYikiLz4KICAgICAgPHBhdGggZD0iTTQzNSAxNDAgTDQ5MCA3MCBMMzk1IDExMCBaIiBmaWxsPSJ1cmwoI2IpIi8+CiAgICAgIDxjaXJjbGUgY3g9IjMyMCIgY3k9IjI0MCIgcj0iMTc1IiBmaWxsPSJub25lIiBzdHJva2U9IiM3ZWU4ZmYiIHN0cm9rZS1vcGFjaXR5PSIuMzUiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWRhc2hhcnJheT0iMTAgMTIiLz4KICAgICAgPHRleHQgeD0iMzIwIiB5PSIzODUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMzAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZmlsbD0iI2ZmZiI+R2xvd2dpbGwgQXhpb248L3RleHQ+CiAgICA8L3N2Zz4=","hedgehog":"data:image/svg+xml;base64,CiAgICA8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjY0MCIgaGVpZ2h0PSI0MjAiPgogICAgICA8ZGVmcz4KICAgICAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImIiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZTFiMCIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzhiNWZkZiIvPgogICAgICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICAgICAgPGZpbHRlciBpZD0iZ2xvdyI+PGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iOCIgcmVzdWx0PSJiIi8+PGZlTWVyZ2U+PGZlTWVyZ2VOb2RlIGluPSJiIi8+PGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+PC9mZU1lcmdlPjwvZmlsdGVyPgogICAgICA8L2RlZnM+CiAgICAgIDxyZWN0IHdpZHRoPSI2NDAiIGhlaWdodD0iNDIwIiByeD0iMzIiIGZpbGw9IiMwOTEwMWQiLz4KICAgICAgPGNpcmNsZSBjeD0iMzIwIiBjeT0iMTkwIiByPSIxMjUiIGZpbGw9InVybCgjYikiIG9wYWNpdHk9Ii4yMiIvPgogICAgICA8ZWxsaXBzZSBjeD0iMzIwIiBjeT0iMjM1IiByeD0iMTQ1IiByeT0iOTAiIGZpbGw9InVybCgjYikiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogICAgICA8Y2lyY2xlIGN4PSIyNTAiIGN5PSIxNjAiIHI9IjU4IiBmaWxsPSJ1cmwoI2IpIi8+CiAgICAgIDxjaXJjbGUgY3g9IjM5MCIgY3k9IjE2MCIgcj0iNTgiIGZpbGw9InVybCgjYikiLz4KICAgICAgPGNpcmNsZSBjeD0iMjc1IiBjeT0iMjA1IiByPSIxMSIgZmlsbD0iI2ZmZiIvPgogICAgICA8Y2lyY2xlIGN4PSIzNjUiIGN5PSIyMDUiIHI9IjExIiBmaWxsPSIjZmZmIi8+CiAgICAgIDxjaXJjbGUgY3g9IjI3NSIgY3k9IjIwNSIgcj0iNSIgZmlsbD0iIzExMSIvPgogICAgICA8Y2lyY2xlIGN4PSIzNjUiIGN5PSIyMDUiIHI9IjUiIGZpbGw9IiMxMTEiLz4KICAgICAgPHBhdGggZD0iTTI2MCAyODAgUTMyMCAzMjUgMzgwIDI4MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgICA8cGF0aCBkPSJNMjA1IDE0MCBMMTUwIDcwIEwyNDUgMTEwIFoiIGZpbGw9InVybCgjYikiLz4KICAgICAgPHBhdGggZD0iTTQzNSAxNDAgTDQ5MCA3MCBMMzk1IDExMCBaIiBmaWxsPSJ1cmwoI2IpIi8+CiAgICAgIDxjaXJjbGUgY3g9IjMyMCIgY3k9IjI0MCIgcj0iMTc1IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmUxYjAiIHN0cm9rZS1vcGFjaXR5PSIuMzUiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWRhc2hhcnJheT0iMTAgMTIiLz4KICAgICAgPHRleHQgeD0iMzIwIiB5PSIzODUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMzAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZmlsbD0iI2ZmZiI+U3RhcnNwaW5lIEhlZHJhPC90ZXh0PgogICAgPC9zdmc+"};
+
+function saveSafe(){if(typeof save==="function")save()}
+function esc(x){return String(x??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function amazon(q){return "https://www.amazon.com/s?k="+encodeURIComponent(q)}
+
+function ensure(){
+  state.morphVetStory=state.morphVetStory||{chapter:0,cases:{},collection:[],log:[],completed:false};
+  const st=state.morphVetStory;
+  if(st.chapter<0)st.chapter=0;
+  if(st.chapter>=MV_ANIMALS.length){st.chapter=MV_ANIMALS.length;st.completed=true}
+  return st;
+}
+function caseFor(id){
+  const st=ensure();
+  st.cases[id]=st.cases[id]||{health:45,trust:30,morph:0,done:[],morphed:false};
+  return st.cases[id];
+}
+function activeAnimal(){
+  const st=ensure();
+  return MV_ANIMALS[Math.min(st.chapter,MV_ANIMALS.length-1)]||null;
+}
+function log(msg){
+  const st=ensure();st.log.unshift(msg);st.log=st.log.slice(0,30);
+}
+function mainPet(id){
+  return (state.pets||[]).find(p=>p.morphVetStoryId===id);
+}
+function registerPet(a,c){
+  let p=mainPet(a.id);
+  if(p)return p;
+  p={
+    morphVetStoryId:a.id,
+    name:a.morph,
+    originalName:a.base,
+    species:a.base,
+    breed:"Fictional Morph • "+a.type,
+    sex:"Unknown",
+    emoji:a.emoji,
+    formName:a.morph,
+    evolutionStage:1,
+    level:1,
+    xp:0,
+    morphEnergy:350,
+    morphPoints:3,
+    abilityPoints:1,
+    dna:a.type.split("/").map(x=>x.trim()).filter(Boolean),
+    mutations:[],
+    abilities:[],
+    trust:c.trust,
+    bond:55,
+    health:100,
+    energy:75,
+    power:20,speed:20,armor:20,instinct:20,adaptation:20,
+    story:"Rescued as a real-world "+a.base+" through the Main Story Deck, stabilized, then unlocked as the fictional exotic form "+a.morph+".",
+    memories:["Main Story Deck rescue completed","Veterinary stabilization completed","Fictional morph registered: "+a.morph],
+    stats:{health:100,pain:0,hydration:85,trust:c.trust,energy:75,bond:55,hygiene:80,happiness:82,fun:65,training:0,social:60,comfort:82,mobility:75}
+  };
+  state.pets=state.pets||[];
+  state.pets.push(p);
+  state.morphLab=state.morphLab||{selected:null,forgeA:null,forgeB:null,hybridSeq:1};
+  state.morphLab.selected=p.name;
+  return p;
+}
+
+window.vgccOpen=function(){
+  ensure();
+  let panel=document.getElementById("vgCardCampaign");
+  if(!panel){panel=document.createElement("div");panel.id="vgCardCampaign";document.body.appendChild(panel)}
+  panel.classList.add("open");
+  mvRender();
+};
+window.vgccClose=function(){document.getElementById("vgCardCampaign")?.classList.remove("open")};
+
+window.mvStoryCare=function(i){
+  const st=ensure(),a=activeAnimal();if(!a||st.completed)return;
+  const c=caseFor(a.id);if(c.morphed||c.done.includes(i))return;
+  c.done.push(i);
+  c.health=Math.min(100,c.health+12);
+  c.trust=Math.min(100,c.trust+10);
+  c.morph=Math.min(88,c.morph+22);
+  log(a.care[i]+" completed. "+a.base+" is more stable.");
+  saveSafe();mvRender();
+};
+
+window.mvStoryMorph=function(){
+  const st=ensure(),a=activeAnimal();if(!a||st.completed)return;
+  const c=caseFor(a.id);
+  if(c.done.length<4)return;
+  if(c.morphed)return;
+  c.morphed=true;c.health=100;c.trust=Math.min(100,c.trust+20);c.morph=100;
+  if(!st.collection.includes(a.id))st.collection.push(a.id);
+  const p=registerPet(a,c);
+  state.funds=(state.funds||0)+500;
+  log("MORPH REGISTERED • "+a.morph+" joined My Pets • +$500");
+  saveSafe();
+  if(typeof toast==="function")toast("🧬 "+a.morph+" REGISTERED • Added to My Pets");
+  mvRender();
+};
+
+window.mvStoryNext=function(){
+  const st=ensure(),a=activeAnimal();if(!a)return;
+  const c=caseFor(a.id);
+  if(!c.morphed)return;
+  st.chapter++;
+  if(st.chapter>=MV_ANIMALS.length){st.chapter=MV_ANIMALS.length;st.completed=true;log("MAIN STORY COMPLETE • All six exotic rescues registered.");}
+  else log("NEXT RESCUE UNLOCKED • "+MV_ANIMALS[st.chapter].base);
+  saveSafe();mvRender();
+};
+
+window.mvStoryMorphLab=function(id){
+  const p=mainPet(id);if(!p)return;
+  state.morphLab=state.morphLab||{};state.morphLab.selected=p.name;saveSafe();vgccClose();
+  if(typeof openCreatureLab==="function")openCreatureLab(p.name);
+};
+window.mvStorySupplies=function(id){
+  const p=mainPet(id);
+  if(p&&typeof vgMorphShop==="function"){vgccClose();vgMorphShop(p.name);return}
+  const a=MV_ANIMALS.find(x=>x.id===id);if(!a)return;
+  const win=window.open("about:blank","_blank");
+  if(win)win.location.href=amazon(Object.values(a.supplies)[0]||a.base+" supplies");
+};
+
+function supplyLinks(a){
+  return Object.entries(a.supplies||{}).map(([k,q])=>`<a class="mvstory-link" target="_blank" rel="noopener noreferrer" href="${amazon(q)}">🛒 ${esc(k)} — Amazon search</a>`).join("");
+}
+
+window.mvRender=function(){
+  const panel=document.getElementById("vgCardCampaign");if(!panel)return;
+  const st=ensure();
+  const progress=MV_ANIMALS.map((a,i)=>`<i class="${i<st.chapter?"done":i===st.chapter&&!st.completed?"now":""}"></i>`).join("");
+
+  if(st.completed){
+    panel.innerHTML=`<div class="mvstory-wrap">
+      <div class="mvstory-top"><div><div class="eyebrow">MAIN STORY DECK</div><div class="mvstory-title">Morph Vet Exotics • Complete</div></div><button class="btn" onclick="vgccClose()">Close</button></div>
+      <div class="mvstory-progress">${progress}</div>
+      <div class="mvstory-complete"><div style="font-size:70px">🏆🧬🐾</div><h2>THE EXOTIC RESCUE RUN IS COMPLETE</h2><p>All six real-animal rescues were stabilized and unlocked as original fictional morph forms. They now live permanently in My Pets and can continue through the main Morph Game.</p></div>
+      <div class="mvstory-collection">${st.collection.map(id=>{const a=MV_ANIMALS.find(x=>x.id===id);return `<div class="mvstory-colcard"><img src="${MV_ART[id]}"><b>${esc(a.morph)}</b><small style="display:block;color:#8da7b2">${esc(a.base)} • ${esc(a.type)}</small><button class="btn" onclick="mvStoryMorphLab('${id}')">Continue Morphing</button></div>`}).join("")}</div>
+      <div class="mvstory-disclaimer">Morph forms are fictional. Amazon links are ordinary product searches and are not veterinary recommendations.</div>
+    </div>`;
+    return;
+  }
+
+  const a=activeAnimal(),c=caseFor(a.id),pet=mainPet(a.id);
+  const nextReady=c.morphed;
+  panel.innerHTML=`<div class="mvstory-wrap">
+    <div class="mvstory-top">
+      <div><div class="eyebrow">MAIN STORY DECK • MORPH VET LOGIC</div><div class="mvstory-title">Rescue → Care → Morph → Register</div></div>
+      <button class="btn" onclick="vgccClose()">Close</button>
+    </div>
+    <div class="mvstory-progress">${progress}</div>
+
+    <div class="mvstory-hero">
+      <img src="${MV_ART[a.id]}" alt="${esc(a.base)}">
+      <div class="mvstory-pad">
+        <div class="eyebrow">RESCUE CASE ${st.chapter+1} / ${MV_ANIMALS.length}</div>
+        <span class="mvstory-tag">${esc(a.type)}</span>
+        <h2 style="margin:8px 0 4px">${c.morphed?esc(a.morph):esc(a.base)}</h2>
+        <p style="color:#9fb8c2;margin:0 0 8px">Real animal: <b>${esc(a.base)}</b> • Fictional morph unlock: <b>${esc(a.morph)}</b></p>
+
+        <div class="mvstory-stats">
+          <div class="mvstory-stat"><small>HEALTH</small><b>${c.health}</b><div class="mvstory-bar"><i style="width:${c.health}%"></i></div></div>
+          <div class="mvstory-stat"><small>TRUST</small><b>${c.trust}</b><div class="mvstory-bar"><i style="width:${c.trust}%"></i></div></div>
+          <div class="mvstory-stat"><small>MORPH</small><b>${c.morph}</b><div class="mvstory-bar"><i style="width:${c.morph}%"></i></div></div>
+        </div>
+
+        <div class="eyebrow">VETERINARY CARE ACTIONS</div>
+        <div class="mvstory-care">${a.care.map((x,i)=>`<button class="${c.done.includes(i)?"done":""}" ${c.done.includes(i)||c.morphed?"disabled":""} onclick="mvStoryCare(${i})">${c.done.includes(i)?"✓ ":""}${esc(x)}</button>`).join("")}</div>
+
+        <button class="mvstory-morph" ${c.done.length<4||c.morphed?"disabled":""} onclick="mvStoryMorph()">${c.morphed?"✓ MORPH REGISTERED":c.done.length<4?"COMPLETE ALL 4 CARE ACTIONS":"🧬 INITIATE FICTIONAL MORPH"}</button>
+
+        ${c.morphed?`<div class="mvstory-complete"><b>OFFICIAL FICTIONAL MORPH REGISTERED</b><p>${esc(a.morph)} is now a permanent My Pets companion with Morph Energy, Morph Points, DNA traits, memories and access to the main Morph Game.</p>
+          <div class="mvstory-actions">
+            <button onclick="mvStoryMorphLab('${a.id}')">🧬 CONTINUE IN MORPH GAME</button>
+            <button onclick="mvStorySupplies('${a.id}')">🛒 EXOTIC SUPPLIES</button>
+          </div>
+          <div class="mvstory-actions">${supplyLinks(a)}</div>
+          <button class="mvstory-morph" onclick="mvStoryNext()">${st.chapter===MV_ANIMALS.length-1?"🏆 FINISH STORY RUN":"➡️ NEXT RESCUE CASE"}</button>
+        </div>`:""}
+
+        <div class="mvstory-log">${st.log.length?st.log.slice(0,10).map(x=>"› "+esc(x)).join("<br>"):"› Rescue case ready. Complete each care action."}</div>
+      </div>
+    </div>
+
+    <div class="mvstory-collection">
+      ${st.collection.map(id=>{const x=MV_ANIMALS.find(a=>a.id===id);return `<div class="mvstory-colcard"><img src="${MV_ART[id]}"><b>${esc(x.morph)}</b><small style="display:block;color:#829ca8">${esc(x.base)}</small></div>`}).join("")}
+    </div>
+    <div class="mvstory-disclaimer"><b>Game fiction:</b> the morph forms are fictional. Real-animal care and product choices should follow qualified veterinary/wildlife guidance and applicable law.</div>
+  </div>`;
+};
+
+// Retire the old visible card-game interactions. Existing save data remains untouched.
+window.vgccPlay=function(){};
+window.vgccComplete=function(){};
+window.vgccBattlePlay=function(){};
+window.vgccEndTurn=function(){};
+window.vgccRestart=function(){};
+window.vgccStartBattle=function(){};
+
+// Make sure the existing top Main Story Deck button opens this replacement logic.
+function bindStoryButton(){
+  const b=document.getElementById("vgCardCampaignBtn");
+  if(b){
+    b.textContent="🧬 MAIN STORY DECK";
+    b.onclick=function(e){if(e){e.preventDefault();e.stopPropagation()}vgccOpen()};
+  }
+}
+addEventListener("load",()=>{ensure();bindStoryButton();setTimeout(bindStoryButton,80);setTimeout(bindStoryButton,500)});
 })();
 </script>
 
