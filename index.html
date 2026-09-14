@@ -179,6 +179,22 @@ button{font:inherit}.shell{max-width:1440px;margin:auto;padding:0 16px 70px}
 .vgtObs{margin-top:10px;padding:10px;border-left:3px solid #74b9dd;background:#10283c;border-radius:8px}
 </style>
 
+
+<style id="vg-shop-tool-progression-css">
+.vgToolShopTitle{margin:22px 0 8px}
+.vgToolShopGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.vgToolShopCard{padding:13px;border:1px solid #426584;border-radius:14px;background:#102239}
+.vgToolShopCard h3{margin:3px 0 6px}.vgToolShopPrice{font-size:1.35rem;font-weight:1000;margin:5px 0}
+.vgToolShopCard small{display:block;opacity:.72;min-height:48px}
+.vgToolShopCard button{width:100%;min-height:44px;margin-top:9px;border:1px solid #6386a6;border-radius:10px;background:#193959;color:inherit;font-weight:950}
+.vgToolShopCard button:disabled{opacity:.55}
+#vgContinuousMonitor{position:fixed;right:12px;bottom:68px;z-index:100003;width:min(300px,calc(100vw - 24px));padding:9px 11px;border:1px solid #587fa0;border-radius:12px;background:#0c2031eF;box-shadow:0 10px 28px #0008;font-size:.72rem;line-height:1.35}
+#vgContinuousMonitor b{font-size:.8rem}
+.vgtLocked{opacity:.5}.vgtLocked button{pointer-events:none}
+.vgtLearned{margin-top:8px;padding:8px;border:1px solid #405f79;border-radius:10px;background:#0c1f31}
+.vgtBehaviorButtons{display:grid;grid-template-columns:1fr;gap:7px;margin-top:8px}
+</style>
+
 </head>
 <body>
 <div class="shell">
@@ -234,7 +250,20 @@ function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remo
 function clinic(){return `<div class="hero"><div class="card pad"><div class="eyebrow">Active Rescue // ${p().species}</div><div class="h1">${p().name}</div><p class="lede">${p().breed} • ${p().sex} • ${p().condition}. The hospital never moves you automatically. Enter a department, work there, finish it, then choose where to go next.</p><div class="notice"><b>Rescue Story:</b> ${p().story}</div>${personalityClinicLine()}${phaseStrip()}<div class="actionRow"><button class="btn primary" onclick="go('${nextArea()}')">Enter Next Department</button><button class="btn" onclick="go('pets')">Open My Pets</button></div></div><div class="card">${petArt()}</div></div>${kpis()}<div class="grid"><div class="card pad"><div class="sectionTitle"><h2>Command Console</h2><p>Department access stays deliberate.</p></div><div class="instrumentGrid">${navItems.slice(1,7).map(([id,l],i)=>`<button class="instrument" onclick="go('${id}')"><div class="dial" style="--pct:${45+i*7}%;--accent:${i%2?'var(--teal)':'var(--cyan)'}"></div><b>${l}</b><small>${areaNote(id)}</small></button>`).join('')}</div></div><div class="card pad"><div class="sectionTitle"><h2>Live Telemetry</h2><p>No timer redraws.</p></div>${telemetry(['health','pain','oxygen','hydration','stress','trust'])}</div></div>${logBox()}`}
 function nextArea(){return ['stabilize','stabilize','diagnostics','treatment',p().surgical?'surgery':'recovery','recovery','recovery','discharge'][state.stage]||'discharge'}
 
-function pers(){return p().personality||{archetype:'Individual Patient',traits:['Unique'],sociability:50,confidence:50,fear:50,curiosity:50,foodDrive:50,affection:50,independence:50,patience:50,energy:50,handling:50,noiseTolerance:50,preferences:[],dislikes:[]}}
+function pers(){
+ let base=p().personality||{archetype:'Individual Patient',traits:['Unique'],sociability:50,confidence:50,fear:50,curiosity:50,foodDrive:50,affection:50,independence:50,patience:50,energy:50,handling:50,noiseTolerance:50,preferences:[],dislikes:[]};
+ let mods={};
+ try{
+   let z=JSON.parse(localStorage.getItem('vetgods_tool_progression_v1')||'{}')||{};
+   mods=((z.learned||{})[p().name])||{};
+ }catch(e){}
+ return Object.assign({},base,{
+   confidence:Math.max(0,Math.min(100,Number(base.confidence||50)+Number(mods.confidence||0))),
+   handling:Math.max(0,Math.min(100,Number(base.handling||50)+Number(mods.handling||0))),
+   noiseTolerance:Math.max(0,Math.min(100,Number(base.noiseTolerance||50)+Number(mods.noiseTolerance||0))),
+   patience:Math.max(0,Math.min(100,Number(base.patience||50)+Number(mods.patience||0)))
+ });
+}
 function behaviorState(){
  const q=pers(),s=state.stats;
  if(s.stress>=78)return 'Frightened';
@@ -1266,6 +1295,173 @@ setInterval(tick,1200);
  addEventListener('load',install);
  document.addEventListener('click',()=>setTimeout(draw,100));
  setTimeout(install,120);
+})();
+</script>
+
+
+<script id="vg-shop-tool-progression-js">
+(function(){
+ const KEY='vetgods_tool_progression_v1';
+ const catalog=[
+  {id:'temperament',name:'Temperament Scanner',price:600,icon:'🧠',desc:'Unlocks temperament scans and gradual discovery of traits, likes, and dislikes.'},
+  {id:'skeletal',name:'Skeletal Structure Scanner',price:900,icon:'🦴',desc:'Unlocks bone, joint, alignment, and mobility scans tied to the current case.'},
+  {id:'behavior',name:'Behavior Monitor',price:1200,icon:'👁',desc:'Unlocks live emotional-state scans based on stress, trust, pain, and temperament.'},
+  {id:'relationship',name:'Relationship Monitor',price:1500,icon:'🤝',desc:'Unlocks trust/bond monitoring and tracks how the animal is responding to you.'},
+  {id:'continuous',name:'Continuous Personality Monitor',price:1800,icon:'📡',desc:'Keeps a live patient temperament/behavior readout visible throughout the clinical case.'},
+  {id:'conditioning',name:'Adaptive Behavior Console',price:2500,icon:'🎛️',desc:'Unlocks gentle behavior-shaping sessions that can improve learned confidence, handling tolerance, and noise tolerance.'}
+ ];
+ let D;
+ function load(){try{D=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){};if(!D)D={owned:{},learned:{},sessions:{}};D.owned=D.owned||{};D.learned=D.learned||{};D.sessions=D.sessions||{}}
+ function saveD(){localStorage.setItem(KEY,JSON.stringify(D))}
+ load();
+ function owned(id){return !!D.owned[id]}
+ function toast(msg){
+   let h=document.getElementById('vgeToast');
+   if(h){h.innerHTML='<div class="vgeToast">'+msg+'</div>';setTimeout(()=>{if(h)h.innerHTML=''},2600)}
+   else alert(msg);
+ }
+ function buy(id){
+   load();let item=catalog.find(x=>x.id===id);if(!item||owned(id))return;
+   if(state.funds<item.price){toast('NEED $'+item.price.toLocaleString()+' • CURRENT $'+state.funds.toLocaleString());return}
+   state.funds-=item.price;D.owned[id]=true;save();saveD();
+   const fundReadout=document.getElementById('funds');
+   if(fundReadout)fundReadout.textContent='$'+state.funds.toLocaleString();
+   if(typeof draw==='function')try{draw()}catch(e){}
+   toast(item.name.toUpperCase()+' PURCHASED');
+   injectShop();gateTools();drawMonitor();
+ }
+ window.vgBuyClinicTool=buy;
+
+ function toolCards(){
+   load();
+   return catalog.map(x=>`<article class="vgToolShopCard">
+    <div>${x.icon} CLINIC HARDWARE</div>
+    <h3>${x.name}</h3>
+    <div class="vgToolShopPrice">$${x.price.toLocaleString()}</div>
+    <small>${x.desc}</small>
+    <button data-vgtoolbuy="${x.id}" ${owned(x.id)?'disabled':''}>${owned(x.id)?'✓ OWNED':'BUY TOOL'}</button>
+   </article>`).join('');
+ }
+ function injectShop(){
+   let shop=document.getElementById('hospitalShopScreen');if(!shop)return;
+   let inner=shop.querySelector('.shopScreenInner');if(!inner||inner.querySelector('#vgClinicToolShop'))return;
+   let temp=inner.querySelector('.tempPackTitle');
+   let sec=document.createElement('section');sec.id='vgClinicToolShop';
+   sec.innerHTML=`<h2 class="vgToolShopTitle">🧰 Diagnostic & Behavior Tools</h2>
+   <p style="opacity:.72;font-size:.8rem">Purchased hardware permanently unlocks abilities in the TOOLS menu. These systems feed directly into patient personality, behavior, mobility, and learned temperament.</p>
+   <div class="vgToolShopGrid">${toolCards()}</div>`;
+   if(temp)temp.insertAdjacentElement('beforebegin',sec);else inner.appendChild(sec);
+ }
+ function labelToolCards(){
+   let panel=document.getElementById('vgToolsPanel');if(!panel)return;
+   panel.querySelectorAll('.vgtTool').forEach(card=>{
+     let h=(card.querySelector('h3')?.textContent||'').toLowerCase();
+     let id=h.includes('temperament')?'temperament':h.includes('relationship')?'relationship':h.includes('behavior')?'behavior':h.includes('clinical')?'behavior':null;
+     if(id)card.dataset.unlock=id;
+   });
+ }
+ function skeletalCard(){
+   let grid=document.querySelector('#vgToolsPanel .vgtGrid');if(!grid||grid.querySelector('[data-special-tool="skeletal"]'))return;
+   let card=document.createElement('div');card.className='vgtTool';card.dataset.specialTool='skeletal';card.dataset.unlock='skeletal';
+   card.innerHTML='<h3>🦴 Skeletal Structure Scanner</h3><div class="subtitle">Reads alignment, joint stress, injury pattern, pain, and mobility for this patient.</div><button onclick="vgSkeletalScan()">RUN SKELETAL SCAN</button>';
+   grid.appendChild(card);
+ }
+ function conditioningCard(){
+   let grid=document.querySelector('#vgToolsPanel .vgtGrid');if(!grid||grid.querySelector('[data-special-tool="conditioning"]'))return;
+   let card=document.createElement('div');card.className='vgtTool';card.dataset.specialTool='conditioning';card.dataset.unlock='conditioning';
+   card.innerHTML=`<h3>🎛️ Adaptive Behavior Console</h3>
+   <div class="subtitle">Shapes learned temperament without replacing the animal's core personality.</div>
+   <div class="vgtBehaviorButtons">
+    <button data-vgcondition="confidence">CONFIDENCE SESSION</button>
+    <button data-vgcondition="handling">HANDLING TOLERANCE</button>
+    <button data-vgcondition="noiseTolerance">NOISE ACCLIMATION</button>
+   </div>`;
+   grid.appendChild(card);
+ }
+ function learnedHTML(){
+   load();let m=D.learned[p().name]||{};
+   return `<div class="vgtLearned"><b>Learned temperament</b><br>Confidence ${m.confidence||0} • Handling ${m.handling||0} • Noise tolerance ${m.noiseTolerance||0}</div>`;
+ }
+ function gateTools(){
+   load();labelToolCards();skeletalCard();conditioningCard();
+   document.querySelectorAll('#vgToolsPanel .vgtTool[data-unlock]').forEach(card=>{
+     let id=card.dataset.unlock,isOwned=owned(id);
+     card.classList.toggle('vgtLocked',!isOwned);
+     card.querySelectorAll('button').forEach(btn=>{
+       btn.disabled=!isOwned;
+       if(!isOwned)btn.title='Purchase this tool in the Hospital Shop';
+     });
+   });
+   let prof=document.querySelector('#vgToolsPanel .vgtProfile');
+   if(prof&&!prof.querySelector('.vgtLearned'))prof.insertAdjacentHTML('beforeend',learnedHTML());
+ }
+ function boneResult(){
+   let n=p().name,s=state.stats;
+   let cases={
+    Kota:'No unstable fracture detected. Paw and distal-limb soft-tissue strain pattern; guarded loading remains the main mobility limitation.',
+    Mira:'Skeletal alignment is preserved around the injured paw. The dominant problem is painful soft-tissue damage rather than gross bony displacement.',
+    Orion:'Wing alignment remains intact without obvious displaced fracture pattern. Strain and shock are limiting safe movement.',
+    Juniper:'No gross long-bone displacement detected. Foreign-body region is associated with focal pain and guarded limb use.'
+   };
+   return `${cases[n]||'Skeletal alignment scan complete.'} Mobility ${s.mobility} • Pain ${s.pain} • Health ${s.health}.`;
+ }
+ window.vgSkeletalScan=function(){
+   load();if(!owned('skeletal')){toast('PURCHASE THE SKELETAL STRUCTURE SCANNER IN SHOP');return}
+   let msg=boneResult();log('Skeletal scan: '+msg);
+   let r=document.querySelector('#vgToolsPanel .vgtObs');if(r)r.innerHTML='<b>Skeletal scan</b><br>'+msg;
+ };
+ function condition(kind){
+   load();if(!owned('conditioning')){toast('PURCHASE THE ADAPTIVE BEHAVIOR CONSOLE IN SHOP');return}
+   let name=p().name;D.learned[name]=D.learned[name]||{};
+   D.sessions[name]=D.sessions[name]||{};
+   let k=name+':'+kind,count=Number(D.sessions[name][kind]||0);
+   if(count>=3){toast('MAXIMUM 3 '+kind.toUpperCase()+' SESSIONS FOR THIS PATIENT');return}
+   let gain=3;
+   D.learned[name][kind]=Math.min(15,Number(D.learned[name][kind]||0)+gain);
+   D.sessions[name][kind]=count+1;
+   if(kind==='confidence'){state.stats.trust=Math.min(100,state.stats.trust+4);state.stats.stress=Math.max(0,state.stats.stress-4)}
+   if(kind==='handling'){state.stats.trust=Math.min(100,state.stats.trust+3);state.stats.stress=Math.max(0,state.stats.stress-2)}
+   if(kind==='noiseTolerance'){state.stats.trust=Math.min(100,state.stats.trust+2);state.stats.stress=Math.min(100,state.stats.stress+1)}
+   save();saveD();
+   log(`Behavior shaping: ${kind} +${gain} learned tolerance. Core personality unchanged.`);
+   toast('LEARNED '+kind.toUpperCase()+' +'+gain);
+   gateTools();drawMonitor();
+ }
+ window.vgCondition=condition;
+
+ function drawMonitor(){
+   load();let old=document.getElementById('vgContinuousMonitor');
+   if(!owned('continuous')){if(old)old.remove();return}
+   if(!old){old=document.createElement('div');old.id='vgContinuousMonitor';document.body.appendChild(old)}
+   let q=pers(),m=D.learned[p().name]||{};
+   old.innerHTML=`<b>📡 ${p().name} • ${q.archetype}</b><br>${behaviorState()} • Trust ${state.stats.trust} • Stress ${state.stats.stress}<br><span style="opacity:.7">Learned: Confidence +${m.confidence||0} • Handling +${m.handling||0} • Noise +${m.noiseTolerance||0}</span>`;
+ }
+ document.addEventListener('click',function(e){
+   let b=e.target.closest('[data-vgtoolbuy]');if(b){buy(b.dataset.vgtoolbuy);return}
+   let c=e.target.closest('[data-vgcondition]');if(c){condition(c.dataset.vgcondition);return}
+   if(e.target.closest('#hospitalTopShopLink')||e.target.closest('#openHospitalShop'))setTimeout(injectShop,35);
+   if(e.target.closest('#vgToolsBtn'))setTimeout(()=>{gateTools();drawMonitor()},35);
+   setTimeout(drawMonitor,80);
+ });
+ let mo=new MutationObserver(()=>{if(document.getElementById('hospitalShopScreen'))injectShop();if(document.getElementById('vgToolsPanel'))gateTools()});
+ mo.observe(document.body,{childList:true,subtree:true});
+ addEventListener('load',()=>{setTimeout(()=>{injectShop();gateTools();drawMonitor()},180)});
+ setInterval(drawMonitor,1200);
+})();
+</script>
+
+
+<script id="vg-funding-display-sync">
+(function(){
+ function syncFunds(){
+   try{
+     const el=document.getElementById('funds');
+     if(el&&window.state)el.textContent='$'+Number(state.funds||0).toLocaleString();
+   }catch(e){}
+ }
+ addEventListener('load',syncFunds);
+ document.addEventListener('click',()=>setTimeout(syncFunds,40));
+ setInterval(syncFunds,800);
 })();
 </script>
 
