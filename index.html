@@ -182,12 +182,83 @@ function clamp(){for(const k in state.stats)state.stats[k]=Math.max(0,Math.min(1
 function phaseStrip(){return `<div class="phasebar">${stages.map((x,i)=>`<span class="phase ${i<state.stage?'done':i===state.stage?'now':''}">${x}</span>`).join('')}</div>`}
 function petArt(){
  const q=p(), key=(q.species+' '+q.breed).toLowerCase();
- const grad=`<defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#69e8ff"/><stop offset="1" stop-color="#a993ff"/></linearGradient><linearGradient id="fur" x1="0" x2="1"><stop stop-color="#dff7ff"/><stop offset=".55" stop-color="#8fb8cb"/><stop offset="1" stop-color="#5d7487"/></linearGradient></defs>`;
+ const defs=`<defs>
+   <linearGradient id="fur" x1="0" x2="1"><stop stop-color="#eefaff"/><stop offset=".55" stop-color="#9fb9c9"/><stop offset="1" stop-color="#617a8c"/></linearGradient>
+   <linearGradient id="warm" x1="0" x2="1"><stop stop-color="#d9af7c"/><stop offset="1" stop-color="#8e6244"/></linearGradient>
+   <radialGradient id="glow"><stop stop-color="#78e8ff" stop-opacity=".32"/><stop offset="1" stop-color="#78e8ff" stop-opacity="0"/></radialGradient>
+ </defs>`;
  let art='';
- if(key.includes('owl')) art=`<svg viewBox="0 0 360 240" aria-label="cartoon barn owl patient">${grad}<ellipse cx="180" cy="207" rx="96" ry="14" fill="#000" opacity=".25"/><path d="M118 111c-37 7-61 35-67 73 27-7 54-18 77-38M242 111c37 7 61 35 67 73-27-7-54-18-77-38" fill="#b88c62" stroke="#e9c89e" stroke-width="5"/><ellipse cx="180" cy="126" rx="65" ry="77" fill="#caa477"/><path d="M140 84c18-28 62-28 80 0 18 25 10 63-40 89-50-26-58-64-40-89z" fill="#f3e9d4"/><circle cx="158" cy="111" r="17" fill="#4a2d20"/><circle cx="202" cy="111" r="17" fill="#4a2d20"/><circle cx="158" cy="111" r="6" fill="#05090b"/><circle cx="202" cy="111" r="6" fill="#05090b"/><path d="M180 124l-9 16h18z" fill="#e5b25b"/><path d="M145 62l-17-25 30 13M215 62l17-25-30 13" fill="#aa7f58" stroke="#e0bc8e" stroke-width="4"/><path d="M161 184v26M199 184v26" stroke="#d9ad71" stroke-width="7" stroke-linecap="round"/></svg>`;
- else if(key.includes('cat')||key.includes('feline')||key.includes('tabby')) art=`<svg viewBox="0 0 360 240" aria-label="cartoon silver tabby cat patient">${grad}<ellipse cx="180" cy="207" rx="108" ry="15" fill="#000" opacity=".25"/><ellipse cx="174" cy="142" rx="88" ry="55" fill="url(#fur)"/><circle cx="253" cy="104" r="43" fill="url(#fur)"/><path d="M226 74l7-43 29 34M271 67l34-34-5 48" fill="#8097a7" stroke="#d6edf6" stroke-width="5"/><circle cx="240" cy="103" r="6" fill="#15303d"/><circle cx="270" cy="103" r="6" fill="#15303d"/><path d="M255 116l-7 7h14z" fill="#e7a7b5"/><path d="M246 126c6 6 12 6 18 0" stroke="#426474" stroke-width="3" fill="none"/><path d="M105 135c-38-3-55-27-41-51" stroke="#879eac" stroke-width="13" fill="none" stroke-linecap="round"/><path d="M132 98l12 29M165 89l9 31M207 94l-4 29M245 77l-8 20M270 76l6 20" stroke="#617886" stroke-width="6" stroke-linecap="round"/><path d="M125 165l-9 38M174 174l-5 31M220 171l8 34" stroke="#91a8b5" stroke-width="12" stroke-linecap="round"/></svg>`;
- else if(key.includes('husky')) art=`<svg viewBox="0 0 360 240" aria-label="cartoon husky mix dog patient">${grad}<ellipse cx="180" cy="208" rx="120" ry="16" fill="#000" opacity=".25"/><ellipse cx="168" cy="148" rx="91" ry="54" fill="#8199a8"/><circle cx="260" cy="103" r="48" fill="#738b9b"/><path d="M225 79l12-50 30 39M274 67l37-37-10 55" fill="#596f7d" stroke="#d9f3ff" stroke-width="6"/><path d="M229 93c10-23 25-30 31-31 9 3 22 13 31 35-10 30-20 42-31 44-14-3-25-18-31-48z" fill="#edf8fc"/><path d="M110 137c-40-11-52-41-31-64" stroke="#748b99" stroke-width="15" fill="none" stroke-linecap="round"/><path d="M124 171l-8 37M174 176l-3 32M221 171l8 37" stroke="#d8edf5" stroke-width="14" stroke-linecap="round"/><circle cx="244" cy="99" r="7" fill="#49bfff"/><circle cx="277" cy="99" r="7" fill="#49bfff"/><ellipse cx="260" cy="120" rx="10" ry="7" fill="#172830"/><path d="M251 132c7 7 13 7 20 0" stroke="#29444f" stroke-width="4" fill="none"/><path d="M142 105c11 8 21 11 33 11M169 99c9 8 20 11 31 11" stroke="#5f7684" stroke-width="6" stroke-linecap="round"/></svg>`;
- else art=`<svg viewBox="0 0 360 240" aria-label="cartoon shepherd mix dog patient">${grad}<ellipse cx="180" cy="208" rx="120" ry="16" fill="#000" opacity=".25"/><ellipse cx="166" cy="148" rx="92" ry="54" fill="#b88c5d"/><circle cx="257" cy="104" r="47" fill="#b88c5d"/><path d="M222 77l7-49 31 39M273 68l32-35 0 48" fill="#3c3128" stroke="#d5b282" stroke-width="6"/><path d="M231 89c7-20 18-31 27-34 10 5 21 17 28 36l-8 41-20 15-21-15z" fill="#40342a"/><path d="M103 140c-42-7-57-36-39-61" stroke="#8c6949" stroke-width="15" fill="none" stroke-linecap="round"/><path d="M119 171l-8 37M170 176l-4 32M220 172l8 36" stroke="#c49a69" stroke-width="14" stroke-linecap="round"/><circle cx="243" cy="101" r="6" fill="#241b14"/><circle cx="274" cy="101" r="6" fill="#241b14"/><ellipse cx="259" cy="122" rx="10" ry="7" fill="#1a1410"/><path d="M250 133c7 7 14 7 21 0" stroke="#201812" stroke-width="4" fill="none"/></svg>`;
+
+ if(key.includes('owl')){
+  art=`<svg viewBox="0 0 360 240" aria-label="barn owl patient">
+   ${defs}
+   <ellipse cx="180" cy="208" rx="94" ry="13" fill="#000" opacity=".24"/>
+   <circle cx="180" cy="120" r="100" fill="url(#glow)"/>
+   <path d="M132 111c-37 10-58 38-62 71 25-5 49-17 69-37" fill="#b48761" stroke="#e3c39c" stroke-width="5"/>
+   <path d="M228 111c37 10 58 38 62 71-25-5-49-17-69-37" fill="#b48761" stroke="#e3c39c" stroke-width="5"/>
+   <ellipse cx="180" cy="132" rx="57" ry="70" fill="#c89f72"/>
+   <path d="M141 87c17-31 61-34 78-1 14 27 5 61-39 86-44-25-54-59-39-85z" fill="#f4ebd9" stroke="#dcc9ab" stroke-width="3"/>
+   <path d="M148 67l-15-25 29 12M212 67l15-25-29 12" fill="#aa7b55" stroke="#dfbd91" stroke-width="4"/>
+   <circle cx="158" cy="111" r="16" fill="#573626"/><circle cx="202" cy="111" r="16" fill="#573626"/>
+   <circle cx="158" cy="111" r="6" fill="#071015"/><circle cx="202" cy="111" r="6" fill="#071015"/>
+   <path d="M180 124l-9 15h18z" fill="#e9b258"/>
+   <path d="M160 183v25M200 183v25" stroke="#d5a366" stroke-width="7" stroke-linecap="round"/>
+   <path d="M154 208h13M194 208h13" stroke="#e6c48e" stroke-width="4" stroke-linecap="round"/>
+  </svg>`;
+ } else if(key.includes('cat')||key.includes('feline')||key.includes('tabby')){
+  art=`<svg viewBox="0 0 360 240" aria-label="silver tabby cat patient">
+   ${defs}
+   <ellipse cx="180" cy="209" rx="106" ry="14" fill="#000" opacity=".24"/>
+   <circle cx="180" cy="126" r="105" fill="url(#glow)"/>
+   <ellipse cx="166" cy="146" rx="83" ry="50" fill="url(#fur)" stroke="#cfe5ef" stroke-width="3"/>
+   <circle cx="251" cy="105" r="43" fill="url(#fur)" stroke="#cfe5ef" stroke-width="3"/>
+   <path d="M223 77l7-42 29 31M270 68l32-35-5 46" fill="#7f98a8" stroke="#d8eef7" stroke-width="5"/>
+   <path d="M106 136c-37-4-54-28-40-50" stroke="#819aaa" stroke-width="13" fill="none" stroke-linecap="round"/>
+   <path d="M129 170l-8 38M208 169l9 39" stroke="#d2e6ef" stroke-width="13" stroke-linecap="round"/>
+   <ellipse cx="120" cy="210" rx="14" ry="5" fill="#d9ebf2"/><ellipse cx="218" cy="210" rx="14" ry="5" fill="#d9ebf2"/>
+   <circle cx="239" cy="103" r="6" fill="#163441"/><circle cx="267" cy="103" r="6" fill="#163441"/>
+   <path d="M253 115l-7 7h14z" fill="#e5a7b5"/>
+   <path d="M245 126c6 6 12 6 18 0" stroke="#426474" stroke-width="3" fill="none"/>
+   <path d="M132 103l10 23M161 96l8 28M194 99l-5 25" stroke="#607a89" stroke-width="6" stroke-linecap="round"/>
+   <path d="M237 79l-7 17M268 78l6 18" stroke="#607a89" stroke-width="5" stroke-linecap="round"/>
+   <path d="M233 118h-29M233 124h-32M273 118h29M273 124h32" stroke="#9eb5c1" stroke-width="2"/>
+  </svg>`;
+ } else if(key.includes('husky')){
+  art=`<svg viewBox="0 0 360 240" aria-label="husky mix dog patient">
+   ${defs}
+   <ellipse cx="180" cy="209" rx="116" ry="15" fill="#000" opacity=".24"/>
+   <circle cx="180" cy="126" r="108" fill="url(#glow)"/>
+   <ellipse cx="163" cy="147" rx="87" ry="51" fill="#839dab" stroke="#cfe7f0" stroke-width="3"/>
+   <circle cx="257" cy="103" r="47" fill="#748d9c" stroke="#cfe7f0" stroke-width="3"/>
+   <path d="M222 78l13-50 30 38M272 67l38-38-10 56" fill="#566d7b" stroke="#e1f4fb" stroke-width="6"/>
+   <path d="M226 91c10-22 24-29 31-30 11 4 23 16 31 36-8 27-18 41-31 44-14-4-25-19-31-50z" fill="#eef9fc"/>
+   <path d="M104 139c-40-9-54-39-33-64" stroke="#738b99" stroke-width="15" fill="none" stroke-linecap="round"/>
+   <path d="M126 171l-8 38M211 171l9 38" stroke="#e0f1f6" stroke-width="14" stroke-linecap="round"/>
+   <ellipse cx="117" cy="210" rx="15" ry="5" fill="#edf9fc"/><ellipse cx="221" cy="210" rx="15" ry="5" fill="#edf9fc"/>
+   <circle cx="242" cy="99" r="7" fill="#4fc7ff"/><circle cx="274" cy="99" r="7" fill="#4fc7ff"/>
+   <ellipse cx="258" cy="120" rx="10" ry="7" fill="#172a33"/>
+   <path d="M249 132c7 7 14 7 21 0" stroke="#29444f" stroke-width="4" fill="none"/>
+   <path d="M139 105c11 8 21 11 33 11M169 100c10 8 20 10 31 10" stroke="#5e7785" stroke-width="6" stroke-linecap="round"/>
+   <path d="M230 118h-20M281 118h20" stroke="#bfdce7" stroke-width="2"/>
+  </svg>`;
+ } else {
+  art=`<svg viewBox="0 0 360 240" aria-label="shepherd mix dog patient">
+   ${defs}
+   <ellipse cx="180" cy="209" rx="116" ry="15" fill="#000" opacity=".24"/>
+   <circle cx="180" cy="126" r="108" fill="url(#glow)"/>
+   <ellipse cx="162" cy="147" rx="88" ry="51" fill="url(#warm)" stroke="#d8b88e" stroke-width="3"/>
+   <circle cx="256" cy="104" r="46" fill="#b9895c" stroke="#d8b88e" stroke-width="3"/>
+   <path d="M220 78l8-50 31 39M271 68l34-35-1 49" fill="#3c3128" stroke="#d9b88c" stroke-width="6"/>
+   <path d="M230 89c8-20 19-30 27-34 11 5 22 18 29 37l-8 40-20 15-21-15z" fill="#40342a"/>
+   <path d="M101 139c-42-7-56-35-38-60" stroke="#8c6849" stroke-width="15" fill="none" stroke-linecap="round"/>
+   <path d="M123 171l-8 38M211 171l9 38" stroke="#c99b69" stroke-width="14" stroke-linecap="round"/>
+   <ellipse cx="114" cy="210" rx="15" ry="5" fill="#d6aa78"/><ellipse cx="221" cy="210" rx="15" ry="5" fill="#d6aa78"/>
+   <circle cx="242" cy="101" r="6" fill="#241b14"/><circle cx="273" cy="101" r="6" fill="#241b14"/>
+   <ellipse cx="258" cy="122" rx="10" ry="7" fill="#19130f"/>
+   <path d="M249 133c7 7 14 7 21 0" stroke="#201812" stroke-width="4" fill="none"/>
+   <path d="M139 107c11 6 22 9 34 9M169 101c9 6 19 9 29 9" stroke="#8d6546" stroke-width="5" stroke-linecap="round"/>
+  </svg>`;
+ }
  return `<div class="patientVisual"><div class="scanline"></div><div class="animal">${art}</div><div style="position:absolute;left:14px;right:14px;bottom:12px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><span class="phase now">${q.species}</span><span class="phase">${q.breed}</span><span class="phase">${q.sex}</span></div></div>`
 }
 function kpis(){const s=state.stats;return `<div class="kpis">${[['Health',s.health],['Pain',100-s.pain],['O₂',s.oxygen],['Hydration',s.hydration],['Trust',s.trust],['Mobility',s.mobility]].map(([n,v])=>`<div class="kpi"><small>${n}</small><strong>${Math.round(n==='Pain'?100-v:v)}${n==='O₂'?'%':''}</strong><div class="mini"><i style="--v:${v}%"></i></div></div>`).join('')}</div>`}
@@ -932,6 +1003,38 @@ setInterval(tick,1200);
  new MutationObserver(cleanMenu).observe(document.body,{childList:true,subtree:true});
 })();
 </script>
+
+
+<style>
+.vgPN{position:absolute;top:6px;left:6px;z-index:9999;padding:4px 8px;border:1px solid currentColor;border-radius:999px;background:#081526;font-size:12px;font-weight:900;pointer-events:none}
+.vgNP{position:relative!important;padding-top:40px!important}
+</style>
+<script>
+(function(){
+function nums(){
+ document.querySelectorAll(".vgPN").forEach(e=>e.remove());
+ document.querySelectorAll(".vgNP").forEach(e=>e.classList.remove("vgNP"));
+ let q=[...document.querySelectorAll(".card,.panel,article,section,.area,.workSurface,.readout,.telemetry")].filter(e=>{
+  let r=e.getBoundingClientRect(),c=getComputedStyle(e);
+  return c.display!=="none"&&c.visibility!=="hidden"&&r.width>120&&r.height>55;
+ });
+ q.sort((a,b)=>{let A=a.getBoundingClientRect(),B=b.getBoundingClientRect();return Math.abs(A.top-B.top)>12?A.top-B.top:A.left-B.left});
+ q.forEach((e,i)=>{
+  if(i>=13)return;
+  e.classList.add("vgNP");
+  let n=document.createElement("span");
+  n.className="vgPN";
+  n.textContent="P"+(i+1);
+  n.title="Panel "+(i+1);
+  e.prepend(n);
+});
+}
+let t;function go(){clearTimeout(t);t=setTimeout(nums,100)}
+addEventListener("load",go);document.addEventListener("click",()=>setTimeout(go,150));
+new MutationObserver(go).observe(document.body,{childList:true,subtree:true});setTimeout(nums,300);
+})();
+</script>
+
 
 </body>
 </html>
