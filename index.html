@@ -47,6 +47,35 @@ button{font:inherit}.shell{max-width:1440px;margin:auto;padding:0 16px 70px}
 .patientVisual .animal svg{width:100%;height:auto;display:block;max-height:300px}
 .petCard .notice{font-size:.9rem;line-height:1.45}
 </style>
+
+<style id="vg-mega-expansion-css">
+.vgxDock{margin:14px 0;padding:14px;border:1px solid #40577b;border-radius:16px;background:linear-gradient(145deg,#0b1425,#111d34)}
+.vgxTitle{font-size:.72rem;letter-spacing:.14em;opacity:.65;text-transform:uppercase}
+.vgxDock h2,.vgxDock h3{margin:4px 0 8px}
+.vgxGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+.vgxCard{padding:10px;border:1px solid #344762;border-radius:12px;background:#111b2f}
+.vgxCard h4{margin:0 0 6px;font-size:.82rem}
+.vgxRow{display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:.74rem}
+.vgxRow:last-child{border-bottom:0}
+.vgxBadge{display:inline-block;padding:5px 8px;border-radius:999px;border:1px solid #506788;background:#17243a;font-size:.7rem}
+.vgxBtns{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.vgxBtn{padding:9px 10px;border:1px solid #4b5f84;border-radius:10px;background:#182741;color:inherit;min-height:42px}
+.vgxBtn:disabled{opacity:.45}
+.vgxGaugeStrip{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+.vgxGauge{padding:10px;border-radius:12px;background:#0d1729;border:1px solid #33445e;text-align:center}
+.vgxGauge .num{font-size:1.15rem;font-weight:700}
+.vgxGauge .bar{height:7px;background:#22304a;border-radius:999px;overflow:hidden;margin-top:6px}
+.vgxGauge .bar i{display:block;height:100%;background:linear-gradient(90deg,#38bdf8,#34d399)}
+.vgxLog{max-height:200px;overflow:auto;padding:8px;background:#08111f;border-radius:10px;font-size:.72rem}
+.vgxCaseCard{padding:10px;border:1px solid #344762;border-radius:12px;background:#111b2f}
+.vgxCaseCard strong{display:block}
+.vgxCaseStory{font-size:.72rem;opacity:.75;margin-top:5px;line-height:1.35}
+.vgxReport{white-space:pre-wrap;font-size:.72rem;background:#08111f;padding:10px;border-radius:10px}
+.vgxHidden{display:none!important}
+.vgxTabs{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.vgxTabs button{padding:7px 9px;border-radius:9px;border:1px solid #3d5474;background:#13223a;color:inherit}
+</style>
+
 </head>
 <body>
 <div class="shell">
@@ -230,6 +259,161 @@ function inject(){
  let story=host.querySelector("#vgStoryDeck");if(story)story.insertAdjacentHTML("beforebegin",html);else host.insertAdjacentHTML("afterbegin",html);
 }
 setInterval(inject,650);inject();
+})();
+</script>
+
+
+<script id="vg-mega-expansion-js">
+(function(){
+const EXTRA_CASES=[{"name": "Atlas", "species": "Canine", "breed": "Great Dane", "sex": "Male", "age": "5 yr", "condition": "Gastric distress and shock risk", "story": "Found beside an abandoned campground after refusing to leave a collapsed tent where his owner had been rescued hours earlier.", "needsSurgery": false}, {"name": "Saffron", "species": "Feline", "breed": "Maine Coon", "sex": "Female", "age": "7 yr", "condition": "Smoke inhalation and paw burns", "story": "Carried two kittens out of a shed fire before collapsing beneath a porch.", "needsSurgery": false}, {"name": "Ember", "species": "Avian", "breed": "African Grey Parrot", "sex": "Female", "age": "12 yr", "condition": "Wing trauma and stress", "story": "Escaped a damaged aviary during a storm and was found repeating the phrase 'come home' from a roadside tree.", "needsSurgery": false}, {"name": "Bramble", "species": "Lagomorph", "breed": "Flemish Giant Rabbit", "sex": "Male", "age": "3 yr", "condition": "Hindlimb injury", "story": "Recovered from a drainage ditch after protecting a smaller rabbit beneath him during flooding.", "needsSurgery": true}, {"name": "Nova", "species": "Reptile", "breed": "Bearded Dragon", "sex": "Female", "age": "4 yr", "condition": "Dehydration and thermal stress", "story": "Found in a damaged travel enclosure after a vehicle breakdown during extreme heat.", "needsSurgery": false}, {"name": "Echo", "species": "Canine", "breed": "Border Collie", "sex": "Female", "age": "6 yr", "condition": "Laceration and exhaustion", "story": "Led search volunteers toward an injured hiker, then collapsed once rescuers arrived.", "needsSurgery": true}, {"name": "Rune", "species": "Feline", "breed": "Siamese", "sex": "Male", "age": "2 yr", "condition": "Foreign-body concern", "story": "Rescued from an apartment after neighbors heard him crying beside an overturned medication cabinet.", "needsSurgery": true}, {"name": "Cinder", "species": "Avian", "breed": "Barn Owl", "sex": "Male", "age": "Adult", "condition": "Wing impact trauma", "story": "Struck debris during a windstorm and was recovered from a school athletic field at dawn.", "needsSurgery": false}, {"name": "Maple", "species": "Small Mammal", "breed": "Guinea Pig", "sex": "Female", "age": "3 yr", "condition": "Anorexia and dehydration", "story": "Surrendered with a handwritten note asking the clinic to 'please make her comfortable and safe.'", "needsSurgery": false}, {"name": "Titan", "species": "Canine", "breed": "German Shepherd", "sex": "Male", "age": "8 yr", "condition": "Mobility crisis", "story": "Retired search dog found unable to rise after a long night pacing beside his owner's hospital bed.", "needsSurgery": false}, {"name": "Pearl", "species": "Caprine", "breed": "Pygmy Goat", "sex": "Female", "age": "4 yr", "condition": "Leg wound and infection risk", "story": "Pulled free from collapsed fencing after a barn roof failure; she kept calling until her herd answered.", "needsSurgery": true}, {"name": "Sol", "species": "Chelonian", "breed": "Red-footed Tortoise", "sex": "Male", "age": "15 yr", "condition": "Shell trauma", "story": "Recovered after flood debris damaged his outdoor habitat and cracked the edge of his shell.", "needsSurgery": true}];
+const KEY="vetgods_mega_expansion_v1";
+let X={funds:2500,reputation:10,favor:0,level:1,records:[],owned:[],critical:false,diag:{},tx:{},surgery:{},recovery:{},sound:true};
+try{Object.assign(X,JSON.parse(localStorage.getItem(KEY)||"{}"));}catch(e){}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(X));}catch(e){}}
+function pnow(){try{return patients[state.idx]||patients[0]}catch(e){return null}}
+function clamp(v){return Math.max(0,Math.min(100,Number(v)||0))}
+function stat(k,f=0){try{return Number(state.stats[k]??f)}catch(e){return f}}
+function setstat(k,v){try{state.stats[k]=clamp(v);if(typeof save==="function")save();}catch(e){}}
+function tone(freq=520,dur=.07){if(!X.sound)return;try{let A=new (window.AudioContext||window.webkitAudioContext)(),o=A.createOscillator(),g=A.createGain();o.frequency.value=freq;g.gain.value=.025;o.connect(g);g.connect(A.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,A.currentTime+dur);o.stop(A.currentTime+dur);}catch(e){}}
+function currentName(){let p=pnow();return p?p.name:"Unknown"}
+function ensureDiag(){let n=currentName();return X.diag[n]||(X.diag[n]={exam:false,img:false,lab:false,ecg:false,ultrasound:false,evidence:[]})}
+function ensureTx(){let n=currentName();return X.tx[n]||(X.tx[n]={oxygen:0,fluids:0,pain:0,wound:0,nutrition:0,warming:0,bandage:0})}
+function ensureSurg(){let n=currentName();return X.surgery[n]||(X.surgery[n]={prepped:false,anesthesia:false,repair:false,closure:false,monitoring:0})}
+function ensureRec(){let n=currentName();return X.recovery[n]||(X.recovery[n]={water:0,food:0,rest:0,mobility:0,comfort:0,wound:0})}
+const findings={
+Kota:["Paw abrasions with cold exposure","Mild hemoconcentration","Sinus tachycardia","No fracture visualized"],
+Mira:["Deep paw laceration","Soft-tissue swelling","Stress leukogram pattern","No thoracic abnormality"],
+Orion:["Left wing soft-tissue strain","No open fracture","Mild dehydration pattern","Rapid regular rhythm"],
+Juniper:["Focal abdominal guarding","Foreign-body shadow suspected","Mild inflammatory pattern","Stable thorax"]
+};
+function genericFindings(){return ["Painful focal finding","Soft-tissue abnormality","Mild stress pattern","No catastrophic instability identified"]}
+function diagEvidence(kind){
+ let d=ensureDiag(), arr=findings[currentName()]||genericFindings(), map={exam:arr[0],img:arr[1],lab:arr[2],ecg:arr[3]||"Sinus tachycardia",ultrasound:"Focused scan: no free-fluid crisis detected"};
+ d[kind]=true;if(!d.evidence.includes(map[kind]))d.evidence.push(map[kind]);X.reputation+=1;persist();tone(640);renderPanels();
+}
+function applyTx(kind){
+ let t=ensureTx();
+ const effects={
+ oxygen:["oxygen",7,"stress",-5],
+ fluids:["hydration",9,"health",3],
+ pain:["pain",-10,"comfort",8],
+ wound:["health",6,"pain",-4],
+ nutrition:["hunger",-10,"energy",6],
+ warming:["health",3,"stress",-3],
+ bandage:["pain",-4,"mobility",4]
+ };
+ let e=effects[kind];if(!e)return;
+ setstat(e[0],stat(e[0])+e[1]);setstat(e[2],stat(e[2])+e[3]);t[kind]=(t[kind]||0)+1;X.favor+=1;persist();tone(520);renderPanels();
+}
+function surgeryStep(kind){
+ let s=ensureSurg();s[kind]=true;s.monitoring=(s.monitoring||0)+1;
+ if(kind==="anesthesia"){setstat("stress",stat("stress")-8);setstat("pain",stat("pain")-5)}
+ if(kind==="repair"){setstat("health",stat("health")+10);setstat("pain",stat("pain")-5)}
+ if(kind==="closure"){setstat("health",stat("health")+7);setstat("comfort",stat("comfort")+6)}
+ X.reputation+=2;X.favor+=2;persist();tone(440);renderPanels();
+}
+function recoveryStep(kind){
+ let r=ensureRec();r[kind]=(r[kind]||0)+1;
+ const E={water:["hydration",8],food:["energy",7],rest:["stress",-8],mobility:["mobility",7],comfort:["comfort",8],wound:["health",5]},e=E[kind];
+ setstat(e[0],stat(e[0])+e[1]);X.reputation+=1;persist();tone(590);renderPanels();
+}
+function readiness(){return Math.round((stat("health",60)+stat("hydration",50)+stat("comfort",40)+stat("mobility",35)+(100-stat("pain",60))+(100-stat("stress",70)))/6)}
+function maybeLevel(){X.level=Math.max(1,Math.floor(X.reputation/20)+1)}
+function criticalEvent(){
+ X.critical=!X.critical;
+ if(X.critical){setstat("oxygen",stat("oxygen",91)-8);setstat("stress",stat("stress",70)+12);setstat("health",stat("health",68)-6);}
+ persist();tone(X.critical?220:720,.12);renderPanels();
+}
+function dischargeRecord(){
+ let p=pnow();if(!p)return;
+ const rec={name:p.name,species:p.species,breed:p.breed||p.type||"",time:new Date().toLocaleString(),health:stat("health"),pain:stat("pain"),hydration:stat("hydration"),mobility:stat("mobility"),readiness:readiness(),evidence:[...ensureDiag().evidence]};
+ X.records=X.records.filter(r=>r.name!==p.name);X.records.unshift(rec);X.funds+=250;X.reputation+=5;X.favor+=3;maybeLevel();persist();tone(880,.14);renderPanels();
+}
+function adoptCurrent(){
+ let p=pnow();if(!p)return;if(!X.owned.some(x=>x.name===p.name))X.owned.push({name:p.name,species:p.species,breed:p.breed||p.type||"",bond:30,hunger:70,water:70,energy:65,fun:50,memories:["Joined the Vet Gods sanctuary."]});
+ persist();renderPanels();
+}
+function petAction(name,kind){
+ let p=X.owned.find(x=>x.name===name);if(!p)return;
+ const e={feed:["hunger",15],water:["water",15],play:["fun",15],rest:["energy",15],bond:["bond",10]}[kind];p[e[0]]=clamp((p[e[0]]||0)+e[1]);p.memories.unshift(kind+" care completed.");persist();tone(700);renderPanels();
+}
+function gaugesHTML(){
+ let arr=[["Health",stat("health",68)],["Pain",stat("pain",61)],["Oxygen",stat("oxygen",91)],["Hydration",stat("hydration",46)],["Stress",stat("stress",72)],["Trust",stat("trust",29)],["Mobility",stat("mobility",35)],["Comfort",stat("comfort",30)]];
+ return '<div class="vgxGaugeStrip">'+arr.map(a=>'<div class="vgxGauge"><div>'+a[0]+'</div><div class="num">'+Math.round(a[1])+'</div><div class="bar"><i style="width:'+clamp(a[1])+'%"></i></div></div>').join("")+'</div>';
+}
+function panelHTML(){
+ let p=pnow(),d=ensureDiag(),t=ensureTx(),sg=ensureSurg(),r=ensureRec();maybeLevel();
+ let evidence=d.evidence.length?d.evidence.map(x=>'<div class="vgxRow"><span>Evidence</span><b>'+x+'</b></div>').join(""):'<div class="vgxRow"><span>Status</span><b>No advanced evidence yet</b></div>';
+ let records=X.records.slice(0,8).map(x=>'<div class="vgxCaseCard"><strong>'+x.name+' • '+x.species+'</strong><div class="vgxCaseStory">Discharged '+x.time+' • Readiness '+x.readiness+'%</div></div>').join("")||'<div class="vgxCaseStory">No completed lives recorded yet.</div>';
+ let pets=X.owned.map(q=>'<div class="vgxCard"><h4>'+q.name+' • '+q.breed+'</h4><div class="vgxRow"><span>Bond</span><b>'+q.bond+'</b></div><div class="vgxRow"><span>Food</span><b>'+q.hunger+'</b></div><div class="vgxRow"><span>Water</span><b>'+q.water+'</b></div><div class="vgxRow"><span>Energy</span><b>'+q.energy+'</b></div><div class="vgxBtns"><button class="vgxBtn" data-pet="'+q.name+'" data-pa="feed">Feed</button><button class="vgxBtn" data-pet="'+q.name+'" data-pa="water">Water</button><button class="vgxBtn" data-pet="'+q.name+'" data-pa="play">Play</button><button class="vgxBtn" data-pet="'+q.name+'" data-pa="rest">Rest</button><button class="vgxBtn" data-pet="'+q.name+'" data-pa="bond">Bond</button></div></div>').join("")||'<div class="vgxCaseStory">No sanctuary residents yet.</div>';
+ let caseDeck=EXTRA_CASES.map(c=>'<div class="vgxCaseCard"><strong>'+c.name+' • '+c.breed+' • '+c.sex+'</strong><div class="vgxCaseStory">'+c.condition+' — '+c.story+'</div><span class="vgxBadge">'+(c.needsSurgery?'Possible surgery':'Medical management')+'</span></div>').join("");
+ return `
+ <section id="vgxMega" class="vgxDock">
+   <div class="vgxTitle">VET GODS • MEGA EXPANSION LAYER</div>
+   <h2>${p?p.name:"Patient"} Command Intelligence</h2>
+   ${gaugesHTML()}
+   <div class="vgxGrid" style="margin-top:10px">
+     <div class="vgxCard"><h4>Hospital Progression</h4><div class="vgxRow"><span>Level</span><b>${X.level}</b></div><div class="vgxRow"><span>Reputation</span><b>${X.reputation}</b></div><div class="vgxRow"><span>Funds</span><b>${X.funds}</b></div><div class="vgxRow"><span>Vet Gods Favor</span><b>${X.favor}</b></div></div>
+     <div class="vgxCard"><h4>Critical Case</h4><div class="vgxRow"><span>Status</span><b>${X.critical?"ACTIVE ALERT":"Stable watch"}</b></div><div class="vgxBtns"><button class="vgxBtn" data-vgx="critical">${X.critical?"Resolve Alert":"Trigger Training Alert"}</button><button class="vgxBtn" data-vgx="sound">Sound: ${X.sound?"On":"Off"}</button></div></div>
+     <div class="vgxCard"><h4>Recovery Readiness</h4><div class="vgxRow"><span>Score</span><b>${readiness()}%</b></div><div class="vgxRow"><span>Goal</span><b>75%+</b></div></div>
+   </div>
+
+   <div class="vgxTabs">
+    <button data-vgtab="diag">Advanced Diagnostics</button><button data-vgtab="tx">Treatment Inventory</button><button data-vgtab="surg">Operating Theater</button><button data-vgtab="rec">Recovery Ward</button><button data-vgtab="cases">Future Cases</button><button data-vgtab="records">Wall of Lives</button><button data-vgtab="pets">Sanctuary</button>
+   </div>
+
+   <div data-vgpanel="diag" class="vgxCard">
+    <h4>Advanced Diagnostic Evidence</h4><div>${evidence}</div>
+    <div class="vgxBtns"><button class="vgxBtn" data-diag="exam">Focused Physical Exam</button><button class="vgxBtn" data-diag="img">Imaging</button><button class="vgxBtn" data-diag="lab">CBC/Chemistry</button><button class="vgxBtn" data-diag="ecg">ECG</button><button class="vgxBtn" data-diag="ultrasound">Focused Ultrasound</button></div>
+   </div>
+
+   <div data-vgpanel="tx" class="vgxCard vgxHidden">
+    <h4>Treatment Inventory</h4>
+    <div class="vgxBtns"><button class="vgxBtn" data-tx="oxygen">Oxygen Support</button><button class="vgxBtn" data-tx="fluids">IV Fluid Support</button><button class="vgxBtn" data-tx="pain">Pain Management</button><button class="vgxBtn" data-tx="wound">Wound Care</button><button class="vgxBtn" data-tx="nutrition">Nutrition Support</button><button class="vgxBtn" data-tx="warming">Thermal Support</button><button class="vgxBtn" data-tx="bandage">Bandage/Splint</button></div>
+   </div>
+
+   <div data-vgpanel="surg" class="vgxCard vgxHidden">
+    <h4>Operating Theater</h4>
+    <div class="vgxRow"><span>Prep</span><b>${sg.prepped?"Ready":"Pending"}</b></div><div class="vgxRow"><span>Anesthesia</span><b>${sg.anesthesia?"Stable":"Pending"}</b></div><div class="vgxRow"><span>Repair</span><b>${sg.repair?"Complete":"Pending"}</b></div><div class="vgxRow"><span>Closure</span><b>${sg.closure?"Complete":"Pending"}</b></div>
+    <div class="vgxBtns"><button class="vgxBtn" data-surg="prepped">Prep Patient</button><button class="vgxBtn" data-surg="anesthesia">Induce Anesthesia</button><button class="vgxBtn" data-surg="repair">Perform Repair</button><button class="vgxBtn" data-surg="closure">Close & Dress</button></div>
+   </div>
+
+   <div data-vgpanel="rec" class="vgxCard vgxHidden">
+    <h4>Recovery Ward</h4><div class="vgxRow"><span>Readiness</span><b>${readiness()}%</b></div>
+    <div class="vgxBtns"><button class="vgxBtn" data-rec="water">Hydrate</button><button class="vgxBtn" data-rec="food">Offer Food</button><button class="vgxBtn" data-rec="rest">Quiet Rest</button><button class="vgxBtn" data-rec="mobility">Mobility Test</button><button class="vgxBtn" data-rec="comfort">Comfort Care</button><button class="vgxBtn" data-rec="wound">Wound Check</button><button class="vgxBtn" data-vgx="record">Create Discharge Report</button><button class="vgxBtn" data-vgx="adopt">Add to Sanctuary</button></div>
+   </div>
+
+   <div data-vgpanel="cases" class="vgxHidden"><div class="vgxGrid">${caseDeck}</div></div>
+   <div data-vgpanel="records" class="vgxHidden"><div class="vgxGrid">${records}</div></div>
+   <div data-vgpanel="pets" class="vgxHidden"><div class="vgxGrid">${pets}</div></div>
+ </section>`;
+}
+function renderPanels(){
+ let old=document.getElementById("vgxMega"),active=old&&old.dataset.activeTab||"diag";if(old)old.remove();
+ let host=document.querySelector("#screen,.screen,main");if(!host)return;
+ host.insertAdjacentHTML("beforeend",panelHTML());
+ let root=document.getElementById("vgxMega");if(root){root.dataset.activeTab=active;showTab(active);}
+}
+function showTab(n){
+ document.querySelectorAll("[data-vgpanel]").forEach(x=>x.classList.toggle("vgxHidden",x.dataset.vgpanel!==n));
+ let root=document.getElementById("vgxMega");if(root)root.dataset.activeTab=n;
+}
+document.addEventListener("click",e=>{
+ let b=e.target.closest("button");if(!b)return;
+ if(b.dataset.vgtab){showTab(b.dataset.vgtab);return}
+ if(b.dataset.diag){diagEvidence(b.dataset.diag);return}
+ if(b.dataset.tx){applyTx(b.dataset.tx);return}
+ if(b.dataset.surg){surgeryStep(b.dataset.surg);return}
+ if(b.dataset.rec){recoveryStep(b.dataset.rec);return}
+ if(b.dataset.pet){petAction(b.dataset.pet,b.dataset.pa);return}
+ if(b.dataset.vgx==="critical"){criticalEvent();return}
+ if(b.dataset.vgx==="record"){dischargeRecord();return}
+ if(b.dataset.vgx==="adopt"){adoptCurrent();return}
+ if(b.dataset.vgx==="sound"){X.sound=!X.sound;persist();renderPanels();return}
+});
+let last="";
+setInterval(()=>{let p=pnow(),key=(p?p.name:"")+"|"+stat("health")+"|"+stat("pain")+"|"+stat("hydration")+"|"+stat("oxygen")+"|"+stat("stress")+"|"+stat("mobility");if(key!==last){last=key;renderPanels();}},1200);
+renderPanels();
 })();
 </script>
 
