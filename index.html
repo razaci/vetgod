@@ -557,6 +557,35 @@ button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
 }
 </style>
 
+
+<style id="vg-morph-core-css">
+/* MORPH CORE — turns Creature Lab into the primary play surface */
+#vgMorphCoreBtn{
+ position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:160;
+ min-height:56px;padding:0 22px;border-radius:18px;border:1px solid #a78cff;
+ background:linear-gradient(180deg,#513782,#291d4d);color:#fff;font-weight:1000;
+ box-shadow:0 14px 40px #000a,0 0 28px #8f72ff44;letter-spacing:.04em
+}
+.vgm-dashboard{display:grid;grid-template-columns:1.1fr .9fr;gap:12px;margin:12px 0}
+.vgm-hero{padding:16px;border:1px solid #68599a;border-radius:18px;background:linear-gradient(145deg,#18152f,#0b2130)}
+.vgm-face{font-size:72px;line-height:1}
+.vgm-points{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:10px 0}
+.vgm-point{padding:9px;border:1px solid #354d69;border-radius:11px;background:#0a1928;text-align:center}
+.vgm-point b{display:block;font-size:18px;color:#d9d0ff}.vgm-point small{font-size:9px;color:#8fa8b5}
+.vgm-stat{display:grid;grid-template-columns:78px 1fr 42px;gap:7px;align-items:center;margin:7px 0;font-size:11px}
+.vgm-statbar{height:8px;background:#142333;border-radius:99px;overflow:hidden}.vgm-statbar i{display:block;height:100%;background:linear-gradient(90deg,#4ef0c8,#987cff)}
+.vgm-upgrades{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+.vgm-upgrade{padding:10px;border:1px solid #3a526a;border-radius:11px;background:#0b1c2a}
+.vgm-upgrade button{width:100%;min-height:36px;margin-top:6px;border:1px solid #715fd0;border-radius:8px;background:#29214b;font-weight:850}
+.vgm-ability{padding:9px;margin:6px 0;border:1px solid #40536f;border-radius:10px;background:#101b2c}
+.vgm-ability.locked{opacity:.45}
+.vgm-quest{padding:9px;border-left:3px solid #9b7cff;background:#15132a;border-radius:8px;margin:6px 0;font-size:11px}
+.vgm-rarity{font-weight:950;color:#ffd166}
+.vgm-mutation{animation:vgmGlow 1.1s ease infinite alternate}
+@keyframes vgmGlow{to{box-shadow:0 0 28px #a77cff55}}
+@media(max-width:760px){.vgm-dashboard{grid-template-columns:1fr}.vgm-points{grid-template-columns:1fr 1fr}.vgm-upgrades{grid-template-columns:1fr}#vgMorphCoreBtn{bottom:8px}}
+</style>
+
 </head>
 <body>
 <div class="shell">
@@ -2940,6 +2969,149 @@ addEventListener("load",function(){
 });
 document.addEventListener("click",()=>setTimeout(patchPetCards,40),true);
 
+})();
+</script>
+
+
+<script id="vg-morph-core-js">
+(function(){
+'use strict';
+
+function coreInit(){
+ if(!state||!state.pets)return;
+ state.morphCore=state.morphCore||{totalMorphs:0,totalHybrids:0,labLevel:1,discoveries:0};
+ state.pets.forEach(p=>{
+   p.morphPoints=p.morphPoints==null?3:p.morphPoints;
+   p.power=p.power==null?20:p.power;
+   p.speed=p.speed==null?20:p.speed;
+   p.armor=p.armor==null?20:p.armor;
+   p.instinct=p.instinct==null?20:p.instinct;
+   p.adaptation=p.adaptation==null?20:p.adaptation;
+   p.abilityPoints=p.abilityPoints==null?1:p.abilityPoints;
+   p.abilities=p.abilities||[];
+   p.mutations=p.mutations||[];
+   p.rarity=p.rarity||"COMMON";
+ });
+}
+function cp(){coreInit();return (state.pets||[]).find(x=>x.name===state.morphLab.selected)||(state.pets||[])[0];}
+function rarity(p){
+ let score=(p.evolutionStage||0)*2+(p.mutations||[]).length+(p.createdHybrid?2:0);
+ return score>=7?"MYTHIC":score>=5?"LEGENDARY":score>=3?"RARE":score>=1?"UNCOMMON":"COMMON";
+}
+const AB=[
+ ["Guardian Pulse","Guardian",2,"Adds a defensive sanctuary ability."],
+ ["Frost Veil","Arctic",2,"Cold-field protection ability."],
+ ["Tidal Rush","Aquatic",2,"Water-powered movement ability."],
+ ["Storm Dash","Speed",2,"Burst movement ability."],
+ ["Night Sight","Night",1,"Improves dark-environment instincts."],
+ ["Wing Burst","Flight",2,"Aerial acceleration ability."],
+ ["Venom Control","Venom",2,"Controlled toxin trait ability."],
+ ["Regenerate","Healing",3,"Strong recovery ability."],
+ ["Titan Guard","Armor",3,"Heavy defensive ability."],
+ ["Wild Instinct","Instinct",1,"General adaptive combat/rescue instinct."]
+];
+function abilitiesFor(p){
+ const dna=p.dna||[];
+ let a=AB.filter(x=>dna.includes(x[1]));
+ if(!a.length)a=[AB[9]];
+ return a;
+}
+window.vgmSpend=function(stat){
+ const p=cp();if(!p||p.morphPoints<1)return;
+ p[stat]=Math.min(100,(p[stat]||0)+5);p.morphPoints--;
+ if(typeof save==="function")save();renderCreatureLab();
+}
+window.vgmUnlock=function(name){
+ const p=cp();const a=AB.find(x=>x[0]===name);if(!p||!a||p.abilities.includes(name)||p.abilityPoints<a[2])return;
+ p.abilityPoints-=a[2];p.abilities.push(name);
+ if(typeof toast==="function")toast("⚡ ABILITY UNLOCKED • "+name);
+ if(typeof save==="function")save();renderCreatureLab();
+}
+window.vgmMutate=function(){
+ const p=cp();if(!p)return;
+ const cost=600;
+ if((p.morphEnergy||0)<cost){if(typeof toast==="function")toast("Need 600 Morph Energy.");return;}
+ p.morphEnergy-=cost;
+ const pool=["Crystal Hide","Bioluminescence","Echo Sense","Feather Crest","Frost Fur","Titan Frame","Prism Pattern","Regrowth","Shadow Coat","Aurora Eyes","Web Spines","Storm Horns"];
+ const avail=pool.filter(x=>!p.mutations.includes(x));if(!avail.length)return;
+ const m=avail[Math.floor(Math.random()*avail.length)];p.mutations.push(m);
+ p.morphPoints+=2;p.abilityPoints+=1;state.morphCore.discoveries++;
+ p.rarity=rarity(p);
+ if(typeof toast==="function")toast("🧬 MUTATION DISCOVERED • "+m+" • +2 Morph Points");
+ if(typeof save==="function")save();renderCreatureLab();
+}
+window.vgmConvertEnergy=function(){
+ const p=cp();if(!p||(p.morphEnergy||0)<250)return;
+ p.morphEnergy-=250;p.morphPoints++;
+ if(typeof save==="function")save();renderCreatureLab();
+}
+function statRow(p,key,label){
+ return `<div class="vgm-stat"><b>${label}</b><div class="vgm-statbar"><i style="width:${p[key]||0}%"></i></div><span>${p[key]||0}</span></div>`;
+}
+function coreHTML(p){
+ if(!p)return '<div class="notice">Rescue or purchase an animal, then keep it in My Pets to begin morph gameplay.</div>';
+ p.rarity=rarity(p);
+ const abs=abilitiesFor(p);
+ return `<div class="vgm-dashboard">
+ <div class="vgm-hero ${p.rarity==="MYTHIC"?"vgm-mutation":""}">
+   <div class="eyebrow">ACTIVE MORPH CREATURE</div>
+   <div style="display:flex;gap:12px;align-items:center;margin-top:8px">
+    <div class="vgm-face">${p.emoji||"🐾"}</div>
+    <div><div style="font-size:25px;font-weight:1000">${p.formName||p.name}</div>
+    <div class="vgm-rarity">${p.rarity}</div><div class="vgcl-meta">${p.name} • ${p.species||"Creature"}</div></div>
+   </div>
+   <div>${(p.dna||[]).map(x=>`<span class="vgcl-badge dna">${x}</span>`).join("")}</div>
+   <div class="vgm-points">
+    <div class="vgm-point"><b>${p.morphPoints}</b><small>MORPH POINTS</small></div>
+    <div class="vgm-point"><b>${p.abilityPoints}</b><small>ABILITY POINTS</small></div>
+    <div class="vgm-point"><b>${p.morphEnergy||0}</b><small>MORPH ENERGY</small></div>
+    <div class="vgm-point"><b>${p.evolutionStage||0}</b><small>FORM STAGE</small></div>
+   </div>
+   ${statRow(p,"power","POWER")}${statRow(p,"speed","SPEED")}${statRow(p,"armor","ARMOR")}${statRow(p,"instinct","INSTINCT")}${statRow(p,"adaptation","ADAPT")}
+   <div class="vgm-upgrades">
+    ${["power","speed","armor","instinct","adaptation"].map(k=>`<div class="vgm-upgrade"><b>${k.toUpperCase()}</b><small> +5 per point</small><button ${p.morphPoints<1?"disabled":""} onclick="vgmSpend('${k}')">SPEND 1 MORPH POINT</button></div>`).join("")}
+   </div>
+ </div>
+ <div>
+  <div class="vgcl-card">
+   <div class="eyebrow">MUTATION FORGE</div><h3>Modify the Creature</h3>
+   <div class="vgcl-meta">Spend energy to discover permanent physical/biological game traits.</div>
+   <div style="margin:8px 0">${(p.mutations||[]).length?p.mutations.map(x=>`<span class="vgcl-badge rare">${x}</span>`).join(""):"No mutations discovered yet."}</div>
+   <div class="vgcl-command"><button onclick="vgmMutate()">🧬 MUTATE • 600⚡</button><button onclick="vgmConvertEnergy()">250⚡ → 1 Morph Point</button></div>
+  </div>
+  <div class="vgcl-card" style="margin-top:10px">
+   <div class="eyebrow">ABILITY MATRIX</div><h3>Creature Features</h3>
+   ${abs.map(a=>`<div class="vgm-ability ${p.abilities.includes(a[0])?"":"locked"}"><b>${a[0]}</b><div class="vgcl-meta">${a[3]}</div><button class="btn" ${p.abilities.includes(a[0])||p.abilityPoints<a[2]?"disabled":""} onclick="vgmUnlock('${a[0]}')">${p.abilities.includes(a[0])?"✓ UNLOCKED":"UNLOCK • "+a[2]+" AP"}</button></div>`).join("")}
+  </div>
+  <div class="vgcl-card" style="margin-top:10px">
+   <div class="eyebrow">MORPH OBJECTIVES</div>
+   <div class="vgm-quest">⚡ Build 500 Morph Energy through care, training and adventures.</div>
+   <div class="vgm-quest">🧬 Discover mutations to raise creature rarity.</div>
+   <div class="vgm-quest">🌟 Evolve forms to earn stronger creature status.</div>
+   <div class="vgm-quest">🔬 Combine two developed creatures in the Gene Forge.</div>
+  </div>
+ </div></div>`;
+}
+function injectCore(){
+ coreInit();
+ const panel=document.getElementById("vgCreatureLab");if(!panel||!panel.classList.contains("open"))return;
+ if(panel.querySelector("#vgMorphCoreArea"))return;
+ const wrap=panel.querySelector(".vgcl-wrap");if(!wrap)return;
+ const top=wrap.querySelector(".vgcl-top");
+ const d=document.createElement("div");d.id="vgMorphCoreArea";d.innerHTML=coreHTML(cp());
+ if(top&&top.nextSibling)wrap.insertBefore(d,top.nextSibling);else wrap.prepend(d);
+}
+const oldR=window.renderCreatureLab;
+if(typeof oldR==="function"){
+ window.renderCreatureLab=function(){coreInit();const r=oldR.apply(this,arguments);setTimeout(injectCore,0);return r;}
+}
+function mainButton(){
+ if(document.getElementById("vgMorphCoreBtn"))return;
+ const b=document.createElement("button");b.id="vgMorphCoreBtn";b.textContent="🧬 MORPH GAME";
+ b.onclick=function(){if(typeof openCreatureLab==="function")openCreatureLab();setTimeout(injectCore,20);};
+ document.body.appendChild(b);
+}
+addEventListener("load",()=>{coreInit();mainButton();});
 })();
 </script>
 
