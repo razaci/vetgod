@@ -61,6 +61,17 @@ button{font:inherit}.shell{max-width:1440px;margin:auto;padding:0 16px 70px}
   white-space:nowrap;
 }
 #hospitalTopShopLink:hover{opacity:1}
+.jackpotSection{margin:18px 0 6px}
+.jackpotGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px}
+.jackpotCard{position:relative;overflow:hidden;padding:12px;border:1px solid #536f99;border-radius:14px;background:#101f35;min-height:145px}
+.jackpotCard h3{margin:3px 0 6px;font-size:.95rem}
+.jackpotCost{font-size:.72rem;opacity:.72}
+.jackpotReward{font-size:1.05rem;font-weight:900;margin:8px 0}
+.jackpotBtn{width:100%;min-height:42px;border:1px solid #6d88b0;border-radius:10px;background:#1b3559;color:inherit;font-weight:900}
+.jackpotSprite{position:fixed;z-index:100001;pointer-events:none;font-size:2rem;animation:jackpotPop 1.15s ease-out forwards}
+@keyframes jackpotPop{0%{opacity:0;transform:scale(.4) translateY(10px)}20%{opacity:1;transform:scale(1.15)}100%{opacity:0;transform:scale(.9) translateY(-70px)}}
+.jackpotFlash{animation:jackpotCardFlash .55s ease}
+@keyframes jackpotCardFlash{0%,100%{transform:none}45%{transform:scale(1.035)}}
 #calmingPackBadge{
   display:inline-flex;
   align-items:center;
@@ -664,6 +675,60 @@ function buyTempPack(key){
  showBoostNotice((key==="trust"?"CALMING PACK ACTIVE: ":"PURCHASED: ")+item.name+" • "+item.rounds+" rounds active");
  screen();document.getElementById("hospitalShopScreen").classList.add("open");
 }
+function jackpotCatalog(){
+ return [
+  {id:"fifty",name:"Lucky $50",cost:10,label:"+$50 CLINIC FUNDS",reward:"money",value:50,sprite:"💰"},
+  {id:"comfort",name:"Comfort Spark",cost:15,label:"+8 COMFORT",reward:"comfort",value:8,sprite:"✨"},
+  {id:"trust",name:"Trust Token",cost:20,label:"+7 TRUST",reward:"trust",value:7,sprite:"🐾"},
+  {id:"calm",name:"Calm Burst",cost:20,label:"-10 STRESS",reward:"stress",value:-10,sprite:"💙"},
+  {id:"health",name:"Health Patch",cost:25,label:"+6 HEALTH",reward:"health",value:6,sprite:"❤️"},
+  {id:"hydrate",name:"Hydration Chip",cost:25,label:"+8 HYDRATION",reward:"hydration",value:8,sprite:"💧"},
+  {id:"miniSponsor",name:"Mini Sponsor",cost:40,label:"+$100 CLINIC FUNDS",reward:"money",value:100,sprite:"🎁"}
+ ];
+}
+function jackpotCards(){
+ return jackpotCatalog().map(x=>`<article class="jackpotCard" data-jackpot-card="${x.id}">
+   <div class="jackpotCost">ONE-PRESS CARD • COST $${x.cost}</div>
+   <h3>${x.sprite} ${x.name}</h3>
+   <div class="jackpotReward">${x.label}</div>
+   <div style="font-size:.72rem;opacity:.72;margin-bottom:9px">Instant in-game reward.</div>
+   <button class="jackpotBtn" data-jackpot="${x.id}">ACTIVATE CARD</button>
+ </article>`).join("");
+}
+function playJackpotTone(){
+ try{
+   let AC=window.AudioContext||window.webkitAudioContext,ac=new AC();
+   let o=ac.createOscillator(),g=ac.createGain();
+   o.connect(g);g.connect(ac.destination);o.frequency.setValueAtTime(660,ac.currentTime);
+   o.frequency.exponentialRampToValueAtTime(990,ac.currentTime+.16);
+   g.gain.setValueAtTime(.09,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.28);
+   o.start();o.stop(ac.currentTime+.3);
+ }catch(e){}
+}
+function spawnJackpotSprite(sprite,btn){
+ let r=btn.getBoundingClientRect();
+ let el=document.createElement("div");
+ el.className="jackpotSprite";el.textContent=sprite;
+ el.style.left=(r.left+r.width/2-12)+"px";el.style.top=(r.top-2)+"px";
+ document.body.appendChild(el);setTimeout(()=>el.remove(),1200);
+}
+function activateJackpot(id,btn){
+ let item=jackpotCatalog().find(x=>x.id===id);if(!item)return;
+ let core=readCore();core.funds=Number(core.funds||0);core.stats=core.stats||{};
+ if(core.funds<item.cost){showBoostNotice("Not enough clinic funds for "+item.name);return}
+ core.funds-=item.cost;
+ if(item.reward==="money")core.funds+=item.value;
+ else{
+   let cur=Number(core.stats[item.reward]||0);
+   core.stats[item.reward]=Math.max(0,Math.min(100,cur+item.value));
+ }
+ writeCore(core);
+ playJackpotTone();
+ spawnJackpotSprite(item.sprite,btn);
+ let card=btn.closest(".jackpotCard");if(card){card.classList.remove("jackpotFlash");void card.offsetWidth;card.classList.add("jackpotFlash")}
+ showBoostNotice("JACKPOT CARD: "+item.label+" • ACTIVATED");
+ setTimeout(()=>{screen();document.getElementById("hospitalShopScreen").classList.add("open")},500);
+}
 function screen(){
  let old=document.getElementById("hospitalShopScreen");if(old)old.remove();
  let t=tier(),m=money();
@@ -674,7 +739,12 @@ function screen(){
   <h2>🏥 Hospital Shop</h2>
   <p style="opacity:.7">Temporary care packs are listed cheapest-to-most-expensive first. Permanent hospital upgrades are at the bottom.</p>
 
-  <h2 class="tempPackTitle">⚡ Temporary Care Packs</h2>
+  <div class="jackpotSection">
+  <h2>🎴 Jackpot Cards</h2>
+  <p style="opacity:.7;font-size:.8rem">Cheap one-press reward cards for testing. Press once and the reward activates immediately.</p>
+  <div class="jackpotGrid">${jackpotCards()}</div>
+ </div>
+ <h2 class="tempPackTitle">⚡ Temporary Care Packs</h2>
   ${activeBoostHTML()}
   <div class="shopGrid">${tempPackCards()}</div>
 
@@ -747,6 +817,7 @@ function closeShop(){let x=document.getElementById("hospitalShopScreen");if(x)x.
 document.addEventListener("click",function(e){
  if(e.target.closest("#openHospitalShop")||e.target.closest("#hospitalTopShopLink")){openShop();return}
  if(e.target.closest("#closeHospitalShop")){closeShop();return}
+ let jb=e.target.closest("[data-jackpot]");if(jb){activateJackpot(jb.dataset.jackpot,jb);return}
  let pb=e.target.closest("[data-packbuy]");if(pb){buyTempPack(pb.dataset.packbuy);return}
  let b=e.target.closest("[data-shopbuy]");if(b){
   try{performUpgrade(Number(b.dataset.shopbuy));screen();document.getElementById("hospitalShopScreen").classList.add("open")}
@@ -814,6 +885,51 @@ function tick(){
  }catch(e){}
 }
 setInterval(tick,1200);
+})();
+</script>
+
+
+<style id="emergency-narrative-off">
+.emergencyNarrative,.emergency-case-narrative,[data-emergency-narrative]{display:none!important}
+</style>
+<script id="remove-emergency-narrative-safe">
+(function(){
+ function clean(){
+  const nodes=[...document.querySelectorAll("h1,h2,h3,h4,h5,h6,.title,.label,strong,b")];
+  nodes.forEach(el=>{
+   if((el.textContent||"").trim().toUpperCase()==="EMERGENCY CASE NARRATIVE"){
+    let box=el.closest(".card,.panel,article,section");
+    if(box) box.style.display="none";
+    else el.style.display="none";
+   }
+  });
+ }
+ clean();
+ new MutationObserver(clean).observe(document.body,{childList:true,subtree:true});
+})();
+</script>
+
+
+<script id="remove-emergency-narrative-menu">
+(function(){
+ function cleanMenu(){
+  const targets=[...document.querySelectorAll("button,a,[role='button'],.menuItem,.navItem,.tab,.chip,.pill,li")];
+  targets.forEach(el=>{
+   const t=(el.textContent||"").trim().toUpperCase();
+   if(t==="EMERGENCY CASE NARRATIVE" || t.includes("EMERGENCY CASE NARRATIVE")){
+     el.remove();
+   }
+  });
+
+  // Also remove select/options if one exists.
+  document.querySelectorAll("option").forEach(opt=>{
+    if((opt.textContent||"").trim().toUpperCase().includes("EMERGENCY CASE NARRATIVE")){
+      opt.remove();
+    }
+  });
+ }
+ cleanMenu();
+ new MutationObserver(cleanMenu).observe(document.body,{childList:true,subtree:true});
 })();
 </script>
 
