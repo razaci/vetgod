@@ -675,6 +675,70 @@ button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
 @media(max-width:760px){.vgu-grid{grid-template-columns:1fr}.vgu-stats{grid-template-columns:repeat(3,1fr)}}
 </style>
 
+
+<style id="vg-morphwild-exotic-css">
+:root{--mw-gold:#ffe17a;--mw-mint:#60f6de;--mw-violet:#a98cff}
+#vgMorphBazaar{position:fixed;inset:0;z-index:10020;background:rgba(2,7,12,.94);display:none;overflow:auto;padding:14px}
+#vgMorphBazaar.open{display:block}
+.mw-wrap{max-width:980px;margin:auto}
+.mw-top{position:sticky;top:0;z-index:3;background:#071018;padding:8px 0 12px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.mw-passport{border:1px solid #7760b8;border-radius:18px;background:linear-gradient(145deg,#111d2a,#201638);overflow:hidden;box-shadow:0 18px 55px #0009}
+.mw-passport-art{height:150px;background-image:linear-gradient(90deg,rgba(6,17,24,.2),rgba(6,17,24,.72)),url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MjAiIGhlaWdodD0iMTgwIiB2aWV3Qm94PSIwIDAgNDIwIDE4MCI+CjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHgyPSIxIj48c3RvcCBzdG9wLWNvbG9yPSIjMDYxOTIzIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMjUxODRiIi8+PC9saW5lYXJHcmFkaWVudD4KPHJhZGlhbEdyYWRpZW50IGlkPSJyIj48c3RvcCBzdG9wLWNvbG9yPSIjNjBmNmRlIiBzdG9wLW9wYWNpdHk9Ii40MiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzYwZjZkZSIgc3RvcC1vcGFjaXR5PSIwIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+CjxyZWN0IHdpZHRoPSI0MjAiIGhlaWdodD0iMTgwIiByeD0iMjYiIGZpbGw9InVybCgjZykiLz4KPGNpcmNsZSBjeD0iMjEwIiBjeT0iOTAiIHI9Ijc4IiBmaWxsPSJ1cmwoI3IpIi8+CjxwYXRoIGQ9Ik0xMzggOTFjMjgtNTAgMTE2LTUwIDE0NCAwLTI4IDUwLTExNiA1MC0xNDQgMFoiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzczZThmZiIgc3Ryb2tlLXdpZHRoPSI2Ii8+CjxjaXJjbGUgY3g9IjIxMCIgY3k9IjkxIiByPSIzMCIgZmlsbD0iIzEwMWYzNSIgc3Ryb2tlPSIjZmZlMTdhIiBzdHJva2Utd2lkdGg9IjciLz4KPGNpcmNsZSBjeD0iMjEwIiBjeT0iOTEiIHI9IjgiIGZpbGw9IiM3M2U4ZmYiLz4KPHBhdGggZD0iTTIxMCAxNnYyOE0yMTAgMTM4djI4TTEzNiA5MWgyOE0yNTYgOTFoMjgiIHN0cm9rZT0iI2Q3YjlmZiIgc3Ryb2tlLXdpZHRoPSI1IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+");background-size:cover;background-position:center;display:flex;align-items:end;padding:15px}
+.mw-passport-art h2{font-size:clamp(24px,5vw,38px);margin:0;text-shadow:0 3px 18px #000}
+.mw-body{padding:15px}
+.mw-chip{display:inline-block;padding:5px 8px;margin:3px;border:1px solid #3d6478;border-radius:999px;background:#0b2230;font-size:10px;font-weight:900}
+.mw-chip.gold{border-color:#8b7434;color:var(--mw-gold);background:#271f0f}
+.mw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:12px 0}
+.mw-shopcard{border:1px solid #2d5062;border-radius:14px;background:#0c1c29;padding:13px;min-height:178px;display:flex;flex-direction:column}
+.mw-shopcard .ico{font-size:32px} .mw-shopcard h3{margin:4px 0} .mw-shopcard p{color:#9fb7c2;font-size:12px;line-height:1.4;flex:1}
+.mw-amz{display:block;text-align:center;margin-top:9px;padding:10px;border-radius:10px;border:1px solid #c49a36;background:#3a2d0d;color:#fff2ba;font-weight:950;text-decoration:none}
+.mw-disclaimer{font-size:11px;color:#86a2ad;line-height:1.5;padding:10px;border:1px solid #294554;border-radius:10px;background:#07151e}
+.mw-license{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
+.mw-license div{padding:8px;border:1px solid #334d62;border-radius:9px;background:#091721;font-size:11px}
+.mw-license b{display:block;color:#dcecff}
+.mw-labbutton{width:100%;min-height:42px;border-radius:10px;border:1px solid #9a7c34!important;background:linear-gradient(180deg,#4b3912,#2a210e)!important;color:#fff2b4!important;font-weight:950!important;margin-top:9px}
+.mw-locked{padding:10px;margin-top:9px;border:1px dashed #53616d;border-radius:10px;color:#8298a2;font-size:11px}
+#vgMorphDexDock{position:fixed;right:14px;bottom:142px;z-index:102}
+#vgMorphDexBtn{min-height:46px;border-radius:13px;border:1px solid #8c73df;background:#261d4c;color:white;font-weight:950;padding:0 12px;box-shadow:0 10px 30px #0008}
+#vgMorphDexPanel{position:fixed;inset:0;z-index:10010;background:#061019;display:none;overflow:auto;padding:14px}
+#vgMorphDexPanel.open{display:block}
+.mw-dexgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:9px}
+.mw-dexcard{padding:12px;border:1px solid #2b4e60;border-radius:13px;background:#0b1d2a}
+.mw-dexface{height:88px;border-radius:10px;display:grid;place-items:center;font-size:48px;background:radial-gradient(circle,#203653,#08141d 68%)}
+@media(max-width:560px){.mw-license{grid-template-columns:1fr}#vgMorphDexDock{right:10px;bottom:126px}}
+</style>
+
+
+<style id="vg-exotic-wing-css">
+#vgExoticWingDock{position:fixed;left:14px;bottom:138px;z-index:108}
+#vgExoticWingBtn{min-height:48px;border-radius:13px;border:1px solid #8d73de;background:linear-gradient(180deg,#34245f,#211642);color:#fff;font-weight:950;padding:0 13px;box-shadow:0 10px 30px #0008}
+#vgExoticWing{position:fixed;inset:0;z-index:10030;background:rgba(2,7,12,.96);display:none;overflow:auto;padding:14px}
+#vgExoticWing.open{display:block}
+.vgew-wrap{max-width:1000px;margin:auto}
+.vgew-top{position:sticky;top:0;z-index:5;background:#061019;padding:8px 0 12px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.vgew-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:10px 0}
+.vgew-tabs button{min-height:40px;border-radius:10px;border:1px solid #35536a;background:#0d2230;color:#fff;font-weight:900}
+.vgew-tabs button.on{border-color:#8d73de;background:#281d4d}
+.vgew-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:10px}
+.vgew-card{border:1px solid #2d5063;border-radius:15px;background:linear-gradient(145deg,#0d2230,#11172a);overflow:hidden}
+.vgew-card img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;background:#07131b}
+.vgew-pad{padding:12px}
+.vgew-tag{display:inline-block;padding:5px 8px;border-radius:999px;border:1px solid #536c94;background:#151d39;font-size:10px;font-weight:900;color:#cddaff}
+.vgew-care{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
+.vgew-care button,.vgew-mainbtn{min-height:42px;border-radius:10px;border:1px solid #3d687b;background:#123448;color:#fff;font-weight:900;padding:7px}
+.vgew-care button.done{border-color:#49775f;background:#12372a;color:#a9f4cd}
+.vgew-mainbtn{width:100%;margin-top:9px;background:linear-gradient(180deg,#3c2f69,#281f4d);border-color:#8c75d7}
+.vgew-mainbtn.good{background:linear-gradient(180deg,#205d4a,#153d32);border-color:#54a984}
+.vgew-bars{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:9px 0}
+.vgew-meter{padding:8px;border:1px solid #294859;border-radius:10px;background:#071721;text-align:center;font-size:10px}.vgew-meter b{display:block;font-size:18px}
+.vgew-log{padding:9px;border:1px solid #243e4d;border-radius:10px;background:#06131b;min-height:70px;font-size:11px;line-height:1.45;color:#a7c1ca;margin-top:8px}
+.vgew-unlock{padding:10px;border:1px solid #806c38;border-radius:10px;background:#27210f;color:#ffe6a0;margin-top:9px;font-size:11px}
+.vgew-links a{display:block;padding:9px;margin:6px 0;border:1px solid #5c4a1e;border-radius:9px;background:#30250d;color:#ffe7a1;text-decoration:none;font-weight:850}
+.vgew-collection{display:flex;gap:10px;align-items:center;padding:10px;border:1px solid #304d62;border-radius:11px;background:#091b27;margin:7px 0}
+.vgew-collection img{width:82px;height:58px;object-fit:cover;border-radius:8px}
+@media(max-width:560px){#vgExoticWingDock{left:10px;bottom:184px}.vgew-care{grid-template-columns:1fr}.vgew-tabs{grid-template-columns:1fr}}
+</style>
+
 </head>
 <body>
 <div class="shell">
@@ -4549,6 +4613,353 @@ addEventListener("load",()=>{
   ensureShell();
   (state.pets||[]).forEach(ensurePet);
 });
+})();
+</script>
+
+
+<script id="vg-morphwild-exotic-js">
+(function(){
+'use strict';
+
+const MW_RARITY=["COMMON","UNCOMMON","RARE","LEGENDARY","MYTHIC"];
+
+function safeSave(){if(typeof save==="function")save()}
+function E(s){return String(s==null?"":s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function Q(s){return "https://www.amazon.com/s?k="+encodeURIComponent(s)}
+
+function ensureMW(){
+ state.morphWild=state.morphWild||{registered:{},dexSeen:{}};
+ (state.pets||[]).forEach((p,i)=>{
+   if(p.evolutionStage>0 && !state.morphWild.registered[p.name]){
+     state.morphWild.registered[p.name]="VGX-"+String(i+1).padStart(3,"0")+"-"+Math.abs(hash(p.name+(p.formName||""))).toString(36).toUpperCase().slice(0,5);
+   }
+   if(p.evolutionStage>0)state.morphWild.dexSeen[p.name]=true;
+ });
+}
+function hash(x){let h=0;for(let i=0;i<x.length;i++)h=((h<<5)-h)+x.charCodeAt(i)|0;return h}
+function activePet(name){
+ ensureMW();
+ return (state.pets||[]).find(p=>p.name===name)||(state.pets||[]).find(p=>state.morphLab&&p.name===state.morphLab.selected)||(state.pets||[])[0]||null;
+}
+function rarity(p){
+ let n=(p.evolutionStage||0)+(p.mutations||[]).length+(p.createdHybrid?1:0);
+ if((p.trust||0)>=85)n++; if((p.bond||0)>=85)n++;
+ return MW_RARITY[Math.min(MW_RARITY.length-1,n)];
+}
+function bucket(p){
+ const s=((p.species||"")+" "+(p.breed||"")+" "+(p.dna||[]).join(" ")).toLowerCase();
+ if(/whale|orca|dolphin|seal|sea lion|shark|ray|turtle|aquatic|otter/.test(s))return "aquatic";
+ if(/owl|eagle|falcon|macaw|bird|flamingo|swan|crane|flight|penguin/.test(s))return "avian";
+ if(/snake|cobra|python|rattlesnake|iguana|chameleon|komodo|tortoise|alligator|crocodile|reptile/.test(s))return "reptile";
+ if(/spider|scorpion|bee|ant|moth|butterfly|beetle|mantis|firefly|dragonfly|arthropod|insect/.test(s))return "arthropod";
+ if(/frog|axolotl|amphib/.test(s))return "amphibian";
+ if(/horse|cow|goat|sheep|alpaca|llama|donkey|camel|bison|moose|elk|reindeer|elephant|rhino|hippo|giraffe|zebra/.test(s))return "large";
+ return "companion";
+}
+function gear(p){
+ const sp=p.species||"animal", b=bucket(p), f=p.formName||"evolved creature";
+ let travel, habitat, toy, food, care, monitor;
+ if(b==="aquatic"){
+   travel="aquarium transport container animal";
+   habitat="aquarium habitat enrichment supplies";
+   toy="aquarium enrichment floating toy";
+   food="aquatic animal feeding supplies";
+   care="aquarium water quality care kit";
+   monitor="aquarium digital thermometer monitor";
+ }else if(b==="avian"){
+   travel="bird travel carrier";
+   habitat="large bird enclosure habitat accessories";
+   toy="bird enrichment foraging toys";
+   food="bird feeding bowls storage";
+   care="bird perch grooming supplies";
+   monitor="bird habitat temperature humidity monitor";
+ }else if(b==="reptile"){
+   travel="reptile travel carrier";
+   habitat="reptile terrarium enclosure accessories";
+   toy="reptile habitat enrichment climbing";
+   food="reptile feeding supplies tongs bowls";
+   care="reptile habitat cleaning supplies";
+   monitor="reptile terrarium temperature humidity monitor";
+ }else if(b==="arthropod"){
+   travel="small insect spider transport container";
+   habitat="insect spider terrarium enclosure";
+   toy="invertebrate habitat enrichment decor";
+   food="insect feeder supplies feeding dish";
+   care="terrarium substrate cleaning supplies";
+   monitor="mini terrarium thermometer hygrometer";
+ }else if(b==="amphibian"){
+   travel="small amphibian travel container";
+   habitat="amphibian terrarium paludarium supplies";
+   toy="amphibian habitat enrichment decor";
+   food="amphibian feeding supplies";
+   care="amphibian water conditioner habitat supplies";
+   monitor="terrarium temperature humidity monitor";
+ }else if(b==="large"){
+   travel="large animal transport safety supplies";
+   habitat="large animal stall enrichment supplies";
+   toy="large animal enrichment toy";
+   food="large animal feed storage container";
+   care="large animal grooming kit";
+   monitor="barn temperature monitor animal";
+ }else{
+   travel="pet travel carrier";
+   habitat="pet habitat bed crate enrichment";
+   toy="pet enrichment puzzle toy";
+   food="pet food storage feeding supplies";
+   care="pet grooming comfort kit";
+   monitor="pet camera temperature monitor";
+ }
+ return [
+  ["🧳","Travel Container",travel,"Travel/transport gear inspired by "+sp+"."],
+  ["🏕️","Habitat & Enclosure",habitat,"Habitat accessories for the real-world animal category."],
+  ["🧸","Exotic Toys",toy,"Enrichment items for the sanctuary/home layer."],
+  ["🥣","Food & Feeding",food,"Feeding tools and storage. Match real diet only with qualified guidance."],
+  ["🧼","Care & Comfort",care,"Cleaning, grooming, bedding and comfort supplies."],
+  ["📡","Monitoring",monitor,"Temperature/humidity/camera or habitat monitoring gear."]
+ ].map(x=>({...{ico:x[0],title:x[1],query:x[2],desc:x[3]},url:Q(x[2]+" "+sp)}));
+}
+function passport(p){
+ ensureMW();
+ const id=state.morphWild.registered[p.name]||"UNREGISTERED";
+ return `<div class="mw-passport">
+   <div class="mw-passport-art"><div><div class="eyebrow">OFFICIAL FICTIONAL EXOTIC MORPH</div><h2>${E(p.formName||p.name)}</h2></div></div>
+   <div class="mw-body">
+    <span class="mw-chip gold">${rarity(p)}</span>
+    <span class="mw-chip">${E(p.species||"Animal")}</span>
+    ${(p.dna||[]).map(t=>`<span class="mw-chip">${E(t)}</span>`).join("")}
+    <div class="mw-license">
+      <div><small>REGISTERED COMPANION</small><b>${E(p.name)}</b></div>
+      <div><small>MORPH LICENSE</small><b>${E(id)}</b></div>
+      <div><small>EVOLUTION STAGE</small><b>${p.evolutionStage||0}</b></div>
+      <div><small>MORPH ENERGY</small><b>${Math.round(p.morphEnergy||0)} ⚡</b></div>
+    </div>
+   </div>
+ </div>`;
+}
+
+window.vgMorphShop=function(name){
+ const p=activePet(name); if(!p)return;
+ ensureMW();
+ if((p.evolutionStage||0)<1){
+   if(typeof toast==="function")toast("Morph this animal first to unlock its Exotic Gear Bazaar.");
+   return;
+ }
+ let panel=document.getElementById("vgMorphBazaar");
+ if(!panel){panel=document.createElement("div");panel.id="vgMorphBazaar";document.body.appendChild(panel)}
+ const items=gear(p);
+ panel.innerHTML=`<div class="mw-wrap">
+   <div class="mw-top">
+    <div><div class="eyebrow">EXOTIC GEAR BAZAAR</div><h2 style="margin:0">${E(p.formName||p.name)} Supply Deck</h2></div>
+    <button class="btn" onclick="vgCloseMorphShop()">Close</button>
+   </div>
+   ${passport(p)}
+   <div class="mw-grid">${items.map(x=>`<div class="mw-shopcard"><div class="ico">${x.ico}</div><h3>${E(x.title)}</h3><p>${E(x.desc)}</p><a class="mw-amz" target="_blank" rel="noopener noreferrer" href="${x.url}">AMAZON SEARCH ↗</a></div>`).join("")}</div>
+   <div class="mw-disclaimer"><b>Fictional game layer:</b> morph forms, licenses and abilities are fictional. Amazon buttons are ordinary product-search links, not endorsements or real exotic-animal care instructions. Real wildlife/exotic animal ownership, transport, diet and housing can be regulated and species-specific—use qualified veterinary/wildlife guidance and local law.</div>
+ </div>`;
+ panel.classList.add("open");panel.scrollTop=0;
+};
+window.vgCloseMorphShop=function(){document.getElementById("vgMorphBazaar")?.classList.remove("open")};
+
+function injectMorphButton(){
+ const panel=document.getElementById("vgCreatureLab"); if(!panel)return;
+ const p=activePet(); if(!p)return;
+ const chamber=[...panel.querySelectorAll(".vgcl-card")].find(c=>(c.textContent||"").includes("MORPH CHAMBER"));
+ if(!chamber)return;
+ if(chamber.querySelector(".mw-labbutton,.mw-locked"))return;
+ const d=document.createElement("div");
+ if((p.evolutionStage||0)>0){
+   d.innerHTML=`<button class="mw-labbutton" onclick="vgMorphShop('${String(p.name).replace(/\\/g,"\\\\").replace(/'/g,"\\'")}')">🛒 EXOTIC GEAR BAZAAR • ${E(p.formName||p.name)}</button>`;
+ }else{
+   d.className="mw-locked";d.textContent="🔒 Exotic Gear Bazaar unlocks after this animal completes its first morph.";
+ }
+ chamber.appendChild(d);
+}
+
+function dexHTML(){
+ ensureMW();
+ const pets=(state.pets||[]).filter(p=>p.evolutionStage>0);
+ return `<div class="mw-wrap">
+  <div class="mw-top"><div><div class="eyebrow">MORPHDEX</div><h2 style="margin:0">Registered Exotic Forms</h2></div><button class="btn" onclick="vgCloseMorphDex()">Close</button></div>
+  <div class="notice">Every rescued real animal can become an original fictional morph. Evolved forms unlock a passport and species-category shopping deck.</div>
+  <div class="mw-dexgrid">${pets.length?pets.map(p=>`<div class="mw-dexcard">
+   <div class="mw-dexface">${p.emoji||"🐾"}</div>
+   <b>${E(p.formName||p.name)}</b><small>${E(p.name)} • ${E(p.species||"Animal")}</small>
+   <div style="margin:6px 0"><span class="mw-chip gold">${rarity(p)}</span></div>
+   <button class="btn" style="width:100%" onclick="vgMorphShop('${String(p.name).replace(/\\/g,"\\\\").replace(/'/g,"\\'")}')">Passport + Supplies</button>
+  </div>`).join(""):`<div class="notice">No registered morphs yet. Rescue, bond with and morph your first animal.</div>`}</div>
+ </div>`;
+}
+window.vgOpenMorphDex=function(){
+ let p=document.getElementById("vgMorphDexPanel");if(!p){p=document.createElement("div");p.id="vgMorphDexPanel";document.body.appendChild(p)}
+ p.innerHTML=dexHTML();p.classList.add("open");p.scrollTop=0;
+};
+window.vgCloseMorphDex=function(){document.getElementById("vgMorphDexPanel")?.classList.remove("open")};
+
+function addDock(){
+ if(document.getElementById("vgMorphDexDock"))return;
+ let d=document.createElement("div");d.id="vgMorphDexDock";d.innerHTML='<button id="vgMorphDexBtn" onclick="vgOpenMorphDex()">📘 MORPHDEX</button>';document.body.appendChild(d);
+}
+
+const oldRender=window.renderCreatureLab;
+if(typeof oldRender==="function"){
+ window.renderCreatureLab=function(){let r=oldRender.apply(this,arguments);setTimeout(injectMorphButton,0);return r}
+}
+const oldMorph=window.vgMorphPet;
+if(typeof oldMorph==="function"){
+ window.vgMorphPet=function(name,pathIndex){
+   let r=oldMorph.apply(this,arguments);
+   ensureMW();safeSave();
+   setTimeout(()=>{injectMorphButton();const p=activePet(name);if(p&&p.evolutionStage>0&&typeof toast==="function")toast("📘 MORPH PASSPORT ISSUED • Gear Bazaar unlocked");},20);
+   return r;
+ }
+}
+
+addEventListener("load",()=>{ensureMW();addDock();setTimeout(injectMorphButton,180)});
+})();
+</script>
+
+
+<script id="vg-exotic-wing-js">
+(function(){
+'use strict';
+const EWA=[{"id":"fox","base":"Red Fox","morph":"Emberveil Vulpin","emoji":"\ud83e\udd8a","type":"Thermal / Forest","care":["Hydration check","Paw inspection","Calm handling","Temperature scan"],"supplies":{"Travel carrier":"fox pet carrier","Enrichment toys":"fox enrichment toys","Food supplies":"fox diet food","Habitat supplies":"fox habitat supplies"},"licenseTier":"Forest","reward":300},{"id":"rabbit","base":"Domestic Rabbit","morph":"Moonhop Auroran","emoji":"\ud83d\udc07","type":"Lunar / Meadow","care":["Dental check","Hydration check","Gut motility scan","Gentle grooming"],"supplies":{"Travel carrier":"rabbit travel carrier","Enrichment toys":"rabbit chew toys","Food supplies":"rabbit hay pellets","Habitat supplies":"rabbit enclosure supplies"},"licenseTier":"Meadow","reward":375},{"id":"gecko","base":"Leopard Gecko","morph":"Prismtail Geckora","emoji":"\ud83e\udd8e","type":"Prism / Desert","care":["Heat gradient check","Skin shed check","Hydration check","Tail reserve scan"],"supplies":{"Travel container":"reptile travel carrier gecko","Enrichment":"gecko climbing decor","Food supplies":"leopard gecko feeder supplies","Habitat":"leopard gecko terrarium supplies"},"licenseTier":"Terrarium","reward":450},{"id":"parrot","base":"Parrot","morph":"Stormcrest Aviar","emoji":"\ud83e\udd9c","type":"Sky / Echo","care":["Beak check","Feather condition","Respiratory scan","Social comfort"],"supplies":{"Travel carrier":"parrot travel carrier","Exotic toys":"parrot enrichment toys","Food supplies":"parrot food pellets","Perches":"parrot perch supplies"},"licenseTier":"Aviary","reward":525},{"id":"axolotl","base":"Axolotl","morph":"Glowgill Axion","emoji":"\ud83e\udee7","type":"Aqua / Bio-light","care":["Water chemistry","Gill check","Temperature check","Body condition"],"supplies":{"Travel container":"axolotl transport container","Tank decor":"axolotl aquarium decor","Food supplies":"axolotl food","Water care":"axolotl aquarium water conditioner"},"licenseTier":"Aquatic","reward":600},{"id":"hedgehog","base":"African Pygmy Hedgehog","morph":"Starspine Hedra","emoji":"\ud83e\udd94","type":"Stellar / Burrow","care":["Foot check","Quill inspection","Hydration check","Weight scan"],"supplies":{"Travel carrier":"hedgehog travel carrier","Exotic toys":"hedgehog toys enrichment","Food supplies":"hedgehog food","Habitat":"hedgehog enclosure supplies"},"licenseTier":"Burrow","reward":675}];
+const EWI={"fox":"data:image/svg+xml;base64,CiAgICA8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjY0MCIgaGVpZ2h0PSI0MjAiPgogICAgICA8ZGVmcz4KICAgICAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImIiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmOWU1NyIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzdhMWYyNyIvPgogICAgICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICAgICAgPGZpbHRlciBpZD0iZ2xvdyI+PGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iOCIgcmVzdWx0PSJiIi8+PGZlTWVyZ2U+PGZlTWVyZ2VOb2RlIGluPSJiIi8+PGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+PC9mZU1lcmdlPjwvZmlsdGVyPgogICAgICA8L2RlZnM+CiAgICAgIDxyZWN0IHdpZHRoPSI2NDAiIGhlaWdodD0iNDIwIiByeD0iMzIiIGZpbGw9IiMwOTEwMWQiLz4KICAgICAgPGNpcmNsZSBjeD0iMzIwIiBjeT0iMTkwIiByPSIxMjUiIGZpbGw9InVybCgjYikiIG9wYWNpdHk9Ii4yMiIvPgogICAgICA8ZWxsaXBzZSBjeD0iMzIwIiBjeT0iMjM1IiByeD0iMTQ1IiByeT0iOTAiIGZpbGw9InVybCgjYikiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogICAgICA8Y2lyY2xlIGN4PSIyNTAiIGN5PSIxNjAiIHI9IjU4IiBmaWxsPSJ1cmwoI2IpIi8+CiAgICAgIDxjaXJjbGUgY3g9IjM5MCIgY3k9IjE2MCIgcj0iNTgiIGZpbGw9InVybCgjYikiLz4KICAgICAgPGNpcmNsZSBjeD0iMjc1IiBjeT0iMjA1IiByPSIxMSIgZmlsbD0iI2ZmZiIvPgogICAgICA8Y2lyY2xlIGN4PSIzNjUiIGN5PSIyMDUiIHI9IjExIiBmaWxsPSIjZmZmIi8+CiAgICAgIDxjaXJjbGUgY3g9IjI3NSIgY3k9IjIwNSIgcj0iNSIgZmlsbD0iIzExMSIvPgogICAgICA8Y2lyY2xlIGN4PSIzNjUiIGN5PSIyMDUiIHI9IjUiIGZpbGw9IiMxMTEiLz4KICAgICAgPHBhdGggZD0iTTI2MCAyODAgUTMyMCAzMjUgMzgwIDI4MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgICA8cGF0aCBkPSJNMjA1IDE0MCBMMTUwIDcwIEwyNDUgMTEwIFoiIGZpbGw9InVybCgjYikiLz4KICAgICAgPHBhdGggZD0iTTQzNSAxNDAgTDQ5MCA3MCBMMzk1IDExMCBaIiBmaWxsPSJ1cmwoI2IpIi8+CiAgICAgIDxjaXJjbGUgY3g9IjMyMCIgY3k9IjI0MCIgcj0iMTc1IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZjllNTciIHN0cm9rZS1vcGFjaXR5PSIuMzUiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWRhc2hhcnJheT0iMTAgMTIiLz4KICAgICAgPHRleHQgeD0iMzIwIiB5PSIzODUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMzAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZmlsbD0iI2ZmZiI+RW1iZXJ2ZWlsIFZ1bHBpbjwvdGV4dD4KICAgIDwvc3ZnPg==","rabbit":"data:image/svg+xml;base64,CiAgICA8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjY0MCIgaGVpZ2h0PSI0MjAiPgogICAgICA8ZGVmcz4KICAgICAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImIiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2Q0ZTZmZiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzdmOGRmZiIvPgogICAgICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICAgICAgPGZpbHRlciBpZD0iZ2xvdyI+PGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iOCIgcmVzdWx0PSJiIi8+PGZlTWVyZ2U+PGZlTWVyZ2VOb2RlIGluPSJiIi8+PGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+PC9mZU1lcmdlPjwvZmlsdGVyPgogICAgICA8L2RlZnM+CiAgICAgIDxyZWN0IHdpZHRoPSI2NDAiIGhlaWdodD0iNDIwIiByeD0iMzIiIGZpbGw9IiMwOTEwMWQiLz4KICAgICAgPGNpcmNsZSBjeD0iMzIwIiBjeT0iMTkwIiByPSIxMjUiIGZpbGw9InVybCgjYikiIG9wYWNpdHk9Ii4yMiIvPgogICAgICA8ZWxsaXBzZSBjeD0iMzIwIiBjeT0iMjM1IiByeD0iMTQ1IiByeT0iOTAiIGZpbGw9InVybCgjYikiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogICAgICA8Y2lyY2xlIGN4PSIyNTAiIGN5PSIxNjAiIHI9IjU4IiBmaWxsPSJ1cmwoI2IpIi8+CiAgICAgIDxjaXJjbGUgY3g9IjM5MCIgY3k9IjE2MCIgcj0iNTgiIGZpbGw9InVybCgjYikiLz4KICAgICAgPGNpcmNsZSBjeD0iMjc1IiBjeT0iMjA1IiByPSIxMSIgZmlsbD0iI2ZmZiIvPgogICAgICA8Y2lyY2xlIGN4PSIzNjUiIGN5PSIyMDUiIHI9IjExIiBmaWxsPSIjZmZmIi8+CiAgICAgIDxjaXJjbGUgY3g9IjI3NSIgY3k9IjIwNSIgcj0iNSIgZmlsbD0iIzExMSIvPgogICAgICA8Y2lyY2xlIGN4PSIzNjUiIGN5PSIyMDUiIHI9IjUiIGZpbGw9IiMxMTEiLz4KICAgICAgPHBhdGggZD0iTTI2MCAyODAgUTMyMCAzMjUgMzgwIDI4MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgICA8cGF0aCBkPSJNMjA1IDE0MCBMMTUwIDcwIEwyNDUgMTEwIFoiIGZpbGw9InVybCgjYikiLz4KICAgICAgPHBhdGggZD0iTTQzNSAxNDAgTDQ5MCA3MCBMMzk1IDExMCBaIiBmaWxsPSJ1cmwoI2IpIi8+CiAgICAgIDxjaXJjbGUgY3g9IjMyMCIgY3k9IjI0MCIgcj0iMTc1IiBmaWxsPSJub25lIiBzdHJva2U9IiNkNGU2ZmYiIHN0cm9rZS1vcGFjaXR5PSIuMzUiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWRhc2hhcnJheT0iMTAgMTIiLz4KICAgICAgPHRleHQgeD0iMzIwIiB5PSIzODUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMzAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZmlsbD0iI2ZmZiI+TW9vbmhvcCBBdXJvcmFuPC90ZXh0PgogICAgPC9zdmc+","gecko":"data:image/svg+xml;base64,CiAgICA8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjY0MCIgaGVpZ2h0PSI0MjAiPgogICAgICA8ZGVmcz4KICAgICAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImIiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZDc2ZSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzZhY2JiOCIvPgogICAgICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICAgICAgPGZpbHRlciBpZD0iZ2xvdyI+PGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iOCIgcmVzdWx0PSJiIi8+PGZlTWVyZ2U+PGZlTWVyZ2VOb2RlIGluPSJiIi8+PGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+PC9mZU1lcmdlPjwvZmlsdGVyPgogICAgICA8L2RlZnM+CiAgICAgIDxyZWN0IHdpZHRoPSI2NDAiIGhlaWdodD0iNDIwIiByeD0iMzIiIGZpbGw9IiMwOTEwMWQiLz4KICAgICAgPGNpcmNsZSBjeD0iMzIwIiBjeT0iMTkwIiByPSIxMjUiIGZpbGw9InVybCgjYikiIG9wYWNpdHk9Ii4yMiIvPgogICAgICA8ZWxsaXBzZSBjeD0iMzIwIiBjeT0iMjM1IiByeD0iMTQ1IiByeT0iOTAiIGZpbGw9InVybCgjYikiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogICAgICA8Y2lyY2xlIGN4PSIyNTAiIGN5PSIxNjAiIHI9IjU4IiBmaWxsPSJ1cmwoI2IpIi8+CiAgICAgIDxjaXJjbGUgY3g9IjM5MCIgY3k9IjE2MCIgcj0iNTgiIGZpbGw9InVybCgjYikiLz4KICAgICAgPGNpcmNsZSBjeD0iMjc1IiBjeT0iMjA1IiByPSIxMSIgZmlsbD0iI2ZmZiIvPgogICAgICA8Y2lyY2xlIGN4PSIzNjUiIGN5PSIyMDUiIHI9IjExIiBmaWxsPSIjZmZmIi8+CiAgICAgIDxjaXJjbGUgY3g9IjI3NSIgY3k9IjIwNSIgcj0iNSIgZmlsbD0iIzExMSIvPgogICAgICA8Y2lyY2xlIGN4PSIzNjUiIGN5PSIyMDUiIHI9IjUiIGZpbGw9IiMxMTEiLz4KICAgICAgPHBhdGggZD0iTTI2MCAyODAgUTMyMCAzMjUgMzgwIDI4MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgICA8cGF0aCBkPSJNMjA1IDE0MCBMMTUwIDcwIEwyNDUgMTEwIFoiIGZpbGw9InVybCgjYikiLz4KICAgICAgPHBhdGggZD0iTTQzNSAxNDAgTDQ5MCA3MCBMMzk1IDExMCBaIiBmaWxsPSJ1cmwoI2IpIi8+CiAgICAgIDxjaXJjbGUgY3g9IjMyMCIgY3k9IjI0MCIgcj0iMTc1IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmQ3NmUiIHN0cm9rZS1vcGFjaXR5PSIuMzUiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWRhc2hhcnJheT0iMTAgMTIiLz4KICAgICAgPHRleHQgeD0iMzIwIiB5PSIzODUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMzAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZmlsbD0iI2ZmZiI+UHJpc210YWlsIEdlY2tvcmE8L3RleHQ+CiAgICA8L3N2Zz4=","parrot":"data:image/svg+xml;base64,CiAgICA8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjY0MCIgaGVpZ2h0PSI0MjAiPgogICAgICA8ZGVmcz4KICAgICAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImIiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzZmZTBmZiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzRmNjZkOCIvPgogICAgICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICAgICAgPGZpbHRlciBpZD0iZ2xvdyI+PGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iOCIgcmVzdWx0PSJiIi8+PGZlTWVyZ2U+PGZlTWVyZ2VOb2RlIGluPSJiIi8+PGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+PC9mZU1lcmdlPjwvZmlsdGVyPgogICAgICA8L2RlZnM+CiAgICAgIDxyZWN0IHdpZHRoPSI2NDAiIGhlaWdodD0iNDIwIiByeD0iMzIiIGZpbGw9IiMwOTEwMWQiLz4KICAgICAgPGNpcmNsZSBjeD0iMzIwIiBjeT0iMTkwIiByPSIxMjUiIGZpbGw9InVybCgjYikiIG9wYWNpdHk9Ii4yMiIvPgogICAgICA8ZWxsaXBzZSBjeD0iMzIwIiBjeT0iMjM1IiByeD0iMTQ1IiByeT0iOTAiIGZpbGw9InVybCgjYikiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogICAgICA8Y2lyY2xlIGN4PSIyNTAiIGN5PSIxNjAiIHI9IjU4IiBmaWxsPSJ1cmwoI2IpIi8+CiAgICAgIDxjaXJjbGUgY3g9IjM5MCIgY3k9IjE2MCIgcj0iNTgiIGZpbGw9InVybCgjYikiLz4KICAgICAgPGNpcmNsZSBjeD0iMjc1IiBjeT0iMjA1IiByPSIxMSIgZmlsbD0iI2ZmZiIvPgogICAgICA8Y2lyY2xlIGN4PSIzNjUiIGN5PSIyMDUiIHI9IjExIiBmaWxsPSIjZmZmIi8+CiAgICAgIDxjaXJjbGUgY3g9IjI3NSIgY3k9IjIwNSIgcj0iNSIgZmlsbD0iIzExMSIvPgogICAgICA8Y2lyY2xlIGN4PSIzNjUiIGN5PSIyMDUiIHI9IjUiIGZpbGw9IiMxMTEiLz4KICAgICAgPHBhdGggZD0iTTI2MCAyODAgUTMyMCAzMjUgMzgwIDI4MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgICA8cGF0aCBkPSJNMjA1IDE0MCBMMTUwIDcwIEwyNDUgMTEwIFoiIGZpbGw9InVybCgjYikiLz4KICAgICAgPHBhdGggZD0iTTQzNSAxNDAgTDQ5MCA3MCBMMzk1IDExMCBaIiBmaWxsPSJ1cmwoI2IpIi8+CiAgICAgIDxjaXJjbGUgY3g9IjMyMCIgY3k9IjI0MCIgcj0iMTc1IiBmaWxsPSJub25lIiBzdHJva2U9IiM2ZmUwZmYiIHN0cm9rZS1vcGFjaXR5PSIuMzUiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWRhc2hhcnJheT0iMTAgMTIiLz4KICAgICAgPHRleHQgeD0iMzIwIiB5PSIzODUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMzAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZmlsbD0iI2ZmZiI+U3Rvcm1jcmVzdCBBdmlhcjwvdGV4dD4KICAgIDwvc3ZnPg==","axolotl":"data:image/svg+xml;base64,CiAgICA8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjY0MCIgaGVpZ2h0PSI0MjAiPgogICAgICA8ZGVmcz4KICAgICAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImIiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzdlZThmZiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzdkNWNmZiIvPgogICAgICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICAgICAgPGZpbHRlciBpZD0iZ2xvdyI+PGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iOCIgcmVzdWx0PSJiIi8+PGZlTWVyZ2U+PGZlTWVyZ2VOb2RlIGluPSJiIi8+PGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+PC9mZU1lcmdlPjwvZmlsdGVyPgogICAgICA8L2RlZnM+CiAgICAgIDxyZWN0IHdpZHRoPSI2NDAiIGhlaWdodD0iNDIwIiByeD0iMzIiIGZpbGw9IiMwOTEwMWQiLz4KICAgICAgPGNpcmNsZSBjeD0iMzIwIiBjeT0iMTkwIiByPSIxMjUiIGZpbGw9InVybCgjYikiIG9wYWNpdHk9Ii4yMiIvPgogICAgICA8ZWxsaXBzZSBjeD0iMzIwIiBjeT0iMjM1IiByeD0iMTQ1IiByeT0iOTAiIGZpbGw9InVybCgjYikiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogICAgICA8Y2lyY2xlIGN4PSIyNTAiIGN5PSIxNjAiIHI9IjU4IiBmaWxsPSJ1cmwoI2IpIi8+CiAgICAgIDxjaXJjbGUgY3g9IjM5MCIgY3k9IjE2MCIgcj0iNTgiIGZpbGw9InVybCgjYikiLz4KICAgICAgPGNpcmNsZSBjeD0iMjc1IiBjeT0iMjA1IiByPSIxMSIgZmlsbD0iI2ZmZiIvPgogICAgICA8Y2lyY2xlIGN4PSIzNjUiIGN5PSIyMDUiIHI9IjExIiBmaWxsPSIjZmZmIi8+CiAgICAgIDxjaXJjbGUgY3g9IjI3NSIgY3k9IjIwNSIgcj0iNSIgZmlsbD0iIzExMSIvPgogICAgICA8Y2lyY2xlIGN4PSIzNjUiIGN5PSIyMDUiIHI9IjUiIGZpbGw9IiMxMTEiLz4KICAgICAgPHBhdGggZD0iTTI2MCAyODAgUTMyMCAzMjUgMzgwIDI4MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgICA8cGF0aCBkPSJNMjA1IDE0MCBMMTUwIDcwIEwyNDUgMTEwIFoiIGZpbGw9InVybCgjYikiLz4KICAgICAgPHBhdGggZD0iTTQzNSAxNDAgTDQ5MCA3MCBMMzk1IDExMCBaIiBmaWxsPSJ1cmwoI2IpIi8+CiAgICAgIDxjaXJjbGUgY3g9IjMyMCIgY3k9IjI0MCIgcj0iMTc1IiBmaWxsPSJub25lIiBzdHJva2U9IiM3ZWU4ZmYiIHN0cm9rZS1vcGFjaXR5PSIuMzUiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWRhc2hhcnJheT0iMTAgMTIiLz4KICAgICAgPHRleHQgeD0iMzIwIiB5PSIzODUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMzAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZmlsbD0iI2ZmZiI+R2xvd2dpbGwgQXhpb248L3RleHQ+CiAgICA8L3N2Zz4=","hedgehog":"data:image/svg+xml;base64,CiAgICA8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjY0MCIgaGVpZ2h0PSI0MjAiPgogICAgICA8ZGVmcz4KICAgICAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImIiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZTFiMCIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzhiNWZkZiIvPgogICAgICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICAgICAgPGZpbHRlciBpZD0iZ2xvdyI+PGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iOCIgcmVzdWx0PSJiIi8+PGZlTWVyZ2U+PGZlTWVyZ2VOb2RlIGluPSJiIi8+PGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+PC9mZU1lcmdlPjwvZmlsdGVyPgogICAgICA8L2RlZnM+CiAgICAgIDxyZWN0IHdpZHRoPSI2NDAiIGhlaWdodD0iNDIwIiByeD0iMzIiIGZpbGw9IiMwOTEwMWQiLz4KICAgICAgPGNpcmNsZSBjeD0iMzIwIiBjeT0iMTkwIiByPSIxMjUiIGZpbGw9InVybCgjYikiIG9wYWNpdHk9Ii4yMiIvPgogICAgICA8ZWxsaXBzZSBjeD0iMzIwIiBjeT0iMjM1IiByeD0iMTQ1IiByeT0iOTAiIGZpbGw9InVybCgjYikiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogICAgICA8Y2lyY2xlIGN4PSIyNTAiIGN5PSIxNjAiIHI9IjU4IiBmaWxsPSJ1cmwoI2IpIi8+CiAgICAgIDxjaXJjbGUgY3g9IjM5MCIgY3k9IjE2MCIgcj0iNTgiIGZpbGw9InVybCgjYikiLz4KICAgICAgPGNpcmNsZSBjeD0iMjc1IiBjeT0iMjA1IiByPSIxMSIgZmlsbD0iI2ZmZiIvPgogICAgICA8Y2lyY2xlIGN4PSIzNjUiIGN5PSIyMDUiIHI9IjExIiBmaWxsPSIjZmZmIi8+CiAgICAgIDxjaXJjbGUgY3g9IjI3NSIgY3k9IjIwNSIgcj0iNSIgZmlsbD0iIzExMSIvPgogICAgICA8Y2lyY2xlIGN4PSIzNjUiIGN5PSIyMDUiIHI9IjUiIGZpbGw9IiMxMTEiLz4KICAgICAgPHBhdGggZD0iTTI2MCAyODAgUTMyMCAzMjUgMzgwIDI4MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgICA8cGF0aCBkPSJNMjA1IDE0MCBMMTUwIDcwIEwyNDUgMTEwIFoiIGZpbGw9InVybCgjYikiLz4KICAgICAgPHBhdGggZD0iTTQzNSAxNDAgTDQ5MCA3MCBMMzk1IDExMCBaIiBmaWxsPSJ1cmwoI2IpIi8+CiAgICAgIDxjaXJjbGUgY3g9IjMyMCIgY3k9IjI0MCIgcj0iMTc1IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmUxYjAiIHN0cm9rZS1vcGFjaXR5PSIuMzUiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWRhc2hhcnJheT0iMTAgMTIiLz4KICAgICAgPHRleHQgeD0iMzIwIiB5PSIzODUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMzAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZmlsbD0iI2ZmZiI+U3RhcnNwaW5lIEhlZHJhPC90ZXh0PgogICAgPC9zdmc+"};
+
+function ss(){if(typeof save==="function")save()}
+function esc(x){return String(x??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function amazon(q){return "https://www.amazon.com/s?k="+encodeURIComponent(q)}
+function ensure(){
+ state.exoticWing=state.exoticWing||{tab:"RESCUE",current:null,cases:{},collection:[],log:[]};
+ return state.exoticWing;
+}
+function rec(id){
+ const w=ensure();
+ if(!w.cases[id])w.cases[id]={health:45,trust:30,morph:0,done:[],morphed:false};
+ return w.cases[id];
+}
+function animal(id){return EWA.find(a=>a.id===id)}
+function mainPetById(id){return (state.pets||[]).find(p=>p.exoticWingId===id)}
+function pushLog(t){let w=ensure();w.log.unshift(t);w.log=w.log.slice(0,25)}
+
+window.vgewOpen=function(){ensure();let p=document.getElementById("vgExoticWing");if(p){p.classList.add("open");render()}};
+window.vgewClose=function(){document.getElementById("vgExoticWing")?.classList.remove("open")};
+window.vgewTab=function(t){ensure().tab=t;ss();render()};
+
+window.vgewStart=function(id){
+ const w=ensure();w.current=id;rec(id);w.tab="CLINIC";pushLog("Admitted "+animal(id).base+" to the Exotic Rescue Wing.");ss();render();
+};
+window.vgewCare=function(id,i){
+ const a=animal(id),c=rec(id);if(!a||c.done.includes(i)||c.morphed)return;
+ c.done.push(i);c.health=Math.min(100,c.health+12);c.trust=Math.min(100,c.trust+10);c.morph=Math.min(88,c.morph+22);
+ pushLog(a.care[i]+" completed for "+a.base+".");ss();render();
+};
+function createMainPet(a,c){
+ let p=mainPetById(a.id);
+ if(p)return p;
+ p={
+   exoticWingId:a.id,
+   caseId:"EXOTIC-"+a.id,
+   name:a.morph,
+   originalName:a.base,
+   species:a.base,
+   breed:"Fictional Morph • "+a.type,
+   sex:"Unknown",
+   story:"Rescued through the Morph Vet Exotics wing. Stabilized as a real-world animal, then registered as the fictional exotic form "+a.morph+".",
+   emoji:a.emoji,
+   formName:a.morph,
+   evolutionStage:1,
+   morphEnergy:350,
+   morphPoints:3,
+   abilityPoints:1,
+   dna:a.type.split("/").map(x=>x.trim()).filter(Boolean),
+   mutations:[],
+   abilities:[],
+   memories:["Rescued in Exotic Wing","Completed veterinary stabilization","Registered fictional morph: "+a.morph],
+   personality:{archetype:"Exotic Companion",traits:["Curious","Bonded","Adaptive"],foodDrive:55,affection:60,independence:50,patience:55},
+   stats:{health:100,pain:0,hydration:85,trust:c.trust,energy:75,bond:55,hygiene:80,happiness:82,fun:65,training:0,social:60,comfort:82,mobility:75},
+   health:100,trust:c.trust,bond:55,energy:75,
+   power:20,speed:20,armor:20,instinct:20,adaptation:20
+ };
+ state.pets=state.pets||[];state.pets.push(p);
+ state.morphLab=state.morphLab||{selected:null,forgeA:null,forgeB:null,hybridSeq:1};
+ state.morphLab.selected=p.name;
+ if(state.morphWild){
+   state.morphWild.registered=state.morphWild.registered||{};
+   state.morphWild.dexSeen=state.morphWild.dexSeen||{};
+   state.morphWild.dexSeen[p.name]=true;
+ }
+ return p;
+}
+window.vgewMorph=function(id){
+ const w=ensure(),a=animal(id),c=rec(id);if(!a||c.done.length<4||c.morphed)return;
+ c.morphed=true;c.health=100;c.trust=Math.min(100,c.trust+20);c.morph=100;
+ if(!w.collection.includes(id))w.collection.push(id);
+ const p=createMainPet(a,c);
+ state.funds=(state.funds||0)+(a.reward||300);
+ pushLog("TRANSFORMATION COMPLETE • "+a.morph+" registered and transferred to My Pets.");
+ ss();render();
+ if(typeof toast==="function")toast("🧬 "+a.morph+" REGISTERED • Added to My Pets • +$"+(a.reward||300));
+};
+window.vgewOpenMainPet=function(id){
+ const a=animal(id),p=mainPetById(id);if(!a||!p)return;
+ state.morphLab=state.morphLab||{};state.morphLab.selected=p.name;ss();vgewClose();
+ if(typeof openCreatureLab==="function")openCreatureLab(p.name);
+ else if(typeof go==="function")go("pets");
+};
+window.vgewOpenSupplies=function(id){
+ const p=mainPetById(id);if(p&&typeof vgMorphShop==="function"){vgewClose();vgMorphShop(p.name)}
+};
+window.vgewGoPets=function(){vgewClose();if(typeof go==="function")go("pets")};
+
+function rescueView(){
+ const w=ensure();
+ return `<div class="vgew-grid">${EWA.map(a=>{
+   const c=rec(a.id), owned=!!mainPetById(a.id);
+   return `<div class="vgew-card"><img src="${EWI[a.id]}" alt="${esc(a.base)}"><div class="vgew-pad">
+    <span class="vgew-tag">${esc(a.type)}</span><h3 style="margin:7px 0 4px">${esc(a.base)}</h3>
+    <div style="font-size:11px;color:#9cb4c0">Unlocks <b>${esc(a.morph)}</b> • $${a.reward} rescue reward</div>
+    <button class="vgew-mainbtn ${owned?"good":""}" onclick="vgewStart('${a.id}')">${owned?"REVISIT RESCUE FILE":"ADMIT TO EXOTIC VET LAB"}</button>
+   </div></div>`;
+ }).join("")}</div>`;
+}
+function clinicView(){
+ const w=ensure(),a=animal(w.current);
+ if(!a)return `<div class="vgew-card"><div class="vgew-pad"><h3>No active exotic rescue.</h3><button class="vgew-mainbtn" onclick="vgewTab('RESCUE')">Choose Rescue</button></div></div>`;
+ const c=rec(a.id),p=mainPetById(a.id);
+ return `<div class="vgew-card"><img src="${EWI[a.id]}" alt="${esc(a.base)}"><div class="vgew-pad">
+  <span class="vgew-tag">${esc(a.licenseTier)} WING</span><h2 style="margin:7px 0">${c.morphed?esc(a.morph):esc(a.base)}</h2>
+  <div style="font-size:12px;color:#a4bdc7">${esc(a.type)} • Real-animal rescue → fictional morph</div>
+  <div class="vgew-bars"><div class="vgew-meter">HEALTH<b>${c.health}</b></div><div class="vgew-meter">TRUST<b>${c.trust}</b></div><div class="vgew-meter">MORPH<b>${c.morph}</b></div></div>
+  <div class="vgew-care">${a.care.map((x,i)=>`<button class="${c.done.includes(i)?"done":""}" ${c.done.includes(i)||c.morphed?"disabled":""} onclick="vgewCare('${a.id}',${i})">${c.done.includes(i)?"✓ ":""}${esc(x)}</button>`).join("")}</div>
+  ${!c.morphed?`<button class="vgew-mainbtn" ${c.done.length<4?"disabled":""} onclick="vgewMorph('${a.id}')">🧬 ${c.done.length<4?"COMPLETE ALL CARE FIRST":"INITIATE FICTIONAL MORPH"}</button>`:
+   `<div class="vgew-unlock"><b>OFFICIAL FICTIONAL EXOTIC REGISTERED</b><br>${esc(a.morph)} now lives inside the main VET GODS My Pets/Morph ecosystem.</div>
+    <button class="vgew-mainbtn good" onclick="vgewOpenMainPet('${a.id}')">🧬 CONTINUE IN MAIN MORPH LAB</button>
+    <button class="vgew-mainbtn" onclick="vgewOpenSupplies('${a.id}')">🛒 OPEN ${
+      p?esc(p.formName||p.name):esc(a.morph)} SUPPLY BAZAAR</button>`}
+  <div class="vgew-log">${w.log.length?w.log.slice(0,8).map(x=>"› "+esc(x)).join("<br>"):"› Rescue file ready."}</div>
+ </div></div>`;
+}
+function collectionView(){
+ const w=ensure();
+ if(!w.collection.length)return `<div class="vgew-card"><div class="vgew-pad"><h3>No exotic morphs registered yet.</h3><div style="color:#9fb7c2">Complete a rescue and all four care actions first.</div></div></div>`;
+ return w.collection.map(id=>{const a=animal(id),p=mainPetById(id);return `<div class="vgew-collection"><img src="${EWI[id]}"><div style="flex:1"><b>${esc(a.morph)}</b><div style="font-size:11px;color:#9db3bd">${esc(a.base)} • ${esc(a.type)} • Main Pet: ${p?"YES":"NO"}</div></div><button class="btn" onclick="vgewOpenMainPet('${id}')">Open</button></div>`}).join("");
+}
+function render(){
+ const panel=document.getElementById("vgExoticWing");if(!panel)return;
+ const w=ensure();
+ panel.innerHTML=`<div class="vgew-wrap"><div class="vgew-top"><div><div class="eyebrow">VET GODS EXPANSION WING</div><h2 style="margin:0">Morph Vet Exotics</h2></div><button class="btn" onclick="vgewClose()">Close</button></div>
+ <div class="notice">Six compact rescue stories are installed directly into the main game. Finish care here, then the fictional morph becomes a permanent main-game companion.</div>
+ <div class="vgew-tabs"><button class="${w.tab==="RESCUE"?"on":""}" onclick="vgewTab('RESCUE')">🐾 RESCUE</button><button class="${w.tab==="CLINIC"?"on":""}" onclick="vgewTab('CLINIC')">🩺 EXOTIC VET LAB</button><button class="${w.tab==="COLLECTION"?"on":""}" onclick="vgewTab('COLLECTION')">📘 WING MORPHDEX</button></div>
+ ${w.tab==="RESCUE"?rescueView():w.tab==="CLINIC"?clinicView():collectionView()}
+ <div class="action-row" style="margin:14px 0"><button class="btn" onclick="vgewGoPets()">🏠 Main My Pets</button><button class="btn" onclick="vgOpenMorphDex();vgewClose()">📘 Main MorphDex</button></div>
+ <div class="mw-disclaimer"><b>Game fiction:</b> morph forms and registration are fictional. The rescue animals are based on real animal categories; product links are general Amazon searches, not veterinary recommendations.</div>
+ </div>`;
+}
+function dock(){
+ if(document.getElementById("vgExoticWingDock"))return;
+ const d=document.createElement("div");d.id="vgExoticWingDock";d.innerHTML='<button id="vgExoticWingBtn" onclick="vgewOpen()">🧪 EXOTIC WING</button>';document.body.appendChild(d);
+}
+addEventListener("load",()=>{ensure();dock()});
 })();
 </script>
 
