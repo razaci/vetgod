@@ -195,6 +195,12 @@ button{font:inherit}.shell{max-width:1440px;margin:auto;padding:0 16px 70px}
 .vgtBehaviorButtons{display:grid;grid-template-columns:1fr;gap:7px;margin-top:8px}
 </style>
 
+
+<style id="vg-economy-shop-css">
+#vgEconomyShopSection{margin:18px 0 10px}
+#vgEconomyShopSection .vgeUpgradeGrid{margin-top:10px}
+</style>
+
 </head>
 <body>
 <div class="shell">
@@ -316,7 +322,37 @@ function pets(){
 }
 function petCare(i,type){let pet=state.pets[i],s=pet.stats,q=pet.personality||{foodDrive:50,affection:50,independence:50,patience:50};if(type==='water'){s.hydration=Math.min(100,s.hydration+15);s.thirst=Math.max(0,s.thirst-20);s.trust=Math.min(100,s.trust+2)}if(type==='food'){s.hunger=Math.max(0,s.hunger-20);s.energy=Math.min(100,s.energy+10+Math.round((q.foodDrive||50)/20));s.trust=Math.min(100,s.trust+Math.round(2+(q.foodDrive||50)/20))}if(type==='comfort'){let gain=Math.round(3+(q.affection||50)/10);if((q.independence||50)>75)gain=Math.max(2,gain-5);s.comfort=Math.min(100,s.comfort+10+gain);s.trust=Math.min(100,s.trust+gain);s.stress=Math.max(0,s.stress-Math.round(3+(q.affection||50)/18))}if(type==='rest'){s.energy=Math.min(100,s.energy+14+Math.round((q.patience||50)/12));s.stress=Math.max(0,s.stress-Math.round(5+(q.independence||50)/15))}save();renderScreen('pets')}
 function careAll(){state.pets.forEach((_,i)=>['water','food','comfort','rest'].forEach(t=>petCare(i,t)));save();renderScreen('pets')}
-function keepPet(){if(!state.pets.some(x=>x.caseId===state.idx)){state.pets.push({caseId:state.idx,name:p().name,species:p().species,breed:p().breed,sex:p().sex,story:p().story,emoji:p().emoji,personality:JSON.parse(JSON.stringify(p().personality||{})),memories:['Survived emergency treatment'],stats:{...state.stats}});save()}document.getElementById('rewardModal').classList.remove('show');go('pets')}
+function keepPet(){
+ if(!state.pets.some(x=>x.caseId===state.idx)){
+   state.pets.push({
+     caseId:state.idx,
+     name:p().name,
+     species:p().species,
+     breed:p().breed,
+     sex:p().sex,
+     story:p().story,
+     emoji:p().emoji,
+     personality:JSON.parse(JSON.stringify(p().personality||{})),
+     memories:['Survived emergency treatment'],
+     stats:{...state.stats}
+   });
+ }
+ log(p().name+' moved to My Pets.');
+ save();
+
+ // Close the discharged case immediately and advance the hospital roster.
+ state.idx=(state.idx+1)%patients.length;
+ state.stage=0;
+ state.stats={...defaults};
+ state.tests={exam:false,imaging:false,lab:false};
+ state.tx={fluids:false,pain:false,definitive:false,surgery:false};
+ state.rewarded=false;
+ save();
+
+ // Open My Pets after the case has been fully cleared from clinical care.
+ render();
+ renderScreen('pets');
+})),memories:['Survived emergency treatment'],stats:{...state.stats}});save()}document.getElementById('rewardModal').classList.remove('show');go('pets')}
 function nextPatient(){state.idx=(state.idx+1)%patients.length;state.stage=0;state.stats=defaults();state.tests={exam:false,imaging:false,lab:false};state.tx={fluids:false,oxygen:false,pain:false,definitive:false,surgery:false};state.log=[];state.rewarded=false;save();document.getElementById('rewardModal').classList.remove('show');go('clinic')}
 function renderScreen(id){document.getElementById('funds').textContent='$'+state.funds.toLocaleString();const el=document.getElementById(id);if(id==='clinic')el.innerHTML=clinic();if(id==='stabilize')el.innerHTML=stabilize();if(id==='diagnostics')el.innerHTML=diagnostics();if(id==='treatment')el.innerHTML=treatment();if(id==='surgery')el.innerHTML=surgery();if(id==='recovery')el.innerHTML=recovery();if(id==='discharge')el.innerHTML=discharge();if(id==='pets')el.innerHTML=pets()}
 function render(){document.getElementById('funds').textContent='$'+state.funds.toLocaleString();const active=document.querySelector('.screen.active')?.id||'clinic';renderScreen(active)}
@@ -1112,11 +1148,15 @@ setInterval(tick,1200);
 
  function draw(){
   let host=document.getElementById("vgEconomyHud");
-  if(!host){host=document.createElement("section");host.id="vgEconomyHud";let main=document.querySelector("main");if(main)main.insertAdjacentElement("beforebegin",host)}
+  if(!host){
+    host=document.createElement("section");
+    host.id="vgEconomyHud";
+    let main=document.querySelector("main");
+    if(main)main.insertAdjacentElement("beforebegin",host);
+  }
   if(!host)return;
-  host.innerHTML='<div class="vgeRow"><span class="vgeChip">💰 $'+state.funds.toLocaleString()+'</span><span class="vgeChip">⭐ REP '+E.reputation.toLocaleString()+'</span><span class="vgeChip">🔥 SAVE STREAK '+E.streak+'</span><span class="vgeChip">🏥 '+rank()+'</span><span class="vgeChip">REWARD ×'+mult()+'</span></div>'+
-   '<div class="vgeUpgradeGrid">'+upgrades.map(u=>'<div class="vgeUpgrade"><b>'+u.name+' • $'+u.cost.toLocaleString()+'</b><small>'+u.desc+'</small><button '+(E.upgrades[u.id]?'disabled':'')+' onclick="vgeBuy(\''+u.id+'\')">'+(E.upgrades[u.id]?'OWNED':'PURCHASE')+'</button></div>').join("")+'</div>';
- }
+  host.innerHTML='<div class="vgeRow"><span class="vgeChip">💰 $'+state.funds.toLocaleString()+'</span><span class="vgeChip">⭐ REP '+E.reputation.toLocaleString()+'</span><span class="vgeChip">🔥 SAVE STREAK '+E.streak+'</span><span class="vgeChip">🏥 '+rank()+'</span><span class="vgeChip">REWARD ×'+mult()+'</span></div>';
+}
 
  function milestone(id,amount,msg){
   let caseKey=String(state.idx)+"-"+id;
@@ -1324,9 +1364,6 @@ setInterval(tick,1200);
    load();let item=catalog.find(x=>x.id===id);if(!item||owned(id))return;
    if(state.funds<item.price){toast('NEED $'+item.price.toLocaleString()+' • CURRENT $'+state.funds.toLocaleString());return}
    state.funds-=item.price;D.owned[id]=true;save();saveD();
-   const fundReadout=document.getElementById('funds');
-   if(fundReadout)fundReadout.textContent='$'+state.funds.toLocaleString();
-   if(typeof draw==='function')try{draw()}catch(e){}
    toast(item.name.toUpperCase()+' PURCHASED');
    injectShop();gateTools();drawMonitor();
  }
@@ -1451,17 +1488,107 @@ setInterval(tick,1200);
 </script>
 
 
-<script id="vg-funding-display-sync">
+<script id="vg-economy-shop-js">
 (function(){
- function syncFunds(){
+ const economyUpgrades=[
+  {id:"scanner",name:"Precision Scanner",cost:1200,desc:"Diagnostics completion earns an extra $50."},
+  {id:"recovery",name:"Recovery Suite",cost:2200,desc:"Excellent recovery earns an extra $100."},
+  {id:"icu",name:"ICU Monitoring Bay",cost:3000,desc:"Stabilization completion earns an extra $75."},
+  {id:"hospital",name:"Advanced Veterinary Hospital",cost:4000,desc:"Adds a $250 hospital excellence bonus at discharge."},
+  {id:"surgery",name:"Precision Surgery Theater",cost:6500,desc:"Successful surgical cases earn an extra $200."},
+  {id:"celestial",name:"Celestial Medical Center",cost:10000,desc:"Adds a $750 center bonus at discharge."}
+ ];
+
+ function getEconomyState(){
+   try{return JSON.parse(localStorage.getItem("vetgods_rewarding_economy_v1")||"{}")||{}}
+   catch(e){return {}}
+ }
+
+ function injectEconomyShop(){
+   const shop=document.getElementById("hospitalShopScreen");
+   if(!shop)return;
+   const inner=shop.querySelector(".shopScreenInner")||shop.firstElementChild||shop;
+   if(!inner)return;
+
+   let sec=document.getElementById("vgEconomyShopSection");
+   if(!sec){
+     sec=document.createElement("section");
+     sec.id="vgEconomyShopSection";
+     // Put reward/economy upgrades near the top of Shop.
+     const firstContent=inner.children[1]||inner.firstElementChild;
+     if(firstContent)firstContent.insertAdjacentElement("afterend",sec);
+     else inner.appendChild(sec);
+   }
+
+   const E=getEconomyState();
+   const owned=(E.upgrades||{});
+   sec.innerHTML=
+     '<div class="sectionTitle"><h2>🏥 Clinic Reward Upgrades</h2><p>Permanent upgrades that increase case rewards and hospital performance bonuses.</p></div>'+
+     '<div class="vgeUpgradeGrid">'+economyUpgrades.map(u=>
+       '<div class="vgeUpgrade"><b>'+u.name+' • $'+u.cost.toLocaleString()+'</b><small>'+u.desc+'</small>'+
+       '<button '+(owned[u.id]?'disabled':'')+' onclick="vgeBuy(\\''+u.id+'\\');setTimeout(window.vgRefreshEconomyShop,60)">'+
+       (owned[u.id]?'✓ OWNED':'PURCHASE')+'</button></div>'
+     ).join("")+'</div>';
+ }
+ window.vgRefreshEconomyShop=injectEconomyShop;
+
+ document.addEventListener("click",function(e){
+   if(e.target.closest("#hospitalTopShopLink")||e.target.closest("#openHospitalShop")){
+     setTimeout(injectEconomyShop,40);
+   }
+ });
+ const mo=new MutationObserver(()=>setTimeout(injectEconomyShop,30));
+ mo.observe(document.body,{childList:true,subtree:true});
+ addEventListener("load",()=>setTimeout(injectEconomyShop,180));
+ setTimeout(injectEconomyShop,220);
+})();
+</script>
+
+
+<script id="vg-clinic-funds-sync-js">
+(function(){
+ function syncClinicFunds(){
    try{
      const el=document.getElementById('funds');
-     if(el&&window.state)el.textContent='$'+Number(state.funds||0).toLocaleString();
+     if(el && window.state && typeof state.funds!=='undefined'){
+       el.textContent='$'+Number(state.funds||0).toLocaleString();
+     }
+     document.querySelectorAll('[data-clinic-funds]').forEach(node=>{
+       if(window.state && typeof state.funds!=='undefined'){
+         node.textContent='$'+Number(state.funds||0).toLocaleString();
+       }
+     });
    }catch(e){}
  }
- addEventListener('load',syncFunds);
- document.addEventListener('click',()=>setTimeout(syncFunds,40));
- setInterval(syncFunds,800);
+
+ // Wrap save/render so the green clinic funding stays tied to the real state.
+ if(typeof window.save==='function' && !window.save.__vgFundsWrapped){
+   const oldSave=window.save;
+   const wrapped=function(){const r=oldSave.apply(this,arguments);syncClinicFunds();return r};
+   wrapped.__vgFundsWrapped=true;
+   window.save=wrapped;
+ }
+ if(typeof window.render==='function' && !window.render.__vgFundsWrapped){
+   const oldRender=window.render;
+   const wrapped=function(){const r=oldRender.apply(this,arguments);setTimeout(syncClinicFunds,0);return r};
+   wrapped.__vgFundsWrapped=true;
+   window.render=wrapped;
+ }
+ if(typeof window.renderScreen==='function' && !window.renderScreen.__vgFundsWrapped){
+   const oldRenderScreen=window.renderScreen;
+   const wrapped=function(){const r=oldRenderScreen.apply(this,arguments);setTimeout(syncClinicFunds,0);return r};
+   wrapped.__vgFundsWrapped=true;
+   window.renderScreen=wrapped;
+ }
+
+ document.addEventListener('click',()=>setTimeout(syncClinicFunds,60));
+ const fundsEl=document.getElementById('funds');
+ if(fundsEl){
+   new MutationObserver(()=>setTimeout(syncClinicFunds,0)).observe(fundsEl,{childList:true,subtree:true,characterData:true});
+ }
+ addEventListener('load',syncClinicFunds);
+ setInterval(syncClinicFunds,500);
+ setTimeout(syncClinicFunds,120);
 })();
 </script>
 
