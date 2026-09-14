@@ -739,6 +739,81 @@ button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
 @media(max-width:560px){#vgExoticWingDock{left:10px;bottom:184px}.vgew-care{grid-template-columns:1fr}.vgew-tabs{grid-template-columns:1fr}}
 </style>
 
+
+<style id="vg-top-command-center-css">
+/* TOP COMMAND CENTER — replaces overlapping floating feature docks */
+#vgTopCommandCenter{
+  position:sticky;
+  top:69px;
+  z-index:48;
+  margin:0 -16px 12px;
+  padding:8px 16px 10px;
+  background:rgba(4,12,18,.96);
+  border-bottom:1px solid rgba(100,185,220,.18);
+  box-shadow:0 12px 28px rgba(0,0,0,.22);
+  backdrop-filter:blur(18px);
+}
+.vgtcc-primary,.vgtcc-features{
+  display:flex;
+  gap:7px;
+  overflow-x:auto;
+  padding:3px 0;
+  scrollbar-width:thin;
+  -webkit-overflow-scrolling:touch;
+}
+.vgtcc-primary{border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:7px;margin-bottom:4px}
+.vgtcc-primary button,.vgtcc-features button{
+  position:static!important;
+  inset:auto!important;
+  left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;
+  transform:none!important;
+  min-width:max-content!important;
+  width:auto!important;
+  height:auto!important;
+  min-height:38px!important;
+  margin:0!important;
+  padding:7px 10px!important;
+  border-radius:10px!important;
+  border:1px solid #315466!important;
+  background:linear-gradient(180deg,#102a37,#0a1b25)!important;
+  color:#edfaff!important;
+  font:800 11px/1.15 system-ui,-apple-system,Segoe UI,sans-serif!important;
+  letter-spacing:.02em!important;
+  box-shadow:none!important;
+  opacity:1!important;
+  visibility:visible!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  white-space:nowrap!important;
+  z-index:auto!important;
+}
+.vgtcc-primary button{border-color:#45697a!important;background:linear-gradient(180deg,#153442,#0c222d)!important}
+.vgtcc-features button:hover,.vgtcc-primary button:hover{border-color:var(--cyan)!important;background:#123343!important}
+#vgTopCommandCenter #vgExoticWingBtn{border-color:#8d73de!important;background:linear-gradient(180deg,#34245f,#211642)!important}
+#vgTopCommandCenter #vgRewardsBtn{border-color:#c9a24a!important;background:linear-gradient(180deg,#3a2e14,#241c0e)!important;color:#fff6d8!important}
+#vgTopCommandCenter #vgMorphMainBtn,#vgTopCommandCenter #vgMorphCoreBtn{border-color:#49a9c9!important;background:linear-gradient(180deg,#143e50,#0e2936)!important}
+#vgTopCommandCenter #vgCardCampaignBtn{border-color:#aa79df!important;background:linear-gradient(180deg,#352354,#211635)!important}
+#vgTopCommandCenter #vgAdventureCoreBtn{border-color:#a07d49!important;background:linear-gradient(180deg,#392b16,#251c0f)!important}
+#vgTopCommandCenter #vgMorphDexBtn{border-color:#657fd7!important;background:linear-gradient(180deg,#202f5b,#151f3e)!important}
+#vgTopCommandCenter .vgtcc-label{
+  display:inline-flex;align-items:center;
+  min-width:max-content;padding:7px 4px;color:#6f97a7;
+  font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;
+}
+/* Empty legacy docks disappear after their buttons are moved. */
+#vgExoticWingDock,#vgRewardsDock,#vgMorphDexDock,#vgCampaignDock,#tools-dock{display:none!important}
+/* Remove standalone floating placement from feature buttons even during load races. */
+body>#vgStoryBtn,body>#vgAdventureCoreBtn,body>#vgCardCampaignBtn,
+body>#vgMorphCoreBtn,body>#vgMorphMainBtn,body>#vgAnimalsEmergencyBtn{
+  display:none!important;
+}
+@media(max-width:760px){
+  #vgTopCommandCenter{top:65px;margin:0 -10px 10px;padding:7px 10px 9px}
+  .vgtcc-primary button,.vgtcc-features button{min-height:36px!important;padding:7px 9px!important;font-size:10px!important}
+}
+</style>
+
 </head>
 <body>
 <div class="shell">
@@ -4960,6 +5035,151 @@ function dock(){
  const d=document.createElement("div");d.id="vgExoticWingDock";d.innerHTML='<button id="vgExoticWingBtn" onclick="vgewOpen()">🧪 EXOTIC WING</button>';document.body.appendChild(d);
 }
 addEventListener("load",()=>{ensure();dock()});
+})();
+</script>
+
+
+<script id="vg-top-command-center-js">
+(function(){
+'use strict';
+
+const PRIMARY = [
+  {id:"vgtccClinic", label:"🏥 CLINIC", action:()=>typeof go==="function"&&go("clinic")},
+  {id:"vgRosterBtn", label:"🐾 ANIMALS"},
+  {id:"btn-pets", label:"🏠 MY PETS"},
+  {id:"btn-shop", label:"🛒 SHOP"}
+];
+
+const FEATURES = [
+  {id:"vgExoticWingBtn", label:"🧪 EXOTIC WING", action:()=>window.vgewOpen&&window.vgewOpen()},
+  {id:"vgRewardsBtn", label:"🎁 REWARDS", action:()=>typeof openRewards==="function"&&openRewards()},
+  {id:"vgStoryBtn", label:"📖 STORY PATH"},
+  {id:"vgMorphMainBtn", label:"🧬 MORPH GAME", fallback:"vgMorphCoreBtn"},
+  {id:"vgAdventureCoreBtn", label:"⚔️ EXPEDITIONS"},
+  {id:"vgMorphDexBtn", label:"📘 MORPH DECK", action:()=>window.vgOpenMorphDex&&window.vgOpenMorphDex()},
+  {id:"vgCardCampaignBtn", label:"🃏 MAIN STORY DECK"},
+  {id:"tools-btn", label:"🧰 TOOLS", action:()=>document.getElementById("tools-panel")?.classList.add("open")},
+  {id:"vgCampaignBtn", label:"📡 CAMPAIGN"}
+];
+
+function commandRoot(){
+  let root=document.getElementById("vgTopCommandCenter");
+  if(root)return root;
+  const header=document.querySelector(".topbar");
+  if(!header)return null;
+  root=document.createElement("nav");
+  root.id="vgTopCommandCenter";
+  root.setAttribute("aria-label","Vet Gods command center");
+  root.innerHTML='<div class="vgtcc-primary" id="vgtccPrimary"></div><div class="vgtcc-features" id="vgtccFeatures"></div>';
+  header.insertAdjacentElement("afterend",root);
+  return root;
+}
+
+function createPrimaryClinic(){
+  if(document.getElementById("vgtccClinic"))return document.getElementById("vgtccClinic");
+  const b=document.createElement("button");
+  b.id="vgtccClinic";b.type="button";b.textContent="🏥 CLINIC";
+  b.onclick=()=>typeof go==="function"&&go("clinic");
+  return b;
+}
+
+function safeBind(b,spec){
+  if(!b)return;
+  if(spec.label)b.textContent=spec.label;
+  if(spec.action && !b.dataset.vgtccBound){
+    b.addEventListener("click",function(e){
+      // Preserve any existing handler; this is a reliable fallback only.
+      if(spec.id==="vgExoticWingBtn"){
+        e.preventDefault();e.stopPropagation();spec.action();
+      }else if(spec.id==="vgMorphDexBtn"){
+        e.preventDefault();e.stopPropagation();spec.action();
+      }
+    });
+    b.dataset.vgtccBound="1";
+  }
+}
+
+function locate(spec){
+  let b=document.getElementById(spec.id);
+  if(!b && spec.fallback)b=document.getElementById(spec.fallback);
+  return b;
+}
+
+function moveButtons(){
+  const root=commandRoot();if(!root)return;
+  const p=document.getElementById("vgtccPrimary");
+  const f=document.getElementById("vgtccFeatures");
+  if(!p||!f)return;
+
+  // Primary navigation.
+  let clinic=createPrimaryClinic();
+  if(clinic.parentElement!==p)p.appendChild(clinic);
+
+  for(const spec of PRIMARY.slice(1)){
+    const b=locate(spec);
+    if(b){
+      safeBind(b,spec);
+      if(b.parentElement!==p)p.appendChild(b);
+    }
+  }
+
+  // One label before feature systems.
+  if(!document.getElementById("vgtccFeatureLabel")){
+    const lab=document.createElement("span");
+    lab.id="vgtccFeatureLabel";lab.className="vgtcc-label";lab.textContent="GAME SYSTEMS";
+    f.appendChild(lab);
+  }
+
+  // Feature systems. Do not add duplicates.
+  const seen=new Set();
+  for(const spec of FEATURES){
+    let b=locate(spec);
+    if(!b||seen.has(b))continue;
+    seen.add(b);
+    safeBind(b,spec);
+    if(b.parentElement!==f)f.appendChild(b);
+  }
+
+  // If both old Morph buttons exist, keep the main Morph Game and hide redundant core launcher.
+  const main=document.getElementById("vgMorphMainBtn");
+  const core=document.getElementById("vgMorphCoreBtn");
+  if(main && core && main!==core){
+    core.style.display="none";
+    core.setAttribute("aria-hidden","true");
+  }
+
+  // The emergency duplicate Animals launcher is no longer needed.
+  const emergency=document.getElementById("vgAnimalsEmergencyBtn");
+  if(emergency){emergency.style.display="none";emergency.setAttribute("aria-hidden","true")}
+
+  // Empty parents are legacy dock shells.
+  ["vgExoticWingDock","vgRewardsDock","vgMorphDexDock","vgCampaignDock","tools-dock"].forEach(id=>{
+    const d=document.getElementById(id);if(d)d.style.display="none";
+  });
+}
+
+function hardenExoticButton(){
+  const b=document.getElementById("vgExoticWingBtn");
+  if(!b)return;
+  b.onclick=function(e){
+    if(e){e.preventDefault();e.stopPropagation()}
+    if(typeof window.vgewOpen==="function") window.vgewOpen();
+  };
+}
+
+addEventListener("load",()=>{
+  moveButtons();
+  hardenExoticButton();
+  setTimeout(()=>{moveButtons();hardenExoticButton()},50);
+  setTimeout(()=>{moveButtons();hardenExoticButton()},250);
+  setTimeout(()=>{moveButtons();hardenExoticButton()},800);
+});
+
+const obs=new MutationObserver(()=>{
+  clearTimeout(window.__vgtccTimer);
+  window.__vgtccTimer=setTimeout(()=>{moveButtons();hardenExoticButton()},20);
+});
+obs.observe(document.documentElement,{childList:true,subtree:true});
 })();
 </script>
 
