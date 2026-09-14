@@ -952,5 +952,31 @@ setInterval(tick,1200);
 })();
 </script>
 
+
+<style id="vg-remove-mega-narrative-ui">
+#vgStoryDeck,.vgxDock{display:none!important}
+</style>
+<script id="vg-remove-mega-narrative-ui-js">
+(function(){
+ function clean(){
+   document.querySelectorAll("#vgStoryDeck,.vgxDock").forEach(e=>e.remove());
+   [...document.querySelectorAll("body *")].forEach(e=>{
+     if(e.children.length>8)return;
+     const t=(e.textContent||"").trim();
+     if(t==="VET GODS • MEGA EXPANSION LAYER" || t==="EMERGENCY CASE NARRATIVE"){
+       const box=e.closest("#vgStoryDeck,.vgxDock");
+       if(box) box.remove();
+       else e.remove();
+     }
+   });
+ }
+ addEventListener("load",clean);
+ document.addEventListener("click",()=>setTimeout(clean,60));
+ const main=document.querySelector("main");
+ if(main)new MutationObserver(()=>setTimeout(clean,20)).observe(main,{childList:true,subtree:true});
+ setTimeout(clean,100);
+})();
+</script>
+
 </body>
 </html>
