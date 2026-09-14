@@ -138,6 +138,47 @@ button{font:inherit}.shell{max-width:1440px;margin:auto;padding:0 16px 70px}
 .boostMini{margin-top:8px;padding:8px 10px;border:1px solid #405a80;border-radius:10px;background:#0d192b;font-size:.75rem;line-height:1.45}
 </style>
 
+
+<style id="vg-economy-css">
+#vgEconomyHud{margin:12px 0;padding:12px;border:1px solid #446786;border-radius:15px;background:#0c1b2a}
+.vgeRow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.vgeChip{padding:6px 9px;border:1px solid #365875;border-radius:999px;background:#10253a;font-size:.72rem;font-weight:800}
+.vgeUpgradeGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin-top:10px}
+.vgeUpgrade{padding:10px;border:1px solid #365875;border-radius:12px;background:#102239}.vgeUpgrade b{display:block}.vgeUpgrade small{display:block;opacity:.72;min-height:38px}
+.vgeUpgrade button{width:100%;margin-top:8px;min-height:40px;border:1px solid #53799d;border-radius:9px;background:#173653;color:inherit;font-weight:900}
+#vgeToast{position:fixed;left:12px;right:12px;top:76px;z-index:100002;display:flex;justify-content:center;pointer-events:none}
+.vgeToast{padding:11px 15px;border:1px solid #72a2c7;border-radius:12px;background:#102842;font-weight:950;box-shadow:0 12px 34px #0008;animation:vgePop 2.6s forwards}
+@keyframes vgePop{0%{opacity:0;transform:translateY(-8px) scale(.96)}12%,78%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-8px)}}
+#vgeRewardModal{position:fixed;inset:0;z-index:100003;background:#02080dcc;display:none;place-items:center;padding:18px}
+#vgeRewardModal.show{display:grid}.vgeRewardBox{width:min(620px,100%);max-height:88vh;overflow:auto;padding:20px;border:1px solid #5a8cad;border-radius:22px;background:#0c1e2b;box-shadow:0 30px 100px #000}
+.vgeRewardBox h2{font-size:clamp(26px,6vw,42px);margin:4px 0 14px}.vgeLine{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid #ffffff12}.vgeTotal{font-size:1.65rem;font-weight:1000;padding-top:14px}
+.vgeRewardBox button{width:100%;min-height:48px;margin-top:15px;border:1px solid #55a68c;border-radius:11px;background:#17483d;color:inherit;font-weight:950}
+</style>
+
+
+<style id="vg-personality-engine-css">
+.personalityPulse{border-color:#7869b8!important}
+</style>
+
+
+<style id="vg-tools-menu-css">
+#vgToolsDock{position:fixed;right:12px;bottom:14px;z-index:100004}
+#vgToolsBtn{min-width:92px;min-height:46px;border:1px solid #63a9d2;border-radius:13px;background:#123453;color:#eaf7ff;font-weight:950;box-shadow:0 10px 30px #0008}
+#vgToolsPanel{position:fixed;inset:0;z-index:100005;background:#02080dcc;display:none;place-items:center;padding:16px}
+#vgToolsPanel.open{display:grid}
+.vgtBox{width:min(720px,100%);max-height:90vh;overflow:auto;border:1px solid #5d83a5;border-radius:20px;background:#0b1a29;padding:16px;box-shadow:0 30px 100px #000}
+.vgtHead{display:flex;gap:10px;align-items:center;justify-content:space-between}
+.vgtHead h2{margin:0}
+.vgtClose{min-width:42px;min-height:42px;border-radius:10px;border:1px solid #566d82;background:#16283a;color:inherit;font-weight:900}
+.vgtGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-top:12px}
+.vgtTool{border:1px solid #365875;border-radius:14px;padding:12px;background:#102238}
+.vgtTool h3{margin:0 0 6px}
+.vgtTool button{width:100%;min-height:42px;border:1px solid #5c7fa0;border-radius:9px;background:#173653;color:inherit;font-weight:900;margin-top:8px}
+.vgtProfile{margin-top:12px;padding:12px;border:1px solid #4b718d;border-radius:14px;background:#0f2233}
+.vgtLine{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid #ffffff10}
+.vgtTag{display:inline-block;margin:3px 4px 3px 0;padding:5px 7px;border:1px solid #496e8d;border-radius:999px;background:#132a3f;font-size:.74rem}
+.vgtObs{margin-top:10px;padding:10px;border-left:3px solid #74b9dd;background:#10283c;border-radius:8px}
+</style>
+
 </head>
 <body>
 <div class="shell">
@@ -162,10 +203,10 @@ button{font:inherit}.shell{max-width:1440px;margin:auto;padding:0 16px 70px}
 const stages=['Intake','Stabilize','Diagnose','Treat','Surgery','Recovery','Prove Ready','Discharge'];
 const navItems=[['clinic','Clinic'],['stabilize','Stabilize'],['diagnostics','Diagnostics'],['treatment','Treatment'],['surgery','Surgery'],['recovery','Recovery'],['discharge','Discharge'],['pets','My Pets']];
 const patients=[
- {name:'Kota',species:'Canine',breed:'Husky mix',sex:'Male',condition:'Trauma with dehydration',surgical:false,emoji:'🐕',story:'Kota was found exhausted beside a winter service road after slipping loose from a damaged transport crate. His coat was soaked, his pads were scraped, and he had gone long enough without water that every movement had become guarded. A highway worker stayed with him until the rescue team arrived.'},
- {name:'Mira',species:'Feline',breed:'Silver tabby',sex:'Female',condition:'Deep paw laceration',surgical:true,emoji:'🐈',story:'Mira is a small silver tabby rescued from an abandoned machine shed. She survived by hiding beneath shelving until a volunteer heard her crying. A torn rear paw had become painful enough that she stopped bearing weight, but she still leaned into the rescuer who carried her out.'},
- {name:'Orion',species:'Avian',breed:'Barn owl',sex:'Male',condition:'Wing strain and shock',surgical:false,emoji:'🦉',story:'Orion was recovered at dawn beneath a farm windbreak after a violent storm. He was alert but stunned, holding one wing low and refusing to launch. The wildlife team transported him in a dark quiet carrier to reduce stress while the clinic prepared for stabilization.'},
- {name:'Juniper',species:'Canine',breed:'Shepherd mix',sex:'Female',condition:'Foreign-body injury',surgical:true,emoji:'🐕‍🦺',story:'Juniper is a young shepherd mix brought in by a trail crew after she was discovered limping near an old fence line. She had remained close to the workers instead of running away, exhausted and frightened. Imaging is needed to find what is causing the deep pain before definitive repair.'}
+ {name:'Kota',species:'Canine',breed:'Husky mix',sex:'Male',condition:'Trauma with dehydration',surgical:false,emoji:'🐕',story:'Kota was found exhausted beside a winter service road after slipping loose from a damaged transport crate. His coat was soaked, his pads were scraped, and he had gone long enough without water that every movement had become guarded. A highway worker stayed with him until the rescue team arrived.',personality:{archetype:'Cautious Loyalist',traits:['Loyal','Cautious','Vocal','Stubborn','Food-motivated'],sociability:62,confidence:45,fear:58,curiosity:72,foodDrive:90,affection:74,independence:58,patience:42,energy:78,handling:48,noiseTolerance:52,preferences:['Treats','Calm voice','Outdoor movement'],dislikes:['Scanner noise','Paw handling','Rushed restraint']}},
+ {name:'Mira',species:'Feline',breed:'Silver tabby',sex:'Female',condition:'Deep paw laceration',surgical:true,emoji:'🐈',story:'Mira is a small silver tabby rescued from an abandoned machine shed. She survived by hiding beneath shelving until a volunteer heard her crying. A torn rear paw had become painful enough that she stopped bearing weight, but she still leaned into the rescuer who carried her out.',personality:{archetype:'Independent Observer',traits:['Independent','Touch-sensitive','Curious','Selective','Quietly affectionate'],sociability:44,confidence:54,fear:52,curiosity:81,foodDrive:64,affection:58,independence:88,patience:56,energy:55,handling:32,noiseTolerance:46,preferences:['Quiet spaces','Slow approach','Warm bedding'],dislikes:['Repeated handling','Loud tools','Crowding']}},
+ {name:'Orion',species:'Avian',breed:'Barn owl',sex:'Male',condition:'Wing strain and shock',surgical:false,emoji:'🦉',story:'Orion was recovered at dawn beneath a farm windbreak after a violent storm. He was alert but stunned, holding one wing low and refusing to launch. The wildlife team transported him in a dark quiet carrier to reduce stress while the clinic prepared for stabilization.',personality:{archetype:'Silent Sentinel',traits:['Watchful','Noise-sensitive','Reserved','Patient','Highly alert'],sociability:24,confidence:61,fear:63,curiosity:48,foodDrive:40,affection:22,independence:92,patience:80,energy:50,handling:26,noiseTolerance:18,preferences:['Darkness','Quiet rest','Minimal handling'],dislikes:['Bright activity','Noise','Frequent restraint']}},
+ {name:'Juniper',species:'Canine',breed:'Shepherd mix',sex:'Female',condition:'Foreign-body injury',surgical:true,emoji:'🐕‍🦺',story:'Juniper is a young shepherd mix brought in by a trail crew after she was discovered limping near an old fence line. She had remained close to the workers instead of running away, exhausted and frightened. Imaging is needed to find what is causing the deep pain before definitive repair.',personality:{archetype:'Handler-Focused Guardian',traits:['Cooperative','Protective','Eager to please','Brave','People-focused'],sociability:82,confidence:70,fear:36,curiosity:66,foodDrive:72,affection:86,independence:38,patience:72,energy:74,handling:78,noiseTolerance:68,preferences:['Praise','Stay nearby','Training-style cues'],dislikes:['Isolation','Chaotic handling','Being left alone']}}
 ];
 const defaults=()=>({health:68,pain:61,oxygen:91,hydration:46,stress:72,trust:29,mobility:35,comfort:30,hunger:56,thirst:64,energy:42});
 let state=JSON.parse(localStorage.getItem('vetgods_reimagined')||'null')||{idx:0,stage:0,funds:2400,stats:defaults(),tests:{exam:false,imaging:false,lab:false},tx:{fluids:false,oxygen:false,pain:false,definitive:false,surgery:false},pets:[],log:[],rewarded:false};
@@ -190,28 +231,63 @@ function telemetry(keys=['health','pain','oxygen','hydration','stress','trust','
 function logBox(){return `<div class="log">${state.log.length?state.log.map(x=>`<div><time>${x.t}</time>${x.msg}</div>`).join(''):'<div>Hospital event log ready.</div>'}</div>`}
 function renderNav(){document.getElementById('nav').innerHTML=navItems.map(([id,label])=>`<button data-go="${id}">${label}</button>`).join('');document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go))}
 function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.go===id));renderScreen(id)}
-function clinic(){return `<div class="hero"><div class="card pad"><div class="eyebrow">Active Rescue // ${p().species}</div><div class="h1">${p().name}</div><p class="lede">${p().breed} • ${p().sex} • ${p().condition}. The hospital never moves you automatically. Enter a department, work there, finish it, then choose where to go next.</p><div class="notice"><b>Rescue Story:</b> ${p().story}</div>${phaseStrip()}<div class="actionRow"><button class="btn primary" onclick="go('${nextArea()}')">Enter Next Department</button><button class="btn" onclick="go('pets')">Open My Pets</button></div></div><div class="card">${petArt()}</div></div>${kpis()}<div class="grid"><div class="card pad"><div class="sectionTitle"><h2>Command Console</h2><p>Department access stays deliberate.</p></div><div class="instrumentGrid">${navItems.slice(1,7).map(([id,l],i)=>`<button class="instrument" onclick="go('${id}')"><div class="dial" style="--pct:${45+i*7}%;--accent:${i%2?'var(--teal)':'var(--cyan)'}"></div><b>${l}</b><small>${areaNote(id)}</small></button>`).join('')}</div></div><div class="card pad"><div class="sectionTitle"><h2>Live Telemetry</h2><p>No timer redraws.</p></div>${telemetry(['health','pain','oxygen','hydration','stress','trust'])}</div></div>${logBox()}`}
+function clinic(){return `<div class="hero"><div class="card pad"><div class="eyebrow">Active Rescue // ${p().species}</div><div class="h1">${p().name}</div><p class="lede">${p().breed} • ${p().sex} • ${p().condition}. The hospital never moves you automatically. Enter a department, work there, finish it, then choose where to go next.</p><div class="notice"><b>Rescue Story:</b> ${p().story}</div>${personalityClinicLine()}${phaseStrip()}<div class="actionRow"><button class="btn primary" onclick="go('${nextArea()}')">Enter Next Department</button><button class="btn" onclick="go('pets')">Open My Pets</button></div></div><div class="card">${petArt()}</div></div>${kpis()}<div class="grid"><div class="card pad"><div class="sectionTitle"><h2>Command Console</h2><p>Department access stays deliberate.</p></div><div class="instrumentGrid">${navItems.slice(1,7).map(([id,l],i)=>`<button class="instrument" onclick="go('${id}')"><div class="dial" style="--pct:${45+i*7}%;--accent:${i%2?'var(--teal)':'var(--cyan)'}"></div><b>${l}</b><small>${areaNote(id)}</small></button>`).join('')}</div></div><div class="card pad"><div class="sectionTitle"><h2>Live Telemetry</h2><p>No timer redraws.</p></div>${telemetry(['health','pain','oxygen','hydration','stress','trust'])}</div></div>${logBox()}`}
 function nextArea(){return ['stabilize','stabilize','diagnostics','treatment',p().surgical?'surgery':'recovery','recovery','recovery','discharge'][state.stage]||'discharge'}
+
+function pers(){return p().personality||{archetype:'Individual Patient',traits:['Unique'],sociability:50,confidence:50,fear:50,curiosity:50,foodDrive:50,affection:50,independence:50,patience:50,energy:50,handling:50,noiseTolerance:50,preferences:[],dislikes:[]}}
+function behaviorState(){
+ const q=pers(),s=state.stats;
+ if(s.stress>=78)return 'Frightened';
+ if(s.stress>=58)return 'Nervous';
+ if(s.trust>=75&&s.stress<45)return 'Attached';
+ if(s.trust>=55)return 'Cooperative';
+ if(s.trust>=38)return 'Curious';
+ return q.independence>72?'Reserved':'Wary';
+}
+function personalityBand(){
+ const q=pers();
+ return `<div class="notice"><b>PERSONALITY • ${q.archetype}</b><br>${q.traits.join(' • ')}<br><span class="subtitle">Current behavior: <b>${behaviorState()}</b> • Likes: ${q.preferences.join(', ')} • Dislikes: ${q.dislikes.join(', ')}</span></div>`
+}
+function pReact(kind){
+ const q=pers(),s=state.stats;
+ let trust=0,stress=0,comfort=0,energy=0,mobility=0,msg='';
+ if(kind==='water'){trust=2+(q.sociability>65?2:0);stress=-2;msg=q.independence>75?`${p().name} drinks once the bowl is set down and space is given.`:`${p().name} accepts the water and watches you more comfortably.`}
+ if(kind==='food'){trust=Math.round(2+q.foodDrive/18);stress=-Math.round(q.foodDrive/35);energy=Math.round(q.foodDrive/25);msg=q.foodDrive>=75?`${p().name} brightens immediately at the food. This is a strong motivator for this patient.`:`${p().name} investigates the food carefully before accepting it.`}
+ if(kind==='comfort'){trust=Math.round(4+q.affection/12);stress=-Math.round(4+q.affection/14);comfort=Math.round(3+q.affection/18);if(q.independence>75){trust=Math.max(2,trust-4);stress=Math.min(-2,stress+4);msg=`${p().name} prefers calm company without much touching. Giving space works better than repeated contact.`}else msg=`${p().name} responds to your presence; posture softens and eye contact becomes easier.`}
+ if(kind==='exam'){trust=Math.round(q.handling/28);stress=Math.round((100-q.handling)/11);msg=q.handling<40?`${p().name} tolerates the exam only in short, careful bursts.`:`${p().name} allows the exam with manageable tension.`}
+ if(kind==='scanner'){trust=Math.round(q.curiosity/35);stress=Math.round((100-q.noiseTolerance)/9);msg=q.noiseTolerance<35?`${p().name} reacts strongly to the scanner noise. Slow handling matters here.`:`${p().name} notices the scanner but remains workable.`}
+ if(kind==='lab'){trust=Math.round(q.patience/40);stress=Math.round((100-q.patience)/14);msg=q.patience>70?`${p().name} remains unusually patient through sample collection.`:`${p().name} grows restless during the sample collection.`}
+ if(kind==='rest'){stress=-Math.round(5+q.independence/18);energy=Math.round(12+q.patience/10);comfort=Math.round(q.independence/28);msg=q.independence>70?`${p().name} settles best when the room becomes quiet and nobody crowds the enclosure.`:`${p().name} settles once the room quiets down.`}
+ if(kind==='walk'){let brave=(q.confidence+q.energy)/2;mobility=Math.round(8+brave/10);trust=Math.round(q.sociability/25);energy=-Math.round(5+q.energy/20);stress=q.confidence<45?4:-3;msg=q.confidence>=65?`${p().name} takes the lead once moving and gains confidence quickly.`:`${p().name} moves cautiously, checking back with you before each stretch.`}
+ if(kind==='anesthesia'){stress=-Math.round(8+q.handling/12);trust=Math.round(q.handling/35);msg=`${p().name}'s handling tolerance changes how smoothly pre-op preparation goes.`}
+ s.trust+=trust;s.stress+=stress;s.comfort+=comfort;s.energy+=energy;s.mobility+=mobility;clamp();
+ log(`${msg} Personality effect: trust ${trust>=0?'+':''}${trust}, stress ${stress>=0?'+':''}${stress}${comfort?`, comfort ${comfort>=0?'+':''}${comfort}`:''}${mobility?`, mobility ${mobility>=0?'+':''}${mobility}`:''}.`);
+}
+function personalityClinicLine(){
+ const q=pers();
+ return `<div class="notice"><b>${p().name} is a ${q.archetype}.</b><br>${q.traits.join(' • ')}<br><span class="subtitle">Behavior now: ${behaviorState()}. Your care choices can strengthen trust, lower stress, or push this patient away.</span></div>`
+}
+
 function areaNote(id){return ({stabilize:'Correct immediate risks',diagnostics:'Reveal evidence',treatment:'Support + definitive care',surgery:'Procedure only if required',recovery:'Playable aftercare',discharge:'Readiness proof'})[id]||''}
-function areaTemplate(title,eyebrow,desc,controls,rightKeys,finish){return `<div class="hero"><div class="card pad"><div class="eyebrow">${eyebrow}</div><div class="h1">${title}</div><p class="lede">${desc}</p><div class="notice"><b>${p().breed} • ${p().sex}</b><br>${p().story}</div><div class="notice">Actions on this page stay on this page. Nothing below can secretly move you elsewhere.</div></div><div class="card">${petArt()}</div></div><div class="grid"><div class="card pad"><div class="sectionTitle"><h2>Work Surface</h2><p>Tap instruments to change patient state.</p></div><div class="instrumentGrid">${controls}</div>${finish||''}${logBox()}</div><div class="card pad"><div class="sectionTitle"><h2>Department Readout</h2><p>Immediate local feedback.</p></div>${telemetry(rightKeys)}</div></div>`}
+function areaTemplate(title,eyebrow,desc,controls,rightKeys,finish){return `<div class="hero"><div class="card pad"><div class="eyebrow">${eyebrow}</div><div class="h1">${title}</div><p class="lede">${desc}</p><div class="notice"><b>${p().breed} • ${p().sex}</b><br>${p().story}</div>${personalityBand()}<div class="notice"><b>TOOLS AVAILABLE:</b> Open 🧰 TOOLS to scan temperament, behavior, relationship, and clinical-behavior changes.</div><div class="notice">Actions on this page stay on this page. Nothing below can secretly move you elsewhere.</div></div><div class="card">${petArt()}</div></div><div class="grid"><div class="card pad"><div class="sectionTitle"><h2>Work Surface</h2><p>Tap instruments to change patient state.</p></div><div class="instrumentGrid">${controls}</div>${finish||''}${logBox()}</div><div class="card pad"><div class="sectionTitle"><h2>Department Readout</h2><p>Immediate local feedback.</p></div>${telemetry(rightKeys)}</div></div>`}
 function control(label,desc,js,pct=65,accent='var(--cyan)',disabled=false){return `<button class="instrument" ${disabled?'disabled':''} onclick="${js}"><div class="dial" style="--pct:${pct}%;--accent:${accent}"></div><b>${label}</b><small>${desc}</small></button>`}
 function advance(to,msg){state.stage=Math.max(state.stage,to);log(msg)}
-function stabilize(){let c='';c+=control('Oxygen Support','Raise saturation + calm breathing',"state.stats.oxygen+=5; state.stats.stress-=6; spend(5); clamp(); advance(1,'Oxygen support completed.');",77);c+=control('IV Fluids','Restore hydration gradually',"state.stats.hydration+=16; state.stats.health+=4; state.tx.fluids=true; spend(5); clamp(); advance(1,'IV fluids improved hydration.');",62,'var(--teal)');c+=control('Pain Control','Reduce pain before mobility',"state.stats.pain-=18; state.stats.comfort+=9; state.tx.pain=true; spend(5); clamp(); advance(1,'Pain control administered.');",55,'var(--amber)');return areaTemplate(`${p().name} // Stabilization`,'Department 01','Correct the dangerous basics before chasing a diagnosis.',c,['oxygen','hydration','pain','stress','health'],`<div class="actionRow"><button class="btn primary" onclick="advance(2,'Stabilization signed off.');go('diagnostics')">Finish Area → Diagnostics</button><button class="btn" onclick="go('clinic')">Return to Clinic</button></div>`)}
-function diagnostics(){let c='';c+=control('Physical Exam',state.tests.exam?'Completed':'Check perfusion, tenderness, neuro signs',"state.tests.exam=true; spend(5); log('Physical exam: localized tenderness, stable neurologic status.');",72);c+=control('Imaging',state.tests.imaging?'Completed':'Reveal structural injury',"state.tests.imaging=true; spend(5); log('Imaging: no unstable fracture; soft-tissue injury visible.');",67,'var(--violet)');c+=control('Laboratory',state.tests.lab?'Completed':'Check hydration and inflammation',"state.tests.lab=true; spend(5); log('Lab: dehydration confirmed; no severe anemia.');",58,'var(--teal)');let ready=state.tests.exam&&state.tests.imaging&&state.tests.lab;return areaTemplate(`${p().name} // Diagnostics`,'Evidence Deck','Diagnosis becomes available only after evidence is collected.',c,['health','pain','hydration','stress','oxygen'],`<div class="finalGate"><div><b>${ready?'Evidence complete':'Evidence incomplete'}</b><div class="subtitle">${ready?'Trauma + dehydration confirmed':'Run all three diagnostic stations'}</div></div><button class="btn primary" ${ready?'':'disabled'} onclick="advance(3,'Diagnosis locked: trauma with dehydration.');go('treatment')">Lock Diagnosis</button></div>`)}
+function stabilize(){let c='';c+=control('Oxygen Support','Raise saturation + calm breathing',"state.stats.oxygen+=5; state.stats.stress-=6; spend(5); clamp(); pReact('comfort'); advance(1,'Oxygen support completed.');",77);c+=control('IV Fluids','Restore hydration gradually',"state.stats.hydration+=16; state.stats.health+=4; state.tx.fluids=true; spend(5); clamp(); pReact('exam'); advance(1,'IV fluids improved hydration.');",62,'var(--teal)');c+=control('Pain Control','Reduce pain before mobility',"state.stats.pain-=18; state.stats.comfort+=9; state.tx.pain=true; spend(5); clamp(); pReact('comfort'); advance(1,'Pain control administered.');",55,'var(--amber)');return areaTemplate(`${p().name} // Stabilization`,'Department 01','Correct the dangerous basics before chasing a diagnosis.',c,['oxygen','hydration','pain','stress','health'],`<div class="actionRow"><button class="btn primary" onclick="advance(2,'Stabilization signed off.');go('diagnostics')">Finish Area → Diagnostics</button><button class="btn" onclick="go('clinic')">Return to Clinic</button></div>`)}
+function diagnostics(){let c='';c+=control('Physical Exam',state.tests.exam?'Completed':'Check perfusion, tenderness, neuro signs',"state.tests.exam=true; spend(5); pReact('exam');",72);c+=control('Imaging',state.tests.imaging?'Completed':'Reveal structural injury',"state.tests.imaging=true; spend(5); pReact('scanner');",67,'var(--violet)');c+=control('Laboratory',state.tests.lab?'Completed':'Check hydration and inflammation',"state.tests.lab=true; spend(5); pReact('lab');",58,'var(--teal)');let ready=state.tests.exam&&state.tests.imaging&&state.tests.lab;return areaTemplate(`${p().name} // Diagnostics`,'Evidence Deck','Diagnosis becomes available only after evidence is collected.',c,['health','pain','hydration','stress','oxygen'],`<div class="finalGate"><div><b>${ready?'Evidence complete':'Evidence incomplete'}</b><div class="subtitle">${ready?'Trauma + dehydration confirmed':'Run all three diagnostic stations'}</div></div><button class="btn primary" ${ready?'':'disabled'} onclick="advance(3,'Diagnosis locked: trauma with dehydration.');go('treatment')">Lock Diagnosis</button></div>`)}
 function treatment(){let c='';c+=control('Fluid Bolus','Support perfusion + hydration',"state.stats.hydration+=13;state.stats.health+=5;state.tx.fluids=true;spend(5);clamp();log('Supportive fluids delivered.');",70,'var(--teal)');c+=control('Analgesia','Control pain, improve comfort',"state.stats.pain-=20;state.stats.comfort+=12;state.tx.pain=true;spend(5);clamp();log('Analgesia response: pain reduced.');",52,'var(--amber)');c+=control('Definitive Care',p().surgical?'Prepare wound for procedure':'Wound care, bandage, medication plan',"state.stats.health+=12;state.stats.stress-=10;state.tx.definitive=true;spend(10);clamp();advance(4,'Definitive treatment completed.');",82,'var(--lime)');let done=state.tx.definitive;return areaTemplate(`${p().name} // Treatment`,'Therapeutics','Supportive care improves stability; definitive care resolves the actual problem.',c,['health','pain','hydration','comfort','stress'],`<div class="actionRow"><button class="btn primary" ${done?'':'disabled'} onclick="go('${p().surgical?'surgery':'recovery'}')">${p().surgical?'Proceed to Surgery':'Surgery Skipped → Recovery'}</button><button class="btn" onclick="go('clinic')">Return to Clinic</button></div>`)}
-function surgery(){if(!p().surgical)return areaTemplate('Surgery // Not Required','Procedure Deck','This case is nonsurgical. The game says so clearly instead of leaving a dead end.',control('Surgery Skipped','No procedure indicated',"advance(5,'Surgery visibly skipped for nonsurgical case.');",100,'var(--lime)',true),['health','pain','oxygen'],`<div class="actionRow"><button class="btn primary" onclick="advance(5,'Surgery skipped; recovery authorized.');go('recovery')">Continue to Recovery</button></div>`);let c='';c+=control('Anesthesia','Stabilize plane + oxygen',"state.stats.oxygen+=4;state.stats.stress-=16;spend(10);clamp();log('Anesthesia plane stable.');",72);c+=control('Repair','Complete controlled procedure',"state.stats.health+=14;state.stats.pain+=8;state.tx.surgery=true;spend(25);clamp();advance(5,'Surgical repair complete.');",78,'var(--violet)');c+=control('Closure','Protect site + recovery plan',"state.stats.comfort+=8;state.stats.pain-=5;spend(5);clamp();log('Closure and dressing complete.');",64,'var(--teal)');return areaTemplate(`${p().name} // Surgery`,'Operating Theater','A focused procedure deck with no navigation surprises.',c,['oxygen','health','pain','stress','comfort'],`<div class="actionRow"><button class="btn primary" ${state.tx.surgery?'':'disabled'} onclick="go('recovery')">Finish Procedure → Recovery</button></div>`)}
-function recovery(){let c='';c+=control('Offer Water','Hydration + thirst relief',"state.stats.hydration+=12;state.stats.thirst-=20;state.stats.trust+=3;clamp();log('Water accepted.');",62,'var(--teal)');c+=control('Offer Food','Nutrition + energy',"state.stats.hunger-=22;state.stats.energy+=12;state.stats.trust+=3;clamp();log('Food accepted.');",60,'var(--lime)');c+=control('Comfort','Stress down, trust up',"state.stats.comfort+=14;state.stats.stress-=12;state.stats.trust+=10;clamp();log('Comfort session improved trust.');",74,'var(--violet)');c+=control('Pain Support','Pain must be controlled before walking',"state.stats.pain-=14;state.stats.comfort+=6;clamp();log('Pain support improved comfort.');",48,'var(--amber)');c+=control('Quiet Rest','Restore energy',"state.stats.energy+=20;state.stats.stress-=8;clamp();log('Quiet rest completed.');",68);c+=control('Gentle Walk','Mobility + confidence',"if(state.stats.pain>45){log('Walk blocked: pain must be 45 or lower.')}else{state.stats.mobility+=15;state.stats.energy-=8;state.stats.trust+=4;clamp();log('Gentle walk completed safely.');}",58,'var(--teal)');let ready=readiness()>=82 && state.stats.pain<=45 && state.stats.hydration>=60 && state.stats.mobility>=55;return areaTemplate(`${p().name} // Recovery`,'Aftercare Habitat','This is gameplay, not a waiting room. Hydrate, feed, rest, control pain, and prove mobility.',c,['health','pain','hydration','mobility','comfort','trust','energy'],`<div class="finalGate"><div><b>Readiness ${readiness()}%</b><div class="subtitle">Need pain ≤45 • hydration ≥60 • mobility ≥55 • score ≥82</div></div><button class="btn good" ${ready?'':'disabled'} onclick="advance(7,'Recovery proof complete.');go('discharge')">Prove Ready</button></div>`)}
+function surgery(){if(!p().surgical)return areaTemplate('Surgery // Not Required','Procedure Deck','This case is nonsurgical. The game says so clearly instead of leaving a dead end.',control('Surgery Skipped','No procedure indicated',"advance(5,'Surgery visibly skipped for nonsurgical case.');",100,'var(--lime)',true),['health','pain','oxygen'],`<div class="actionRow"><button class="btn primary" onclick="advance(5,'Surgery skipped; recovery authorized.');go('recovery')">Continue to Recovery</button></div>`);let c='';c+=control('Anesthesia','Stabilize plane + oxygen',"state.stats.oxygen+=4;state.stats.stress-=16;spend(10);clamp();pReact('anesthesia');",72);c+=control('Repair','Complete controlled procedure',"state.stats.health+=14;state.stats.pain+=8;state.tx.surgery=true;spend(25);clamp();advance(5,'Surgical repair complete.');",78,'var(--violet)');c+=control('Closure','Protect site + recovery plan',"state.stats.comfort+=8;state.stats.pain-=5;spend(5);clamp();log('Closure and dressing complete.');",64,'var(--teal)');return areaTemplate(`${p().name} // Surgery`,'Operating Theater','A focused procedure deck with no navigation surprises.',c,['oxygen','health','pain','stress','comfort'],`<div class="actionRow"><button class="btn primary" ${state.tx.surgery?'':'disabled'} onclick="go('recovery')">Finish Procedure → Recovery</button></div>`)}
+function recovery(){let c='';c+=control('Offer Water','Hydration + thirst relief',"state.stats.hydration+=12;state.stats.thirst-=20;clamp();pReact('water');",62,'var(--teal)');c+=control('Offer Food','Nutrition + energy',"state.stats.hunger-=22;state.stats.energy+=12;clamp();pReact('food');",60,'var(--lime)');c+=control('Comfort','Stress down, trust up',"state.stats.comfort+=14;state.stats.stress-=8;clamp();pReact('comfort');",74,'var(--violet)');c+=control('Pain Support','Pain must be controlled before walking',"state.stats.pain-=14;state.stats.comfort+=6;clamp();log('Pain support improved comfort.');",48,'var(--amber)');c+=control('Quiet Rest','Restore energy',"state.stats.energy+=20;state.stats.stress-=4;clamp();pReact('rest');",68);c+=control('Gentle Walk','Mobility + confidence',"if(state.stats.pain>45){log('Walk blocked: pain must be 45 or lower.')}else{pReact('walk');state.stats.mobility+=7;state.stats.energy-=3;clamp();}",58,'var(--teal)');let ready=readiness()>=82 && state.stats.pain<=45 && state.stats.hydration>=60 && state.stats.mobility>=55;return areaTemplate(`${p().name} // Recovery`,'Aftercare Habitat','This is gameplay, not a waiting room. Hydrate, feed, rest, control pain, and prove mobility.',c,['health','pain','hydration','mobility','comfort','trust','energy'],`<div class="finalGate"><div><b>Readiness ${readiness()}%</b><div class="subtitle">Need pain ≤45 • hydration ≥60 • mobility ≥55 • score ≥82</div></div><button class="btn good" ${ready?'':'disabled'} onclick="advance(7,'Recovery proof complete.');go('discharge')">Prove Ready</button></div>`)}
 function readiness(){let s=state.stats;return Math.round((s.health+(100-s.pain)+s.hydration+s.mobility+s.comfort+s.trust)/6)}
 function discharge(){let r=readiness();return `<div class="hero"><div class="card pad"><div class="eyebrow">Final Gate</div><div class="h1">Discharge ${p().name}</div><p class="lede">The case ends once, visibly, with a reward and a clean handoff to My Pets or the next patient.</p>${phaseStrip()}<div class="finalGate"><div><b>Readiness ${r}%</b><div class="subtitle">Current evidence and aftercare state</div></div><button class="btn good" ${r>=82?'':'disabled'} onclick="finishCase()">Complete Case</button></div>${logBox()}</div><div class="card">${petArt()}</div></div>${kpis()}`}
 function finishCase(){if(!state.rewarded){state.funds+=250;state.rewarded=true;state.stage=7;save()}document.getElementById('rewardTitle').textContent=`${p().name} is safe.`;document.getElementById('rewardText').textContent='Case reward: $250 clinic funding. You can keep this rescue in My Pets or continue to a fresh patient.';document.getElementById('rewardModal').classList.add('show');render()}
 function pets(){
  const back=`<div class="actionRow"><button class="btn primary" onclick="go('clinic')">← Return to Active Habitat</button>${state.stage<7?`<button class="btn" onclick="go('${nextArea()}')">Return to ${nextArea()[0].toUpperCase()+nextArea().slice(1)}</button>`:''}</div>`;
  if(!state.pets.length)return `<div class="card pad" style="margin-top:18px"><div class="eyebrow">Rescue Habitat</div><div class="h1">My Pets</div><p class="lede">Completed patients you keep will live here with persistent needs, care actions, and their own recovery history.</p>${back}<div class="notice">No rescued pets yet. Finish a case and choose “Keep in My Pets.”</div></div>`;
- return `<div class="card pad" style="margin-top:18px"><div class="eyebrow">Rescue Habitat</div><div class="h1">My Pets</div><p class="lede">Persistent rescued animals. Care updates happen inline and never kick you out of this screen.</p>${back}<div class="actionRow"><button class="btn good" onclick="careAll()">Care For All Pets</button></div></div><div class="petGrid" style="margin-top:14px">${state.pets.map((x,i)=>`<div class="petCard"><div class="petFace">${x.emoji}</div><h3>${x.name}</h3><div class="subtitle">${x.species} • ${x.breed}${x.sex?' • '+x.sex:''}</div>${x.story?`<div class="notice" style="margin-top:10px">${x.story}</div>`:''}<div class="petStats"><span>Health <b>${x.stats.health}</b></span><span>Pain <b>${x.stats.pain}</b></span><span>Water <b>${x.stats.hydration}</b></span><span>Trust <b>${x.stats.trust}</b></span><span>Mobility <b>${x.stats.mobility}</b></span><span>Energy <b>${x.stats.energy}</b></span></div><div class="actionRow"><button class="btn" onclick="petCare(${i},'water')">Water</button><button class="btn" onclick="petCare(${i},'food')">Food</button><button class="btn" onclick="petCare(${i},'comfort')">Comfort</button><button class="btn" onclick="petCare(${i},'rest')">Rest</button></div></div>`).join('')}</div>`
+ return `<div class="card pad" style="margin-top:18px"><div class="eyebrow">Rescue Habitat</div><div class="h1">My Pets</div><p class="lede">Persistent rescued animals. Care updates happen inline and never kick you out of this screen.</p>${back}<div class="actionRow"><button class="btn good" onclick="careAll()">Care For All Pets</button></div></div><div class="petGrid" style="margin-top:14px">${state.pets.map((x,i)=>`<div class="petCard"><div class="petFace">${x.emoji}</div><h3>${x.name}</h3><div class="subtitle">${x.species} • ${x.breed}${x.sex?' • '+x.sex:''}</div>${x.personality?`<div class="notice" style="margin-top:10px"><b>${x.personality.archetype}</b><br>${x.personality.traits.join(' • ')}</div>`:''}${x.story?`<div class="notice" style="margin-top:10px">${x.story}</div>`:''}<div class="petStats"><span>Health <b>${x.stats.health}</b></span><span>Pain <b>${x.stats.pain}</b></span><span>Water <b>${x.stats.hydration}</b></span><span>Trust <b>${x.stats.trust}</b></span><span>Mobility <b>${x.stats.mobility}</b></span><span>Energy <b>${x.stats.energy}</b></span></div><div class="actionRow"><button class="btn" onclick="petCare(${i},'water')">Water</button><button class="btn" onclick="petCare(${i},'food')">Food</button><button class="btn" onclick="petCare(${i},'comfort')">Comfort</button><button class="btn" onclick="petCare(${i},'rest')">Rest</button></div></div>`).join('')}</div>`
 }
-function petCare(i,type){let s=state.pets[i].stats;if(type==='water'){s.hydration=Math.min(100,s.hydration+15);s.thirst=Math.max(0,s.thirst-20)}if(type==='food'){s.hunger=Math.max(0,s.hunger-20);s.energy=Math.min(100,s.energy+10)}if(type==='comfort'){s.comfort=Math.min(100,s.comfort+14);s.trust=Math.min(100,s.trust+8)}if(type==='rest'){s.energy=Math.min(100,s.energy+18);s.stress=Math.max(0,s.stress-8)}save();renderScreen('pets')}
+function petCare(i,type){let pet=state.pets[i],s=pet.stats,q=pet.personality||{foodDrive:50,affection:50,independence:50,patience:50};if(type==='water'){s.hydration=Math.min(100,s.hydration+15);s.thirst=Math.max(0,s.thirst-20);s.trust=Math.min(100,s.trust+2)}if(type==='food'){s.hunger=Math.max(0,s.hunger-20);s.energy=Math.min(100,s.energy+10+Math.round((q.foodDrive||50)/20));s.trust=Math.min(100,s.trust+Math.round(2+(q.foodDrive||50)/20))}if(type==='comfort'){let gain=Math.round(3+(q.affection||50)/10);if((q.independence||50)>75)gain=Math.max(2,gain-5);s.comfort=Math.min(100,s.comfort+10+gain);s.trust=Math.min(100,s.trust+gain);s.stress=Math.max(0,s.stress-Math.round(3+(q.affection||50)/18))}if(type==='rest'){s.energy=Math.min(100,s.energy+14+Math.round((q.patience||50)/12));s.stress=Math.max(0,s.stress-Math.round(5+(q.independence||50)/15))}save();renderScreen('pets')}
 function careAll(){state.pets.forEach((_,i)=>['water','food','comfort','rest'].forEach(t=>petCare(i,t)));save();renderScreen('pets')}
-function keepPet(){if(!state.pets.some(x=>x.caseId===state.idx)){state.pets.push({caseId:state.idx,name:p().name,species:p().species,breed:p().breed,sex:p().sex,story:p().story,emoji:p().emoji,stats:{...state.stats}});save()}document.getElementById('rewardModal').classList.remove('show');go('pets')}
+function keepPet(){if(!state.pets.some(x=>x.caseId===state.idx)){state.pets.push({caseId:state.idx,name:p().name,species:p().species,breed:p().breed,sex:p().sex,story:p().story,emoji:p().emoji,personality:JSON.parse(JSON.stringify(p().personality||{})),memories:['Survived emergency treatment'],stats:{...state.stats}});save()}document.getElementById('rewardModal').classList.remove('show');go('pets')}
 function nextPatient(){state.idx=(state.idx+1)%patients.length;state.stage=0;state.stats=defaults();state.tests={exam:false,imaging:false,lab:false};state.tx={fluids:false,oxygen:false,pain:false,definitive:false,surgery:false};state.log=[];state.rewarded=false;save();document.getElementById('rewardModal').classList.remove('show');go('clinic')}
 function renderScreen(id){document.getElementById('funds').textContent='$'+state.funds.toLocaleString();const el=document.getElementById(id);if(id==='clinic')el.innerHTML=clinic();if(id==='stabilize')el.innerHTML=stabilize();if(id==='diagnostics')el.innerHTML=diagnostics();if(id==='treatment')el.innerHTML=treatment();if(id==='surgery')el.innerHTML=surgery();if(id==='recovery')el.innerHTML=recovery();if(id==='discharge')el.innerHTML=discharge();if(id==='pets')el.innerHTML=pets()}
 function render(){document.getElementById('funds').textContent='$'+state.funds.toLocaleString();const active=document.querySelector('.screen.active')?.id||'clinic';renderScreen(active)}
@@ -975,6 +1051,221 @@ setInterval(tick,1200);
  const main=document.querySelector("main");
  if(main)new MutationObserver(()=>setTimeout(clean,20)).observe(main,{childList:true,subtree:true});
  setTimeout(clean,100);
+})();
+</script>
+
+
+<script id="vg-rewarding-economy-js">
+(function(){
+ const KEY="vetgods_rewarding_economy_v1";
+ const upgrades=[
+  {id:"scanner",name:"Precision Scanner",cost:1200,desc:"Diagnostics completion earns an extra $50."},
+  {id:"recovery",name:"Recovery Suite",cost:2200,desc:"Excellent recovery earns an extra $100."},
+  {id:"icu",name:"ICU Monitoring Bay",cost:3000,desc:"Stabilization completion earns an extra $75."},
+  {id:"hospital",name:"Advanced Veterinary Hospital",cost:4000,desc:"Adds a $250 hospital excellence bonus at discharge."},
+  {id:"surgery",name:"Precision Surgery Theater",cost:6500,desc:"Successful surgical cases earn an extra $200."},
+  {id:"celestial",name:"Celestial Medical Center",cost:10000,desc:"Adds a $750 center bonus at discharge."}
+ ];
+ let E;
+ try{E=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}
+ if(!E)E={reputation:0,streak:0,bestStreak:0,upgrades:{},milestones:{},lastRewardedCase:null};
+ function esave(){localStorage.setItem(KEY,JSON.stringify(E))}
+ function money(n){state.funds=Math.max(0,state.funds+Number(n||0));save();render();return n}
+ function toast(t){let h=document.getElementById("vgeToast");if(!h){h=document.createElement("div");h.id="vgeToast";document.body.appendChild(h)}h.innerHTML='<div class="vgeToast">'+t+'</div>';setTimeout(()=>{if(h)h.innerHTML=""},2700)}
+ function rank(){let r=E.reputation;return r>=5000?"VET GODS MEDICAL CENTER":r>=2500?"ADVANCED TRAUMA CENTER":r>=1000?"REGIONAL HOSPITAL":"NEIGHBORHOOD CLINIC"}
+ function mult(){return E.streak>=10?2:E.streak>=5?1.5:E.streak>=3?1.25:E.streak>=2?1.1:1}
+ function buy(id){
+  let u=upgrades.find(x=>x.id===id);if(!u||E.upgrades[id])return;
+  if(state.funds<u.cost){toast("NEED $"+u.cost.toLocaleString()+" • CURRENT $"+state.funds.toLocaleString());return}
+  state.funds-=u.cost;E.upgrades[id]=true;E.reputation+=Math.round(u.cost/20);save();esave();toast("UPGRADE PURCHASED • "+u.name);draw();
+ }
+ window.vgeBuy=buy;
+
+ function draw(){
+  let host=document.getElementById("vgEconomyHud");
+  if(!host){host=document.createElement("section");host.id="vgEconomyHud";let main=document.querySelector("main");if(main)main.insertAdjacentElement("beforebegin",host)}
+  if(!host)return;
+  host.innerHTML='<div class="vgeRow"><span class="vgeChip">💰 $'+state.funds.toLocaleString()+'</span><span class="vgeChip">⭐ REP '+E.reputation.toLocaleString()+'</span><span class="vgeChip">🔥 SAVE STREAK '+E.streak+'</span><span class="vgeChip">🏥 '+rank()+'</span><span class="vgeChip">REWARD ×'+mult()+'</span></div>'+
+   '<div class="vgeUpgradeGrid">'+upgrades.map(u=>'<div class="vgeUpgrade"><b>'+u.name+' • $'+u.cost.toLocaleString()+'</b><small>'+u.desc+'</small><button '+(E.upgrades[u.id]?'disabled':'')+' onclick="vgeBuy(\''+u.id+'\')">'+(E.upgrades[u.id]?'OWNED':'PURCHASE')+'</button></div>').join("")+'</div>';
+ }
+
+ function milestone(id,amount,msg){
+  let caseKey=String(state.idx)+"-"+id;
+  if(E.milestones[caseKey])return;
+  E.milestones[caseKey]=1; money(amount); E.reputation+=Math.max(5,Math.round(amount/5));esave();toast(msg+" • +$"+amount);
+ }
+
+ // Reward correct clinical milestones once per patient.
+ document.addEventListener("click",function(){
+  setTimeout(()=>{
+   try{
+    if(state.stage>=2) milestone("stabilized",50+(E.upgrades.icu?75:0),"STABILIZATION REWARD");
+    if(state.tests&&state.tests.exam&&state.tests.imaging&&state.tests.lab) milestone("diagnostics",100+(E.upgrades.scanner?50:0),"EVIDENCE COMPLETE");
+    if(state.tx&&state.tx.definitive) milestone("treatment",125,"DEFINITIVE CARE REWARD");
+    if(p().surgical&&state.tx&&state.tx.surgery) milestone("surgery",150+(E.upgrades.surgery?200:0),"SURGERY SUCCESS");
+    draw();
+   }catch(e){}
+  },80);
+ },true);
+
+ function rewardCase(){
+  let caseId=String(state.idx);
+  if(E.lastRewardedCase===caseId)return;
+  let st=state.stats,lines=[],base=250;
+  lines.push(["Patient Saved",base]);
+  if(st.pain<=25)lines.push(["Low Pain Bonus",100]);
+  if(st.hydration>=80)lines.push(["Hydration Excellence",75]);
+  if(st.trust>=65)lines.push(["High Trust Bonus",100]);
+  if(state.tests.exam&&state.tests.imaging&&state.tests.lab)lines.push(["Perfect Diagnostics",150]);
+  let rr=typeof readiness==="function"?readiness():0;
+  if(rr>=90)lines.push(["Recovery Excellence",200+(E.upgrades.recovery?100:0)]);
+  if(E.upgrades.hospital)lines.push(["Advanced Hospital",250]);
+  if(E.upgrades.celestial)lines.push(["Celestial Center",750]);
+
+  E.streak++;E.bestStreak=Math.max(E.bestStreak,E.streak);
+  let subtotal=lines.reduce((a,x)=>a+x[1],0);
+  let bonus=Math.round(subtotal*(mult()-1));
+  if(bonus>0)lines.push(["Rescue Streak ×"+mult(),bonus]);
+  if(st.pain<=25&&st.hydration>=80&&st.trust>=65&&rr>=90)lines.push(["GODLIKE CARE",500]);
+
+  let total=lines.reduce((a,x)=>a+x[1],0);
+  // Original finishCase already grants $250; add only reward above base.
+  money(Math.max(0,total-base));
+  E.reputation+=Math.round(total/2);E.lastRewardedCase=caseId;esave();
+
+  let m=document.getElementById("vgeRewardModal");
+  if(!m){m=document.createElement("div");m.id="vgeRewardModal";document.body.appendChild(m)}
+  m.innerHTML='<div class="vgeRewardBox"><div class="eyebrow">🐾 PATIENT SAVED</div><h2>'+p().name+' • REWARD REPORT</h2>'+lines.map(x=>'<div class="vgeLine"><span>'+x[0]+'</span><b>+$'+x[1].toLocaleString()+'</b></div>').join("")+'<div class="vgeLine vgeTotal"><span>TOTAL</span><b>+$'+total.toLocaleString()+'</b></div><div class="subtitle">REPUTATION '+E.reputation.toLocaleString()+' • STREAK '+E.streak+' • '+rank()+'</div><button onclick="document.getElementById(\'vgeRewardModal\').classList.remove(\'show\')">CONTINUE</button></div>';
+  m.classList.add("show");draw();
+ }
+
+ // Wrap existing finishCase rather than rewriting it.
+ const oldFinish=window.finishCase;
+ window.finishCase=function(){
+  let was=state.rewarded;
+  oldFinish();
+  if(!was) setTimeout(rewardCase,50);
+ };
+
+ // Small transparent jackpot-style funding events, no paid randomness.
+ const oldNext=window.nextPatient;
+ window.nextPatient=function(){
+   oldNext();
+   if(Math.random()<.22){
+    let events=[["LOCAL RESCUE DONATION",300],["COMMUNITY FUNDRAISER",500],["ANONYMOUS ANIMAL LOVER",750],["EMERGENCY GRANT",1000]];
+    let ev=events[Math.floor(Math.random()*events.length)];
+    money(ev[1]);E.reputation+=50;esave();toast(ev[0]+" • +$"+ev[1]);
+   }
+   draw();
+ };
+
+ addEventListener("load",draw);setTimeout(draw,150);
+ document.addEventListener("click",()=>setTimeout(draw,120));
+})();
+</script>
+
+
+<script id="vg-tools-menu-js">
+(function(){
+ const KEY='vetgods_tools_personality_v1';
+ let T;
+ try{T=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}
+ if(!T)T={cases:{}};
+ function saveT(){localStorage.setItem(KEY,JSON.stringify(T))}
+ function cid(){return String(state.idx)}
+ function rec(){
+   let k=cid();
+   if(!T.cases[k])T.cases[k]={scans:0,discoveredTraits:[],discoveredLikes:[],discoveredDislikes:[],lastObservation:'No temperament scan performed yet.'};
+   return T.cases[k];
+ }
+ function uniqPush(arr,v){if(v&&!arr.includes(v))arr.push(v)}
+ function currentObservation(){
+   let q=pers(),b=behaviorState(),s=state.stats;
+   if(b==='Frightened')return `${p().name} is overwhelmed and reactive. Slow handling and quiet are most important right now.`;
+   if(b==='Nervous')return `${p().name} is tense and monitoring every movement, but remains workable.`;
+   if(b==='Attached')return `${p().name} actively seeks your presence and shows strong recognition and trust.`;
+   if(b==='Cooperative')return `${p().name} is accepting care with noticeably less resistance.`;
+   if(b==='Curious')return `${p().name} is beginning to investigate you and the environment instead of only guarding.`;
+   if(q.independence>75)return `${p().name} remains reserved and responds best when given space between interactions.`;
+   return `${p().name} is wary but still reading your behavior closely.`;
+ }
+ function revealScan(){
+   let r=rec(),q=pers();
+   r.scans++;
+   let trait=q.traits[(r.scans-1)%q.traits.length]; uniqPush(r.discoveredTraits,trait);
+   if(r.scans>=2)uniqPush(r.discoveredLikes,q.preferences[(r.scans-2)%q.preferences.length]);
+   if(r.scans>=3)uniqPush(r.discoveredDislikes,q.dislikes[(r.scans-3)%q.dislikes.length]);
+   r.lastObservation=currentObservation();
+   state.stats.trust=Math.min(100,state.stats.trust+1);
+   state.stats.stress=Math.max(0,state.stats.stress + (q.noiseTolerance<35?2:-1));
+   clamp(); save(); saveT(); log(`Temperament scanner: discovered ${trait}. ${r.lastObservation}`); draw();
+ }
+ function behavioralScan(){
+   let r=rec();
+   r.lastObservation=currentObservation();
+   saveT();log(`Behavior scan: ${r.lastObservation}`);draw();
+ }
+ function relationshipScan(){
+   let r=rec(),s=state.stats;
+   let level=s.trust>=75?'Strong bond':s.trust>=55?'Working trust':s.trust>=35?'Emerging trust':'Low trust';
+   r.lastObservation=`Relationship readout: ${level}. Trust ${s.trust}, comfort ${s.comfort}, stress ${s.stress}.`;
+   saveT();log(r.lastObservation);draw();
+ }
+ function clinicalScan(){
+   let r=rec();
+   r.lastObservation=`Clinical-behavior link: ${p().condition}. Current behavior ${behaviorState()}. Pain ${state.stats.pain}, hydration ${state.stats.hydration}, mobility ${state.stats.mobility}.`;
+   saveT();log(r.lastObservation);draw();
+ }
+ window.vgtTemperament=revealScan;
+ window.vgtBehavior=behavioralScan;
+ window.vgtRelationship=relationshipScan;
+ window.vgtClinical=clinicalScan;
+
+ function profileHTML(){
+   let q=pers(),r=rec();
+   return `<div class="vgtProfile">
+     <div class="eyebrow">LIVE PATIENT PROFILE</div>
+     <div class="vgtLine"><span>Name</span><b>${p().name}</b></div>
+     <div class="vgtLine"><span>Breed / Sex</span><b>${p().breed} • ${p().sex}</b></div>
+     <div class="vgtLine"><span>Condition</span><b>${p().condition}</b></div>
+     <div class="vgtLine"><span>Temperament</span><b>${q.archetype}</b></div>
+     <div class="vgtLine"><span>Behavior now</span><b>${behaviorState()}</b></div>
+     <div class="vgtLine"><span>Trust / Stress / Comfort</span><b>${state.stats.trust} / ${state.stats.stress} / ${state.stats.comfort}</b></div>
+     <div><b>Discovered traits</b><br>${r.discoveredTraits.length?r.discoveredTraits.map(x=>`<span class="vgtTag">${x}</span>`).join(''):'<span class="subtitle">Run the temperament scanner.</span>'}</div>
+     <div style="margin-top:8px"><b>Discovered likes</b><br>${r.discoveredLikes.length?r.discoveredLikes.map(x=>`<span class="vgtTag">${x}</span>`).join(''):'<span class="subtitle">Unknown</span>'}</div>
+     <div style="margin-top:8px"><b>Discovered dislikes</b><br>${r.discoveredDislikes.length?r.discoveredDislikes.map(x=>`<span class="vgtTag">${x}</span>`).join(''):'<span class="subtitle">Unknown</span>'}</div>
+     <div class="vgtObs"><b>Latest observation</b><br>${r.lastObservation}</div>
+   </div>`;
+ }
+ function draw(){
+   let panel=document.getElementById('vgToolsPanel');
+   if(!panel)return;
+   panel.innerHTML=`<div class="vgtBox">
+     <div class="vgtHead"><div><div class="eyebrow">CLINICAL TOOLS</div><h2>Patient Scanner Suite</h2></div><button class="vgtClose" onclick="document.getElementById('vgToolsPanel').classList.remove('open')">✕</button></div>
+     <div class="vgtGrid">
+       <div class="vgtTool"><h3>🧠 Temperament Scanner</h3><div class="subtitle">Gradually discovers personality traits, preferences, and dislikes.</div><button onclick="vgtTemperament()">RUN TEMPERAMENT SCAN</button></div>
+       <div class="vgtTool"><h3>👁 Behavior Scanner</h3><div class="subtitle">Reads the animal's current emotional state from trust, stress, and temperament.</div><button onclick="vgtBehavior()">SCAN BEHAVIOR</button></div>
+       <div class="vgtTool"><h3>🤝 Relationship Scanner</h3><div class="subtitle">Checks how strongly this patient currently trusts and accepts you.</div><button onclick="vgtRelationship()">SCAN RELATIONSHIP</button></div>
+       <div class="vgtTool"><h3>🩺 Clinical Link Scanner</h3><div class="subtitle">Connects current medical status with behavior and mobility.</div><button onclick="vgtClinical()">SCAN CLINICAL STATE</button></div>
+     </div>
+     ${profileHTML()}
+   </div>`;
+ }
+ function install(){
+   if(!document.getElementById('vgToolsDock')){
+     let d=document.createElement('div');d.id='vgToolsDock';
+     d.innerHTML='<button id="vgToolsBtn">🧰 TOOLS</button>';
+     document.body.appendChild(d);
+     d.querySelector('button').onclick=function(){document.getElementById('vgToolsPanel').classList.add('open');draw()};
+   }
+   if(!document.getElementById('vgToolsPanel')){
+     let p=document.createElement('div');p.id='vgToolsPanel';document.body.appendChild(p);
+   }
+   draw();
+ }
+ addEventListener('load',install);
+ document.addEventListener('click',()=>setTimeout(draw,100));
+ setTimeout(install,120);
 })();
 </script>
 
