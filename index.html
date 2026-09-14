@@ -388,6 +388,84 @@ button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
 @media(max-width:560px){#vgAnimalsEmergencyBtn{right:10px;bottom:124px}}
 </style>
 
+
+<style id="vg-reward-scroll-fix-css">
+/* Reward screen overflow fix */
+#reward-modal{
+  overflow:auto !important;
+  align-items:flex-start !important;
+  padding:12px !important;
+}
+#reward-modal.show{
+  display:grid !important;
+}
+#reward-modal .modal-box{
+  width:min(560px,100%) !important;
+  max-height:calc(100vh - 24px) !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch;
+  padding:18px !important;
+  margin:auto !important;
+}
+#reward-modal .scorecard{
+  grid-template-columns:1fr 1fr !important;
+  gap:6px !important;
+  margin:10px 0 12px !important;
+}
+#reward-modal .score-line{
+  padding:6px 8px !important;
+  font-size:10px !important;
+  line-height:1.25 !important;
+  min-height:0 !important;
+}
+#reward-modal .case-grade{
+  font-size:42px !important;
+}
+#reward-modal .reward-btns{
+  position:sticky !important;
+  bottom:-18px !important;
+  z-index:5 !important;
+  padding:12px 0 4px !important;
+  margin-top:12px !important;
+  background:linear-gradient(180deg,rgba(12,30,42,0),#0c1e2a 28%,#0c1e2a 100%) !important;
+}
+#reward-modal .reward-btns .btn{
+  min-height:44px !important;
+}
+@media(max-width:560px){
+  #reward-modal{padding:6px !important}
+  #reward-modal .modal-box{
+    max-height:calc(100vh - 12px) !important;
+    padding:14px !important;
+    border-radius:16px !important;
+  }
+  #reward-modal .scorecard{
+    grid-template-columns:1fr !important;
+  }
+  #reward-modal .score-line{
+    font-size:10px !important;
+    padding:5px 7px !important;
+  }
+  #reward-modal .modal-box h2{
+    font-size:22px !important;
+    margin:3px 0 6px !important;
+  }
+  #reward-modal .modal-box .reward{
+    font-size:42px !important;
+    margin-bottom:2px !important;
+  }
+  #reward-modal .case-grade{
+    font-size:36px !important;
+  }
+  #reward-modal .reward-btns{
+    bottom:-14px !important;
+    display:grid !important;
+    grid-template-columns:1fr !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div class="shell">
@@ -1608,6 +1686,539 @@ function watch(){
 addEventListener("load",()=>{watch();setTimeout(watch,150);});
 setInterval(watch,1500);
 setTimeout(watch,100);
+})();
+</script>
+
+
+<script id="vg-reward-expansion-js">
+/* VET GODS — Reward Expansion Pack
+   More money, more goals, more loops. Additive overlay; original engines stay intact. */
+(function(){
+'use strict';
+
+function vgEnsureRewards(){
+  state.casesCompleted = state.casesCompleted || 0;
+  state.milestones = state.milestones || {};
+  state.dailyClaim = state.dailyClaim || {};
+  state.sideMissions = state.sideMissions || {};
+  state.stageBonusGiven = state.stageBonusGiven || {};
+  state.careStreak = state.careStreak || 0;
+  state.totalPetCare = state.totalPetCare || 0;
+  state.funTokens = state.funTokens || 0;
+}
+
+/* ---------- BIGGER CASE REWARDS ---------- */
+const oldBreakdown = window.vgScoreBreakdown;
+window.vgScoreBreakdown = function(){
+  const s = state.stats, b = [];
+  b.push(['Patient Saved', 600]);
+  if(s.pain <= 25) b.push(['Pain Control', 250]);
+  if(s.pain <= 15) b.push(['Near-Zero Pain', 150]);
+  if(s.hydration >= 80) b.push(['Hydration Excellence', 180]);
+  if(s.hydration >= 90) b.push(['Perfect Fluids', 100]);
+  if(s.trust >= 65) b.push(['Trust Bonus', 220]);
+  if(s.trust >= 85) b.push(['Deep Bond', 180]);
+  if(s.comfort >= 70) b.push(['Comfort Care', 120]);
+  if(s.mobility >= 70) b.push(['Mobility Restored', 140]);
+  if(state.tests.exam && state.tests.imaging && state.tests.lab) b.push(['Perfect Diagnostics', 350]);
+  if(readiness() >= 90) b.push(['Recovery Excellence', 450 + (state.ownedUpgrades.recovery ? 200 : 0)]);
+  if(readiness() >= 95) b.push(['Elite Discharge', 250]);
+  if(state.ownedUpgrades.hospital) b.push(['Advanced Hospital', 500]);
+  if(state.ownedUpgrades.celestial) b.push(['Celestial Center', 1500]);
+  if(state.ownedUpgrades.icu) b.push(['ICU Stabilization', 200]);
+  if(state.ownedUpgrades.scanner && state.tests.imaging) b.push(['Precision Evidence', 150]);
+  if(p().surgical && state.tx.surgery) b.push(['Surgical Success', 350 + (state.ownedUpgrades.surgery ? 400 : 0)]);
+  // Evidence board bonuses
+  const ev = (state.caseEvidence && state.caseEvidence[p().name]) || {};
+  let evidenceCount = 0;
+  Object.keys(ev).forEach(k => { if(ev[k]) evidenceCount++; });
+  if(evidenceCount >= 2) b.push(['Evidence Board', 100 * evidenceCount]);
+  // Reputation scaling
+  const rep = state.reputation || 0;
+  if(rep >= 500) b.push(['Established Clinic', 150]);
+  if(rep >= 2000) b.push(['Renowned Rescue', 300]);
+  if(rep >= 5000) b.push(['Legendary Sanctuary', 500]);
+  return b;
+};
+
+const oldFinish = window.finishCase;
+window.finishCase = function(){
+  if(state.rewarded) return;
+  vgEnsureRewards();
+  const b = vgScoreBreakdown();
+  let subtotal = b.reduce((n,x)=>n+x[1], 0);
+  state.streak = (state.streak || 0) + 1;
+  // Stronger streak multipliers
+  let mult = 1;
+  if(state.streak >= 10) mult = 2.25;
+  else if(state.streak >= 7) mult = 2.0;
+  else if(state.streak >= 5) mult = 1.75;
+  else if(state.streak >= 3) mult = 1.4;
+  else if(state.streak >= 2) mult = 1.2;
+  const total = Math.round(subtotal * mult);
+  money(total);
+  state.reputation = (state.reputation || 0) + Math.round(total / 2);
+  state.casesCompleted = (state.casesCompleted || 0) + 1;
+  state.funTokens = (state.funTokens || 0) + 1 + Math.floor(state.streak / 3);
+  state.rewarded = true;
+  state.stage = 6;
+  state.stageBonusGiven = {};
+  save();
+
+  // Milestone checks
+  checkMilestones();
+
+  const grade = (typeof vgCaseGrade === 'function') ? vgCaseGrade(total) : (readiness()>=94?'S':readiness()>=90?'A':readiness()>=84?'B':'C');
+  document.getElementById('reward-title').textContent = `${p().name} is safe • Grade ${grade}`;
+  const text = document.getElementById('reward-text');
+  text.innerHTML = `<div class="case-grade">${grade}</div>
+    <div>Case reward <b>$${total.toLocaleString()}</b> • Reputation +${Math.round(total/2)} • Streak ×${mult} • Tokens +${1+Math.floor(state.streak/3)}</div>
+    <div class="scorecard">${b.map(x=>`<div class="score-line">${x[0]}<b>+$${x[1]}</b></div>`).join('')}</div>
+    <div style="font-size:11px;opacity:.7;margin-top:8px">Keep this rescue in My Pets or continue. Claim daily grants & side missions from the 🎁 REWARDS dock.</div>`;
+  document.getElementById('reward-modal').classList.add('show');
+  render();
+  toast(`CASE COMPLETE • GRADE ${grade} • +$${total.toLocaleString()}`);
+};
+
+/* ---------- STAGE PROGRESS PAYOUTS ---------- */
+function stagePayout(key, amount, label){
+  vgEnsureRewards();
+  const caseKey = state.idx + ':' + key;
+  if(state.stageBonusGiven[caseKey]) return;
+  state.stageBonusGiven[caseKey] = true;
+  money(amount);
+  state.reputation = (state.reputation || 0) + Math.round(amount / 10);
+  toast(label + ' • +$' + amount);
+  if(typeof log === 'function') log(label + ` (+$${amount})`);
+  save();
+  if(typeof render === 'function') render();
+}
+
+// Hook common control patterns by wrapping money spends that mark progress
+const stageWatch = setInterval(function(){
+  try{
+    if(!window.state) return;
+    if(state.tests && state.tests.exam && state.tests.imaging && state.tests.lab){
+      stagePayout('fullDiag', 175, 'FULL DIAGNOSTICS BONUS');
+    }
+    if(state.tx && state.tx.fluids && state.tx.oxygen && state.tx.pain){
+      stagePayout('fullStab', 150, 'STABILIZATION COMPLETE BONUS');
+    }
+    if(state.tx && state.tx.definitive){
+      stagePayout('definitive', 200, 'DEFINITIVE TREATMENT BONUS');
+    }
+    if(state.tx && state.tx.surgery){
+      stagePayout('surgery', 275, 'SURGERY SUCCESS BONUS');
+    }
+    if(state.stage >= 5 && readiness() >= 70){
+      stagePayout('recovery70', 125, 'RECOVERY MILESTONE');
+    }
+  }catch(e){}
+}, 2000);
+
+/* ---------- PET CARE REWARDS ---------- */
+const oldPetCare = window.petCare;
+if(typeof oldPetCare === 'function'){
+  window.petCare = function(i, type){
+    oldPetCare(i, type);
+    vgEnsureRewards();
+    state.totalPetCare = (state.totalPetCare || 0) + 1;
+    state.careStreak = (state.careStreak || 0) + 1;
+    // Small cash drip for caring
+    const carePay = ({water:15,food:20,comfort:25,rest:15,groom:30,play:35,train:40,walk:45,medicine:30,adventure:80,photo:25})[type] || 15;
+    money(carePay);
+    state.funTokens = (state.funTokens || 0) + (type === 'adventure' ? 2 : type === 'train' ? 1 : 0);
+    // Daily want bonus already in original; add extra funds if want done
+    try{
+      const pet = state.pets[i];
+      if(pet && pet.wantDone){
+        const day = Math.floor(Date.now()/86400000);
+        if(pet.wantDone[day] && !pet._wantPaid || pet._wantPaid !== day){
+          // pay once per day when want first completed
+          if(pet._wantPaid !== day){
+            pet._wantPaid = day;
+            money(120);
+            state.reputation = (state.reputation||0) + 15;
+            toast('DAILY WANT REWARD • +$120');
+          }
+        }
+      }
+    }catch(e){}
+    if(state.careStreak > 0 && state.careStreak % 10 === 0){
+      money(200);
+      toast('CARE STREAK ×' + state.careStreak + ' • +$200');
+    }
+    save();
+    if(document.getElementById('funds-display'))
+      document.getElementById('funds-display').textContent = '$' + state.funds.toLocaleString();
+  };
+}
+
+const oldCareAll = window.careAll;
+if(typeof oldCareAll === 'function'){
+  window.careAll = function(){
+    oldCareAll();
+    vgEnsureRewards();
+    const n = (state.pets || []).length;
+    if(n > 0){
+      const bonus = 50 + n * 40;
+      money(bonus);
+      state.funTokens = (state.funTokens || 0) + n;
+      toast('HABITAT CARE BONUS • +$' + bonus);
+      save();
+      if(document.getElementById('funds-display'))
+        document.getElementById('funds-display').textContent = '$' + state.funds.toLocaleString();
+    }
+  };
+}
+
+/* ---------- CHEAPER / MORE GENEROUS SHOP ---------- */
+if(window.UPGRADES){
+  UPGRADES.forEach(u => { u.cost = Math.max(400, Math.round(u.cost * 0.65)); });
+}
+if(window.TOOLS_CATALOG){
+  TOOLS_CATALOG.forEach(t => { t.price = Math.max(250, Math.round(t.price * 0.6)); });
+}
+
+/* ---------- BETTER DONATIONS ON NEXT PATIENT ---------- */
+const oldNext = window.nextPatient;
+window.nextPatient = function(){
+  if(typeof oldNext === 'function') oldNext();
+  // Extra donation chance layered on top
+  if(Math.random() < 0.45){
+    const events = [
+      ['SPONSOR CLINIC GIFT', 400],
+      ['CITY ANIMAL GRANT', 700],
+      ['VIRAL RESCUE BOOST', 1100],
+      ['FOUNDATION MATCHING FUND', 1600],
+      ['CELEBRITY PET ADOPTION', 2200]
+    ];
+    const ev = events[Math.floor(Math.random()*events.length)];
+    money(ev[1]);
+    state.reputation = (state.reputation||0) + 60;
+    toast(ev[0] + ' • +$' + ev[1]);
+    save();
+  }
+};
+
+/* ---------- MILESTONES ---------- */
+function checkMilestones(){
+  vgEnsureRewards();
+  const m = state.milestones;
+  const cc = state.casesCompleted || 0;
+  const pets = (state.pets || []).length;
+  const rep = state.reputation || 0;
+  const table = [
+    ['cases3', cc >= 3, 800, '3 Cases Complete'],
+    ['cases5', cc >= 5, 1500, '5 Cases Complete'],
+    ['cases10', cc >= 10, 3500, '10 Cases Complete'],
+    ['cases25', cc >= 25, 9000, '25 Cases Complete'],
+    ['pets3', pets >= 3, 1000, '3 Habitat Residents'],
+    ['pets5', pets >= 5, 2500, '5 Habitat Residents'],
+    ['pets10', pets >= 10, 6000, '10 Habitat Residents'],
+    ['rep1k', rep >= 1000, 1200, 'Reputation 1,000'],
+    ['rep5k', rep >= 5000, 4000, 'Reputation 5,000'],
+    ['streak5', (state.streak||0) >= 5, 900, '5 Case Streak'],
+    ['streak10', (state.streak||0) >= 10, 2500, '10 Case Streak']
+  ];
+  table.forEach(([id, ok, pay, label]) => {
+    if(ok && !m[id]){
+      m[id] = true;
+      money(pay);
+      state.funTokens = (state.funTokens||0) + 3;
+      setTimeout(() => toast('🏆 MILESTONE: ' + label + ' • +$' + pay), 600);
+    }
+  });
+  save();
+}
+
+/* ---------- DAILY GRANT + SIDE MISSIONS UI ---------- */
+function todayKey(){ return Math.floor(Date.now()/86400000); }
+
+function claimDaily(){
+  vgEnsureRewards();
+  const d = todayKey();
+  if(state.dailyClaim[d]){ toast('Daily grant already claimed'); return; }
+  state.dailyClaim[d] = true;
+  const base = 500 + Math.min(2000, (state.casesCompleted||0) * 40);
+  const streakBonus = Math.min(1500, (state.streak||0) * 80);
+  const total = base + streakBonus;
+  money(total);
+  state.funTokens = (state.funTokens||0) + 5;
+  state.reputation = (state.reputation||0) + 50;
+  toast('DAILY CLINIC GRANT • +$' + total.toLocaleString());
+  save();
+  renderRewardsPanel();
+  if(document.getElementById('funds-display'))
+    document.getElementById('funds-display').textContent = '$' + state.funds.toLocaleString();
+}
+
+function missionDefs(){
+  return [
+    {id:'care5', label:'Care for pets 5 times today', check:()=> (state.totalPetCare||0) >= 5 + (state.sideMissions._careBase||0), pay:350, token:2},
+    {id:'adventure2', label:'Send 2 pet adventures', check:()=> !!state.sideMissions.adventureCount && state.sideMissions.adventureCount >= 2, pay:400, token:3},
+    {id:'case1', label:'Complete 1 case today', check:()=> (state.sideMissions.casesToday||0) >= 1, pay:500, token:2},
+    {id:'diagFull', label:'Run full diagnostics on a case', check:()=> !!state.sideMissions.fullDiag, pay:300, token:1},
+    {id:'trust80', label:'Reach trust 80+ on a patient', check:()=> !!state.sideMissions.highTrust, pay:450, token:2}
+  ];
+}
+
+function trackMissionsPassive(){
+  vgEnsureRewards();
+  const d = todayKey();
+  if(state.sideMissions.day !== d){
+    state.sideMissions = {day:d, claimed:{}, _careBase: state.totalPetCare||0, adventureCount:0, casesToday:0};
+  }
+  if(state.tests && state.tests.exam && state.tests.imaging && state.tests.lab)
+    state.sideMissions.fullDiag = true;
+  if(state.stats && state.stats.trust >= 80)
+    state.sideMissions.highTrust = true;
+  if(state.rewarded)
+    state.sideMissions.casesToday = Math.max(state.sideMissions.casesToday||0, 1);
+}
+
+const oldPetCare2 = window.petCare;
+window.petCare = function(i, type){
+  if(typeof oldPetCare2 === 'function') oldPetCare2(i, type);
+  vgEnsureRewards();
+  trackMissionsPassive();
+  if(type === 'adventure'){
+    state.sideMissions.adventureCount = (state.sideMissions.adventureCount||0) + 1;
+  }
+  save();
+};
+
+function claimMission(id){
+  vgEnsureRewards();
+  trackMissionsPassive();
+  const m = missionDefs().find(x => x.id === id);
+  if(!m) return;
+  if(state.sideMissions.claimed && state.sideMissions.claimed[id]){ toast('Already claimed'); return; }
+  if(!m.check()){ toast('Mission not complete yet'); return; }
+  state.sideMissions.claimed = state.sideMissions.claimed || {};
+  state.sideMissions.claimed[id] = true;
+  money(m.pay);
+  state.funTokens = (state.funTokens||0) + m.token;
+  toast('MISSION COMPLETE • +$' + m.pay);
+  save();
+  renderRewardsPanel();
+}
+
+function spendTokens(n, label){
+  vgEnsureRewards();
+  if((state.funTokens||0) < n){ toast('Need ' + n + ' tokens'); return false; }
+  state.funTokens -= n;
+  toast(label);
+  save();
+  renderRewardsPanel();
+  if(document.getElementById('funds-display'))
+    document.getElementById('funds-display').textContent = '$' + state.funds.toLocaleString();
+  return true;
+}
+
+function tokenShop(action){
+  if(action === 'cash'){
+    if(spendTokens(5, 'TOKEN EXCHANGE • +$400')) money(400);
+  } else if(action === 'rep'){
+    if(spendTokens(8, 'TOKEN EXCHANGE • +150 Reputation')) state.reputation = (state.reputation||0) + 150;
+  } else if(action === 'boost'){
+    if(spendTokens(10, 'CLINIC BOOST • +$900 + upgrades progress')){
+      money(900);
+      // soft unlock hint
+      state.reputation = (state.reputation||0) + 80;
+    }
+  } else if(action === 'habitat'){
+    if(spendTokens(12, 'HABITAT GIFT • pets happier')){
+      (state.pets||[]).forEach(pet=>{
+        if(!pet.stats) return;
+        pet.stats.happiness = Math.min(100, (pet.stats.happiness||70)+15);
+        pet.stats.bond = Math.min(100, (pet.stats.bond||30)+10);
+        pet.stats.fun = Math.min(100, (pet.stats.fun||55)+12);
+      });
+      money(200);
+    }
+  }
+  save();
+}
+
+function renderRewardsPanel(){
+  vgEnsureRewards();
+  trackMissionsPassive();
+  const panel = document.getElementById('vgRewardsPanel');
+  if(!panel) return;
+  const d = todayKey();
+  const claimed = !!state.dailyClaim[d];
+  const missions = missionDefs();
+  panel.innerHTML = `
+  <div class="vgr-wrap" style="max-width:720px">
+    <div class="vgr-top">
+      <div>
+        <div class="eyebrow">REWARD HUB</div>
+        <div class="h1" style="font-size:28px;margin:4px 0">More to Earn</div>
+      </div>
+      <button class="btn" onclick="closeRewardsPanel()">Close</button>
+    </div>
+    <div class="vgc-card">
+      <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center">
+        <div>
+          <b>Clinic Funds</b> $${(state.funds||0).toLocaleString()}<br>
+          <span style="opacity:.8">Reputation ${(state.reputation||0).toLocaleString()} • Cases ${state.casesCompleted||0} • Streak ${state.streak||0}</span>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:22px;font-weight:900;color:var(--lime)">🎫 ${state.funTokens||0}</div>
+          <div style="font-size:11px;opacity:.7">Fun Tokens</div>
+        </div>
+      </div>
+    </div>
+    <div class="vgc-card">
+      <div class="eyebrow">DAILY</div>
+      <h3 style="margin:4px 0 8px">Clinic Operations Grant</h3>
+      <p style="font-size:13px;color:#a9c0ca">Scales with cases completed and current streak. Claim once per day.</p>
+      <button class="btn good" ${claimed?'disabled':''} onclick="claimDaily()">${claimed?'✓ CLAIMED TODAY':'CLAIM DAILY GRANT'}</button>
+    </div>
+    <div class="vgc-card">
+      <div class="eyebrow">SIDE MISSIONS</div>
+      <h3 style="margin:4px 0 8px">Extra goals • extra payouts</h3>
+      ${missions.map(m=>{
+        const done = m.check();
+        const took = state.sideMissions.claimed && state.sideMissions.claimed[m.id];
+        return `<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+          <div style="font-size:13px">${done?'✅':'⬜'} ${m.label}<div style="font-size:11px;opacity:.7">+$${m.pay} • +${m.token} tokens</div></div>
+          <button class="btn ${took?'':'good'}" ${(!done||took)?'disabled':''} onclick="claimMission('${m.id}')">${took?'CLAIMED':done?'CLAIM':'LOCKED'}</button>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="vgc-card">
+      <div class="eyebrow">TOKEN SHOP</div>
+      <h3 style="margin:4px 0 8px">Spend Fun Tokens</h3>
+      <div class="action-row">
+        <button class="btn" onclick="tokenShop('cash')">5🎫 → $400</button>
+        <button class="btn" onclick="tokenShop('rep')">8🎫 → +150 Rep</button>
+        <button class="btn" onclick="tokenShop('boost')">10🎫 → Clinic Boost</button>
+        <button class="btn" onclick="tokenShop('habitat')">12🎫 → Habitat Gift</button>
+      </div>
+      <p style="font-size:11px;opacity:.7;margin-top:8px">Tokens drop from case wins, care streaks, daily claims, and missions.</p>
+    </div>
+    <div class="vgc-card">
+      <div class="eyebrow">ACTIVE BOOSTS</div>
+      <ul style="font-size:13px;line-height:1.6;color:#b6ced6;padding-left:18px;margin:6px 0">
+        <li>Case payouts roughly 2–3× higher with more bonus lines</li>
+        <li>Streak multiplier up to ×2.25 at 10+ wins</li>
+        <li>Stage bonuses for diagnostics / stabilize / surgery / recovery</li>
+        <li>Pet care pays clinic funds; Care All pays a habitat bonus</li>
+        <li>Shop upgrades & tools cost ~35–40% less</li>
+        <li>Stronger random grants when starting the next patient</li>
+        <li>Milestone trophies for cases, pets, reputation & streaks</li>
+      </ul>
+    </div>
+  </div>`;
+}
+
+function openRewards(){
+  let panel = document.getElementById('vgRewardsPanel');
+  if(!panel){
+    panel = document.createElement('div');
+    panel.id = 'vgRewardsPanel';
+    panel.style.cssText = 'position:fixed;inset:0;z-index:220;background:rgba(2,8,12,.92);display:none;overflow:auto;padding:14px';
+    document.body.appendChild(panel);
+  }
+  panel.classList.add('open');
+  panel.style.display = 'block';
+  panel.setAttribute('aria-hidden','false');
+  renderRewardsPanel();
+}
+
+// dock button
+function ensureRewardsDock(){
+  if(document.getElementById('vgRewardsDock')) return;
+  const dock = document.createElement('div');
+  dock.id = 'vgRewardsDock';
+  dock.style.cssText = 'position:fixed;left:14px;bottom:72px;z-index:102';
+  dock.innerHTML = '<button id="vgRewardsBtn" style="min-height:48px;border-radius:13px;border:1px solid #c9a24a;background:linear-gradient(180deg,#3a2e14,#241c0e);color:#fff6d8;font-weight:900;padding:0 14px;box-shadow:0 10px 30px #0008;cursor:pointer">🎁 REWARDS</button>';
+  document.body.appendChild(dock);
+  document.getElementById('vgRewardsBtn').onclick = openRewards;
+  // close on overlay click outside card
+  document.addEventListener('click', function(e){
+    const panel = document.getElementById('vgRewardsPanel');
+    if(panel && panel.classList.contains('open') && e.target === panel){
+      window.closeRewardsPanel();
+    }
+  });
+}
+
+// Patch close to hide display
+const _origClose = window.close;
+window.closeRewardsPanel = function(){
+  const panel = document.getElementById('vgRewardsPanel');
+  if(panel){
+    panel.classList.remove('open');
+    panel.style.display = 'none';
+    panel.setAttribute('aria-hidden','true');
+  }
+};
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape') window.closeRewardsPanel();
+});
+
+// expose for inline onclick
+window.claimDaily = claimDaily;
+window.claimMission = claimMission;
+window.tokenShop = tokenShop;
+window.openRewards = openRewards;
+
+// Keep-pet bonus
+const oldKeep = window.keepPet;
+if(typeof oldKeep === 'function'){
+  window.keepPet = function(){
+    oldKeep();
+    money(250);
+    state.funTokens = (state.funTokens||0) + 2;
+    state.reputation = (state.reputation||0) + 40;
+    toast('HABITAT INTAKE BONUS • +$250');
+    checkMilestones();
+    save();
+  };
+}
+
+// Init
+addEventListener('load', function(){
+  vgEnsureRewards();
+  ensureRewardsDock();
+  trackMissionsPassive();
+  checkMilestones();
+  // one-time welcome boost for existing saves
+  if(!state.milestones.welcomeBoost){
+    state.milestones.welcomeBoost = true;
+    money(750);
+    state.funTokens = (state.funTokens||0) + 8;
+    toast('🎁 REWARD PACK ACTIVE • Welcome +$750 + 8 tokens');
+    save();
+  }
+});
+setTimeout(function(){ vgEnsureRewards(); ensureRewardsDock(); }, 400);
+setInterval(trackMissionsPassive, 3000);
+
+})();
+</script>
+
+
+<script id="vg-reward-scroll-fix-js">
+(function(){
+  function prepRewardModal(){
+    const modal=document.getElementById('reward-modal');
+    if(!modal) return;
+    const box=modal.querySelector('.modal-box');
+    if(modal.classList.contains('show')){
+      modal.scrollTop=0;
+      if(box) box.scrollTop=0;
+    }
+  }
+  const modal=document.getElementById('reward-modal');
+  if(modal){
+    new MutationObserver(prepRewardModal).observe(modal,{attributes:true,attributeFilter:['class']});
+  }
+  document.addEventListener('click',()=>setTimeout(prepRewardModal,30),true);
+  addEventListener('load',prepRewardModal);
 })();
 </script>
 
