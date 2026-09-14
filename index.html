@@ -61,6 +61,19 @@ button{font:inherit}.shell{max-width:1440px;margin:auto;padding:0 16px 70px}
   white-space:nowrap;
 }
 #hospitalTopShopLink:hover{opacity:1}
+#calmingPackBadge{
+  display:inline-flex;
+  align-items:center;
+  margin-left:8px;
+  padding:3px 7px;
+  border:1px solid #6583ad;
+  border-radius:999px;
+  background:#122640;
+  font-size:.68rem;
+  font-weight:900;
+  letter-spacing:.05em;
+  white-space:nowrap;
+}
 
 </style>
 
@@ -235,9 +248,26 @@ function installTopShopLink(){
    command.insertAdjacentHTML("beforeend",link);
  }
 }
+
+function installCalmingBadge(){
+ let old=document.getElementById("calmingPackBadge");
+ let mega={};
+ try{mega=JSON.parse(localStorage.getItem("vetgods_mega_expansion_v1")||"{}")||{}}catch(e){}
+ let rounds=Number((mega.tempPacks||{}).trust||0);
+
+ if(rounds<=0){if(old)old.remove();return}
+ if(old){old.textContent="CALMING PACK ACTIVE • "+rounds+" ROUNDS";return}
+
+ let shop=document.getElementById("hospitalTopShopLink");
+ if(shop){
+   shop.insertAdjacentHTML("afterend",'<span id="calmingPackBadge">CALMING PACK ACTIVE • '+rounds+' ROUNDS</span>');
+ }
+}
+
 installTopShopLink();
-setTimeout(installTopShopLink,250);
-setTimeout(installTopShopLink,900);
+installCalmingBadge();
+setTimeout(()=>{installTopShopLink();installCalmingBadge()},250);
+setTimeout(()=>{installTopShopLink();installCalmingBadge()},900);
 
 </script>
 
@@ -605,7 +635,7 @@ function packCatalog(){
  surgery:{name:"Surgical Precision Pack",price:850,rounds:2,desc:"Stronger repair/closure and improved anesthesia support."},
  recovery:{name:"Recovery Booster Pack",price:500,rounds:4,desc:"Boosts water, food, rest, comfort and mobility recovery."},
  supplies:{name:"Emergency Supply Drop",price:700,rounds:5,desc:"Premium temporary supplies add health and comfort support."},
- trust:{name:"Calm Animal Pack",price:300,rounds:4,desc:"Trust rises faster and stress falls during care."},
+ trust:{name:"Calming Pack",price:300,rounds:4,desc:"For 4 patient rounds: every care phase lowers stress and raises trust. A CALMING PACK ACTIVE badge stays visible while it is running."},
  reward:{name:"Sponsor Bonus Pack",price:1000,rounds:3,desc:"Earn an extra $400 clinic funds on each completed patient round."}
  };
 }
@@ -631,7 +661,7 @@ function buyTempPack(key){
  if(core.funds<item.price){alert(item.name+" requires $"+item.price.toLocaleString()+". Current funds: $"+core.funds.toLocaleString());return}
  core.funds-=item.price;mega.tempPacks[key]=Number(mega.tempPacks[key]||0)+item.rounds;
  writeCore(core);writeMega(mega);
- showBoostNotice("PURCHASED: "+item.name+" • "+item.rounds+" rounds active");
+ showBoostNotice((key==="trust"?"CALMING PACK ACTIVE: ":"PURCHASED: ")+item.name+" • "+item.rounds+" rounds active");
  screen();document.getElementById("hospitalShopScreen").classList.add("open");
 }
 function screen(){
@@ -754,7 +784,7 @@ function tick(){
    if(st==="surgery"&&p.surgery>0){add("health",5);add("stress",-5);triggered.push("Surgical Precision")}
    if(st==="recovery"&&p.recovery>0){add("hydration",4);add("energy",4);add("comfort",4);add("mobility",3);triggered.push("Recovery Booster")}
    if((st==="stabilize"||st==="treatment")&&p.supplies>0){add("health",3);add("comfort",2);triggered.push("Emergency Supply Drop")}
-   if(p.trust>0){add("trust",2);add("stress",-2);triggered.push("Calm Animal")}
+   if(p.trust>0){add("trust",5);add("stress",-7);add("comfort",3);triggered.push("CALMING PACK ACTIVE")}
    wr(CK,c);wr(MK,m);lastStage=st;
    if(triggered.length)notice("ACTIVE BOOST: "+triggered.join(" + ")+" applied");
  }
@@ -773,6 +803,15 @@ function tick(){
    if(expired.length)setTimeout(()=>notice("PACK EXPIRED: "+expired.join(", ")),900);
  }
  lastRewarded=!!c.rewarded;
+ try{
+   let b=document.getElementById("calmingPackBadge"),r=Number((m.tempPacks||{}).trust||0);
+   if(r>0){
+     if(!b){
+       let shop=document.getElementById("hospitalTopShopLink");
+       if(shop)shop.insertAdjacentHTML("afterend",'<span id="calmingPackBadge">CALMING PACK ACTIVE • '+r+' ROUNDS</span>');
+     }else b.textContent="CALMING PACK ACTIVE • "+r+" ROUNDS";
+   }else if(b)b.remove();
+ }catch(e){}
 }
 setInterval(tick,1200);
 })();
