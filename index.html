@@ -46,6 +46,22 @@ button{font:inherit}.shell{max-width:1440px;margin:auto;padding:0 16px 70px}
 .patientVisual{position:relative}
 .patientVisual .animal svg{width:100%;height:auto;display:block;max-height:300px}
 .petCard .notice{font-size:.9rem;line-height:1.45}
+
+#hospitalTopShopLink{
+  display:inline-flex;
+  align-items:center;
+  margin-left:10px;
+  font-weight:800;
+  font-size:.78rem;
+  letter-spacing:.06em;
+  text-decoration:underline;
+  text-underline-offset:3px;
+  cursor:pointer;
+  opacity:.95;
+  white-space:nowrap;
+}
+#hospitalTopShopLink:hover{opacity:1}
+
 </style>
 
 <style id="vg-mega-expansion-css">
@@ -80,8 +96,7 @@ button{font:inherit}.shell{max-width:1440px;margin:auto;padding:0 16px 70px}
 
 
 <style id="hospital-shop-screen-css">
-#hospitalShopLauncher{margin:10px 0}
-#hospitalShopLauncher button{width:100%;min-height:46px;border:1px solid #4d668d;border-radius:12px;background:#172844;color:inherit;font-weight:800}
+
 #hospitalShopScreen{position:fixed;inset:0;z-index:99999;background:#08111f;overflow-y:auto;padding:14px;display:none}
 #hospitalShopScreen.open{display:block}
 .shopScreenInner{max-width:900px;margin:0 auto}
@@ -94,6 +109,14 @@ button{font:inherit}.shell{max-width:1440px;margin:auto;padding:0 16px 70px}
 .shopTier ul{padding-left:18px;font-size:.78rem;line-height:1.55}
 .shopBuy{width:100%;min-height:48px;border-radius:11px;border:1px solid #6b84aa;background:#20395d;color:inherit;font-weight:800}
 .shopBuy:disabled{opacity:.5}
+.tempPackTitle{margin:20px 0 8px}
+.tempPack{padding:12px;border:1px solid #405a80;border-radius:13px;background:#101d31}
+.packRounds{font-size:.72rem;opacity:.72;margin:4px 0 8px}
+.activeBoosts{margin:12px 0;padding:10px;border:1px solid #405a80;border-radius:12px;background:#0d192b;font-size:.78rem;line-height:1.55}
+#boostNoticeBar{position:fixed;left:10px;right:10px;top:10px;z-index:100000;pointer-events:none;display:flex;justify-content:center}
+.boostNotice{max-width:760px;padding:10px 14px;border:1px solid #6c88b3;border-radius:12px;background:#10213a;color:inherit;box-shadow:0 8px 24px rgba(0,0,0,.35);font-size:.82rem;font-weight:800;animation:boostfade 3.8s forwards}
+@keyframes boostfade{0%{opacity:0;transform:translateY(-8px)}10%,80%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-8px)}}
+.boostMini{margin-top:8px;padding:8px 10px;border:1px solid #405a80;border-radius:10px;background:#0d192b;font-size:.75rem;line-height:1.45}
 </style>
 
 </head>
@@ -174,6 +197,48 @@ function nextPatient(){state.idx=(state.idx+1)%patients.length;state.stage=0;sta
 function renderScreen(id){document.getElementById('funds').textContent='$'+state.funds.toLocaleString();const el=document.getElementById(id);if(id==='clinic')el.innerHTML=clinic();if(id==='stabilize')el.innerHTML=stabilize();if(id==='diagnostics')el.innerHTML=diagnostics();if(id==='treatment')el.innerHTML=treatment();if(id==='surgery')el.innerHTML=surgery();if(id==='recovery')el.innerHTML=recovery();if(id==='discharge')el.innerHTML=discharge();if(id==='pets')el.innerHTML=pets()}
 function render(){document.getElementById('funds').textContent='$'+state.funds.toLocaleString();const active=document.querySelector('.screen.active')?.id||'clinic';renderScreen(active)}
 document.getElementById('keepPet').onclick=keepPet;document.getElementById('nextPatient').onclick=nextPatient;renderNav();go('clinic');
+
+function installTopShopLink(){
+ let existing=document.getElementById("hospitalTopShopLink");
+ if(existing)return;
+
+ let all=[...document.querySelectorAll("body *")];
+
+ let status=all.find(el=>{
+   let t=(el.textContent||"").trim();
+   let r=el.getBoundingClientRect();
+   return /\bclinic\b/i.test(t) && /\$[\d,]+/.test(t) &&
+          r.top>=0 && r.top<220 && r.width>0 && r.height>0 &&
+          el.children.length<=14;
+ });
+
+ let command=all.find(el=>{
+   let t=(el.textContent||"").trim();
+   let r=el.getBoundingClientRect();
+   return /vet gods/i.test(t) && /intervention command/i.test(t) &&
+          r.top>=0 && r.top<220 && r.width>0 && r.height>0 &&
+          el.children.length<=12;
+ });
+
+ let mega={};
+ try{mega=JSON.parse(localStorage.getItem("vetgods_mega_expansion_v1")||"{}")||{}}catch(e){}
+ let active=mega.tempPacks||{};
+ let activeCount=Object.values(active).filter(v=>Number(v)>0).length;
+ let link='<span id="hospitalTopShopLink" role="button" tabindex="0">SHOP'+(activeCount?' • '+activeCount+' ACTIVE':'')+'</span>';
+
+ if(status){
+   status.insertAdjacentHTML("beforeend",link);
+   return;
+ }
+
+ if(command){
+   command.insertAdjacentHTML("beforeend",link);
+ }
+}
+installTopShopLink();
+setTimeout(installTopShopLink,250);
+setTimeout(installTopShopLink,900);
+
 </script>
 
 <script>
@@ -531,9 +596,43 @@ function writeCore(v){localStorage.setItem("vetgods_reimagined",JSON.stringify(v
 function writeMega(v){localStorage.setItem("vetgods_mega_expansion_v1",JSON.stringify(v))}
 function tier(){return Number(readMega().hospitalTier||0)}
 function money(){return Number(readCore().funds||0)}
-function launcher(){
- let host=document.querySelector("#screen,.screen,main");if(!host||document.getElementById("hospitalShopLauncher"))return;
- host.insertAdjacentHTML("afterbegin",'<div id="hospitalShopLauncher"><button id="openHospitalShop">🏥 HOSPITAL UPGRADES & EQUIPMENT</button></div>');
+
+function packCatalog(){
+ return {
+ trauma:{name:"Trauma Response Pack",price:450,rounds:3,desc:"Stronger stabilization, oxygen, hydration and stress control."},
+ pain:{name:"Pain & Comfort Pack",price:350,rounds:4,desc:"Pain support works harder and comfort rises faster."},
+ diagnostics:{name:"Rapid Diagnostics Pack",price:600,rounds:3,desc:"Bonus diagnostic evidence and extra reputation."},
+ surgery:{name:"Surgical Precision Pack",price:850,rounds:2,desc:"Stronger repair/closure and improved anesthesia support."},
+ recovery:{name:"Recovery Booster Pack",price:500,rounds:4,desc:"Boosts water, food, rest, comfort and mobility recovery."},
+ supplies:{name:"Emergency Supply Drop",price:700,rounds:5,desc:"Premium temporary supplies add health and comfort support."},
+ trust:{name:"Calm Animal Pack",price:300,rounds:4,desc:"Trust rises faster and stress falls during care."},
+ reward:{name:"Sponsor Bonus Pack",price:1000,rounds:3,desc:"Earn an extra $400 clinic funds on each completed patient round."}
+ };
+}
+function packMega(){let m=readMega();m.tempPacks=m.tempPacks||{};return m}
+function activeBoostHTML(){
+ let m=packMega(),cat=packCatalog(),rows=[];
+ Object.keys(m.tempPacks).forEach(k=>{if(Number(m.tempPacks[k])>0&&cat[k])rows.push("<b>"+cat[k].name+"</b>: "+m.tempPacks[k]+" rounds remaining")});
+ return '<div class="activeBoosts">'+(rows.length?"<b>ACTIVE TEMPORARY PACKS</b><br>"+rows.join("<br>"):"No temporary packs active.")+"</div>";
+}
+function tempPackCards(){
+ let cat=packCatalog();
+ return Object.keys(cat).sort((a,b)=>cat[a].price-cat[b].price).map(k=>{let x=cat[k];return `<article class="tempPack"><h3>${x.name}</h3><div class="shopPrice">$${x.price.toLocaleString()}</div><div class="packRounds">TEMPORARY • ${x.rounds} PATIENT ROUNDS</div><div style="font-size:.78rem;line-height:1.45">${x.desc}</div><button class="shopBuy" style="margin-top:10px" data-packbuy="${k}">BUY PACK</button></article>`}).join("");
+}
+function showBoostNotice(msg){
+ let bar=document.getElementById("boostNoticeBar");
+ if(!bar){document.body.insertAdjacentHTML("beforeend",'<div id="boostNoticeBar"></div>');bar=document.getElementById("boostNoticeBar")}
+ bar.innerHTML='<div class="boostNotice">'+msg+'</div>';
+ setTimeout(()=>{if(bar)bar.innerHTML=""},3900);
+}
+function buyTempPack(key){
+ let item=packCatalog()[key];if(!item)return;
+ let core=readCore(),mega=packMega();core.funds=Number(core.funds||0);
+ if(core.funds<item.price){alert(item.name+" requires $"+item.price.toLocaleString()+". Current funds: $"+core.funds.toLocaleString());return}
+ core.funds-=item.price;mega.tempPacks[key]=Number(mega.tempPacks[key]||0)+item.rounds;
+ writeCore(core);writeMega(mega);
+ showBoostNotice("PURCHASED: "+item.name+" • "+item.rounds+" rounds active");
+ screen();document.getElementById("hospitalShopScreen").classList.add("open");
 }
 function screen(){
  let old=document.getElementById("hospitalShopScreen");if(old)old.remove();
@@ -542,8 +641,14 @@ function screen(){
  <div class="shopScreenInner">
   <div class="shopScreenTop"><button class="shopBack" id="closeHospitalShop">← BACK TO PATIENT</button><div class="shopMoney">Clinic Funds: $${m.toLocaleString()}</div></div>
   <div style="font-size:.7rem;letter-spacing:.14em;opacity:.65">VET GODS FACILITIES DIVISION</div>
-  <h2>🏥 Hospital Upgrade Shop</h2>
-  <p style="opacity:.7">Permanent facility upgrades. Purchases improve the hospital systems used during cases.</p>
+  <h2>🏥 Hospital Shop</h2>
+  <p style="opacity:.7">Temporary care packs are listed cheapest-to-most-expensive first. Permanent hospital upgrades are at the bottom.</p>
+
+  <h2 class="tempPackTitle">⚡ Temporary Care Packs</h2>
+  ${activeBoostHTML()}
+  <div class="shopGrid">${tempPackCards()}</div>
+
+  <h2 class="tempPackTitle">🏥 Permanent Hospital Upgrades</h2>
   <div class="shopGrid">
    <article class="shopTier"><div>LEVEL II</div><h3>Advanced Veterinary Hospital</h3><div class="shopPrice">$4,000</div>
     <ul><li>Advanced imaging suite</li><li>ICU monitoring</li><li>Precision oxygen and fluid support</li><li>Improved pain and wound care</li><li>Safer anesthesia and surgery</li><li>Faster recovery</li><li>+$250 upgraded discharge bonus</li></ul>
@@ -610,20 +715,66 @@ function performUpgrade(tier){
 function openShop(){screen();document.getElementById("hospitalShopScreen").classList.add("open")}
 function closeShop(){let x=document.getElementById("hospitalShopScreen");if(x)x.classList.remove("open")}
 document.addEventListener("click",function(e){
- if(e.target.closest("#openHospitalShop")){openShop();return}
+ if(e.target.closest("#openHospitalShop")||e.target.closest("#hospitalTopShopLink")){openShop();return}
  if(e.target.closest("#closeHospitalShop")){closeShop();return}
+ let pb=e.target.closest("[data-packbuy]");if(pb){buyTempPack(pb.dataset.packbuy);return}
  let b=e.target.closest("[data-shopbuy]");if(b){
   try{performUpgrade(Number(b.dataset.shopbuy));screen();document.getElementById("hospitalShopScreen").classList.add("open")}
   catch(err){alert("Upgrade shop error: "+err.message)}
  }
 });
-let last="";
-setInterval(function(){
- let host=document.querySelector("#screen,.screen,main");
- let sig=(host?"1":"0")+"|"+(host&&host.querySelector("#hospitalShopLauncher")?"1":"0");
- if(sig!==last){last=sig;launcher()}
-},800);
-launcher();
+
+})();
+</script>
+
+
+<script id="temporary-pack-runtime">
+(function(){
+const CK="vetgods_reimagined",MK="vetgods_mega_expansion_v1";
+function rd(k){try{return JSON.parse(localStorage.getItem(k)||"{}")||{}}catch(e){return{}}}
+function wr(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function notice(msg){
+ let bar=document.getElementById("boostNoticeBar");
+ if(!bar){document.body.insertAdjacentHTML("beforeend",'<div id="boostNoticeBar"></div>');bar=document.getElementById("boostNoticeBar")}
+ bar.innerHTML='<div class="boostNotice">'+msg+'</div>';
+ setTimeout(()=>{if(bar)bar.innerHTML=""},3800);
+}
+let lastStage=null,lastIdx=null,lastRewarded=false;
+function tick(){
+ let c=rd(CK),m=rd(MK);m.tempPacks=m.tempPacks||{};c.stats=c.stats||{};
+ let st=String(c.stage||""),idx=Number(c.idx||0),p=m.tempPacks;
+ if(lastStage===null){lastStage=st;lastIdx=idx;lastRewarded=!!c.rewarded;return}
+ const add=(k,n)=>c.stats[k]=Math.max(0,Math.min(100,Number(c.stats[k]||0)+n));
+ let triggered=[];
+
+ if(st!==lastStage){
+   if(st==="stabilize"&&p.trauma>0){add("oxygen",4);add("hydration",4);add("stress",-4);triggered.push("Trauma Response")}
+   if((st==="treatment"||st==="recovery")&&p.pain>0){add("pain",-4);add("comfort",4);triggered.push("Pain & Comfort")}
+   if(st==="diagnostics"&&p.diagnostics>0){m.reputation=Number(m.reputation||0)+2;triggered.push("Rapid Diagnostics")}
+   if(st==="surgery"&&p.surgery>0){add("health",5);add("stress",-5);triggered.push("Surgical Precision")}
+   if(st==="recovery"&&p.recovery>0){add("hydration",4);add("energy",4);add("comfort",4);add("mobility",3);triggered.push("Recovery Booster")}
+   if((st==="stabilize"||st==="treatment")&&p.supplies>0){add("health",3);add("comfort",2);triggered.push("Emergency Supply Drop")}
+   if(p.trust>0){add("trust",2);add("stress",-2);triggered.push("Calm Animal")}
+   wr(CK,c);wr(MK,m);lastStage=st;
+   if(triggered.length)notice("ACTIVE BOOST: "+triggered.join(" + ")+" applied");
+ }
+
+ let done=(idx!==lastIdx)||(!!c.rewarded&&!lastRewarded);
+ if(done){
+   if(Number(p.reward||0)>0){c.funds=Number(c.funds||0)+400;notice("SPONSOR BONUS: +$400 clinic funds")}
+   let expired=[];
+   Object.keys(p).forEach(k=>{
+     if(Number(p[k]||0)>0){
+       p[k]=Math.max(0,Number(p[k])-1);
+       if(p[k]===0)expired.push(k);
+     }
+   });
+   wr(CK,c);wr(MK,m);lastIdx=idx;
+   if(expired.length)setTimeout(()=>notice("PACK EXPIRED: "+expired.join(", ")),900);
+ }
+ lastRewarded=!!c.rewarded;
+}
+setInterval(tick,1200);
 })();
 </script>
 
