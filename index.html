@@ -516,6 +516,22 @@ body{
 .mxmeter{height:8px;background:#061018;border-radius:99px;overflow:hidden}.mxmeter i{display:block;height:100%;background:linear-gradient(90deg,#25bfd8,#9c6cff)}
 @media(max-width:650px){.mxgrid{grid-template-columns:1fr}}
 </style>
+
+<style id="vg-toon-designer-css">
+.toon-launch{width:100%;margin:10px 0;padding:14px;border:1px solid #7ce8fb;border-radius:12px;background:linear-gradient(135deg,#0d607a,#623d99);color:#fff;font-weight:1000;letter-spacing:.06em}
+#toonDesigner,#transformVault{position:fixed;inset:0;z-index:35000;display:none;overflow:auto;background:#02070c;color:#edfaff;padding:12px}
+#toonDesigner.open,#transformVault.open{display:block}.toon-shell{max-width:1100px;margin:auto}.toon-head{position:sticky;top:0;z-index:6;background:#02070c;border-bottom:1px solid #284d5f;padding:8px 0}
+.toon-title{font-size:clamp(25px,6vw,42px);font-weight:1000}.toon-grid{display:grid;grid-template-columns:1.05fr 1.6fr;gap:10px}.toon-card{border:1px solid #31576a;border-radius:14px;padding:11px;background:linear-gradient(145deg,#071923,#15172c);margin-top:10px}
+.toon-preview{font-size:76px;text-align:center;padding:15px}.toon-form{text-align:center;font-size:22px;font-weight:1000}.toon-sub{font-size:9px;color:#9ab4bf;line-height:1.55}
+.toon-meters{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.toon-meter{border:1px solid #284b5c;border-radius:9px;padding:7px}.toon-meter b{font-size:18px}.toon-meter span{display:block;font-size:8px;color:#8faab5}
+.toon-category{margin-top:10px;border:1px solid #294d5f;border-radius:12px;padding:10px}.toon-category h3{margin:0 0 7px}.toon-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.toon-control{border:1px solid #31596b;border-radius:10px;padding:8px;background:#071722}.toon-control b{display:block;font-size:9px;margin-bottom:5px}.toon-control select{width:100%;padding:8px;background:#04121a;color:#fff;border:1px solid #3e6678;border-radius:7px}
+.toon-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}.toon-chip{font-size:8px;padding:4px 7px;border:1px solid #3a6072;border-radius:999px}.toon-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.toon-btn{border:1px solid #63d9ee;border-radius:9px;background:#0c2936;color:#fff;padding:10px;font-weight:1000}.toon-btn.primary{background:linear-gradient(135deg,#106b88,#653fa0)}.toon-btn.gold{border-color:#9a7a31;background:#2a210c;color:#ffe59a}
+.vault-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.vault-resident{border:1px solid #365f73;border-radius:15px;padding:12px;background:linear-gradient(145deg,#071923,#17182e)}.vault-face{font-size:56px}.vault-data{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:8px}.vault-data div{border:1px solid #294c5d;border-radius:8px;padding:7px;font-size:8px}.vault-data b{display:block;font-size:11px;color:#e9fbff}
+@media(max-width:760px){.toon-grid,.vault-grid{grid-template-columns:1fr}.toon-controls{grid-template-columns:1fr}}
+</style>
+
 </head>
 <body>
 <div id="app">
@@ -1679,7 +1695,7 @@ function treeScreen(){
   return hero("Morph Tree · Choose a Path",
     "Compare the future, not just the immediate bonus. Every branch changes traversal, abilities, habitat fit and later specialization.","🌌")
   +`<div class="panel"><div class="morph-grid">${cards}</div>${gate("MORPH SELECTION",checks)}
-    ${morphCustomizationLab(c)}
+    <button class="toon-launch" onclick="openToonDesigner()">🧬 OPEN LARGE TOON MORPH DESIGNER · 30 LIVE DATA CHANNELS</button>${morphCustomizationLab(c)}
     ${areaFooter(checks.every(x=>x[1]),"MORPH CHAMBER")}</div>`;
 }
 function selectMorph(id){
@@ -1850,7 +1866,7 @@ function sanctuaryScreen(){
   }
   return hero("Morph Sanctuary",
     "Residence is the handoff into the continuing game, not an ending. Continue the resident story to search for items, use discoveries in Career research, or begin the next rescue case.","🌿")
-  +`<div class="panel"><div class="callout good"><b>🏡 RESIDENCE ESTABLISHED — CHOOSE THE NEXT GAMEPLAY PATH</b><br>Story expeditions recover reusable Institute items. Career research converts those discoveries into new field expectations.</div><div class="footer-actions"><button class="primary fx-button" onclick="openFirstMorphStory()">🗺️ CONTINUE STORY · SEARCH FOR ITEMS</button><button class="primary fx-button" onclick="goMeta('career')">🎓 USE ITEMS IN CAREER CENTER</button><button class="secondary fx-button" onclick="careAll()">CARE FOR ALL RESIDENTS</button>
+  +`<div class="panel"><div class="callout good"><b>🏡 RESIDENCE ESTABLISHED — CHOOSE THE NEXT GAMEPLAY PATH</b><br>Story expeditions recover reusable Institute items. Career research converts those discoveries into new field expectations.</div><div class="footer-actions"><button class="primary fx-button" onclick="openFirstMorphStory()">🗺️ CONTINUE STORY · SEARCH FOR ITEMS</button><button class="primary fx-button" onclick="openTransformVault()">✨ TRANSFORMATION VAULT · VIEW ALL BUILDS</button><button class="primary fx-button" onclick="goMeta('career')">🎓 USE ITEMS IN CAREER CENTER</button><button class="secondary fx-button" onclick="careAll()">CARE FOR ALL RESIDENTS</button>
     <button class="secondary fx-button" onclick="startNextCreature()">${state.activeIndex<CREATURES.length-1?"▶ ADVANCE TO NEXT PATIENT":"▶ START NEXT PATIENT CYCLE"}</button></div></div>
   <div class="sanctuary-grid">${state.sanctuary.map((p,i)=>petCard(p,i)).join("")}</div>`;
 }
@@ -3200,8 +3216,8 @@ function completeCreatureCase(){
  let resident=state.sanctuary.find(x=>x.caseKey===c.key),isNew=!resident;
  if(isNew){
    resident={caseKey:c.key,name:c.name,species:c.species,icon:m.icon,formName:m.name,theme:m.theme,temperament:c.temperament,habitat:m.habitat,tags:m.tags,health:90,hydration:82,energy:72,comfort:80,bond:clamp(c.bond+10),mastery:18,lastUpdate:Date.now(),residenceEstablished:true,
-     morphRecord:{selectedMorph:c.selectedMorph,catalyst:m.catalyst,strength:m.strength,trade:m.trade,abilities:m.abilities,baseTags:c.baseTags,
-       customizations:c.morphCustomizations||c.customizations||c.selectedCustomizations||[],workshop:c.morphWorkshop||null,architecture:c.exoticArchitecture||null}};
+     morphRecord:{selectedMorph:c.selectedMorph,formName:m.name,theme:m.theme,habitat:m.habitat,catalyst:m.catalyst,strength:m.strength,trade:m.trade,abilities:[...(m.abilities||[])],tags:[...(m.tags||[])],baseTags:c.baseTags,
+       channels:{...(c.morphCustom||{})},customizations:{...(c.morphCustom||{})},workshop:c.morphWorkshop||null,architecture:c.exoticArchitecture||null,designSnapshot:c.morphDesignSnapshot||null}};
    state.sanctuary.push(resident);state.completedCases+=1;state.research+=12;state.credits+=125;state.rank=1+Math.floor(state.completedCases/2);state.chapter=1+state.completedCases;
  }else resident.residenceEstablished=true;
  state.codex[c.key]={name:c.name,species:c.species,icon:m.icon,formName:m.name,theme:m.theme,temperament:c.temperament,tags:m.tags,world:w.name+" · "+w.biome,objective:w.objective,complete:100};
@@ -3328,7 +3344,7 @@ function gather(p){
  if(c){
    const m=(c.morphs||[]).find(x=>x.id===c.selectedMorph);
    add("Selected morph path",m?.name);add("Catalyst",m?.catalyst);add("Strength profile",m?.strength);add("Tradeoff",m?.trade);add("Abilities",m?.abilities);
-   add("Base traits",c.baseTags);add("Morph customizations",c.morphCustomizations||c.customizations||c.selectedCustomizations);
+   add("Base traits",c.baseTags);add("Morph customizations",c.morphCustom||c.morphCustomizations||c.customizations||c.selectedCustomizations);
    add("Body plan",c.morphWorkshop?.bodyPlan);add("Installed organs",c.morphWorkshop?.organs);add("Biome imprints",c.morphWorkshop?.biomeImprints);
    add("Preserved traits",c.morphWorkshop?.preservedTraits);add("Echo abilities",c.morphWorkshop?.echoAbilities);
    if(c.exoticArchitecture?.systems)add("Body systems",Object.values(c.exoticArchitecture.systems).map(x=>x?.name||x));
@@ -3381,5 +3397,57 @@ new MutationObserver(()=>{clearTimeout(window.__vgr);window.__vgr=setTimeout(inj
 .mission-depth .depth-node{height:7px;border-radius:99px;background:#16303d}.mission-depth .depth-node.on{background:#74dff2}.mission-depth .mystery{font-size:9px;color:#a8c1cb;line-height:1.55}
 .mission-depth .mission-find{border:1px solid #725f32;background:#251e0d;color:#ffe7a3;border-radius:9px;padding:8px;margin-top:8px;font-size:9px}
 </style>
+
+<script id="vg-toon-designer-js">
+(function(){
+const CATS=["Identity","Body","Surface","Head","Movement","Energy","Habitat","Signature"];
+function root(id){let e=document.getElementById(id);if(!e){e=document.createElement("div");e.id=id;document.body.appendChild(e)}return e}
+function esc(x){return String(x??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function cat(n,i){const s=n.toLowerCase();if(/eye|face|horn|ear|jaw|crest|head/.test(s))return"Head";if(/wing|leg|tail|movement|flight|stride|mobility/.test(s))return"Movement";if(/skin|fur|feather|scale|color|pattern|surface|coat/.test(s))return"Surface";if(/body|size|frame|mass|shape|silhouette/.test(s))return"Body";if(/energy|glow|aura|pulse|element|resonance/.test(s))return"Energy";if(/habitat|climate|biome|environment/.test(s))return"Habitat";if(/signature|name|temperament|identity/.test(s))return"Identity";return CATS[(i%3)+5]}
+function activeSafe(){try{return active()}catch(e){return null}}
+function ensure(c){if(typeof ensureMorphCustom==="function")ensureMorphCustom(c);c.morphCustom=c.morphCustom||{};return c.morphCustom}
+function score(c,key){const vals=Object.values(ensure(c)).join("|");let n=0;for(let i=0;i<vals.length;i++)n=(n+vals.charCodeAt(i)*(i+1))%997;const seed=key.split("").reduce((a,x)=>a+x.charCodeAt(0),n);return 45+(seed%51)}
+function snapshot(c){
+ const m=(c.morphs||[]).find(x=>x.id===c.selectedMorph)||{};
+ return {formName:m.name||"Unselected Form",icon:m.icon||c.icon||"🧬",theme:m.theme||"",catalyst:m.catalyst||"",habitat:m.habitat||"",strength:m.strength||"",trade:m.trade||"",abilities:[...(m.abilities||[])],tags:[...(m.tags||[])],channels:{...ensure(c)},savedAt:Date.now()};
+}
+window.openToonDesigner=function(){
+ const c=activeSafe();if(!c){if(typeof toast==="function")toast("No active morph candidate.");return}
+ ensure(c);drawDesigner(c);root("toonDesigner").classList.add("open");root("toonDesigner").scrollTop=0
+}
+window.closeToonDesigner=function(){root("toonDesigner").classList.remove("open")}
+window.toonSet=function(n,v){const c=activeSafe();if(!c)return;ensure(c)[n]=v;c.morphDesignSnapshot=snapshot(c);if(typeof save==="function")save();drawDesigner(c)}
+window.toonRandomize=function(){const c=activeSafe();if(!c)return;if(typeof randomizeMorphCustom==="function"){randomizeMorphCustom();setTimeout(()=>{c.morphDesignSnapshot=snapshot(c);drawDesigner(c)},0)}}
+window.toonLockBuild=function(){const c=activeSafe();if(!c)return;c.morphDesignSnapshot=snapshot(c);c.morphDesignLocked=true;if(typeof save==="function")save();drawDesigner(c);if(typeof toast==="function")toast("🧬 Morph design recorded. You can still continue the normal transformation sequence.")}
+function drawDesigner(c){
+ const m=(c.morphs||[]).find(x=>x.id===c.selectedMorph)||{},custom=ensure(c);
+ const groups={};MORPH_CUSTOMIZATIONS.forEach((x,i)=>{const k=cat(x[0],i);(groups[k]||(groups[k]=[])).push(x)});
+ const metrics=["Adaptation","Mobility","Sensory","Resonance","Stability","Field Utility"];
+ root("toonDesigner").innerHTML=`<div class="toon-shell"><div class="toon-head"><div class="toon-actions" style="justify-content:space-between"><div><div class="toon-sub">LIVE CHARACTER MORPH CONSOLE</div><div class="toon-title">🧬 TOON MORPH DESIGNER</div></div><button class="toon-btn" onclick="closeToonDesigner()">RETURN</button></div></div>
+ <div class="toon-grid"><aside><div class="toon-card"><div class="toon-preview">${esc(m.icon||c.icon||"🧬")}</div><div class="toon-form">${esc(c.name)} · ${esc(m.name||"SELECT A MORPH PATH")}</div><div class="toon-sub" style="text-align:center">${esc(m.theme||c.species)}</div>
+ <div class="toon-chips">${(m.tags||[]).map(x=>`<span class="toon-chip">${esc(x)}</span>`).join("")}</div></div>
+ <div class="toon-card"><h3>LIVE MORPH DATA</h3><div class="toon-meters">${metrics.map(k=>`<div class="toon-meter"><b>${score(c,k)}%</b><span>${k.toUpperCase()}</span></div>`).join("")}</div></div>
+ <div class="toon-card"><h3>FORM ENGINE</h3><div class="toon-sub"><b>CATALYST</b><br>${esc(m.catalyst||"Choose a branch")}<br><br><b>STRENGTH</b><br>${esc(m.strength||"—")}<br><br><b>TRADEOFF</b><br>${esc(m.trade||"—")}<br><br><b>HABITAT</b><br>${esc(m.habitat||"—")}</div>
+ <div class="toon-chips">${(m.abilities||[]).map(x=>`<span class="toon-chip">✦ ${esc(x)}</span>`).join("")}</div></div></aside>
+ <main>${CATS.map(k=>groups[k]?`<div class="toon-category"><h3>${k.toUpperCase()} SYSTEMS · ${groups[k].length}</h3><div class="toon-controls">${groups[k].map(([n,o])=>`<div class="toon-control"><b>${esc(n)}</b><select onchange='toonSet(${JSON.stringify(n)},this.value)'>${o.map(v=>`<option ${custom[n]===v?"selected":""}>${esc(v)}</option>`).join("")}</select></div>`).join("")}</div></div>`:"").join("")}
+ <div class="toon-card"><h3>BUILD SUMMARY · 30 CHANNELS</h3><div class="toon-sub">${MORPH_CUSTOMIZATIONS.map(([n])=>`<b>${esc(n)}:</b> ${esc(custom[n])}`).join(" · ")}</div><div class="toon-actions"><button class="toon-btn" onclick="toonRandomize()">🎲 RANDOMIZE BUILD</button><button class="toon-btn primary" onclick="toonLockBuild()">💾 RECORD THIS TRANSFORMATION</button></div></div></main></div></div>`;
+}
+window.openTransformVault=function(){drawVault();root("transformVault").classList.add("open");root("transformVault").scrollTop=0}
+window.closeTransformVault=function(){root("transformVault").classList.remove("open")}
+function residentBuild(p){
+ const r=p.morphRecord||{}, ch=r.channels||r.customizations||{};
+ return {icon:p.icon||"🧬",form:p.formName||r.formName||"Morph",theme:p.theme||r.theme||"",habitat:p.habitat||r.habitat||"",catalyst:r.catalyst||"",strength:r.strength||"",trade:r.trade||"",abilities:r.abilities||[],tags:p.tags||r.tags||[],channels:ch};
+}
+function drawVault(){
+ const pets=state.sanctuary||[];
+ root("transformVault").innerHTML=`<div class="toon-shell"><div class="toon-head"><div class="toon-actions" style="justify-content:space-between"><div><div class="toon-sub">SANCTUARY CHARACTER ARCHIVE</div><div class="toon-title">✨ TRANSFORMATION VAULT</div></div><button class="toon-btn" onclick="closeTransformVault()">RETURN</button></div></div>
+ ${pets.length?`<div class="vault-grid">${pets.map((p,i)=>{const b=residentBuild(p),chs=Object.entries(b.channels);return `<div class="vault-resident"><div class="vault-face">${esc(b.icon)}</div><h2>${esc(p.name)} · ${esc(b.form)}</h2><div class="toon-sub">${esc(p.species)} · ${esc(b.theme)} · ${esc(b.habitat)}</div><div class="toon-chips">${b.tags.map(x=>`<span class="toon-chip">${esc(x)}</span>`).join("")}</div>
+ <div class="vault-data"><div><span>CATALYST</span><b>${esc(b.catalyst||"Recorded form")}</b></div><div><span>STRENGTH</span><b>${esc(b.strength||"Adaptive")}</b></div><div><span>TRADEOFF</span><b>${esc(b.trade||"—")}</b></div><div><span>CUSTOM CHANNELS</span><b>${chs.length}/30</b></div></div>
+ <div class="toon-card"><h3>TRANSFORMATION SETTINGS</h3><div class="toon-sub">${chs.length?chs.map(([k,v])=>`<b>${esc(k)}:</b> ${esc(v)}`).join(" · "):"This older resident predates the 30-channel snapshot. Future transformations will preserve every setting here."}</div></div>
+ <div class="toon-actions"><button class="toon-btn primary" onclick="closeTransformVault();openMorphStory(${i})">🗺️ PLAY THIS MORPH</button><button class="toon-btn" onclick="closeTransformVault();vgOpenMorphRecord(${i},'build')">📚 FULL LIFETIME RECORD</button></div></div>`}).join("")}</div>`:`<div class="toon-card">Complete a morph and establish residence to create your first Transformation Vault entry.</div>`}</div>`;
+}
+})();
+</script>
+
 </body>
 </html>
