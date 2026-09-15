@@ -532,6 +532,35 @@ body{
 @media(max-width:760px){.toon-grid,.vault-grid{grid-template-columns:1fr}.toon-controls{grid-template-columns:1fr}}
 </style>
 
+
+<style id="living-morph-css">
+#livingMorphGame{position:fixed;inset:0;z-index:37000;display:none;overflow:auto;background:#02060b;color:#eefbff;padding:10px}#livingMorphGame.open{display:block}
+.lmg-shell{max-width:1120px;margin:auto}.lmg-head{position:sticky;top:0;z-index:7;background:#02060b;border-bottom:1px solid #284b5c;padding:8px 0}.lmg-layout{display:grid;grid-template-columns:1.35fr .8fr;gap:10px}
+.lmg-card{border:1px solid #31586b;border-radius:14px;padding:11px;background:linear-gradient(145deg,#071923,#16182e);margin-top:9px}.lmg-step{font-size:9px;color:#8faeba}.lmg-choicegrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.lmg-choice{min-height:78px;border:1px solid #3b667a;border-radius:11px;padding:9px;background:#081b25;color:#fff;text-align:left}.lmg-choice.on{border-color:#8be9fb;background:linear-gradient(135deg,#10475b,#382b66)}.lmg-choice strong{display:block;font-size:10px}.lmg-choice span{display:block;font-size:8px;color:#9eb9c4;margin-top:5px}
+.lmg-stage{position:sticky;top:78px;height:390px;overflow:hidden;border:1px solid #4a7182;border-radius:16px;background:radial-gradient(circle at 50% 40%,#18394b,#050c12 60%,#010407);perspective:700px}
+.lmg-floor{position:absolute;left:8%;right:8%;bottom:-35px;height:130px;border:1px solid #244657;border-radius:50%;transform:rotateX(70deg);background:repeating-radial-gradient(ellipse,#0a1c25 0 8px,#102b37 9px 11px)}
+.lmg-creature{position:absolute;left:50%;top:48%;width:150px;height:150px;transform-style:preserve-3d;animation:lmgBob 2.2s ease-in-out infinite,lmgTurn 8s linear infinite}
+.lmg-body{position:absolute;inset:25px;border:2px solid #9cecff;border-radius:48% 52% 42% 58%;background:radial-gradient(circle at 35% 28%,rgba(255,255,255,.25),rgba(30,124,158,.42) 28%,rgba(62,31,105,.75));box-shadow:0 0 28px rgba(83,219,247,.45);font-size:58px;display:flex;align-items:center;justify-content:center}
+.lmg-glyph{position:absolute;left:68px;top:68px;font-size:21px;text-shadow:0 0 12px currentColor;animation:lmgOrbit var(--spd) linear infinite;transform-origin:7px 7px}
+.lmg-glyph i{display:block;transform:translateX(var(--rad));font-style:normal}.lmg-spark{position:absolute;font-size:14px;animation:lmgSpark 1.7s ease-in-out infinite}.lmg-name{position:absolute;left:0;right:0;bottom:14px;text-align:center;font-weight:1000;font-size:18px;text-shadow:0 0 10px #000}
+.lmg-data{position:absolute;left:8px;top:8px;font-size:7px;color:#9dd6e6;line-height:1.5}.lmg-controls{display:flex;gap:6px;flex-wrap:wrap}.lmg-btn{border:1px solid #63d9ee;border-radius:9px;background:#0c2936;color:#fff;padding:10px;font-weight:1000}.lmg-btn.primary{background:linear-gradient(135deg,#116e8b,#633f9e)}
+.lmg-progress{height:8px;border-radius:99px;background:#061018;overflow:hidden;margin-top:7px}.lmg-progress i{display:block;height:100%;background:linear-gradient(90deg,#28bfd8,#a76ef1)}
+@keyframes lmgBob{0%,100%{margin-top:4px}50%{margin-top:-9px}}@keyframes lmgTurn{0%{transform:translate(-50%,-50%) rotateY(-12deg)}50%{transform:translate(-50%,-50%) rotateY(12deg)}100%{transform:translate(-50%,-50%) rotateY(-12deg)}}@keyframes lmgOrbit{to{transform:rotate(360deg)}}@keyframes lmgSpark{0%,100%{opacity:.25;transform:scale(.7)}50%{opacity:1;transform:scale(1.35)}}
+@media(max-width:760px){.lmg-layout{grid-template-columns:1fr}.lmg-stage{position:relative;top:auto;height:330px}.lmg-choicegrid{grid-template-columns:1fr}}
+</style>
+
+
+<style id="resident-spec-css">
+#residentSpec{position:fixed;inset:0;z-index:39000;display:none;overflow:auto;background:#02070c;color:#effbff;padding:12px}#residentSpec.open{display:block}
+.rspec-shell{max-width:1050px;margin:auto}.rspec-head{position:sticky;top:0;z-index:8;background:#02070c;border-bottom:1px solid #2d5365;padding:8px 0}
+.rspec-title{font-size:clamp(25px,6vw,40px);font-weight:1000}.rspec-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+.rspec-card{border:1px solid #31596b;border-radius:11px;padding:9px;background:linear-gradient(145deg,#071923,#15172c)}.rspec-card span{display:block;font-size:7px;color:#8caab6;letter-spacing:.08em}.rspec-card b{display:block;margin-top:4px;font-size:11px;line-height:1.4}
+.rspec-section{margin-top:12px}.rspec-section h3{margin:0 0 7px}.rspec-btn{width:100%;margin-top:7px;min-height:38px;border:1px solid #76dff2;border-radius:9px;background:linear-gradient(135deg,#104d64,#50347e);color:white;font-weight:1000}
+.rspec-count{display:inline-block;border:1px solid #477083;border-radius:999px;padding:4px 8px;font-size:8px;margin-top:5px}
+@media(max-width:650px){.rspec-grid{grid-template-columns:1fr}}
+</style>
+
 </head>
 <body>
 <div id="app">
@@ -1695,7 +1724,7 @@ function treeScreen(){
   return hero("Morph Tree · Choose a Path",
     "Compare the future, not just the immediate bonus. Every branch changes traversal, abilities, habitat fit and later specialization.","🌌")
   +`<div class="panel"><div class="morph-grid">${cards}</div>${gate("MORPH SELECTION",checks)}
-    <button class="toon-launch" onclick="openToonDesigner()">🧬 OPEN LARGE TOON MORPH DESIGNER · 30 LIVE DATA CHANNELS</button>${morphCustomizationLab(c)}
+    <button class="toon-launch" onclick="openLivingMorph()">🎮 BEGIN LIVING MORPH CREATION · BUILD YOUR ANIMAL</button><button class="toon-launch" onclick="openToonDesigner()">🧬 OPEN LARGE TOON MORPH DESIGNER · 30 LIVE DATA CHANNELS</button>${morphCustomizationLab(c)}
     ${areaFooter(checks.every(x=>x[1]),"MORPH CHAMBER")}</div>`;
 }
 function selectMorph(id){
@@ -1859,6 +1888,64 @@ function worldMapScreen(){
     <div class="tags">${w.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div></div>`).join("")}</div></div>`;
 }
 
+
+function residentSettingsRows(p){
+  const r=p.morphRecord||{},snap=r.designSnapshot||{},live=r.livingChoices||snap.livingChoices||{},ch=r.channels||r.customizations||{};
+  const rows=[];
+  const add=(group,key,value)=>{
+    if(value===undefined||value===null||value===""||(Array.isArray(value)&&!value.length))return;
+    let v=value;
+    if(Array.isArray(v))v=v.join(", ");
+    else if(typeof v==="object")v=Object.values(v).map(x=>x?.value||x?.name||x).join(", ");
+    rows.push({group,key,value:v});
+  };
+  add("IDENTITY","Resident",p.name);add("IDENTITY","Original Species",p.species);add("IDENTITY","Final Morph",p.formName);
+  add("IDENTITY","Morph Theme",p.theme);add("IDENTITY","Temperament",p.temperament);add("IDENTITY","Habitat",p.habitat);
+  add("CORE FORM","Catalyst",r.catalyst);add("CORE FORM","Strength",r.strength);add("CORE FORM","Tradeoff",r.trade);
+  add("CORE FORM","Abilities",r.abilities);add("CORE FORM","Tags",p.tags||r.tags);add("CORE FORM","Base Traits",r.baseTags);
+  Object.entries(live).forEach(([k,v])=>add("LIVING MORPH DECISIONS",k,v?.value||v));
+  Object.entries(ch).forEach(([k,v])=>add("30-CHANNEL TRANSFORMATION DATA",k,v));
+  Object.entries(r.workshop||{}).forEach(([k,v])=>add("MORPH WORKSHOP",k.replace(/([A-Z])/g," $1"),v));
+  Object.entries((r.architecture||{}).systems||{}).forEach(([k,v])=>add("EXOTIC BODY SYSTEMS",k.replace(/([A-Z])/g," $1"),v?.name||v));
+  add("RESIDENT STATUS","Health",p.health);add("RESIDENT STATUS","Hydration",p.hydration);add("RESIDENT STATUS","Energy",p.energy);
+  add("RESIDENT STATUS","Comfort",p.comfort);add("RESIDENT STATUS","Bond",p.bond);add("RESIDENT STATUS","Mastery",p.mastery);
+  const derived=["Adaptation Profile","Mobility Profile","Sensory Profile","Field Stability","Resonance Profile","Quest Readiness","Environmental Fit","Rescue Utility","Exploration Bias","Artifact Affinity"];
+  derived.forEach(k=>{if(rows.length<60){let seed=(String(p.name)+k).split("").reduce((a,c)=>a+c.charCodeAt(0),0);add("DERIVED PROFILE READOUTS",k,(45+(seed%51))+"%")}});
+  return rows.slice(0,60);
+}
+function openResidentSettings(i){
+  i=Number(i);
+  if(!Number.isInteger(i)||!state.sanctuary||!state.sanctuary[i]){toast("Resident settings are unavailable.");return}
+  state.residentSettingsIndex=i;
+  state.screen="residentsettings";
+  save();render();
+  window.scrollTo({top:0,left:0,behavior:"auto"});
+}
+
+function returnFromResidentSettings(){
+  state.screen="sanctuary";
+  save();
+  render();
+  window.scrollTo({top:0,left:0,behavior:"auto"});
+}
+function playResidentFromSettings(){
+  const i=Number(state.residentSettingsIndex);
+  if(!Number.isInteger(i)||!state.sanctuary||!state.sanctuary[i]){
+    toast("That resident could not be opened.");
+    return;
+  }
+  openMorphStory(i);
+}
+function residentSettingsScreen(){
+  const i=Number(state.residentSettingsIndex||0),p=(state.sanctuary||[])[i];
+  if(!p){state.screen="sanctuary";return sanctuaryScreen()}
+  const rows=residentSettingsRows(p),groups=[...new Set(rows.map(x=>x.group))];
+  return hero("Morph Settings · "+p.name,
+    "Read-only archive of the transformation choices, body systems, abilities and resident profile preserved on this animal.",p.icon||"🧬")
+   +`<div class="panel"><div class="callout good"><b>${rows.length} SETTINGS / READOUTS</b> · This screen cannot alter the morph.</div>
+   <div class="footer-actions"><button class="primary fx-button" onclick="returnFromResidentSettings()">← RETURN TO SANCTUARY</button><button class="secondary fx-button" onclick="playResidentFromSettings()">🗺️ PLAY THIS MORPH</button></div></div>
+   ${groups.map(g=>`<div class="panel"><h3>${g}</h3><div class="rspec-grid">${rows.filter(x=>x.group===g).map(x=>`<div class="rspec-card"><span>${x.key.toUpperCase()}</span><b>${x.value}</b></div>`).join("")}</div></div>`).join("")}`;
+}
 function sanctuaryScreen(){
   if(!state.sanctuary.length){
     return hero("Morph Sanctuary","Completed transformed animals live here permanently. Finish Koda's full morph case and expedition to bring the first resident home.","🌿")
@@ -1884,7 +1971,7 @@ function petCard(p,i){
       <button onclick="petCare(${i},'food')">OFFER FOOD</button><button onclick="petCare(${i},'water')">OFFER WATER</button>
       <button onclick="petCare(${i},'comfort')">COMFORT</button><button onclick="petCare(${i},'train')">TRAIN</button>
     </div>
-    <button class="pet-story-btn" onclick="openMorphStory(${i})">🗺️ CONTINUE ${p.name.toUpperCase()}'S STORY · SEARCH FOR ITEMS</button>
+    <button class="pet-story-btn" onclick="openMorphStory(${i})">🗺️ CONTINUE ${p.name.toUpperCase()}'S STORY · SEARCH FOR ITEMS</button><button class="rspec-btn" onclick="openResidentSettings(${i})">🧬 VIEW ALL MORPH SETTINGS · READ ONLY</button>
   </div>`;
 }
 
@@ -3026,11 +3113,14 @@ function animatedGauge(label,value){
   return `<div style="margin:8px 0"><div class="small"><b>${label}</b> · ${v}%</div><div class="animated-gauge"><i style="width:${v}%"></i></div></div>`;
 }
 function render(){
+
+
   ensureAdvancedState();evaluateCareerUnlocks();
   document.getElementById("resourceBar").innerHTML=resourceBar();
   document.getElementById("nav").innerHTML=nav();
   let html="";
   if(state.screen==="institute")html=instituteScreen();
+  else if(state.screen==="residentsettings")html=residentSettingsScreen();
   else if(state.screen==="sanctuary")html=sanctuaryScreen();
   else if(state.screen==="codex")html=codexScreen();
   else if(state.screen==="worldmap")html=worldMapScreen();
@@ -3045,7 +3135,7 @@ function render(){
     const id=stageId();
     html=({intake:intakeScreen,triage:triageScreen,exam:examScreen,diagnostics:diagnosticsScreen,treatment:treatmentScreen,vetrecovery:vetRecoveryScreen,eligibility:eligibilityScreen,resonance:resonanceScreen,prep:prepScreen,tree:treeScreen,chamber:chamberScreen,recovery:recoveryScreen,training:trainingScreen,expedition:expeditionScreen}[id]||intakeScreen)();
   }
-  if(state.screen!=="sanctuary" && state.screen!=="codex" && state.screen!=="worldmap" && state.screen!=="morphstory" && state.screen!=="career" && state.screen!=="researchtrack" && state.screen!=="projects" && state.screen!=="instituteroom" && state.screen!=="assignment" && state.screen!=="crafting"){
+  if(state.screen!=="residentsettings" && state.screen!=="sanctuary" && state.screen!=="codex" && state.screen!=="worldmap" && state.screen!=="morphstory" && state.screen!=="career" && state.screen!=="researchtrack" && state.screen!=="projects" && state.screen!=="instituteroom" && state.screen!=="assignment" && state.screen!=="crafting"){
     html = storyPanel() + html;
   }
   document.getElementById("main").innerHTML=html;
@@ -3217,7 +3307,7 @@ function completeCreatureCase(){
  if(isNew){
    resident={caseKey:c.key,name:c.name,species:c.species,icon:m.icon,formName:m.name,theme:m.theme,temperament:c.temperament,habitat:m.habitat,tags:m.tags,health:90,hydration:82,energy:72,comfort:80,bond:clamp(c.bond+10),mastery:18,lastUpdate:Date.now(),residenceEstablished:true,
      morphRecord:{selectedMorph:c.selectedMorph,formName:m.name,theme:m.theme,habitat:m.habitat,catalyst:m.catalyst,strength:m.strength,trade:m.trade,abilities:[...(m.abilities||[])],tags:[...(m.tags||[])],baseTags:c.baseTags,
-       channels:{...(c.morphCustom||{})},customizations:{...(c.morphCustom||{})},workshop:c.morphWorkshop||null,architecture:c.exoticArchitecture||null,designSnapshot:c.morphDesignSnapshot||null}};
+       channels:{...(c.morphCustom||{})},customizations:{...(c.morphCustom||{})},workshop:c.morphWorkshop||null,architecture:c.exoticArchitecture||null,designSnapshot:c.morphDesignSnapshot||null,livingChoices:JSON.parse(JSON.stringify(c.livingMorph?.choices||{}))}};
    state.sanctuary.push(resident);state.completedCases+=1;state.research+=12;state.credits+=125;state.rank=1+Math.floor(state.completedCases/2);state.chapter=1+state.completedCases;
  }else resident.residenceEstablished=true;
  state.codex[c.key]={name:c.name,species:c.species,icon:m.icon,formName:m.name,theme:m.theme,temperament:c.temperament,tags:m.tags,world:w.name+" · "+w.biome,objective:w.objective,complete:100};
@@ -3252,7 +3342,7 @@ window.goStage=goStage;window.goMeta=goMeta;window.finishArea=finishArea;window.
 window.intakeAction=intakeAction;window.vetTriage=vetTriage;window.vetExam=vetExam;window.vetDx=vetDx;window.vetTreat=vetTreat;window.vetRecover=vetRecover;window.clearForMorph=clearForMorph;window.scan=scan;window.prep=prep;window.selectMorph=selectMorph;window.chamberAction=chamberAction;
 window.recover=recover;window.train=train;window.pickWorld=pickWorld;window.field=field;window.completeCreatureCase=completeCreatureCase;
 window.closeRewardToSanctuary=closeRewardToSanctuary;window.closeRewardToCodex=closeRewardToCodex;window.startNextCreature=startNextCreature;
-window.petCare=petCare;window.careAll=careAll;window.openMorphStory=openMorphStory;window.openFirstMorphStory=openFirstMorphStory;window.closeMorphStory=closeMorphStory;window.continueMorphStory=continueMorphStory;window.morphStoryScreen=morphStoryScreen;window.chooseMorphAdventure=chooseMorphAdventure;window.deepMissionStep=deepMissionStep;window.deepMissionReset=deepMissionReset;window.resetMorphAdventure=resetMorphAdventure;window.careerCenterScreen=careerCenterScreen;window.openResearchTrack=openResearchTrack;window.runCareerResearch=runCareerResearch;window.finishResearchTrack=finishResearchTrack;window.continueResearchToField=continueResearchToField;window.projectsScreen=projectsScreen;window.buildInstituteProject=buildInstituteProject;window.completeAssignment=completeAssignment;window.useMorphFieldSkill=useMorphFieldSkill;window.openInstituteRoom=openInstituteRoom;window.startAssignment=startAssignment;window.advanceAssignment=advanceAssignment;window.fileAssignment=fileAssignment;window.toggleFieldTool=toggleFieldTool;window.useExpeditionTool=useExpeditionTool;window.advanceProjectStage=advanceProjectStage;window.selectCraftProject=selectCraftProject;window.socketGem=socketGem;window.unsocketGem=unsocketGem;window.finalizeSocketCraft=finalizeSocketCraft;window.resolveFieldEvent=resolveFieldEvent;window.resetGame=resetGame;
+window.petCare=petCare;window.careAll=careAll;window.openMorphStory=openMorphStory;window.openResidentSettings=openResidentSettings;window.returnFromResidentSettings=returnFromResidentSettings;window.playResidentFromSettings=playResidentFromSettings;window.openFirstMorphStory=openFirstMorphStory;window.closeMorphStory=closeMorphStory;window.continueMorphStory=continueMorphStory;window.morphStoryScreen=morphStoryScreen;window.chooseMorphAdventure=chooseMorphAdventure;window.deepMissionStep=deepMissionStep;window.deepMissionReset=deepMissionReset;window.resetMorphAdventure=resetMorphAdventure;window.careerCenterScreen=careerCenterScreen;window.openResearchTrack=openResearchTrack;window.runCareerResearch=runCareerResearch;window.finishResearchTrack=finishResearchTrack;window.continueResearchToField=continueResearchToField;window.projectsScreen=projectsScreen;window.buildInstituteProject=buildInstituteProject;window.completeAssignment=completeAssignment;window.useMorphFieldSkill=useMorphFieldSkill;window.openInstituteRoom=openInstituteRoom;window.startAssignment=startAssignment;window.advanceAssignment=advanceAssignment;window.fileAssignment=fileAssignment;window.toggleFieldTool=toggleFieldTool;window.useExpeditionTool=useExpeditionTool;window.advanceProjectStage=advanceProjectStage;window.selectCraftProject=selectCraftProject;window.socketGem=socketGem;window.unsocketGem=unsocketGem;window.finalizeSocketCraft=finalizeSocketCraft;window.resolveFieldEvent=resolveFieldEvent;window.resetGame=resetGame;
 
 
 function showStoryIntro(){
@@ -3441,7 +3531,7 @@ function residentBuild(p){
 function drawVault(){
  const pets=state.sanctuary||[];
  root("transformVault").innerHTML=`<div class="toon-shell"><div class="toon-head"><div class="toon-actions" style="justify-content:space-between"><div><div class="toon-sub">SANCTUARY CHARACTER ARCHIVE</div><div class="toon-title">✨ TRANSFORMATION VAULT</div></div><button class="toon-btn" onclick="closeTransformVault()">RETURN</button></div></div>
- ${pets.length?`<div class="vault-grid">${pets.map((p,i)=>{const b=residentBuild(p),chs=Object.entries(b.channels);return `<div class="vault-resident"><div class="vault-face">${esc(b.icon)}</div><h2>${esc(p.name)} · ${esc(b.form)}</h2><div class="toon-sub">${esc(p.species)} · ${esc(b.theme)} · ${esc(b.habitat)}</div><div class="toon-chips">${b.tags.map(x=>`<span class="toon-chip">${esc(x)}</span>`).join("")}</div>
+ ${pets.length?`<div class="vault-grid">${pets.map((p,i)=>{const b=residentBuild(p),chs=Object.entries(b.channels);return `<div class="vault-resident">${typeof lmgResidentPreview==="function"?lmgResidentPreview(p):`<div class="vault-face">${esc(b.icon)}</div>`}<h2>${esc(p.name)} · ${esc(b.form)}</h2><div class="toon-sub">${esc(p.species)} · ${esc(b.theme)} · ${esc(b.habitat)}</div><div class="toon-chips">${b.tags.map(x=>`<span class="toon-chip">${esc(x)}</span>`).join("")}</div>
  <div class="vault-data"><div><span>CATALYST</span><b>${esc(b.catalyst||"Recorded form")}</b></div><div><span>STRENGTH</span><b>${esc(b.strength||"Adaptive")}</b></div><div><span>TRADEOFF</span><b>${esc(b.trade||"—")}</b></div><div><span>CUSTOM CHANNELS</span><b>${chs.length}/30</b></div></div>
  <div class="toon-card"><h3>TRANSFORMATION SETTINGS</h3><div class="toon-sub">${chs.length?chs.map(([k,v])=>`<b>${esc(k)}:</b> ${esc(v)}`).join(" · "):"This older resident predates the 30-channel snapshot. Future transformations will preserve every setting here."}</div></div>
  <div class="toon-actions"><button class="toon-btn primary" onclick="closeTransformVault();openMorphStory(${i})">🗺️ PLAY THIS MORPH</button><button class="toon-btn" onclick="closeTransformVault();vgOpenMorphRecord(${i},'build')">📚 FULL LIFETIME RECORD</button></div></div>`}).join("")}</div>`:`<div class="toon-card">Complete a morph and establish residence to create your first Transformation Vault entry.</div>`}</div>`;
@@ -3449,5 +3539,44 @@ function drawVault(){
 })();
 </script>
 
+
+<script id="living-morph-js">
+(function(){
+const STEPS=[
+ {title:"Choose the body direction",key:"Body Frame",choices:[["Swift","Lean, fast silhouette","⌁"],["Guardian","Broad protective frame","⬡"],["Climber","Flexible gripping build","⌇"],["Deepform","Dense aquatic profile","≈"]]},
+ {title:"Shape the sensory crown",key:"Sensory Crown",choices:[["Echo Crest","Reads vibration and distant calls",")))"],["Night Halo","Low-light awareness","☾"],["Prism Eyes","Wide-spectrum field sight","◉"],["Storm Whiskers","Reads pressure and weather","≋"]]},
+ {title:"Build its movement system",key:"Movement Form",choices:[["Glide Fins","Air and cliff gliding","≻"],["Spring Legs","Explosive leaps","⋀"],["Ribbon Tail","Balance and water steering","〰"],["Grip Array","Climbing and rescue traction","⌘"]]},
+ {title:"Choose the surface adaptation",key:"Surface Morph",choices:[["Lumen Fur","Soft bioluminescent coat","✦"],["Glass Scales","Reflective armored scales","◇"],["Moss Mantle","Living camouflage layer","❧"],["Frost Plume","Insulating feather filaments","❄"]]},
+ {title:"Tune the field energy",key:"Field Energy",choices:[["Resonance","Pulses around sound and emotion","◌"],["Thermal","Warm protective field","☼"],["Tidal","Fluid pressure aura","≋"],["Static","Crackling navigation sparks","ϟ"]]},
+ {title:"Give it a signature ability",key:"Signature Ability",choices:[["Rescue Pulse","Highlights creatures needing help","♥"],["Ruin Sense","Reacts near hidden structures","⌂"],["Trail Memory","Remembers expedition paths","↟"],["Relic Resonance","Responds to mysterious items","✧"]]},
+ {title:"Choose its expedition instinct",key:"Quest Instinct",choices:[["Investigator","Find clues and preserve evidence","?"],["Protector","Prioritize animals and habitats","♢"],["Explorer","Seek hidden routes","↗"],["Collector","Search for rare field objects","◆"]]},
+ {title:"Set the final morph signature",key:"Morph Signature",choices:[["Celestial","Orbiting star glyphs","✦"],["Wildcode","Living rune fragments","⌘"],["Abyssal","Tidal symbols and deep pulses","≈"],["Aurora","Shifting luminous marks","❈"]]}
+];
+function esc(x){return String(x??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function R(){let e=document.getElementById("livingMorphGame");if(!e){e=document.createElement("div");e.id="livingMorphGame";document.body.appendChild(e)}return e}
+function c(){try{return active()}catch(e){return null}}
+function S(x){x.livingMorph=x.livingMorph||{step:0,choices:{},complete:false};return x.livingMorph}
+window.openLivingMorph=function(){const x=c();if(!x){toast("No active animal.");return}S(x);draw();R().classList.add("open");R().scrollTop=0}
+window.closeLivingMorph=function(){R().classList.remove("open")}
+window.lmgChoose=function(v,g){const x=c(),s=S(x),st=STEPS[s.step];s.choices[st.key]={value:v,glyph:g};x.morphCustom=x.morphCustom||{};x.morphCustom[st.key]=v;if(typeof save==="function")save();draw()}
+window.lmgNext=function(){const x=c(),s=S(x),st=STEPS[s.step];if(!s.choices[st.key]){toast("Choose how this part of the morph develops.");return}if(s.step<STEPS.length-1)s.step++;else{s.complete=true;x.morphDesignLocked=true;x.morphDesignSnapshot={...(x.morphDesignSnapshot||{}),livingChoices:JSON.parse(JSON.stringify(s.choices)),savedAt:Date.now()};toast("✨ LIVING MORPH COMPLETE");}if(typeof save==="function")save();draw()}
+window.lmgBack=function(){const x=c(),s=S(x);if(s.step>0)s.step--;draw()}
+function glyphs(s){return Object.values(s.choices).map((q,i)=>`<span class="lmg-glyph" style="--rad:${58+(i%3)*15}px;--spd:${5+i*.7}s;transform:rotate(${i*47}deg)"><i>${esc(q.glyph)}</i></span>`).join("")}
+function draw(){
+ const x=c();if(!x)return;const s=S(x),st=STEPS[s.step],m=(x.morphs||[]).find(z=>z.id===x.selectedMorph)||{},pick=s.choices[st.key]?.value;
+ R().innerHTML=`<div class="lmg-shell"><div class="lmg-head"><div class="lmg-controls" style="justify-content:space-between"><div><div class="lmg-step">INTERACTIVE MORPH GAME · NOT A STORY SCREEN</div><div style="font-size:28px;font-weight:1000">${esc(x.name)} · LIVING TRANSFORMATION</div></div><button class="lmg-btn" onclick="closeLivingMorph()">RETURN</button></div><div class="lmg-progress"><i style="width:${((s.step+(s.complete?1:0))/STEPS.length)*100}%"></i></div></div>
+ <div class="lmg-layout"><main><div class="lmg-card"><div class="lmg-step">MORPH DECISION ${s.step+1} / ${STEPS.length}</div><h2>${esc(st.title)}</h2><div class="lmg-choicegrid">${st.choices.map(q=>`<button class="lmg-choice ${pick===q[0]?"on":""}" onclick='lmgChoose(${JSON.stringify(q[0])},${JSON.stringify(q[2])})'><strong>${esc(q[2])} ${esc(q[0])}</strong><span>${esc(q[1])}</span></button>`).join("")}</div>
+ <div class="lmg-controls" style="margin-top:9px"><button class="lmg-btn" onclick="lmgBack()" ${s.step===0?"disabled":""}>← PREVIOUS</button><button class="lmg-btn primary" onclick="lmgNext()">${s.step===STEPS.length-1?"COMPLETE TRANSFORMATION":"LOCK CHOICE · CONTINUE →"}</button></div></div>
+ <div class="lmg-card"><h3>YOUR BUILD SO FAR</h3><div class="toon-chips">${Object.entries(s.choices).map(([k,v])=>`<span class="toon-chip">${esc(v.glyph)} ${esc(k)} · ${esc(v.value)}</span>`).join("")||'<span class="toon-sub">Your selections will build the animal here.</span>'}</div></div></main>
+ <aside><div class="lmg-stage"><div class="lmg-data">LIVE MORPH VIEW<br>${esc(m.name||x.species)}<br>DECISIONS ${Object.keys(s.choices).length}/${STEPS.length}</div><div class="lmg-floor"></div><div class="lmg-creature"><div class="lmg-body">${esc(m.icon||x.icon||"🐾")}</div>${glyphs(s)}<span class="lmg-spark" style="left:25px;top:30px">✦</span><span class="lmg-spark" style="right:20px;bottom:40px">·</span></div><div class="lmg-name">${esc(x.name)} · ${esc(m.name||"Developing Morph")}</div></div>
+ <div class="lmg-card"><h3>LIVE FORM READOUT</h3><div class="toon-sub">Every decision changes the glyph field around the creature. This preview is CSS/HTML animation, so it stays lightweight and works inside the single-file game.</div>${s.complete?'<button class="toon-launch" onclick="closeLivingMorph();openToonDesigner()">🧬 OPEN FULL 30-CHANNEL DATA SCREEN</button>':''}</div></aside></div></div>`;
+}
+window.lmgResidentPreview=function(p){
+ const choices=p.morphRecord?.livingChoices||p.morphRecord?.designSnapshot?.livingChoices||{};
+ const gs=Object.values(choices).map((q,i)=>`<span class="lmg-glyph" style="--rad:${45+(i%3)*12}px;--spd:${5+i*.6}s;transform:rotate(${i*51}deg)"><i>${esc(q.glyph||"✦")}</i></span>`).join("");
+ return `<div class="lmg-stage" style="position:relative;top:auto;height:240px"><div class="lmg-floor"></div><div class="lmg-creature" style="width:130px;height:130px"><div class="lmg-body">${esc(p.icon||"🐾")}</div>${gs}</div><div class="lmg-name">${esc(p.name)} · ${esc(p.formName)}</div></div>`;
+}
+})();
+</script>
 </body>
 </html>
