@@ -561,6 +561,58 @@ body{
 @media(max-width:650px){.rspec-grid{grid-template-columns:1fr}}
 </style>
 
+
+<style id="morph-3d-viewer-css">
+.m3d-launch{width:100%;margin-top:7px;min-height:42px;border:1px solid #b48cff;border-radius:10px;background:linear-gradient(135deg,#193d62,#633b8e);color:#fff;font-weight:1000}
+#morph3dViewer{position:fixed;inset:0;z-index:42000;display:none;overflow:auto;background:#01050a;color:#effcff;padding:10px}#morph3dViewer.open{display:block}
+.m3d-shell{max-width:1100px;margin:auto}.m3d-head{position:sticky;top:0;z-index:8;background:#01050a;border-bottom:1px solid #315468;padding:8px 0}
+.m3d-layout{display:grid;grid-template-columns:1.45fr .8fr;gap:10px}.m3d-card{border:1px solid #31596c;border-radius:14px;padding:10px;background:linear-gradient(145deg,#061720,#15162c);margin-top:9px}
+.m3d-stage{height:520px;position:relative;overflow:hidden;border:1px solid #557b8d;border-radius:18px;background:radial-gradient(circle at 50% 35%,#1b4052,#071018 55%,#010306);perspective:900px;touch-action:none;user-select:none}
+.m3d-grid{position:absolute;left:-10%;right:-10%;bottom:-110px;height:280px;transform:rotateX(68deg);background:repeating-linear-gradient(0deg,transparent 0 24px,#17394a 25px 26px),repeating-linear-gradient(90deg,transparent 0 24px,#17394a 25px 26px);border-radius:50%}
+.m3d-platform{position:absolute;left:50%;bottom:42px;width:260px;height:78px;transform:translateX(-50%) rotateX(65deg);border:2px solid #65dff4;border-radius:50%;box-shadow:0 0 35px #1e90aa,inset 0 0 35px #0b4151;background:rgba(20,91,111,.25)}
+.m3d-rig{position:absolute;left:50%;top:46%;width:220px;height:220px;transform-style:preserve-3d;transform:translate(-50%,-50%) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) scale(var(--zoom,1));transition:transform .15s ease}
+.m3d-animal{position:absolute;inset:32px;border-radius:50% 46% 55% 44%;border:2px solid #9cecff;background:radial-gradient(circle at 34% 26%,rgba(255,255,255,.3),rgba(27,125,160,.5) 30%,rgba(73,38,115,.82));box-shadow:0 0 40px rgba(80,220,250,.55);display:flex;align-items:center;justify-content:center;font-size:88px;animation:m3dBreathe 2.4s ease-in-out infinite}
+.m3d-part{position:absolute;font-size:32px;text-shadow:0 0 14px currentColor;filter:drop-shadow(0 0 8px currentColor)}.m3d-left{left:0;top:88px}.m3d-right{right:0;top:88px}.m3d-top{left:94px;top:0}.m3d-tail{right:4px;bottom:24px;font-size:45px}.m3d-glyph{position:absolute;left:105px;top:105px;font-size:22px;transform-origin:5px 5px;animation:m3dOrbit var(--spd) linear infinite}.m3d-glyph i{display:block;transform:translateX(var(--rad));font-style:normal}
+.m3d-label{position:absolute;left:10px;top:10px;font-size:8px;color:#a3d5e4;line-height:1.6}.m3d-name{position:absolute;left:0;right:0;bottom:12px;text-align:center;font-size:21px;font-weight:1000;text-shadow:0 2px 10px #000}
+.m3d-controls{display:flex;gap:6px;flex-wrap:wrap}.m3d-btn{border:1px solid #5e8799;border-radius:9px;background:#0a202b;color:#fff;padding:9px;font-weight:900}.m3d-btn.on{border-color:#9beaff;background:#155068}.m3d-feature{padding:8px;border-bottom:1px solid #1e3b49;font-size:9px}.m3d-feature b{display:block;font-size:11px}.m3d-hud{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.m3d-hud div{border:1px solid #294c5d;border-radius:9px;padding:7px}.m3d-hud span{display:block;font-size:7px;color:#8faeba}.m3d-hud b{font-size:12px}
+@keyframes m3dBreathe{0%,100%{transform:translateY(2px) scale(.98)}50%{transform:translateY(-5px) scale(1.03)}}@keyframes m3dOrbit{to{transform:rotate(360deg)}}@keyframes m3dPulse{0%,100%{opacity:.35}50%{opacity:1}}
+@media(max-width:760px){.m3d-layout{grid-template-columns:1fr}.m3d-stage{height:410px}}
+</style>
+
+
+<style id="vg-polish-css">
+.case-strip{position:sticky;top:0;z-index:11000;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;padding:6px 8px;background:rgba(2,8,13,.97);border-bottom:1px solid #31586a;backdrop-filter:blur(8px)}
+.case-stat{min-width:0;border:1px solid #24495a;border-radius:8px;padding:5px 7px;background:#071722}.case-stat span{display:block;font-size:6px;color:#7f9eab;letter-spacing:.08em}.case-stat b{display:block;font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-groups{display:flex;align-items:center;gap:5px;margin:4px 0;overflow-x:auto;overflow-y:hidden;padding:2px 1px;scrollbar-width:thin}.nav-group{display:flex;align-items:center;gap:3px;flex:0 0 auto;border:1px solid #24495a;border-radius:7px;padding:3px 4px;background:#06141c}.nav-group>span{display:inline-block;font-size:5px;color:#7f9eab;margin:0 2px 0 0;white-space:nowrap}.nav-group button{width:auto!important;min-height:0!important;margin:0!important;font-size:6px!important;line-height:1!important;padding:5px 6px!important;border-radius:6px!important;white-space:nowrap}
+.guide-card{border:1px solid #72dff2;border-radius:14px;padding:12px;background:linear-gradient(145deg,#092532,#201d3c);margin:8px 0}.guide-card h2{margin:2px 0 6px}
+.readiness-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.ready-gauge{border:1px solid #294d5e;border-radius:9px;padding:7px}.ready-gauge span{display:block;font-size:7px;color:#8caab7}.ready-gauge b{font-size:14px}.ready-bar{height:5px;background:#061018;border-radius:9px;overflow:hidden;margin-top:4px}.ready-bar i{display:block;height:100%;background:linear-gradient(90deg,#24bad4,#9b73ef)}
+.lock-why{border:1px solid #7c6132;border-radius:10px;background:#231b0b;padding:9px;margin:7px 0;font-size:9px}.audit-line{padding:7px 0;border-bottom:1px solid #193643;font-size:9px}.studio-grid{display:grid;grid-template-columns:.8fr 1.4fr;gap:9px}.studio-channel{border:1px solid #31576a;border-radius:10px;padding:8px;margin:6px 0}.studio-channel label{display:block;font-size:8px;margin-bottom:4px}.studio-channel select{width:100%;background:#04121a;color:#fff;border:1px solid #426a7b;border-radius:7px;padding:7px}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:7px}.compare>div{border:1px solid #31576a;border-radius:12px;padding:10px;text-align:center}.compare .face{font-size:62px}
+.compat{padding:7px;border-radius:8px;margin:5px 0;border:1px solid #31576a;font-size:8px}.compat.bad{border-color:#86504a;background:#281110}.compat.good{border-color:#38705c;background:#0b211a}
+@media(max-width:720px){.case-strip{grid-template-columns:repeat(2,1fr)}.nav-groups,.studio-grid{grid-template-columns:1fr}.readiness-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+
+
+<style id="vg-top-nav-compact-hotfix">
+#nav{font-size:7px}
+#nav>.nav-groups+* button,#nav>button,#nav .nav button,#nav .nav-row button{
+  width:auto!important;min-width:0!important;min-height:0!important;
+  padding:5px 7px!important;margin:2px!important;font-size:6px!important;line-height:1!important;
+}
+#nav .nav-groups button{width:auto!important}
+@media(max-width:720px){
+  .nav-groups{display:flex!important;grid-template-columns:none!important}
+  .nav-group{display:flex!important}
+}
+</style>
+
+
+<style id="m3d-launch-hotfix">
+#morph3dViewer{z-index:99999!important;pointer-events:auto!important}
+#morph3dViewer.open{display:block!important;visibility:visible!important;opacity:1!important}
+.m3d-launch{pointer-events:auto!important;position:relative;z-index:2}
+</style>
+
 </head>
 <body>
 <div id="app">
@@ -577,7 +629,7 @@ body{
     </div>
     <div class="nav-wrap"><div class="nav" id="nav"></div></div>
   </div>
-  <main id="main"></main>
+  <div id="caseStatusStrip" class="case-strip"></div><main id="main"></main>
 </div>
 
 <div class="modal" id="rewardModal">
@@ -1903,8 +1955,19 @@ function residentSettingsRows(p){
   add("IDENTITY","Morph Theme",p.theme);add("IDENTITY","Temperament",p.temperament);add("IDENTITY","Habitat",p.habitat);
   add("CORE FORM","Catalyst",r.catalyst);add("CORE FORM","Strength",r.strength);add("CORE FORM","Tradeoff",r.trade);
   add("CORE FORM","Abilities",r.abilities);add("CORE FORM","Tags",p.tags||r.tags);add("CORE FORM","Base Traits",r.baseTags);
-  Object.entries(live).forEach(([k,v])=>add("LIVING MORPH DECISIONS",k,v?.value||v));
-  Object.entries(ch).forEach(([k,v])=>add("30-CHANNEL TRANSFORMATION DATA",k,v));
+  Object.entries(live).forEach(([k,v])=>{
+    const chosen=v?.value||v;
+    let opts="";
+    if(typeof STEPS!=="undefined"){
+      const st=STEPS.find(s=>s.key===k);
+      if(st)opts=st.choices.map(q=>q[0]).join(" / ");
+    }
+    add("LIVING MORPH DECISIONS",k,chosen+(opts?"  ·  OPTIONS: "+opts:""));
+  });
+  Object.entries(ch).forEach(([k,v])=>{
+    const def=(typeof MORPH_CUSTOMIZATIONS!=="undefined"?MORPH_CUSTOMIZATIONS:[]).find(x=>x[0]===k);
+    add("30-CHANNEL TRANSFORMATION DATA",k,def ? (v+"  ·  OPTIONS: "+def[1].join(" / ")) : v);
+  });
   Object.entries(r.workshop||{}).forEach(([k,v])=>add("MORPH WORKSHOP",k.replace(/([A-Z])/g," $1"),v));
   Object.entries((r.architecture||{}).systems||{}).forEach(([k,v])=>add("EXOTIC BODY SYSTEMS",k.replace(/([A-Z])/g," $1"),v?.name||v));
   add("RESIDENT STATUS","Health",p.health);add("RESIDENT STATUS","Hydration",p.hydration);add("RESIDENT STATUS","Energy",p.energy);
@@ -1942,11 +2005,93 @@ function residentSettingsScreen(){
   const rows=residentSettingsRows(p),groups=[...new Set(rows.map(x=>x.group))];
   return hero("Morph Settings · "+p.name,
     "Read-only archive of the transformation choices, body systems, abilities and resident profile preserved on this animal.",p.icon||"🧬")
-   +`<div class="panel"><div class="callout good"><b>${rows.length} SETTINGS / READOUTS</b> · This screen cannot alter the morph.</div>
-   <div class="footer-actions"><button class="primary fx-button" onclick="returnFromResidentSettings()">← RETURN TO SANCTUARY</button><button class="secondary fx-button" onclick="playResidentFromSettings()">🗺️ PLAY THIS MORPH</button></div></div>
+   +`<div class="panel"><div class="callout good"><b>${rows.length} SETTINGS / READOUTS</b> · This screen cannot alter the morph.<br><b>🛡️ SANCTUARY PROTECTION ACTIVE</b> · This resident cannot be injured, become critical, or lose health.</div>
+   <div class="footer-actions"><button class="primary fx-button" onclick="returnFromResidentSettings()">← RETURN TO SANCTUARY</button><button class="secondary fx-button" onclick="playResidentFromSettings()">🗺️ PLAY THIS MORPH</button><button class="secondary fx-button" onclick="if(typeof window.openNative3D==='function'){window.openNative3D(${i})}else{alert('3D viewer module failed to initialize.')}">🔬 3D MORPH VIEWER</button></div></div>
    ${groups.map(g=>`<div class="panel"><h3>${g}</h3><div class="rspec-grid">${rows.filter(x=>x.group===g).map(x=>`<div class="rspec-card"><span>${x.key.toUpperCase()}</span><b>${x.value}</b></div>`).join("")}</div></div>`).join("")}`;
 }
-function sanctuaryScreen(){
+function protectSanctuaryResidents(){
+  (state.sanctuary||[]).forEach(p=>{
+    p.health=100;p.hydration=Math.max(85,Number(p.hydration)||85);p.energy=Math.max(80,Number(p.energy)||80);
+    p.comfort=Math.max(90,Number(p.comfort)||90);p.pain=0;p.injured=false;p.critical=false;p.lastUpdate=Date.now();
+  });
+}
+
+function openCaseReview(){state.screen="casereview";render();window.scrollTo(0,0)}
+function caseReviewScreen(){
+ const c=active();if(!c)return hero("Case Review","No active case.","📋");
+ const m=(c.morphs||[]).find(x=>x.id===c.selectedMorph);
+ const logs=(state.audit||[]).slice(0,40);
+ return hero("Case Review · "+c.name,"Clinical milestones, readiness, morph decision and audit history.","📋")
+ +`<div class="panel"><h3>CLINICAL READINESS</h3>${clinicalReadiness(c)}</div>
+ <div class="panel"><h3>MORPH ACCESS</h3>${morphLockReasons(c).length?morphLockReasons(c).map(x=>`<div class="lock-why">🔒 WHY LOCKED · ${x}</div>`).join(""):`<div class="callout good">✓ Clinical wellbeing criteria are met.</div>`}</div>
+ <div class="panel"><h3>CASE MILESTONES</h3><div class="small">Completed stages: ${(c.completedStages||[]).map(i=>STAGES[i]?.label).filter(Boolean).join(" · ")||"None yet"}<br>Selected form: ${m?.name||"Not selected"}<br>Training: ${c.trainingComplete?"Complete":"Pending"}<br>Expedition: ${c.expeditionComplete?"Complete":"Pending"}</div></div>
+ <div class="panel"><h3>AUDIT TIMELINE</h3>${logs.length?logs.map(x=>`<div class="audit-line"><b>${x.time}</b><br>${x.note}</div>`).join(""):`<div class="small muted">Actions will accumulate here as the case progresses.</div>`}</div>`;
+}
+function studioCategory(name){const s=name.toLowerCase();if(/body|organ|phys|frame/.test(s))return"PHYSIOLOGY";if(/move|wing|leg|tail|flight|stride/.test(s))return"LOCOMOTION";if(/eye|sense|echo|sensory/.test(s))return"SENSORY";if(/fur|skin|scale|coat|color|surface|feather/.test(s))return"COATING / APPEARANCE";if(/habitat|climate|biome|thermal|water/.test(s))return"ENVIRONMENTAL ADAPTATION";if(/temper|social|bond|behavior/.test(s))return"SOCIAL / BEHAVIORAL";return"UTILITY"}
+function openMorphStudio(){state.screen="morphstudio";render();window.scrollTo(0,0)}
+function studioSet(k,v){const c=active();c.morphCustom=c.morphCustom||{};c.morphCustom[k]=v;save();render()}
+function saveMorphTemplate(){const c=active();const n=prompt("Template name:",c.name+" morph");if(!n)return;const all=JSON.parse(localStorage.getItem("vgMorphTemplates")||"{}");all[n]={selectedMorph:c.selectedMorph,channels:c.morphCustom||{}};localStorage.setItem("vgMorphTemplates",JSON.stringify(all));toast("Morph template saved.");render()}
+function applyMorphTemplate(n){const all=JSON.parse(localStorage.getItem("vgMorphTemplates")||"{}"),x=all[n],c=active();if(!x)return;c.selectedMorph=x.selectedMorph;c.morphCustom={...x.channels};save();render()}
+function exportMorphJSON(){const c=active(),m=(c.morphs||[]).find(x=>x.id===c.selectedMorph);const data={specimen:c.name,species:c.species,form:m?.name||null,selectedMorph:c.selectedMorph,channels:c.morphCustom||{},exported:new Date().toISOString()};const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(c.name||"morph")+"_design.json";a.click();URL.revokeObjectURL(a.href)}
+function importMorphJSON(){const inp=document.createElement("input");inp.type="file";inp.accept=".json,application/json";inp.onchange=()=>{const f=inp.files[0],r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result),c=active();c.selectedMorph=x.selectedMorph||c.selectedMorph;c.morphCustom={...(x.channels||{})};save();render();toast("Morph design imported.")}catch(e){toast("Invalid morph JSON.")}};r.readAsText(f)};inp.click()}
+function morphStudioScreen(){
+ const c=active(),m=(c.morphs||[]).find(x=>x.id===c.selectedMorph)||{},reasons=morphLockReasons(c),defs=typeof MORPH_CUSTOMIZATIONS!=="undefined"?MORPH_CUSTOMIZATIONS:[],custom=c.morphCustom||{},templates=JSON.parse(localStorage.getItem("vgMorphTemplates")||"{}");
+ const cats=[...new Set(defs.map(x=>studioCategory(x[0])))];
+ return hero("Morph Design Studio · "+c.name,"One coherent editor for proposed morphology. Clinical readiness remains authoritative.","🧬")
+ +`<div class="panel"><div class="compare"><div><div class="small">BASE CREATURE</div><div class="face">${c.icon||"🐾"}</div><b>${c.species}</b></div><div><div class="small">PROPOSED FORM</div><div class="face">${m.icon||c.icon||"🧬"}</div><b>${m.name||"Choose morph path"}</b></div></div></div>
+ <div class="panel"><h3>COMPATIBILITY CHECK</h3>${reasons.length?reasons.map(x=>`<div class="compat bad">⚠ ${x}</div>`).join(""):`<div class="compat good">✓ Clinical readiness compatible with morph research.</div>`}${clinicalReadiness(c)}</div>
+ <div class="studio-grid"><aside><div class="panel"><h3>PRESETS / TEMPLATES</h3>${(c.morphs||[]).map(x=>`<button class="secondary fx-button" style="width:100%;margin:3px 0" onclick="selectMorph('${x.id}')">${x.icon} ${x.name}</button>`).join("")}<hr>${Object.keys(templates).map(n=>`<button class="secondary fx-button" style="width:100%;margin:3px 0" onclick='applyMorphTemplate(${JSON.stringify(n)})'>💾 ${n}</button>`).join("")||'<div class="small muted">No custom templates saved.</div>'}</div>
+ <div class="panel"><button class="primary fx-button" style="width:100%" onclick="saveMorphTemplate()">SAVE TEMPLATE</button><button class="secondary fx-button" style="width:100%;margin-top:5px" onclick="exportMorphJSON()">EXPORT JSON</button><button class="secondary fx-button" style="width:100%;margin-top:5px" onclick="importMorphJSON()">IMPORT JSON</button></div></aside>
+ <main>${cats.map(cat=>`<div class="panel"><h3>${cat}</h3>${defs.filter(x=>studioCategory(x[0])===cat).map(([k,opts])=>`<div class="studio-channel"><label>${k}</label><select onchange='studioSet(${JSON.stringify(k)},this.value)'>${opts.map(v=>`<option ${custom[k]===v?"selected":""}>${v}</option>`).join("")}</select></div>`).join("")}</div>`).join("")}</main></div>
+ <div class="panel"><h3>HUMAN-READABLE SPECIMEN RECORD</h3><div class="small"><b>${c.name}</b> · ${c.species} → ${m.name||"Unselected form"}<br>${Object.entries(custom).map(([k,v])=>`${k}: ${v}`).join(" · ")||"No custom channels selected yet."}</div></div>`;
+}
+
+function openNative3D(i){
+ i=Number(i);
+ if(!Number.isInteger(i)||!state.sanctuary||!state.sanctuary[i]){toast("Resident record not found.");return}
+ state.viewerResidentIndex=i;state.screen="native3d";save();render();window.scrollTo({top:0,left:0,behavior:"auto"});
+}
+function native3DData(p){
+ const r=p.morphRecord||{},snap=r.designSnapshot||{},live=r.livingChoices||snap.livingChoices||{},ch=r.channels||r.customizations||{};
+ return {live,ch,features:[...Object.entries(live).map(([k,v])=>[k,v?.value||v]),...Object.entries(ch)]};
+}
+function native3DGlyphs(p){
+ const d=native3DData(p),arr=[...Object.values(d.live),...Object.entries(d.ch).slice(0,12).map(([k,v])=>({value:v,glyph:["✦","ϟ","≈","◇","❈","◉","⌘","☾"][k.length%8]}))];
+ return arr.slice(0,16).map((q,i)=>`<span class="m3d-glyph" style="--rad:${72+(i%4)*16}px;--spd:${5+i*.45}s;transform:rotate(${i*31}deg)"><i>${q?.glyph||["✦","ϟ","≈","◇"][i%4]}</i></span>`).join("");
+}
+function native3DTransform(){const e=document.getElementById("native3dRig");if(e)e.style.transform=`translate(-50%,-50%) rotateX(${state.n3rx||0}deg) rotateY(${state.n3ry||0}deg) scale(${state.n3zoom||1})`}
+function native3DView(v){
+ state.n3auto=false;
+ if(v==="front"){state.n3ry=0;state.n3rx=0}if(v==="side"){state.n3ry=90;state.n3rx=0}if(v==="rear"){state.n3ry=180;state.n3rx=0}if(v==="top"){state.n3ry=0;state.n3rx=-55}
+ native3DTransform();
+}
+function native3DZoom(n){state.n3zoom=Math.max(.65,Math.min(1.55,(state.n3zoom||1)+n));native3DTransform()}
+function native3DReset(){state.n3rx=0;state.n3ry=0;state.n3zoom=1;state.n3auto=false;native3DTransform()}
+function native3DToggleAuto(){state.n3auto=!state.n3auto}
+function native3DBack(){state.screen="sanctuary";save();render();window.scrollTo(0,0)}
+function native3DSettings(){const i=Number(state.viewerResidentIndex);state.residentSettingsIndex=i;state.screen="residentsettings";save();render();window.scrollTo(0,0)}
+function native3DScreen(){
+ const i=Number(state.viewerResidentIndex),p=(state.sanctuary||[])[i];
+ if(!p){state.screen="sanctuary";return sanctuaryScreen()}
+ const d=native3DData(p);
+ setTimeout(native3DBind,0);
+ return hero("3D Morph Inspection · "+p.name,"Conceptual pseudo-3D visualization · not a medically accurate anatomical reconstruction.","🔬")
+ +`<div class="panel"><div class="m3d-stage" id="native3dStage"><div class="m3d-label">DRAG TO ROTATE<br>R RESET · SPACE AUTO · 1–4 VIEWS · +/- ZOOM<br>CONCEPTUAL DISPLAY</div><div class="m3d-grid"></div><div class="m3d-platform"></div><div class="m3d-rig" id="native3dRig"><div class="m3d-animal">${p.icon||"🐾"}</div>${native3DGlyphs(p)}</div><div class="m3d-name">${p.name} · ${p.formName||"Morph"}</div></div>
+ <div class="m3d-controls" style="margin-top:8px"><button class="m3d-btn" onclick="native3DReset()">RESET</button><button class="m3d-btn" onclick="native3DView('front')">FRONT</button><button class="m3d-btn" onclick="native3DView('side')">SIDE</button><button class="m3d-btn" onclick="native3DView('rear')">REAR</button><button class="m3d-btn" onclick="native3DView('top')">TOP</button><button class="m3d-btn" onclick="native3DZoom(.1)">＋</button><button class="m3d-btn" onclick="native3DZoom(-.1)">－</button><button class="m3d-btn" onclick="native3DToggleAuto()">↻ AUTO</button></div></div>
+ <div class="panel"><h3>TRANSFORMATION FEATURES</h3>${d.features.length?d.features.map(x=>`<div class="m3d-feature"><b>${x[0]}</b>${x[1]}</div>`).join(""):'<div class="small muted">No detailed morph channels were retained for this older resident.</div>'}</div>
+ <div class="panel"><div class="footer-actions"><button class="primary fx-button" onclick="native3DBack()">← RETURN TO SANCTUARY</button><button class="secondary fx-button" onclick="native3DSettings()">🧬 COMPLETE MORPH DATA</button></div></div>`;
+}
+function native3DBind(){
+ const st=document.getElementById("native3dStage");if(!st)return;
+ state.n3rx=state.n3rx||0;state.n3ry=state.n3ry||0;state.n3zoom=state.n3zoom||1;native3DTransform();
+ let down=false,lx=0,ly=0,vx=0,vy=0;
+ st.onpointerdown=e=>{down=true;lx=e.clientX;ly=e.clientY;state.n3auto=false;try{st.setPointerCapture(e.pointerId)}catch(_){}};
+ st.onpointermove=e=>{if(!down)return;vx=(e.clientX-lx)*.55;vy=-(e.clientY-ly)*.35;state.n3ry=(state.n3ry||0)+vx;state.n3rx=Math.max(-60,Math.min(60,(state.n3rx||0)+vy));lx=e.clientX;ly=e.clientY;native3DTransform()};
+ st.onpointerup=()=>{down=false};
+ if(!window.__native3dKeys){window.__native3dKeys=true;document.addEventListener("keydown",e=>{if(state.screen!=="native3d")return;if(e.key==="Escape")native3DBack();else if(e.key==="r"||e.key==="R")native3DReset();else if(e.code==="Space"){e.preventDefault();native3DToggleAuto()}else if(e.key==="1")native3DView("front");else if(e.key==="2")native3DView("side");else if(e.key==="3")native3DView("rear");else if(e.key==="4")native3DView("top");else if(e.key==="+"||e.key==="=")native3DZoom(.1);else if(e.key==="-")native3DZoom(-.1)})}
+ if(!window.__native3dLoop){window.__native3dLoop=true;const loop=()=>{if(state.screen==="native3d"&&state.n3auto){state.n3ry=(state.n3ry||0)+.18;native3DTransform()}requestAnimationFrame(loop)};requestAnimationFrame(loop)}
+}
+function sanctuaryScreen(){protectSanctuaryResidents();
   if(!state.sanctuary.length){
     return hero("Morph Sanctuary","Completed transformed animals live here permanently. Finish Koda's full morph case and expedition to bring the first resident home.","🌿")
     +`<div class="empty">No transformed residents yet.<br><br><button class="primary fx-button" onclick="goStage(${active().stage})">RETURN TO ACTIVE CASE</button></div>`;
@@ -1971,7 +2116,7 @@ function petCard(p,i){
       <button onclick="petCare(${i},'food')">OFFER FOOD</button><button onclick="petCare(${i},'water')">OFFER WATER</button>
       <button onclick="petCare(${i},'comfort')">COMFORT</button><button onclick="petCare(${i},'train')">TRAIN</button>
     </div>
-    <button class="pet-story-btn" onclick="openMorphStory(${i})">🗺️ CONTINUE ${p.name.toUpperCase()}'S STORY · SEARCH FOR ITEMS</button><button class="rspec-btn" onclick="openResidentSettings(${i})">🧬 VIEW ALL MORPH SETTINGS · READ ONLY</button>
+    <button class="pet-story-btn" onclick="openMorphStory(${i})">🗺️ CONTINUE ${p.name.toUpperCase()}'S STORY · SEARCH FOR ITEMS</button><button class="rspec-btn" onclick="openResidentSettings(${i})">🧬 VIEW ALL MORPH SETTINGS · READ ONLY</button><button class="m3d-launch" onclick="if(typeof window.openNative3D==='function'){window.openNative3D(${i})}else{alert('3D viewer module failed to initialize.')}">🔬 3D MORPH VIEWER · INSPECT CREATURE</button>
   </div>`;
 }
 
@@ -3112,15 +3257,48 @@ function animatedGauge(label,value){
   const v=Math.max(0,Math.min(100,Math.round(value||0)));
   return `<div style="margin:8px 0"><div class="small"><b>${label}</b> · ${v}%</div><div class="animated-gauge"><i style="width:${v}%"></i></div></div>`;
 }
+
+function currentCaseStatusStrip(){
+ const c=active(),resident=(state.sanctuary||[])[state.storyResidentIndex];
+ const who=resident||c||{},form=resident?.formName||((c?.morphs||[]).find(x=>x.id===c?.selectedMorph)?.name)||"Not selected";
+ const stage=resident?"Sanctuary / Field":(STAGES[c?.stage]?.label||state.screen||"Institute");
+ const stability=resident?"Protected":Math.round(((c?.health||0)+(c?.hydration||0)+(100-(c?.pain||0)))/3)+"%";
+ return [["ACTIVE",who.name||"No case"],["STAGE",stage],["STABILITY",stability],["MORPH",form],["SAVE","Local ✓"]].map(x=>`<div class="case-stat"><span>${x[0]}</span><b>${x[1]}</b></div>`).join("");
+}
+function groupedQuickNav(){
+ return `<div class="nav-groups">
+ <div class="nav-group"><span>CLINICAL CARE</span><button onclick="goStage(active().stage)">Active Case</button><button onclick="openCaseReview()">Case Review</button></div>
+ <div class="nav-group"><span>MORPHOLOGY</span><button onclick="goMeta('institute')">Institute</button><button onclick="openMorphStudio()">Morph Studio</button></div>
+ <div class="nav-group"><span>FIELD OPERATIONS</span><button onclick="goMeta('worldmap')">World Map</button><button onclick="openFirstMorphStory()">Resident Quest</button></div>
+ <div class="nav-group"><span>ARCHIVE & SANCTUARY</span><button onclick="goMeta('sanctuary')">Sanctuary</button><button onclick="goMeta('codex')">Codex</button></div></div>`;
+}
+function clinicalReadiness(c){
+ if(!c)return"";
+ const vals=[["Pain",100-(c.pain||0)],["Hydration",c.hydration||0],["Energy",c.energy||0],["Trust",c.trust||0],["Stress",100-(c.stress||0)],["Mobility",c.mobility||70],["Stability",Math.round(((c.health||0)+(c.hydration||0)+(100-(c.pain||0)))/3)]];
+ return `<div class="readiness-grid">${vals.map(([k,v])=>`<div class="ready-gauge"><span>${k}</span><b>${Math.max(0,Math.min(100,Math.round(v)))}%</b><div class="ready-bar"><i style="width:${Math.max(0,Math.min(100,v))}%"></i></div></div>`).join("")}</div>`;
+}
+function morphLockReasons(c){
+ const a=[];if((c.pain||0)>30)a.push("Pain must be 30 or lower.");if((c.hydration||0)<70)a.push("Hydration must reach 70%.");if((c.health||0)<82)a.push("Health must reach 82%.");if((c.stress||0)>55)a.push("Stress must be reduced.");if(c.stage<7)a.push("Clinical care and eligibility must be completed before morph research.");
+ return a;
+}
+function firstRunGuide(){
+ if(localStorage.getItem("vgClinicalGuideSeen"))return"";
+ return `<div class="guide-card"><div class="eyebrow">FIRST-RUN INSTITUTE GUIDE</div><h2>Clinical care comes first.</h2><p>Stabilize pain, hydration, breathing, stress and recovery before morph research begins. Morphology is unlocked only after the resident is clinically ready.</p><button class="primary fx-button" onclick="localStorage.setItem('vgClinicalGuideSeen','1');render()">UNDERSTOOD · BEGIN CASE</button></div>`;
+}
+function addAudit(note){state.audit=state.audit||[];state.audit.unshift({time:new Date().toLocaleString(),note});state.audit=state.audit.slice(0,120)}
 function render(){
 
 
   ensureAdvancedState();evaluateCareerUnlocks();
   document.getElementById("resourceBar").innerHTML=resourceBar();
-  document.getElementById("nav").innerHTML=nav();
+  document.getElementById("nav").innerHTML=groupedQuickNav()+nav();
+  const cs=document.getElementById("caseStatusStrip");if(cs)cs.innerHTML=currentCaseStatusStrip();
   let html="";
   if(state.screen==="institute")html=instituteScreen();
   else if(state.screen==="residentsettings")html=residentSettingsScreen();
+  else if(state.screen==="native3d")html=native3DScreen();
+  else if(state.screen==="casereview")html=caseReviewScreen();
+  else if(state.screen==="morphstudio")html=morphStudioScreen();
   else if(state.screen==="sanctuary")html=sanctuaryScreen();
   else if(state.screen==="codex")html=codexScreen();
   else if(state.screen==="worldmap")html=worldMapScreen();
@@ -3135,8 +3313,8 @@ function render(){
     const id=stageId();
     html=({intake:intakeScreen,triage:triageScreen,exam:examScreen,diagnostics:diagnosticsScreen,treatment:treatmentScreen,vetrecovery:vetRecoveryScreen,eligibility:eligibilityScreen,resonance:resonanceScreen,prep:prepScreen,tree:treeScreen,chamber:chamberScreen,recovery:recoveryScreen,training:trainingScreen,expedition:expeditionScreen}[id]||intakeScreen)();
   }
-  if(state.screen!=="residentsettings" && state.screen!=="sanctuary" && state.screen!=="codex" && state.screen!=="worldmap" && state.screen!=="morphstory" && state.screen!=="career" && state.screen!=="researchtrack" && state.screen!=="projects" && state.screen!=="instituteroom" && state.screen!=="assignment" && state.screen!=="crafting"){
-    html = storyPanel() + html;
+  if(state.screen!=="native3d" && state.screen!=="casereview" && state.screen!=="morphstudio" && state.screen!=="residentsettings" && state.screen!=="sanctuary" && state.screen!=="codex" && state.screen!=="worldmap" && state.screen!=="morphstory" && state.screen!=="career" && state.screen!=="researchtrack" && state.screen!=="projects" && state.screen!=="instituteroom" && state.screen!=="assignment" && state.screen!=="crafting"){
+    html = firstRunGuide()+storyPanel()+html;
   }
   document.getElementById("main").innerHTML=html;
   requestAnimationFrame(()=>{
@@ -3150,6 +3328,8 @@ function render(){
   save();
 }
 function goStage(i){
+  const __target=Number(arguments[0]);if(__target>=9){const __c=active(),__why=morphLockReasons(__c);if(__why.length){toast("Morph access locked: "+__why[0]);state.screen="casereview";render();return;}}
+
   const c=active();
   if(i>c.stage&&!c.completedStages.includes(i)){toast("That area is still locked. Finish the current area first.");return}
   state.screen=STAGES[i].id;save();render();
@@ -3364,6 +3544,16 @@ function beginVetGodsStory(){
   save();render();
 }
 window.beginVetGodsStory=beginVetGodsStory;
+
+// Native 3D controls must be exported here, BEFORE this IIFE closes.
+window.openNative3D=openNative3D;
+window.native3DReset=native3DReset;
+window.native3DView=native3DView;
+window.native3DZoom=native3DZoom;
+window.native3DToggleAuto=native3DToggleAuto;
+window.native3DBack=native3DBack;
+window.native3DSettings=native3DSettings;
+
 render();
 setTimeout(showStoryIntro,80);
 })();
@@ -3578,5 +3768,72 @@ window.lmgResidentPreview=function(p){
 }
 })();
 </script>
+
+<script id="morph-3d-viewer-js">
+(function(){
+let idx=0,ry=0,rx=0,zoom=1,mode="surface",drag=false,lastX=0,lastY=0,auto=true,raf=0;
+function esc(x){return String(x??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function root(){let e=document.getElementById("morph3dViewer");if(!e){e=document.createElement("div");e.id="morph3dViewer";document.body.appendChild(e)}return e}
+function P(){return (state.sanctuary||[])[idx]}
+function build(p){const r=p.morphRecord||{},s=r.designSnapshot||{},live=r.livingChoices||s.livingChoices||{},ch=r.channels||r.customizations||{};return{r,live,ch}}
+function glyphs(p){const b=build(p),vals=[...Object.values(b.live),...Object.entries(b.ch).slice(0,12).map(([k,v])=>({value:v,glyph:["✦","ϟ","≈","◇","❈","◉","⌘","☾"][k.length%8]}))];return vals.slice(0,16).map((q,i)=>`<span class="m3d-glyph" style="--rad:${72+(i%4)*16}px;--spd:${5+i*.45}s;transform:rotate(${i*31}deg)"><i>${esc(q?.glyph||["✦","ϟ","≈","◇"][i%4])}</i></span>`).join("")}
+function parts(p){const b=build(p),text=Object.values(b.ch).join(" ").toLowerCase();let a=[];if(/wing|glide|flight/.test(text))a.push(["m3d-left","≪"],["m3d-right","≫"]);if(/horn|crest|crown/.test(text))a.push(["m3d-top","♜"]);if(/tail|ribbon/.test(text))a.push(["m3d-tail","〰"]);if(/frost|plume|feather/.test(text))a.push(["m3d-left","❄"],["m3d-right","❄"]);if(/static|storm/.test(text))a.push(["m3d-top","ϟ"]);return a.map(x=>`<span class="m3d-part ${x[0]}">${x[1]}</span>`).join("")}
+function features(p){const b=build(p),rows=[];Object.entries(b.live).forEach(([k,v])=>rows.push([k,v?.value||v]));Object.entries(b.ch).slice(0,30).forEach(([k,v])=>rows.push([k,v]));return rows}
+function rig(){const e=document.querySelector(".m3d-rig");if(e)e.style.cssText+=`;--ry:${ry}deg;--rx:${rx}deg;--zoom:${zoom}`}
+function animate(){cancelAnimationFrame(raf);const tick=()=>{if(auto){ry=(ry+.12)%360;rig()}raf=requestAnimationFrame(tick)};tick()}
+window.openMorph3d=function(i){idx=Number(i);if(!P()){if(typeof toast==="function")toast("Resident not found.");return}ry=0;rx=0;zoom=1;mode="surface";draw();root().classList.add("open");root().scrollTop=0;animate()}
+window.closeMorph3d=function(){root().classList.remove("open");cancelAnimationFrame(raf)}
+document.addEventListener("keydown",e=>{if(!root().classList.contains("open"))return;if(e.key==="Escape")closeMorph3d();else if(e.key==="r"||e.key==="R")m3dReset();else if(e.code==="Space"){e.preventDefault();m3dAuto()}else if(e.key==="1")m3dView("front");else if(e.key==="2")m3dView("side");else if(e.key==="3")m3dView("rear");else if(e.key==="4")m3dView("top");else if(e.key==="+"||e.key==="=")m3dZoom(.1);else if(e.key==="-")m3dZoom(-.1)})
+window.m3dView=function(v){if(v==="front"){ry=0;rx=0}else if(v==="side"){ry=90;rx=0}else if(v==="rear"){ry=180;rx=0}else if(v==="top"){ry=0;rx=-55}auto=false;rig();buttons()}
+window.m3dMode=function(v){mode=v;draw();animate()}
+window.m3dAuto=function(){auto=!auto;buttons();animate()}
+window.m3dZoom=function(n){zoom=Math.max(.65,Math.min(1.55,zoom+n));rig()}
+window.m3dReset=function(){ry=0;rx=0;zoom=1;auto=false;rig();draw();animate()}
+window.m3dExportProfile=function(){const p=P(),b=build(p);const text=["VET GODS · CONCEPTUAL SPECIMEN RECORD",p.name+" · "+p.formName,"Species: "+p.species,"Theme: "+(p.theme||""),"Habitat: "+(p.habitat||""),"Protected Sanctuary Resident","",...features(p).map(x=>x[0]+": "+(x[1]?.value||x[1]))].join("\n");const blob=new Blob([text],{type:"text/plain"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(p.name||"specimen")+"_profile.txt";a.click();URL.revokeObjectURL(a.href)}
+
+function buttons(){document.querySelectorAll("[data-m3d-auto]").forEach(b=>b.classList.toggle("on",auto))}
+function draw(){
+ const p=P(),b=build(p),fs=features(p);if(!p)return;
+ let animal=p.icon||"🐾";let overlay=mode==="skeleton"?"☠":mode==="abilities"?"✦":mode==="movement"?"↝":animal;
+ root().innerHTML=`<div class="m3d-shell"><div class="m3d-head"><div class="m3d-controls" style="justify-content:space-between"><div><div style="font-size:8px;color:#92b5c2">CONCEPTUAL PSEUDO-3D VISUALIZATION · NOT A MEDICALLY ACCURATE ANATOMICAL RECONSTRUCTION</div><div style="font-size:29px;font-weight:1000">🔬 ${esc(p.name)} · ${esc(p.formName)}</div></div><button class="m3d-btn" onclick="closeMorph3d()">RETURN</button></div></div>
+ <div class="m3d-layout"><main><div class="m3d-stage" id="m3dStage"><div class="m3d-label">DRAG TO ROTATE · INERTIA ENABLED<br>R RESET · SPACE AUTO · 1–4 VIEWS · +/- ZOOM · ESC CLOSE<br>ORIENTATION Y ${Math.round(ry)}° / X ${Math.round(rx)}°<br>MODE · ${esc(mode.toUpperCase())}</div><div class="m3d-grid"></div><div class="m3d-platform"></div><div class="m3d-rig"><div class="m3d-animal">${overlay}</div>${parts(p)}${glyphs(p)}</div><div class="m3d-name">${esc(p.name)} · ${esc(p.formName)}</div></div>
+ <div class="m3d-card"><div class="m3d-controls"><button class="m3d-btn" onclick="m3dReset()">RESET CAMERA</button><button class="m3d-btn" onclick="m3dView('front')">FRONT</button><button class="m3d-btn" onclick="m3dView('side')">SIDE</button><button class="m3d-btn" onclick="m3dView('rear')">REAR</button><button class="m3d-btn" onclick="m3dView('top')">TOP</button><button class="m3d-btn" onclick="m3dZoom(.1)">＋</button><button class="m3d-btn" onclick="m3dZoom(-.1)">－</button><button class="m3d-btn ${auto?"on":""}" data-m3d-auto onclick="m3dAuto()">↻ AUTO ROTATE</button><button class="m3d-btn" onclick="m3dExportProfile()">EXPORT PROFILE</button></div></div>
+ <div class="m3d-card"><div class="m3d-controls">${["surface","skeleton","abilities","movement","morph layers"].map(x=>`<button class="m3d-btn ${mode===x?"on":""}" onclick='m3dMode(${JSON.stringify(x)})'>${x.toUpperCase()}</button>`).join("")}</div></div></main>
+ <aside><div class="m3d-card"><h3>SPECIMEN HUD</h3><div class="m3d-hud"><div><span>HEALTH</span><b>PROTECTED</b></div><div><span>PAIN</span><b>0</b></div><div><span>BOND</span><b>${esc(p.bond||0)}</b></div><div><span>MASTERY</span><b>${esc(p.mastery||0)}</b></div></div></div>
+ <div class="m3d-card"><h3>VISIBLE TRANSFORMATION FEATURES</h3>${fs.length?fs.map(x=>`<div class="m3d-feature"><b>${esc(x[0])}</b>${esc(x[1]?.value||x[1])}</div>`).join(""):'<div class="toon-sub">Older resident: visual profile uses the morph information retained in its record.</div>'}</div>
+ <button class="m3d-launch" onclick="closeMorph3d();openResidentSettings(${idx})">🧬 OPEN COMPLETE MORPH DATA</button></aside></div></div>`;
+ const st=document.getElementById("m3dStage");
+ let vx=0,vy=0;
+ st.onpointerdown=e=>{drag=true;lastX=e.clientX;lastY=e.clientY;auto=false;vx=vy=0;st.setPointerCapture(e.pointerId)};
+ st.onpointermove=e=>{if(!drag)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;vx=dx*.55;vy=-dy*.35;ry+=vx;rx=Math.max(-60,Math.min(60,rx+vy));lastX=e.clientX;lastY=e.clientY;rig()};
+ const release=()=>{drag=false;let n=0;const coast=()=>{if(drag||n++>45||Math.abs(vx)+Math.abs(vy)<.08)return;vx*=.92;vy*=.92;ry+=vx;rx=Math.max(-60,Math.min(60,rx+vy));rig();requestAnimationFrame(coast)};coast()};
+ st.onpointerup=release;st.onpointercancel=release;
+ rig();
+}
+})();
+</script>
+
+
+<script id="sanctuary-3d-launch-fix">
+(function(){
+ window.launchSanctuary3D=function(i){
+   i=Number(i);
+   const residents=(window.state&&state.sanctuary)||[];
+   if(!Number.isInteger(i)||!residents[i]){
+     if(typeof window.toast==="function")toast("3D viewer: resident record not found.");
+     return;
+   }
+   // Persist which Sanctuary resident is being inspected.
+   state.viewerResidentIndex=i;
+   if(typeof window.save==="function")save();
+   if(typeof window.openMorph3d!=="function"){
+     if(typeof window.toast==="function")toast("3D viewer module did not load.");
+     return;
+   }
+   window.openMorph3d(i);
+ };
+})();
+</script>
+
 </body>
 </html>
