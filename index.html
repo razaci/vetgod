@@ -1849,8 +1849,8 @@ function sanctuaryScreen(){
     +`<div class="empty">No transformed residents yet.<br><br><button class="primary fx-button" onclick="goStage(${active().stage})">RETURN TO ACTIVE CASE</button></div>`;
   }
   return hero("Morph Sanctuary",
-    "Persistent care, habitat fit, bond and mastery continue after a case ends. Use CARE FOR ALL for baseline care, then work with individuals when you want deeper attention.","🌿")
-  +`<div class="panel"><div class="footer-actions"><button class="primary fx-button" onclick="careAll()">CARE FOR ALL RESIDENTS</button><button class="secondary fx-button" onclick="openFirstMorphStory()">🗺️ PLAY MORPHED ANIMAL ADVENTURE</button><button class="secondary fx-button" onclick="goMeta('career')">🎓 CAREER CENTER</button>
+    "Residence is the handoff into the continuing game, not an ending. Continue the resident story to search for items, use discoveries in Career research, or begin the next rescue case.","🌿")
+  +`<div class="panel"><div class="callout good"><b>🏡 RESIDENCE ESTABLISHED — CHOOSE THE NEXT GAMEPLAY PATH</b><br>Story expeditions recover reusable Institute items. Career research converts those discoveries into new field expectations.</div><div class="footer-actions"><button class="primary fx-button" onclick="openFirstMorphStory()">🗺️ CONTINUE STORY · SEARCH FOR ITEMS</button><button class="primary fx-button" onclick="goMeta('career')">🎓 USE ITEMS IN CAREER CENTER</button><button class="secondary fx-button" onclick="careAll()">CARE FOR ALL RESIDENTS</button>
     <button class="secondary fx-button" onclick="startNextCreature()">${state.activeIndex<CREATURES.length-1?"▶ ADVANCE TO NEXT PATIENT":"▶ START NEXT PATIENT CYCLE"}</button></div></div>
   <div class="sanctuary-grid">${state.sanctuary.map((p,i)=>petCard(p,i)).join("")}</div>`;
 }
@@ -1868,7 +1868,7 @@ function petCard(p,i){
       <button onclick="petCare(${i},'food')">OFFER FOOD</button><button onclick="petCare(${i},'water')">OFFER WATER</button>
       <button onclick="petCare(${i},'comfort')">COMFORT</button><button onclick="petCare(${i},'train')">TRAIN</button>
     </div>
-    <button class="pet-story-btn" onclick="openMorphStory(${i})">🗺️ PLAY ${p.name.toUpperCase()}'S MORPH ADVENTURE</button>
+    <button class="pet-story-btn" onclick="openMorphStory(${i})">🗺️ CONTINUE ${p.name.toUpperCase()}'S STORY · SEARCH FOR ITEMS</button>
   </div>`;
 }
 
@@ -1887,10 +1887,19 @@ function morphStoryData(p){
 }
 
 function openMorphStory(i){
-  if(!state.sanctuary[i]){
-    toast("That morphed animal is not available yet.");
-    return;
-  }
+  i=Number(i);
+  if(!Number.isInteger(i) || i<0 || i>=state.sanctuary.length){toast("That morphed animal is not available yet.");return}
+  const p=state.sanctuary[i];
+  p.adventure=p.adventure||{};
+  if(!p.adventure.scene)p.adventure.scene=p.adventure.completed?"complete":"trailhead";
+  if(!Array.isArray(p.adventure.inventory))p.adventure.inventory=[];
+  if(!p.adventure.flags||typeof p.adventure.flags!=="object")p.adventure.flags={};
+  if(typeof p.adventure.energy!=="number")p.adventure.energy=100;
+  if(typeof p.adventure.completed!=="boolean")p.adventure.completed=false;
+  if(!Array.isArray(p.adventure.log))p.adventure.log=["You entered the wilds beyond the Morph Sanctuary."];
+  p.deepMission=p.deepMission||{depth:0,finds:[],notes:[],complete:false,runs:0};
+  if(!Array.isArray(p.deepMission.finds))p.deepMission.finds=[];
+  if(!Array.isArray(p.deepMission.notes))p.deepMission.notes=[];
   state.storyResidentIndex=i;
   state.screen="morphstory";
   save();
@@ -2572,6 +2581,70 @@ function adventureChoiceAllowed(p,c){
   return true;
 }
 
+
+const VG_DEEP_MISSIONS=[
+ {title:"The Broken Marker",text:"A survey marker is split cleanly in two, but there are no tool marks. A second set of tracks circles it without ever crossing your own.",find:"Fractured Survey Seal"},
+ {title:"Whisper Grass",text:"The grass bends toward your morph instead of the wind. Something beneath the roots repeats a three-note pulse.",find:"Resonant Grass Knot"},
+ {title:"The Empty Nest",text:"A warm nest holds no eggs, only a tiny polished stone etched with a map that does not match the terrain.",find:"Nest Map Stone"},
+ {title:"Tracks That Stop",text:"Fresh tracks end in the center of bare ground. Your morph's field senses detect movement somewhere above—or below.",find:"Impossible Track Cast"},
+ {title:"Buried Relay",text:"A dead Institute relay wakes only when your morph approaches. Its final transmission contains your resident's name.",find:"Ghost Relay Chip"},
+ {title:"Mirror Pool",text:"The water reflects a different sky. Something bright moves beneath the reflection without disturbing the real surface.",find:"Mirrorwater Vial"},
+ {title:"The Rescue Bell",text:"A tiny bell rings from a ravine. Following it reveals an injured wild creature guarding a sealed field capsule.",find:"Rescue Bell Capsule"},
+ {title:"Forgotten Camp",text:"An abandoned camp looks only minutes old, yet the equipment is stamped with an Institute date from decades ago.",find:"Weathered Institute Patch"},
+ {title:"The Moving Stones",text:"A line of stones changes position whenever nobody watches it. Your morph can choose to follow the pattern.",find:"Migrating Stone"},
+ {title:"Signal in the Fog",text:"A repeating beacon calls from dense fog. Every scan says the source is both 30 meters away and several kilometers distant.",find:"Fog Signal Coil"},
+ {title:"The Hidden Nursery",text:"A concealed habitat contains harmless young creatures. Their parent has not returned, and strange tracks lead toward a collapsed passage.",find:"Nursery Guardian Token"},
+ {title:"The Black Feather",text:"A feather hangs motionless in midair. It carries a harmless static field and a coded migration signature.",find:"Suspended Black Feather"},
+ {title:"Door Under the Roots",text:"A geometric door is woven into living roots. It opens only after your morph's accumulated field discoveries resonate together.",find:"Root Door Fragment"},
+ {title:"The Second Trail",text:"Your own tracks appear ahead of you before you make them. The trail leads away from the safe route toward an unknown overlook.",find:"Precursor Track Sample"},
+ {title:"The Silent Observatory",text:"An old observation station still tracks something crossing the night sky. The object is absent from every Institute chart.",find:"Uncatalogued Star Plate"},
+ {title:"Creature in the Echo",text:"A distress call repeats from a canyon, but each echo describes a different location. Your morph must determine which one is alive.",find:"Echo Rescue Tag"},
+ {title:"The Living Archive",text:"Bioluminescent growth has formed patterns resembling written records. Touching nothing, your morph maps the entire chamber.",find:"Living Archive Spore"},
+ {title:"The Last Expedition",text:"You discover gear from a lost expedition. Its journal ends with: 'If another bonded morph finds this, finish the route.'",find:"Lost Expedition Journal"},
+ {title:"The Unmarked Sanctuary",text:"Beyond a concealed ridge is an old refuge built for animals, but no Institute record says it ever existed.",find:"Unknown Sanctuary Emblem"},
+ {title:"The Far Gate",text:"At the deepest point stands a sealed gate covered in animal silhouettes. One silhouette matches your morph exactly. The gate records your arrival, releases a final relic, and leaves its deeper destination unresolved.",find:"Far Gate Relic"}
+];
+function deepMissionState(p){
+  p.deepMission=p.deepMission||{depth:0,finds:[],notes:[],complete:false,runs:0};
+  if(!Array.isArray(p.deepMission.finds))p.deepMission.finds=[];
+  if(!Array.isArray(p.deepMission.notes))p.deepMission.notes=[];
+  return p.deepMission;
+}
+function deepMissionAddItem(p,item){
+  const a=ensureAdventureState(p);
+  if(!a.inventory.includes(item))a.inventory.push(item);
+  p.creatureItems=p.creatureItems||[];if(!p.creatureItems.includes(item))p.creatureItems.push(item);
+  p.storyRelics=p.storyRelics||[];if(!p.storyRelics.includes(item))p.storyRelics.push(item);
+  if(typeof addInstituteItem==="function")addInstituteItem(item,p.name);
+}
+function deepMissionStep(i,choice){
+  const p=state.sanctuary[i];if(!p){toast("Resident not found.");return}
+  const s=deepMissionState(p);if(s.complete){toast("This 20-stage run is complete. Start another run when ready.");return}
+  const d=VG_DEEP_MISSIONS[s.depth];if(!d)return;
+  const variants=["Investigated carefully and preserved the scene.","Used "+(p.formName||"the morph")+"'s specialized abilities.","Protected the habitat or rescued a creature before collecting evidence."];
+  s.notes.push("Depth "+(s.depth+1)+" · "+d.title+" — "+variants[choice||0]);
+  deepMissionAddItem(p,d.find);if(!s.finds.includes(d.find))s.finds.push(d.find);
+  p.morphLifetime=p.morphLifetime||{quests:[],items:[],milestones:[],fieldNotes:[]};
+  p.morphLifetime.items=p.morphLifetime.items||[];if(!p.morphLifetime.items.includes(d.find))p.morphLifetime.items.push(d.find);
+  p.morphLifetime.quests=p.morphLifetime.quests||[];p.morphLifetime.quests.push("Deep Mission "+(s.depth+1)+": "+d.title);
+  p.morphLifetime.fieldNotes=p.morphLifetime.fieldNotes||[];p.morphLifetime.fieldNotes.push(d.text);
+  p.mastery=clamp((p.mastery||0)+2);p.bond=clamp((p.bond||0)+1);s.depth++;
+  if(s.depth>=VG_DEEP_MISSIONS.length){s.complete=true;s.runs=(s.runs||0)+1;p.morphLifetime.milestones=p.morphLifetime.milestones||[];p.morphLifetime.milestones.push("Reached the Far Gate after a 20-stage mystery expedition");}
+  save();render();toast(s.complete?"🌌 FAR GATE REACHED • Expedition complete":"🔎 Discovery recovered • Depth "+s.depth+"/20");
+}
+function deepMissionReset(i){
+  const p=state.sanctuary[i];if(!p)return;const s=deepMissionState(p);
+  p.deepMission={depth:0,finds:[...s.finds],notes:[...s.notes],complete:false,runs:s.runs||0};
+  save();render();
+}
+function deepMissionPanel(i){
+  const p=state.sanctuary[i];if(!p)return"";const s=deepMissionState(p),d=VG_DEEP_MISSIONS[Math.min(s.depth,19)];
+  return `<div class="mission-depth"><div class="eyebrow">20-DEEP MYSTERY EXPEDITION</div><h3>${s.complete?"🌌 FAR GATE EXPEDITION COMPLETE":"DEPTH "+(s.depth+1)+" / 20 · "+d.title}</h3>
+  <div class="depth-track">${VG_DEEP_MISSIONS.map((_,n)=>`<i class="depth-node ${n<s.depth?"on":""}"></i>`).join("")}</div>
+  <div class="mystery">${s.complete?"Your morph returned with the full discovery chain. Every relic and field note remains attached to this resident.":d.text}</div>
+  ${!s.complete?`<div class="action-grid three" style="margin-top:8px"><button class="action" onclick="deepMissionStep(${i},0)"><strong>INVESTIGATE</strong><span>Study clues and preserve evidence.</span></button><button class="action" onclick="deepMissionStep(${i},1)"><strong>USE MORPH ABILITY</strong><span>Let this form solve the mystery.</span></button><button class="action" onclick="deepMissionStep(${i},2)"><strong>RESCUE / PROTECT</strong><span>Put the living habitat first.</span></button></div>`:`<button class="primary fx-button" style="width:100%;margin-top:8px" onclick="deepMissionReset(${i})">↻ BEGIN NEW 20-DEEP RUN</button>`}
+  <div class="small muted" style="margin-top:7px">Recovered: ${s.finds.length} unique mystery items · Completed runs: ${s.runs||0}</div></div>`;
+}
 function morphStoryScreen(){
   if(!state.sanctuary.length){
     return hero("Morphed Animal Adventure","No transformed resident has been created yet.","📖")
@@ -2608,7 +2681,8 @@ function morphStoryScreen(){
 
   return hero(p.name+"'s Morph Adventure",
     "This is a playable branching story. Pick routes, collect items, rescue creatures, unlock hidden areas, and bring what you find back to the Sanctuary.","🗺️")
-  +animatedMorphShowcase(p)+excitementPanel()+fieldEventCard()
+  +excitementPanel()+fieldEventCard()
+  +deepMissionPanel(i)
   +`<div class="grid"><div>
       <div class="story-card">
         <div class="eyebrow">CURRENT LOCATION</div>
@@ -2977,14 +3051,14 @@ function goStage(i){
 }
 function goMeta(id){state.screen=id;save();render()}
 function finishArea(){
-  const c=active(),i=c.stage;
-  if(c.areaComplete){toast("This area is already complete. Press ADVANCE PATIENT.");return}
-  if(!canFinish(i)){toast("Still needed: "+missingSummary(i));return}
-  c.areaComplete=true;
-  if(!c.completedStages.includes(i))c.completedStages.push(i);
-  log(STAGES[i].label+" completed for "+c.name+".");
-  save();render();
-  toast("Area complete. Press ADVANCE PATIENT.");
+ const c=active(),i=c.stage;
+ if(!c.areaComplete){
+   if(!canFinish(i)){toast("Still needed: "+missingSummary(i));return}
+   c.areaComplete=true;if(!c.completedStages.includes(i))c.completedStages.push(i);
+   log(STAGES[i].label+" completed for "+c.name+".");save();
+ }
+ if(i===13){completeCreatureCase();return}
+ continueStage();
 }
 function continueStage(){
   const c=active();
@@ -3079,17 +3153,21 @@ function missingSummary(i){
 }
 
 function advanceCase(){
-  const c=active();
-  if(!c.areaComplete){
-    if(canFinish(c.stage)){
-      finishArea();
-      toast("Area complete. Press ADVANCE PATIENT again.");
-    }else{
-      toast("Still needed: "+missingSummary(c.stage));
-    }
-    return;
-  }
-  continueStage();
+ const c=active();
+ if(c.stage===13){
+   if(!c.areaComplete){
+     if(!canFinish(13)){toast("Still needed: "+missingSummary(13));return}
+     c.areaComplete=true;if(!c.completedStages.includes(13))c.completedStages.push(13);save();
+   }
+   completeCreatureCase();return;
+ }
+ if(!c.areaComplete){
+   if(!canFinish(c.stage)){toast("Still needed: "+missingSummary(c.stage));return}
+   const finished=STAGES[c.stage].label;c.areaComplete=true;
+   if(!c.completedStages.includes(c.stage))c.completedStages.push(c.stage);
+   log(finished+" completed for "+c.name+".");
+ }
+ continueStage();
 }
 
 function canFinish(i){
@@ -3112,22 +3190,25 @@ function canFinish(i){
 }
 
 function completeCreatureCase(){
-  const c=active();if(!c.areaComplete||c.stage!==13)return;
-  const m=morph(),w=WORLDS.find(x=>x.id===c.expedition.world);
-  const exists=state.sanctuary.some(x=>x.caseKey===c.key);
-  if(!exists){
-    state.sanctuary.push({
-      caseKey:c.key,name:c.name,species:c.species,icon:m.icon,formName:m.name,theme:m.theme,temperament:c.temperament,
-      habitat:m.habitat,tags:m.tags,health:90,hydration:82,energy:72,comfort:80,bond:clamp(c.bond+10),mastery:18,lastUpdate:Date.now()
-    });
-  }
-  state.codex[c.key]={
-    name:c.name,species:c.species,icon:m.icon,formName:m.name,theme:m.theme,temperament:c.temperament,tags:m.tags,
-    world:w.name+" · "+w.biome,objective:w.objective,complete:78
-  };
-  state.completedCases+=1;state.research+=12;state.credits+=125;state.rank=1+Math.floor(state.completedCases/2);state.chapter=1+state.completedCases;
-  save();
-  showReward(c,m,w);
+ const c=active();
+ if(c.stage!==13){toast("Finish the Field Expedition before establishing residence.");return}
+ if(!c.areaComplete){
+   if(!canFinish(13)){toast("Still needed: "+missingSummary(13));return}
+   c.areaComplete=true;if(!c.completedStages.includes(13))c.completedStages.push(13);
+ }
+ const m=morph(),w=WORLDS.find(x=>x.id===c.expedition.world);
+ if(!m||!w){toast("Morph form or expedition record is incomplete.");return}
+ let resident=state.sanctuary.find(x=>x.caseKey===c.key),isNew=!resident;
+ if(isNew){
+   resident={caseKey:c.key,name:c.name,species:c.species,icon:m.icon,formName:m.name,theme:m.theme,temperament:c.temperament,habitat:m.habitat,tags:m.tags,health:90,hydration:82,energy:72,comfort:80,bond:clamp(c.bond+10),mastery:18,lastUpdate:Date.now(),residenceEstablished:true,
+     morphRecord:{selectedMorph:c.selectedMorph,catalyst:m.catalyst,strength:m.strength,trade:m.trade,abilities:m.abilities,baseTags:c.baseTags,
+       customizations:c.morphCustomizations||c.customizations||c.selectedCustomizations||[],workshop:c.morphWorkshop||null,architecture:c.exoticArchitecture||null}};
+   state.sanctuary.push(resident);state.completedCases+=1;state.research+=12;state.credits+=125;state.rank=1+Math.floor(state.completedCases/2);state.chapter=1+state.completedCases;
+ }else resident.residenceEstablished=true;
+ state.codex[c.key]={name:c.name,species:c.species,icon:m.icon,formName:m.name,theme:m.theme,temperament:c.temperament,tags:m.tags,world:w.name+" · "+w.biome,objective:w.objective,complete:100};
+ state.storyResidentIndex=Math.max(0,state.sanctuary.findIndex(x=>x.caseKey===c.key));state.screen="sanctuary";
+ log(c.name+" established permanent residence in the Morph Sanctuary.");save();render();window.scrollTo({top:0,left:0,behavior:"auto"});
+ toast(isNew?"🏡 Residence established — choose the resident story, Career Center, or next patient.":"🏡 Residence restored — choose the next activity.");
 }
 function showReward(c,m,w){
   const modal=document.getElementById("rewardModal");
@@ -3156,7 +3237,7 @@ window.goStage=goStage;window.goMeta=goMeta;window.finishArea=finishArea;window.
 window.intakeAction=intakeAction;window.vetTriage=vetTriage;window.vetExam=vetExam;window.vetDx=vetDx;window.vetTreat=vetTreat;window.vetRecover=vetRecover;window.clearForMorph=clearForMorph;window.scan=scan;window.prep=prep;window.selectMorph=selectMorph;window.chamberAction=chamberAction;
 window.recover=recover;window.train=train;window.pickWorld=pickWorld;window.field=field;window.completeCreatureCase=completeCreatureCase;
 window.closeRewardToSanctuary=closeRewardToSanctuary;window.closeRewardToCodex=closeRewardToCodex;window.startNextCreature=startNextCreature;
-window.petCare=petCare;window.careAll=careAll;window.openMorphStory=openMorphStory;window.openFirstMorphStory=openFirstMorphStory;window.closeMorphStory=closeMorphStory;window.continueMorphStory=continueMorphStory;window.morphStoryScreen=morphStoryScreen;window.chooseMorphAdventure=chooseMorphAdventure;window.resetMorphAdventure=resetMorphAdventure;window.careerCenterScreen=careerCenterScreen;window.openResearchTrack=openResearchTrack;window.runCareerResearch=runCareerResearch;window.finishResearchTrack=finishResearchTrack;window.continueResearchToField=continueResearchToField;window.projectsScreen=projectsScreen;window.buildInstituteProject=buildInstituteProject;window.completeAssignment=completeAssignment;window.useMorphFieldSkill=useMorphFieldSkill;window.openInstituteRoom=openInstituteRoom;window.startAssignment=startAssignment;window.advanceAssignment=advanceAssignment;window.fileAssignment=fileAssignment;window.toggleFieldTool=toggleFieldTool;window.useExpeditionTool=useExpeditionTool;window.advanceProjectStage=advanceProjectStage;window.selectCraftProject=selectCraftProject;window.socketGem=socketGem;window.unsocketGem=unsocketGem;window.finalizeSocketCraft=finalizeSocketCraft;window.resolveFieldEvent=resolveFieldEvent;window.resetGame=resetGame;
+window.petCare=petCare;window.careAll=careAll;window.openMorphStory=openMorphStory;window.openFirstMorphStory=openFirstMorphStory;window.closeMorphStory=closeMorphStory;window.continueMorphStory=continueMorphStory;window.morphStoryScreen=morphStoryScreen;window.chooseMorphAdventure=chooseMorphAdventure;window.deepMissionStep=deepMissionStep;window.deepMissionReset=deepMissionReset;window.resetMorphAdventure=resetMorphAdventure;window.careerCenterScreen=careerCenterScreen;window.openResearchTrack=openResearchTrack;window.runCareerResearch=runCareerResearch;window.finishResearchTrack=finishResearchTrack;window.continueResearchToField=continueResearchToField;window.projectsScreen=projectsScreen;window.buildInstituteProject=buildInstituteProject;window.completeAssignment=completeAssignment;window.useMorphFieldSkill=useMorphFieldSkill;window.openInstituteRoom=openInstituteRoom;window.startAssignment=startAssignment;window.advanceAssignment=advanceAssignment;window.fileAssignment=fileAssignment;window.toggleFieldTool=toggleFieldTool;window.useExpeditionTool=useExpeditionTool;window.advanceProjectStage=advanceProjectStage;window.selectCraftProject=selectCraftProject;window.socketGem=socketGem;window.unsocketGem=unsocketGem;window.finalizeSocketCraft=finalizeSocketCraft;window.resolveFieldEvent=resolveFieldEvent;window.resetGame=resetGame;
 
 
 function showStoryIntro(){
@@ -3219,5 +3300,87 @@ function inject(){if(document.getElementById("mixlab-launch"))return;let host=[.
 addEventListener("load",()=>setTimeout(inject,500));new MutationObserver(()=>{clearTimeout(window.__mx);window.__mx=setTimeout(inject,100)}).observe(document.documentElement,{childList:true,subtree:true});
 })();
 </script>
+
+<style id="vg-morph-record-css">
+.vg-record-btn{width:100%;margin-top:7px;min-height:38px;border-radius:8px;border:1px solid #4d7c91;background:#102635;color:#e8fbff;font-size:7px;font-weight:1000}
+#vgMorphRecord{position:fixed;inset:0;z-index:32000;display:none;overflow:auto;background:rgba(1,6,10,.98);padding:12px;color:#edfaff}
+#vgMorphRecord.open{display:block}.vgr-shell{max-width:980px;margin:auto}.vgr-top{position:sticky;top:0;background:#02080d;z-index:5;padding:8px 0;border-bottom:1px solid #284b5d}
+.vgr-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.vgr-card{border:1px solid #315568;border-radius:13px;padding:11px;background:linear-gradient(145deg,#071923,#15172c);margin-top:9px}
+.vgr-card h3{margin:3px 0 8px}.vgr-small{font-size:9px;color:#9ab4bf;line-height:1.55}.vgr-chiprow{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}.vgr-chip{font-size:8px;border:1px solid #385d70;border-radius:999px;padding:4px 7px;background:#071722}
+.vgr-item{padding:7px 0;border-bottom:1px solid #193541;font-size:9px}.vgr-tabs{display:flex;gap:6px;overflow:auto;padding:8px 0}.vgr-tab{white-space:nowrap;border:1px solid #45697a;border-radius:9px;background:#0a1c26;color:white;padding:8px;font-weight:900}.vgr-tab.on{border-color:#72e2f6;background:#17485c}
+@media(max-width:650px){.vgr-grid{grid-template-columns:1fr}}
+</style>
+<script id="vg-morph-record-js">
+(function(){
+function esc(x){return String(x??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function resident(i){return (state.sanctuary||[])[i]}
+function ensure(p){
+ p.morphLifetime=p.morphLifetime||{created:Date.now(),quests:[],items:[],milestones:[],fieldNotes:[]};
+ p.adventure=p.adventure||{scene:"trailhead",inventory:[],flags:{},energy:100,completed:false,log:[]};
+ return p.morphLifetime;
+}
+function uniq(a){return [...new Set((a||[]).filter(Boolean))]}
+function gather(p){
+ const r=ensure(p), c=(state.creature&&state.creature.key===p.caseKey)?state.creature:null;
+ const items=uniq([...(r.items||[]),...(p.adventure?.inventory||[]),...(p.creatureItems||[]),...(p.storyRelics||[]),...(p.deepMission?.finds||[])]);
+ const settings=[];
+ const add=(k,v)=>{if(v!==undefined&&v!==null&&v!==""&&v!==false)settings.push([k,Array.isArray(v)?v.join(", "):v])};
+ add("Original species",p.species);add("Final morph",p.formName);add("Morph theme",p.theme);add("Temperament",p.temperament);add("Habitat",p.habitat);add("Trait package",p.tags);
+ if(c){
+   const m=(c.morphs||[]).find(x=>x.id===c.selectedMorph);
+   add("Selected morph path",m?.name);add("Catalyst",m?.catalyst);add("Strength profile",m?.strength);add("Tradeoff",m?.trade);add("Abilities",m?.abilities);
+   add("Base traits",c.baseTags);add("Morph customizations",c.morphCustomizations||c.customizations||c.selectedCustomizations);
+   add("Body plan",c.morphWorkshop?.bodyPlan);add("Installed organs",c.morphWorkshop?.organs);add("Biome imprints",c.morphWorkshop?.biomeImprints);
+   add("Preserved traits",c.morphWorkshop?.preservedTraits);add("Echo abilities",c.morphWorkshop?.echoAbilities);
+   if(c.exoticArchitecture?.systems)add("Body systems",Object.values(c.exoticArchitecture.systems).map(x=>x?.name||x));
+ }
+ add("Resident mastery",p.mastery);add("Bond",p.bond);
+ return {r,c,items,settings};
+}
+function root(){let e=document.getElementById("vgMorphRecord");if(!e){e=document.createElement("div");e.id="vgMorphRecord";document.body.appendChild(e)}return e}
+window.vgOpenMorphRecord=function(i,tab){state.storyResidentIndex=i;draw(i,tab||"build");root().classList.add("open");root().scrollTop=0}
+window.vgCloseMorphRecord=function(){root().classList.remove("open")}
+window.vgRecordQuest=function(i){vgCloseMorphRecord();if(typeof window.openMorphStory==="function")window.openMorphStory(i)}
+function draw(i,tab){
+ const p=resident(i);if(!p)return;const g=gather(p),a=p.adventure||{},logs=uniq([...(g.r.fieldNotes||[]),...(a.log||[])]);
+ const tabs=[["build","🧬 Morph Build"],["quests","🗺️ Quest Record"],["items","🎒 Items"],["life","📚 Lifetime Log"]];
+ let body="";
+ if(tab==="build")body=`<div class="vgr-grid">${g.settings.map(x=>`<div class="vgr-card"><div class="vgr-small">${esc(x[0]).toUpperCase()}</div><h3>${esc(x[1])}</h3></div>`).join("")}</div>`;
+ if(tab==="quests")body=`<div class="vgr-card"><h3>Quest & Field History</h3>${(g.r.quests||[]).map(x=>`<div class="vgr-item">${esc(x)}</div>`).join("")||`<div class="vgr-small">No completed quest milestones logged yet. Continue this morph's field story to build its record.</div>`}<button class="vg-record-btn" onclick="vgRecordQuest(${i})">🗺️ PLAY ${esc(p.formName||p.name)} IN QUEST AREA</button></div>`;
+ if(tab==="items")body=`<div class="vgr-card"><h3>Recovered Item Archive · ${g.items.length}</h3><div class="vgr-small">These are discoveries tied to this resident. They remain visible here even when used as research references in the Institute.</div>${g.items.map(x=>`<div class="vgr-item">🎒 ${esc(typeof x==="string"?x:(x.name||"Recovered item"))}</div>`).join("")||`<div class="vgr-small">No recovered items yet.</div>`}</div>`;
+ if(tab==="life")body=`<div class="vgr-grid"><div class="vgr-card"><h3>Resident Milestones</h3><div class="vgr-item">🏥 Veterinary case completed</div><div class="vgr-item">🧬 ${esc(p.formName)} morph established</div><div class="vgr-item">🏡 Sanctuary residence established</div>${(g.r.milestones||[]).map(x=>`<div class="vgr-item">✓ ${esc(x)}</div>`).join("")}</div><div class="vgr-card"><h3>Field Notes</h3>${logs.map(x=>`<div class="vgr-item">${esc(x)}</div>`).join("")||`<div class="vgr-small">Field notes will accumulate as this animal explores.</div>`}</div></div>`;
+ root().innerHTML=`<div class="vgr-shell"><div class="vgr-top"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><div><div class="vgr-small">PERMANENT RESIDENT RECORD</div><div style="font-size:27px;font-weight:1000">${esc(p.icon)} ${esc(p.name)} · ${esc(p.formName)}</div></div><button class="vgr-tab" onclick="vgCloseMorphRecord()">RETURN</button></div><div class="vgr-tabs">${tabs.map(x=>`<button class="vgr-tab ${tab===x[0]?"on":""}" onclick="vgOpenMorphRecord(${i},'${x[0]}')">${x[1]}</button>`).join("")}</div></div>${body}</div>`;
+}
+function sync(){
+ (state.sanctuary||[]).forEach((p,i)=>{
+   const g=gather(p),a=p.adventure||{};
+   g.r.items=uniq([...(g.r.items||[]),...(a.inventory||[]),...(p.creatureItems||[]),...(p.storyRelics||[])]);
+   g.r.fieldNotes=uniq([...(g.r.fieldNotes||[]),...(a.log||[])]);
+   if(a.completed&&!g.r.quests.includes("Completed a Morph Adventure expedition"))g.r.quests.push("Completed a Morph Adventure expedition");
+   if(a.scene&&a.scene!=="trailhead"){const q="Explored quest passage: "+a.scene;if(!g.r.quests.includes(q))g.r.quests.push(q)}
+ });
+ if(typeof save==="function")save();
+}
+const oldRender=window.render;
+if(typeof oldRender==="function")window.render=function(){sync();return oldRender.apply(this,arguments)}
+function inject(){
+ document.querySelectorAll(".pet").forEach((card,i)=>{
+   if(card.querySelector(".vg-record-btn"))return;
+   const p=resident(i);if(!p)return;
+   const b=document.createElement("button");b.className="vg-record-btn";b.textContent="📚 VIEW COMPLETE MORPH RECORD";b.onclick=()=>vgOpenMorphRecord(i,"build");card.appendChild(b);
+ });
+}
+addEventListener("load",()=>setTimeout(()=>{sync();inject()},500));
+new MutationObserver(()=>{clearTimeout(window.__vgr);window.__vgr=setTimeout(inject,80)}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+
+<style id="vg-deep-missions-css">
+.mission-depth{margin-top:10px;border:1px solid #3d6072;border-radius:14px;padding:10px;background:linear-gradient(145deg,#061721,#15172c)}
+.mission-depth h3{margin:3px 0 8px}.mission-depth .depth-track{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;margin:8px 0}
+.mission-depth .depth-node{height:7px;border-radius:99px;background:#16303d}.mission-depth .depth-node.on{background:#74dff2}.mission-depth .mystery{font-size:9px;color:#a8c1cb;line-height:1.55}
+.mission-depth .mission-find{border:1px solid #725f32;background:#251e0d;color:#ffe7a3;border-radius:9px;padding:8px;margin-top:8px;font-size:9px}
+</style>
 </body>
 </html>
