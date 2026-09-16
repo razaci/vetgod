@@ -1010,7 +1010,263 @@ button,.fx-button{border-radius:9px!important;letter-spacing:.04em;position:rela
 .ac-toolbar{display:flex;gap:4px;flex-wrap:wrap;margin:7px 0}.ac-floorbar{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:7px 0}.ac-floorbar button.on{border-color:#d4b36a;background:#251f10}.ac-labgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.ac-lab{border:1px solid #31596b;border-radius:10px;padding:8px;background:#081f29;min-height:130px}.ac-lab strong{display:block;font-size:8px}.ac-lab p{font-size:5.8px}.ac-lab .lights{display:grid;grid-template-columns:repeat(8,1fr);gap:2px;margin:5px 0}.ac-lab .lights i{height:8px;border-radius:5px;background:#78dbaf;box-shadow:0 0 5px #78dbaf}.ac-lab .lights i:nth-child(3n){background:#d0b168;box-shadow:0 0 5px #d0b168}.ac-room{display:grid;grid-template-columns:1.15fr .85fr;gap:7px}.ac-console{border:1px solid #31596b;border-radius:11px;padding:8px;background:#071b24;margin-bottom:6px}.ac-machine{height:270px;border:1px solid #477589;border-radius:13px;position:relative;overflow:hidden;background:radial-gradient(circle,#154250,#06151c 61%)}.ac-machine .core{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:80px;filter:drop-shadow(0 0 18px #79dbc0)}.ac-machine .ring{position:absolute;left:50%;top:50%;width:180px;height:180px;border:1px dashed #4c7b8c;border-radius:50%;transform:translate(-50%,-50%);animation:acspin 17s linear infinite}.ac-machine .ring.r2{width:225px;height:225px;animation-direction:reverse;animation-duration:27s}@keyframes acspin{to{transform:translate(-50%,-50%) rotate(360deg)}}.ac-machine .scan{position:absolute;left:0;right:0;height:2px;background:#7ce0c2;box-shadow:0 0 12px #7ce0c2;animation:acscan 3s linear infinite}@keyframes acscan{from{top:8%}to{top:92%}}
 .ac-readouts{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}.ac-read{border:1px solid #365f71;border-radius:8px;padding:6px;text-align:center;background:#061820}.ac-read b{display:block;font-size:10px}.ac-read small{font-size:5px}.ac-list{max-height:250px;overflow:auto}.ac-list div{padding:5px;border-bottom:1px solid #173642;font-size:6px}.ac-archive-tabs{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}.ac-archive-tabs button{font-size:5.5px;min-height:34px}.ac-archive-tabs button.on{border-color:#d4b36a}.ac-missionmap{height:250px;border:1px solid #3d6b7d;border-radius:12px;position:relative;overflow:hidden;background:radial-gradient(circle at 60% 30%,#173d49,#07151c)}.ac-missionmap:after{content:"";position:absolute;inset:0;background-image:radial-gradient(circle,#bdebe4 0 1px,transparent 1.5px);background-size:37px 31px;opacity:.38}.ac-node{position:absolute;z-index:2;border:1px solid #77d9b0;border-radius:50%;width:19px;height:19px;background:#0b2e29;box-shadow:0 0 9px #77d9b0}.ac-cert{border:3px double #b99c58;border-radius:11px;padding:11px;background:radial-gradient(circle,#28210d,#0a1418);text-align:center;margin:5px}.ac-cert h4{margin:3px}.ac-back{border-color:#d4b36a!important}.ac-floor-title{border-left:3px solid #d4b36a;padding:7px 9px;background:linear-gradient(90deg,#211b0c,#071b24);border-radius:8px;margin:6px 0}
 @media(max-width:760px){.ac-buildings{grid-template-columns:repeat(2,1fr)}.ac-floorbar{grid-template-columns:repeat(2,1fr)}.ac-labgrid{grid-template-columns:1fr}.ac-room{grid-template-columns:1fr}.ac-readouts{grid-template-columns:repeat(2,1fr)}.ac-archive-tabs{grid-template-columns:repeat(3,1fr)}.ac-campus{min-height:350px}}
-</style><style id="fp-css">.fp{min-height:95vh;max-width:1500px;margin:auto;padding:10px;border:1px solid #396779;border-radius:16px;background:radial-gradient(circle at 50% 18%,#123d4c,#06151d 48%,#02080c)}.fp-top{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid #2a5262;padding:6px 0}.fp-top h2{margin:0}.fp-grid{display:grid;grid-template-columns:260px 1fr 260px;gap:8px;margin-top:8px}.fp-card,.fp-content{border:1px solid #31596b;border-radius:11px;padding:8px;background:#071b24;margin-bottom:6px}.fp-stage{height:480px;border:1px solid #4b7a8d;border-radius:16px;position:relative;overflow:hidden;background:radial-gradient(circle,#174b5a,#071820 58%,#02080c);perspective:900px}.fp-floor{position:absolute;left:-25%;right:-25%;bottom:-38%;height:72%;transform:rotateX(64deg);background:repeating-linear-gradient(90deg,transparent 0 42px,#2e6575 43px 44px),repeating-linear-gradient(0deg,transparent 0 42px,#2e6575 43px 44px);opacity:.45}.fp-creature{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%) scale(var(--z));font-size:145px;filter:drop-shadow(0 0 25px #7bdec2);animation:fpf 4.5s ease-in-out infinite}@keyframes fpf{50%{top:45%}}.fp-ring{position:absolute;left:50%;top:48%;width:310px;height:310px;border:1px dashed #4b7c8d;border-radius:50%;transform:translate(-50%,-50%);animation:fpr 22s linear infinite}.fp-ring.r2{width:385px;height:385px;animation-direction:reverse;animation-duration:35s}@keyframes fpr{to{transform:translate(-50%,-50%) rotate(360deg)}}.fp-scan{position:absolute;left:0;right:0;height:2px;background:#7de0c3;box-shadow:0 0 16px #7de0c3;animation:fps 3.4s linear infinite}@keyframes fps{from{top:6%}to{top:93%}}.fp-label{position:absolute;left:50%;bottom:15px;transform:translateX(-50%);background:#031015dd;border:1px solid #3e6b7c;border-radius:10px;padding:7px 16px;text-align:center}.fp-gauges{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin:6px 0}.fp-gauge{aspect-ratio:1;border:1px solid #416f82;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle,#0d2d39 0 48%,#06131a 50% 69%,#173a47 70%)}.fp-gauge b{font-size:12px}.fp-gauge small{font-size:4.5px}.fp-tabs{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin:7px 0}.fp-tabs button.on{border-color:#d4b36a;background:#251f10}.fp-scroll{max-height:360px;overflow:auto}.fp-row{display:grid;grid-template-columns:1fr auto;gap:5px;border-bottom:1px solid #173642;padding:5px;font-size:6.5px}.fp-morphs{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}.fp-morph{border:1px solid #31596b;border-radius:8px;padding:6px;font-size:5.7px}.fp-morph b{display:block;font-size:7px}.fp-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:4px}.fp-readonly{border-left:3px solid #79dcb1;padding:6px;background:#0d2c24;border-radius:7px;font-size:6px;margin-bottom:6px}@media(max-width:950px){.fp-grid{grid-template-columns:1fr}.fp-stage{height:390px}.fp-gauges{grid-template-columns:repeat(4,1fr)}}@media(max-width:600px){.fp-stage{height:330px}.fp-creature{font-size:105px}.fp-ring{width:220px;height:220px}.fp-ring.r2{width:275px;height:275px}.fp-tabs{grid-template-columns:repeat(4,1fr)}.fp-morphs{grid-template-columns:repeat(2,1fr)}}</style></head>
+</style><style id="fp-css">.fp{min-height:95vh;max-width:1500px;margin:auto;padding:10px;border:1px solid #396779;border-radius:16px;background:radial-gradient(circle at 50% 18%,#123d4c,#06151d 48%,#02080c)}.fp-top{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid #2a5262;padding:6px 0}.fp-top h2{margin:0}.fp-grid{display:grid;grid-template-columns:260px 1fr 260px;gap:8px;margin-top:8px}.fp-card,.fp-content{border:1px solid #31596b;border-radius:11px;padding:8px;background:#071b24;margin-bottom:6px}.fp-stage{height:480px;border:1px solid #4b7a8d;border-radius:16px;position:relative;overflow:hidden;background:radial-gradient(circle,#174b5a,#071820 58%,#02080c);perspective:900px}.fp-floor{position:absolute;left:-25%;right:-25%;bottom:-38%;height:72%;transform:rotateX(64deg);background:repeating-linear-gradient(90deg,transparent 0 42px,#2e6575 43px 44px),repeating-linear-gradient(0deg,transparent 0 42px,#2e6575 43px 44px);opacity:.45}.fp-creature{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%) scale(var(--z));font-size:145px;filter:drop-shadow(0 0 25px #7bdec2);animation:fpf 4.5s ease-in-out infinite}@keyframes fpf{50%{top:45%}}.fp-ring{position:absolute;left:50%;top:48%;width:310px;height:310px;border:1px dashed #4b7c8d;border-radius:50%;transform:translate(-50%,-50%);animation:fpr 22s linear infinite}.fp-ring.r2{width:385px;height:385px;animation-direction:reverse;animation-duration:35s}@keyframes fpr{to{transform:translate(-50%,-50%) rotate(360deg)}}.fp-scan{position:absolute;left:0;right:0;height:2px;background:#7de0c3;box-shadow:0 0 16px #7de0c3;animation:fps 3.4s linear infinite}@keyframes fps{from{top:6%}to{top:93%}}.fp-label{position:absolute;left:50%;bottom:15px;transform:translateX(-50%);background:#031015dd;border:1px solid #3e6b7c;border-radius:10px;padding:7px 16px;text-align:center}.fp-gauges{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin:6px 0}.fp-gauge{aspect-ratio:1;border:1px solid #416f82;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle,#0d2d39 0 48%,#06131a 50% 69%,#173a47 70%)}.fp-gauge b{font-size:12px}.fp-gauge small{font-size:4.5px}.fp-tabs{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin:7px 0}.fp-tabs button.on{border-color:#d4b36a;background:#251f10}.fp-scroll{max-height:360px;overflow:auto}.fp-row{display:grid;grid-template-columns:1fr auto;gap:5px;border-bottom:1px solid #173642;padding:5px;font-size:6.5px}.fp-morphs{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}.fp-morph{border:1px solid #31596b;border-radius:8px;padding:6px;font-size:5.7px}.fp-morph b{display:block;font-size:7px}.fp-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:4px}.fp-readonly{border-left:3px solid #79dcb1;padding:6px;background:#0d2c24;border-radius:7px;font-size:6px;margin-bottom:6px}@media(max-width:950px){.fp-grid{grid-template-columns:1fr}.fp-stage{height:390px}.fp-gauges{grid-template-columns:repeat(4,1fr)}}@media(max-width:600px){.fp-stage{height:330px}.fp-creature{font-size:105px}.fp-ring{width:220px;height:220px}.fp-ring.r2{width:275px;height:275px}.fp-tabs{grid-template-columns:repeat(4,1fr)}.fp-morphs{grid-template-columns:repeat(2,1fr)}}</style><style id="core-loop-awards-css">
+.loopmap{border:1px solid #396779;border-radius:14px;padding:9px;background:linear-gradient(145deg,#06151d,#0a2630);margin:8px 0}.loopsteps{display:grid;grid-template-columns:repeat(9,1fr);gap:4px}.loopstep{border:1px solid #31596b;border-radius:9px;padding:6px;text-align:center;background:#071b24;font-size:5.5px}.loopstep b{display:block;font-size:7px}.loopstep.on{border-color:#d4b36a;background:#27200e;box-shadow:0 0 12px #d4b36a44}.packgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}.packslot{border:1px solid #365f71;border-radius:9px;padding:7px;background:#071b24;min-height:75px}.packslot b{display:block}.returnmanifest{border:2px double #78d9b1;border-radius:12px;padding:10px;background:linear-gradient(145deg,#0d2d25,#061820)}.routing{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.routecard{border:1px solid #31596b;border-radius:9px;padding:7px;background:#081f29}.routecard.done{border-color:#7eddb0}.req{font-size:5.5px;border-left:2px solid #d4b36a;padding-left:5px;margin:3px 0}.awardwall{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.awardcard{border:3px double #b89a58;border-radius:12px;padding:10px;background:radial-gradient(circle,#29220d,#07161d);text-align:center;cursor:pointer}.awardcard:hover{transform:translateY(-2px);box-shadow:0 8px 20px #0008}.awardcard h3{margin:4px}.pdfsheet{background:white;color:#111;padding:32px;max-width:850px;margin:auto;font-family:Georgia,serif;min-height:700px}.pdfsheet .seal{font-size:55px;text-align:center}.pdfsheet h1,.pdfsheet h2{text-align:center}.pdfsheet .rule{border-top:2px solid #222;margin:18px 0}.pdfsheet .sign{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:70px}.pdfsheet .sign div{border-top:1px solid #222;text-align:center;padding-top:5px}.pdfcontrols{display:flex;gap:5px;justify-content:center;margin:8px}.storychoice.locked{opacity:.55}.fieldpackbar{display:flex;gap:4px;flex-wrap:wrap}.fieldpackbar span{border:1px solid #365f71;border-radius:999px;padding:4px 7px;font-size:5.5px}@media(max-width:760px){.loopsteps{grid-template-columns:repeat(3,1fr)}.packgrid{grid-template-columns:repeat(2,1fr)}.routing{grid-template-columns:1fr}.awardwall{grid-template-columns:1fr}}
+@media print{body *{visibility:hidden!important}.pdfsheet,.pdfsheet *{visibility:visible!important}.pdfsheet{position:absolute;left:0;top:0;width:100%;max-width:none;min-height:100vh;padding:45px}.pdfcontrols{display:none!important}}
+</style><style id="repair-institute-css">
+.eri{border:1px solid #3b687a;border-radius:14px;padding:9px;background:linear-gradient(145deg,#06161e,#0a2832);margin:8px 0}
+.eri-head{display:flex;justify-content:space-between;gap:8px;align-items:center;border-bottom:1px solid #294d5c;padding-bottom:6px}.eri-head h3{margin:0}
+.eri-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:7px}.eri-card{border:1px solid #31596b;border-radius:10px;padding:8px;background:#071b24;margin:5px 0}
+.eri-controls{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}.eri-control{border:1px solid #365f71;border-radius:9px;padding:7px;background:#061820}
+.eri-control label{display:flex;justify-content:space-between;font-size:6px}.eri-control input[type=range]{width:100%;accent-color:#7ddbb0}
+.eri-dials{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}.eri-dial{aspect-ratio:1;border:1px solid #416f82;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle,#0e303c 0 46%,#06131a 48% 68%,#183b48 70%);box-shadow:inset 0 0 15px #000}.eri-dial b{font-size:12px}.eri-dial small{font-size:4.8px}
+.eri-temp{height:12px;border-radius:8px;background:#02080b;overflow:hidden}.eri-temp i{display:block;height:100%;width:var(--v);background:linear-gradient(90deg,#4ca7c2,#7ddbb0,#d4b36a)}
+.eri-log{max-height:210px;overflow:auto}.eri-log div{font-size:6px;padding:5px;border-bottom:1px solid #173642}
+.eri-return{border:2px double #d4b36a;border-radius:11px;padding:9px;background:linear-gradient(145deg,#251f0d,#071820)}.eri-safe{border-left:3px solid #7ddbb0;padding:6px;background:#0d2d24;border-radius:7px;font-size:6px}
+.eri-mission-footer{margin-top:10px;border-top:1px solid #355f70;padding-top:8px}.eri-device{border:1px solid #477587;border-radius:11px;padding:8px;background:radial-gradient(circle at 50% 0,#153e4b,#061820)}
+@media(max-width:760px){.eri-grid{grid-template-columns:1fr}.eri-controls{grid-template-columns:1fr}.eri-dials{grid-template-columns:repeat(2,1fr)}}
+
+</style>
+<style id="vg-vegas-graphics-repair">
+/* ============================================================
+   VET GODS · VEGAS LIGHTS GRAPHICS REPAIR
+   Fixes the "mess" from stacked neon overhauls:
+   - readable type scale
+   - stable top-down institute map
+   - less badge / sticky stacking clutter
+   - neon kept, noise reduced
+   ============================================================ */
+
+/* Base readability (was 6–8px across the app) */
+body{
+  font-size:13px !important;
+  line-height:1.4 !important;
+  color:#eef9ff !important;
+}
+.small, .muted, .mxsmall, .toon-sub, .vgr-small, .amazon-note,
+.chip b, .status-pill, .phase-state, .requirement-line{
+  font-size:11px !important;
+  line-height:1.45 !important;
+}
+.panel h3, .mxcard h3, .toon-card h3, .vgr-card h3{font-size:13px !important; letter-spacing:.04em}
+.panel h4{font-size:12px !important}
+button, .btn, .fx-button, .primary, .secondary, .pet-story-btn,
+.mxbtn, .mxtab, .toon-btn, .lmg-btn, .m3d-btn, .vg-btn, .tw-choice{
+  min-height:34px !important;
+  font-size:11px !important;
+  padding:7px 11px !important;
+  letter-spacing:.03em !important;
+}
+.nav button, #nav button{
+  height:28px !important;
+  min-height:28px !important;
+  max-height:none !important;
+  font-size:10px !important;
+  padding:4px 9px !important;
+}
+
+/* Case strip + sticky chrome: stop stacked "mess" */
+#vg-case-strip{
+  grid-template-columns: minmax(140px,1.4fr) repeat(4,minmax(80px,.75fr)) !important;
+  gap:6px !important;
+  padding:7px 10px !important;
+  margin-bottom:8px !important;
+}
+#vg-case-strip small{font-size:9px !important; letter-spacing:.06em}
+#vg-case-strip b{font-size:12px !important; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.top-shell{z-index:1000}
+.brand h1{font-size:15px !important}
+.brand .sub{font-size:10px !important}
+
+/* Vegas sign: neon without clipping glyphs */
+.vegas-sign{
+  margin:12px 0 14px !important;
+  padding:18px 14px 16px !important;
+  border-radius:18px !important;
+  overflow:hidden;
+  position:relative;
+}
+.vegas-sign:before,
+.vegas-sign:after{
+  letter-spacing:10px !important;
+  font-size:11px !important;
+  opacity:.85;
+}
+.vegas-sign h1{
+  font-size:clamp(18px, 3.2vw, 28px) !important;
+  margin:8px 0 6px !important;
+  line-height:1.15 !important;
+}
+.vegas-sign .small{font-size:11px !important}
+
+/* TOP-DOWN INSTITUTE MAP — main source of the "mess" */
+.topdown-shell{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) minmax(260px,300px) !important;
+  gap:14px !important;
+  align-items:start !important;
+}
+.topdown-map{
+  position:relative !important;
+  min-height:560px !important;
+  height:auto !important;
+  border-radius:18px !important;
+  border:2px solid #3a6a80 !important;
+  overflow:hidden !important;
+  background-color:#07131c !important;
+  background-image:
+    linear-gradient(rgba(69,234,255,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(69,234,255,.05) 1px, transparent 1px),
+    radial-gradient(circle at 50% 50%, rgba(255,79,216,.07), transparent 50%) !important;
+  background-size:28px 28px, 28px 28px, 100% 100% !important;
+}
+.map-path{opacity:.55}
+.path-h{height:12px !important; top:50% !important; transform:translateY(-50%)}
+.path-v{width:12px !important; left:50% !important; transform:translateX(-50%)}
+
+.map-room{
+  position:absolute !important;
+  width:26% !important;
+  min-height:96px !important;
+  max-height:130px !important;
+  padding:10px !important;
+  border-radius:12px !important;
+  border-width:2px !important;
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+  z-index:2 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:center !important;
+}
+.map-room .room-lamp{font-size:22px !important; line-height:1.1}
+.map-room strong{
+  display:block !important;
+  font-size:12px !important;
+  margin-top:4px !important;
+  line-height:1.2 !important;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.map-room span{
+  font-size:10px !important;
+  line-height:1.3 !important;
+  color:#9bb8c4 !important;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+/* Fixed 3×3-ish room grid so rooms never pile up */
+.room-a{left:5% !important; top:6% !important; right:auto !important; bottom:auto !important}
+.room-b{left:37% !important; top:6% !important; right:auto !important; bottom:auto !important}
+.room-c{left:69% !important; top:6% !important; right:auto !important; bottom:auto !important}
+.room-d{left:5% !important; top:38% !important; right:auto !important; bottom:auto !important}
+.room-e{left:69% !important; top:38% !important; right:auto !important; bottom:auto !important}
+.room-f{left:5% !important; top:70% !important; right:auto !important; bottom:auto !important}
+.room-g{left:37% !important; top:70% !important; right:auto !important; bottom:auto !important}
+.room-h{left:69% !important; top:70% !important; right:auto !important; bottom:auto !important}
+
+.player-marker{
+  width:64px !important;
+  height:64px !important;
+  font-size:28px !important;
+  z-index:5 !important;
+}
+.player-marker:after{
+  top:68px !important;
+  font-size:10px !important;
+}
+
+/* Side casino panels */
+.vegas-side .panel,
+.jackpot-box,
+.casino-console{
+  border-radius:14px !important;
+  padding:12px !important;
+}
+.jackpot-box b{font-size:20px !important}
+.casino-lights{height:6px !important; margin:8px 0 !important}
+
+/* Panel number badges — smaller, less invasive */
+.panel-number{
+  top:6px !important;
+  right:6px !important;
+  min-width:22px !important;
+  height:22px !important;
+  font-size:10px !important;
+  opacity:.9 !important;
+  padding:0 6px !important;
+}
+
+/* Cards / grids breathe */
+.panel, .card, .vg-card, .tw-card, .f30panel, .mxcard, .toon-card, .vgr-card{
+  padding:12px !important;
+  margin-bottom:10px !important;
+}
+.hub-grid, .morph-grid, .sanctuary-grid, .world-grid{
+  gap:12px !important;
+}
+.hub-card, .morph-card, .pet, .world{
+  min-height:auto !important;
+  padding:12px !important;
+}
+
+/* Tone down infinite neon pulse noise a bit */
+.vegas-sign h1{animation-duration:7s !important}
+.topdown-map{animation-duration:6s !important}
+.casino-lights{animation-duration:1.6s !important}
+
+/* Mobile: stack map cleanly, no overlapping absolute rooms */
+@media(max-width:900px){
+  .topdown-shell{grid-template-columns:1fr !important}
+  .topdown-map{
+    min-height:0 !important;
+    height:auto !important;
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:10px !important;
+    padding:12px !important;
+    background-image:none !important;
+  }
+  .topdown-map:after,
+  .map-path,
+  .player-marker{display:none !important}
+  .map-room{
+    position:relative !important;
+    left:auto !important;
+    right:auto !important;
+    top:auto !important;
+    bottom:auto !important;
+    width:100% !important;
+    max-height:none !important;
+    min-height:88px !important;
+  }
+  .room-a,.room-b,.room-c,.room-d,.room-e,.room-f,.room-g,.room-h{
+    left:auto !important; top:auto !important; right:auto !important; bottom:auto !important;
+  }
+}
+@media(max-width:560px){
+  .topdown-map{grid-template-columns:1fr !important}
+  body{font-size:14px !important}
+  #vg-case-strip{grid-template-columns:1fr 1fr !important}
+  #vg-case-strip .optional{display:none !important}
+}
+
+/* Prefer reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .vegas-sign h1,
+  .topdown-map,
+  .casino-lights,
+  .neonBuzz,
+  .floorPulse,
+  .marquee{animation:none !important}
+}
+</style>
+
+</head>
 <body>
 <div id="app">
   <div class="top-shell">
@@ -10717,7 +10973,86 @@ window.FP_close=function(){state.screen="sanctuary";save();render();return false
 window.FP_tab=function(i,x){const p=state.sanctuary?.[i];if(!p)return false;FP(p).tab=x;save();render();return false}
 window.FP_zoom=function(i,d){const p=state.sanctuary?.[i];if(!p)return false;FP(p).zoom=Math.max(.65,Math.min(1.5,FP(p).zoom+d));save();render();return false}
 function fpBody(p,i){const f=FP(p),l=LRC(p),fs=FS(p),fab=FIC(p),n=INET(p),a=AX(p),v=VW(p),rt=RLT(p);if(f.tab==="MORPH")return `<div class="fp-readonly">Read-only full resident morphology profile · 60 persistent channels.</div><div class="fp-morphs">${Object.entries(v.morph).map(([k,val])=>`<div class="fp-morph"><b>${k}</b>${val}<div class="ax-heat"><i style="--v:${val}%"></i></div></div>`).join("")}</div>`;if(f.tab==="LIFE")return `<div class="fp-scroll">${[["Location",rt.location],["Activity",rt.activity],["Bond",l.bond],["Confidence",l.confidence],["Curiosity",l.curiosity],["Mood",fs.mood],["Trust",fs.trust],["Hunger",fs.hunger],["Thirst",fs.thirst]].map(x=>`<div class="fp-row"><b>${x[0]}</b><span>${x[1]}</span></div>`).join("")}</div>`;if(f.tab==="GEAR")return `<div class="fp-scroll"><div class="fp-row"><b>Recovered</b><span>${fab.recovered.length}</span></div><div class="fp-row"><b>Finished equipment</b><span>${fab.finished.length}</span></div>${fab.finished.map(x=>`<div class="fp-row"><b>${x.name||x}</b><span>GEAR</span></div>`).join("")}${fab.recovered.slice(-50).map(x=>`<div class="fp-row"><b>${x.name||x}</b><span>ITEM</span></div>`).join("")}</div>`;if(f.tab==="FIELD")return `<div class="fp-scroll">${a.archive.slice().reverse().map(x=>`<div class="fp-row"><b>${x}</b><span>DISCOVERY</span></div>`).join("")||"No field discoveries yet."}</div>`;if(f.tab==="CERTS")return axCredentials(p);if(f.tab==="MEMORY")return `<div class="fp-scroll">${l.memories.slice().reverse().map(x=>`<div class="fp-row"><b>${x}</b><span>MEMORY</span></div>`).join("")}</div>`;if(f.tab==="TIMELINE")return `<div class="fp-scroll">${[...a.timeline,...AC(p).log].slice(-100).reverse().map(x=>`<div class="fp-row"><b>${x}</b><span>•</span></div>`).join("")}</div>`;return axResidentRecord(p)}
-function fullAnimalProfile(p,i){const f=FP(p),l=LRC(p),fs=FS(p),m=MC(p),rt=RLT(p),n=INET(p),fab=FIC(p),form=p.formName||p.species||p.activeMorphConfig?.preset||"Institute Resident",vals=[["BOND",l.bond],["TRUST",fs.trust],["MOOD",fs.mood],["FIELD",l.fieldSkill],["RESEARCH",l.research],["TRAIN",l.training],["CURIOSITY",l.curiosity],["SIGNAL",m.signal]];return `<div class="fp"><div class="fp-top"><div><small>VET GODS · DEDICATED RESIDENT PAGE</small><h2>${p.name} · FULL ANIMAL PROFILE</h2></div><button onclick="FP_close()">← RETURN TO SANCTUARY</button></div><div class="fp-grid"><aside><div class="fp-card"><h4>IDENTITY</h4><div class="fp-row"><b>Resident</b><span>${p.name}</span></div><div class="fp-row"><b>Form</b><span>${form}</span></div><div class="fp-row"><b>Location</b><span>${rt.location}</span></div><div class="fp-row"><b>Activity</b><span>${rt.activity}</span></div></div><div class="fp-card"><h4>INSTITUTE RECORD</h4><div class="fp-row"><b>Credentials</b><span>${n.certificates.length}</span></div><div class="fp-row"><b>Recovered</b><span>${fab.recovered.length}</span></div><div class="fp-row"><b>Equipment</b><span>${fab.finished.length}</span></div><div class="fp-row"><b>APEX XP</b><span>${AX(p).roomXP}</span></div></div></aside><main><div class="fp-stage"><div class="fp-floor"></div><div class="fp-ring"></div><div class="fp-ring r2"></div><div class="fp-scan"></div><div class="fp-creature" style="--z:${f.zoom}">${p.icon||"🦖"}</div><div class="fp-label"><b>${p.name}</b><small>${form} · ${rt.activity}</small></div></div><div class="fp-gauges">${vals.map(x=>`<div class="fp-gauge"><b>${Math.round(x[1])}</b><small>${x[0]}</small></div>`).join("")}</div><div class="fp-tabs">${[["PROFILE","PROFILE"],["MORPH","60 MORPHS"],["LIFE","LIFE"],["GEAR","GEAR"],["FIELD","FIELD"],["CERTS","CERTS"],["MEMORY","MEMORY"],["TIMELINE","TIMELINE"]].map(x=>`<button class="${f.tab===x[0]?"on":""}" onclick="FP_tab(${i},'${x[0]}')">${x[1]}</button>`).join("")}</div><div class="fp-content">${fpBody(p,i)}</div></main><aside><div class="fp-card"><h4>VIEW CONTROLS</h4><div class="fp-actions"><button onclick="FP_zoom(${i},.1)">＋ ZOOM</button><button onclick="FP_zoom(${i},-.1)">− ZOOM</button></div></div><div class="fp-card"><h4>LIVE TELEMETRY</h4>${vals.map(x=>`<div class="fp-row"><b>${x[0]}</b><span>${Math.round(x[1])}</span></div>`).join("")}</div><div class="fp-card"><h4>RECENT MEMORY</h4><div class="fp-scroll">${l.memories.slice(-10).reverse().map(x=>`<div class="fp-row"><b>${x}</b><span>•</span></div>`).join("")}</div></div></aside></div></div>`}
+function fullAnimalProfile(p,i){const f=FP(p),l=LRC(p),fs=FS(p),m=MC(p),rt=RLT(p),n=INET(p),fab=FIC(p),form=p.formName||p.species||p.activeMorphConfig?.preset||"Institute Resident",vals=[["BOND",l.bond],["TRUST",fs.trust],["MOOD",fs.mood],["FIELD",l.fieldSkill],["RESEARCH",l.research],["TRAIN",l.training],["CURIOSITY",l.curiosity],["SIGNAL",m.signal]];return `<div class="fp"><div class="fp-top"><div><small>VET GODS · DEDICATED RESIDENT PAGE</small><h2>${p.name} · FULL ANIMAL PROFILE</h2></div><button onclick="FP_close()">← RETURN TO SANCTUARY</button></div>${gameLoopMap(p,i)}${fieldPack(p,i)}${instituteRouting(p)}${advancementRequirements(p)}${awardWall(p,i)}${missionRepairFooter(p,i)}<div class="fp-grid"><aside><div class="fp-card"><h4>IDENTITY</h4><div class="fp-row"><b>Resident</b><span>${p.name}</span></div><div class="fp-row"><b>Form</b><span>${form}</span></div><div class="fp-row"><b>Location</b><span>${rt.location}</span></div><div class="fp-row"><b>Activity</b><span>${rt.activity}</span></div></div><div class="fp-card"><h4>INSTITUTE RECORD</h4><div class="fp-row"><b>Credentials</b><span>${n.certificates.length}</span></div><div class="fp-row"><b>Recovered</b><span>${fab.recovered.length}</span></div><div class="fp-row"><b>Equipment</b><span>${fab.finished.length}</span></div><div class="fp-row"><b>APEX XP</b><span>${AX(p).roomXP}</span></div></div></aside><main><div class="fp-stage"><div class="fp-floor"></div><div class="fp-ring"></div><div class="fp-ring r2"></div><div class="fp-scan"></div><div class="fp-creature" style="--z:${f.zoom}">${p.icon||"🦖"}</div><div class="fp-label"><b>${p.name}</b><small>${form} · ${rt.activity}</small></div></div><div class="fp-gauges">${vals.map(x=>`<div class="fp-gauge"><b>${Math.round(x[1])}</b><small>${x[0]}</small></div>`).join("")}</div><div class="fp-tabs">${[["PROFILE","PROFILE"],["MORPH","60 MORPHS"],["LIFE","LIFE"],["GEAR","GEAR"],["FIELD","FIELD"],["CERTS","CERTS"],["MEMORY","MEMORY"],["TIMELINE","TIMELINE"]].map(x=>`<button class="${f.tab===x[0]?"on":""}" onclick="FP_tab(${i},'${x[0]}')">${x[1]}</button>`).join("")}</div><div class="fp-content">${fpBody(p,i)}</div></main><aside><div class="fp-card"><h4>VIEW CONTROLS</h4><div class="fp-actions"><button onclick="FP_zoom(${i},.1)">＋ ZOOM</button><button onclick="FP_zoom(${i},-.1)">− ZOOM</button></div></div><div class="fp-card"><h4>LIVE TELEMETRY</h4>${vals.map(x=>`<div class="fp-row"><b>${x[0]}</b><span>${Math.round(x[1])}</span></div>`).join("")}</div><div class="fp-card"><h4>RECENT MEMORY</h4><div class="fp-scroll">${l.memories.slice(-10).reverse().map(x=>`<div class="fp-row"><b>${x}</b><span>•</span></div>`).join("")}</div></div></aside></div></div>`}
+const LOOP_LOOT=[{"id":0,"name":"Bone Fragment 001","route":"RECONSTRUCTION","rarity":"COMMON","value":2},{"id":1,"name":"Resonance Crystal 002","route":"RESONANCE","rarity":"UNUSUAL","value":9},{"id":2,"name":"Seed Pod 003","route":"NUTRITION","rarity":"RARE","value":16},{"id":3,"name":"Field Transmitter 004","route":"SIGNAL","rarity":"EXOTIC","value":4},{"id":4,"name":"Fossil Feather 005","route":"RESEARCH","rarity":"COMMON","value":11},{"id":5,"name":"Meteoric Alloy 006","route":"FABRICATION","rarity":"UNUSUAL","value":18},{"id":6,"name":"Map Fragment 007","route":"RECONSTRUCTION","rarity":"RARE","value":6},{"id":7,"name":"Biological Sample 008","route":"RESONANCE","rarity":"EXOTIC","value":13},{"id":8,"name":"Ancient Claw 009","route":"NUTRITION","rarity":"COMMON","value":20},{"id":9,"name":"Mineral Plate 010","route":"SIGNAL","rarity":"UNUSUAL","value":8},{"id":10,"name":"Signal Shard 011","route":"RESEARCH","rarity":"RARE","value":15},{"id":11,"name":"Unknown Spore 012","route":"FABRICATION","rarity":"EXOTIC","value":3},{"id":12,"name":"Bone Fragment 013","route":"RECONSTRUCTION","rarity":"COMMON","value":10},{"id":13,"name":"Resonance Crystal 014","route":"RESONANCE","rarity":"UNUSUAL","value":17},{"id":14,"name":"Seed Pod 015","route":"NUTRITION","rarity":"RARE","value":5},{"id":15,"name":"Field Transmitter 016","route":"SIGNAL","rarity":"EXOTIC","value":12},{"id":16,"name":"Fossil Feather 017","route":"RESEARCH","rarity":"COMMON","value":19},{"id":17,"name":"Meteoric Alloy 018","route":"FABRICATION","rarity":"UNUSUAL","value":7},{"id":18,"name":"Map Fragment 019","route":"RECONSTRUCTION","rarity":"RARE","value":14},{"id":19,"name":"Biological Sample 020","route":"RESONANCE","rarity":"EXOTIC","value":2},{"id":20,"name":"Ancient Claw 021","route":"NUTRITION","rarity":"COMMON","value":9},{"id":21,"name":"Mineral Plate 022","route":"SIGNAL","rarity":"UNUSUAL","value":16},{"id":22,"name":"Signal Shard 023","route":"RESEARCH","rarity":"RARE","value":4},{"id":23,"name":"Unknown Spore 024","route":"FABRICATION","rarity":"EXOTIC","value":11},{"id":24,"name":"Bone Fragment 025","route":"RECONSTRUCTION","rarity":"COMMON","value":18},{"id":25,"name":"Resonance Crystal 026","route":"RESONANCE","rarity":"UNUSUAL","value":6},{"id":26,"name":"Seed Pod 027","route":"NUTRITION","rarity":"RARE","value":13},{"id":27,"name":"Field Transmitter 028","route":"SIGNAL","rarity":"EXOTIC","value":20},{"id":28,"name":"Fossil Feather 029","route":"RESEARCH","rarity":"COMMON","value":8},{"id":29,"name":"Meteoric Alloy 030","route":"FABRICATION","rarity":"UNUSUAL","value":15},{"id":30,"name":"Map Fragment 031","route":"RECONSTRUCTION","rarity":"RARE","value":3},{"id":31,"name":"Biological Sample 032","route":"RESONANCE","rarity":"EXOTIC","value":10},{"id":32,"name":"Ancient Claw 033","route":"NUTRITION","rarity":"COMMON","value":17},{"id":33,"name":"Mineral Plate 034","route":"SIGNAL","rarity":"UNUSUAL","value":5},{"id":34,"name":"Signal Shard 035","route":"RESEARCH","rarity":"RARE","value":12},{"id":35,"name":"Unknown Spore 036","route":"FABRICATION","rarity":"EXOTIC","value":19},{"id":36,"name":"Bone Fragment 037","route":"RECONSTRUCTION","rarity":"COMMON","value":7},{"id":37,"name":"Resonance Crystal 038","route":"RESONANCE","rarity":"UNUSUAL","value":14},{"id":38,"name":"Seed Pod 039","route":"NUTRITION","rarity":"RARE","value":2},{"id":39,"name":"Field Transmitter 040","route":"SIGNAL","rarity":"EXOTIC","value":9},{"id":40,"name":"Fossil Feather 041","route":"RESEARCH","rarity":"COMMON","value":16},{"id":41,"name":"Meteoric Alloy 042","route":"FABRICATION","rarity":"UNUSUAL","value":4},{"id":42,"name":"Map Fragment 043","route":"RECONSTRUCTION","rarity":"RARE","value":11},{"id":43,"name":"Biological Sample 044","route":"RESONANCE","rarity":"EXOTIC","value":18},{"id":44,"name":"Ancient Claw 045","route":"NUTRITION","rarity":"COMMON","value":6},{"id":45,"name":"Mineral Plate 046","route":"SIGNAL","rarity":"UNUSUAL","value":13},{"id":46,"name":"Signal Shard 047","route":"RESEARCH","rarity":"RARE","value":20},{"id":47,"name":"Unknown Spore 048","route":"FABRICATION","rarity":"EXOTIC","value":8},{"id":48,"name":"Bone Fragment 049","route":"RECONSTRUCTION","rarity":"COMMON","value":15},{"id":49,"name":"Resonance Crystal 050","route":"RESONANCE","rarity":"UNUSUAL","value":3},{"id":50,"name":"Seed Pod 051","route":"NUTRITION","rarity":"RARE","value":10},{"id":51,"name":"Field Transmitter 052","route":"SIGNAL","rarity":"EXOTIC","value":17},{"id":52,"name":"Fossil Feather 053","route":"RESEARCH","rarity":"COMMON","value":5},{"id":53,"name":"Meteoric Alloy 054","route":"FABRICATION","rarity":"UNUSUAL","value":12},{"id":54,"name":"Map Fragment 055","route":"RECONSTRUCTION","rarity":"RARE","value":19},{"id":55,"name":"Biological Sample 056","route":"RESONANCE","rarity":"EXOTIC","value":7},{"id":56,"name":"Ancient Claw 057","route":"NUTRITION","rarity":"COMMON","value":14},{"id":57,"name":"Mineral Plate 058","route":"SIGNAL","rarity":"UNUSUAL","value":2},{"id":58,"name":"Signal Shard 059","route":"RESEARCH","rarity":"RARE","value":9},{"id":59,"name":"Unknown Spore 060","route":"FABRICATION","rarity":"EXOTIC","value":16},{"id":60,"name":"Bone Fragment 061","route":"RECONSTRUCTION","rarity":"COMMON","value":4},{"id":61,"name":"Resonance Crystal 062","route":"RESONANCE","rarity":"UNUSUAL","value":11},{"id":62,"name":"Seed Pod 063","route":"NUTRITION","rarity":"RARE","value":18},{"id":63,"name":"Field Transmitter 064","route":"SIGNAL","rarity":"EXOTIC","value":6},{"id":64,"name":"Fossil Feather 065","route":"RESEARCH","rarity":"COMMON","value":13},{"id":65,"name":"Meteoric Alloy 066","route":"FABRICATION","rarity":"UNUSUAL","value":20},{"id":66,"name":"Map Fragment 067","route":"RECONSTRUCTION","rarity":"RARE","value":8},{"id":67,"name":"Biological Sample 068","route":"RESONANCE","rarity":"EXOTIC","value":15},{"id":68,"name":"Ancient Claw 069","route":"NUTRITION","rarity":"COMMON","value":3},{"id":69,"name":"Mineral Plate 070","route":"SIGNAL","rarity":"UNUSUAL","value":10},{"id":70,"name":"Signal Shard 071","route":"RESEARCH","rarity":"RARE","value":17},{"id":71,"name":"Unknown Spore 072","route":"FABRICATION","rarity":"EXOTIC","value":5},{"id":72,"name":"Bone Fragment 073","route":"RECONSTRUCTION","rarity":"COMMON","value":12},{"id":73,"name":"Resonance Crystal 074","route":"RESONANCE","rarity":"UNUSUAL","value":19},{"id":74,"name":"Seed Pod 075","route":"NUTRITION","rarity":"RARE","value":7},{"id":75,"name":"Field Transmitter 076","route":"SIGNAL","rarity":"EXOTIC","value":14},{"id":76,"name":"Fossil Feather 077","route":"RESEARCH","rarity":"COMMON","value":2},{"id":77,"name":"Meteoric Alloy 078","route":"FABRICATION","rarity":"UNUSUAL","value":9},{"id":78,"name":"Map Fragment 079","route":"RECONSTRUCTION","rarity":"RARE","value":16},{"id":79,"name":"Biological Sample 080","route":"RESONANCE","rarity":"EXOTIC","value":4},{"id":80,"name":"Ancient Claw 081","route":"NUTRITION","rarity":"COMMON","value":11},{"id":81,"name":"Mineral Plate 082","route":"SIGNAL","rarity":"UNUSUAL","value":18},{"id":82,"name":"Signal Shard 083","route":"RESEARCH","rarity":"RARE","value":6},{"id":83,"name":"Unknown Spore 084","route":"FABRICATION","rarity":"EXOTIC","value":13},{"id":84,"name":"Bone Fragment 085","route":"RECONSTRUCTION","rarity":"COMMON","value":20},{"id":85,"name":"Resonance Crystal 086","route":"RESONANCE","rarity":"UNUSUAL","value":8},{"id":86,"name":"Seed Pod 087","route":"NUTRITION","rarity":"RARE","value":15},{"id":87,"name":"Field Transmitter 088","route":"SIGNAL","rarity":"EXOTIC","value":3},{"id":88,"name":"Fossil Feather 089","route":"RESEARCH","rarity":"COMMON","value":10},{"id":89,"name":"Meteoric Alloy 090","route":"FABRICATION","rarity":"UNUSUAL","value":17},{"id":90,"name":"Map Fragment 091","route":"RECONSTRUCTION","rarity":"RARE","value":5},{"id":91,"name":"Biological Sample 092","route":"RESONANCE","rarity":"EXOTIC","value":12},{"id":92,"name":"Ancient Claw 093","route":"NUTRITION","rarity":"COMMON","value":19},{"id":93,"name":"Mineral Plate 094","route":"SIGNAL","rarity":"UNUSUAL","value":7},{"id":94,"name":"Signal Shard 095","route":"RESEARCH","rarity":"RARE","value":14},{"id":95,"name":"Unknown Spore 096","route":"FABRICATION","rarity":"EXOTIC","value":2},{"id":96,"name":"Bone Fragment 097","route":"RECONSTRUCTION","rarity":"COMMON","value":9},{"id":97,"name":"Resonance Crystal 098","route":"RESONANCE","rarity":"UNUSUAL","value":16},{"id":98,"name":"Seed Pod 099","route":"NUTRITION","rarity":"RARE","value":4},{"id":99,"name":"Field Transmitter 100","route":"SIGNAL","rarity":"EXOTIC","value":11},{"id":100,"name":"Fossil Feather 101","route":"RESEARCH","rarity":"COMMON","value":18},{"id":101,"name":"Meteoric Alloy 102","route":"FABRICATION","rarity":"UNUSUAL","value":6},{"id":102,"name":"Map Fragment 103","route":"RECONSTRUCTION","rarity":"RARE","value":13},{"id":103,"name":"Biological Sample 104","route":"RESONANCE","rarity":"EXOTIC","value":20},{"id":104,"name":"Ancient Claw 105","route":"NUTRITION","rarity":"COMMON","value":8},{"id":105,"name":"Mineral Plate 106","route":"SIGNAL","rarity":"UNUSUAL","value":15},{"id":106,"name":"Signal Shard 107","route":"RESEARCH","rarity":"RARE","value":3},{"id":107,"name":"Unknown Spore 108","route":"FABRICATION","rarity":"EXOTIC","value":10},{"id":108,"name":"Bone Fragment 109","route":"RECONSTRUCTION","rarity":"COMMON","value":17},{"id":109,"name":"Resonance Crystal 110","route":"RESONANCE","rarity":"UNUSUAL","value":5},{"id":110,"name":"Seed Pod 111","route":"NUTRITION","rarity":"RARE","value":12},{"id":111,"name":"Field Transmitter 112","route":"SIGNAL","rarity":"EXOTIC","value":19},{"id":112,"name":"Fossil Feather 113","route":"RESEARCH","rarity":"COMMON","value":7},{"id":113,"name":"Meteoric Alloy 114","route":"FABRICATION","rarity":"UNUSUAL","value":14},{"id":114,"name":"Map Fragment 115","route":"RECONSTRUCTION","rarity":"RARE","value":2},{"id":115,"name":"Biological Sample 116","route":"RESONANCE","rarity":"EXOTIC","value":9},{"id":116,"name":"Ancient Claw 117","route":"NUTRITION","rarity":"COMMON","value":16},{"id":117,"name":"Mineral Plate 118","route":"SIGNAL","rarity":"UNUSUAL","value":4},{"id":118,"name":"Signal Shard 119","route":"RESEARCH","rarity":"RARE","value":11},{"id":119,"name":"Unknown Spore 120","route":"FABRICATION","rarity":"EXOTIC","value":18},{"id":120,"name":"Bone Fragment 121","route":"RECONSTRUCTION","rarity":"COMMON","value":6},{"id":121,"name":"Resonance Crystal 122","route":"RESONANCE","rarity":"UNUSUAL","value":13},{"id":122,"name":"Seed Pod 123","route":"NUTRITION","rarity":"RARE","value":20},{"id":123,"name":"Field Transmitter 124","route":"SIGNAL","rarity":"EXOTIC","value":8},{"id":124,"name":"Fossil Feather 125","route":"RESEARCH","rarity":"COMMON","value":15},{"id":125,"name":"Meteoric Alloy 126","route":"FABRICATION","rarity":"UNUSUAL","value":3},{"id":126,"name":"Map Fragment 127","route":"RECONSTRUCTION","rarity":"RARE","value":10},{"id":127,"name":"Biological Sample 128","route":"RESONANCE","rarity":"EXOTIC","value":17},{"id":128,"name":"Ancient Claw 129","route":"NUTRITION","rarity":"COMMON","value":5},{"id":129,"name":"Mineral Plate 130","route":"SIGNAL","rarity":"UNUSUAL","value":12},{"id":130,"name":"Signal Shard 131","route":"RESEARCH","rarity":"RARE","value":19},{"id":131,"name":"Unknown Spore 132","route":"FABRICATION","rarity":"EXOTIC","value":7},{"id":132,"name":"Bone Fragment 133","route":"RECONSTRUCTION","rarity":"COMMON","value":14},{"id":133,"name":"Resonance Crystal 134","route":"RESONANCE","rarity":"UNUSUAL","value":2},{"id":134,"name":"Seed Pod 135","route":"NUTRITION","rarity":"RARE","value":9},{"id":135,"name":"Field Transmitter 136","route":"SIGNAL","rarity":"EXOTIC","value":16},{"id":136,"name":"Fossil Feather 137","route":"RESEARCH","rarity":"COMMON","value":4},{"id":137,"name":"Meteoric Alloy 138","route":"FABRICATION","rarity":"UNUSUAL","value":11},{"id":138,"name":"Map Fragment 139","route":"RECONSTRUCTION","rarity":"RARE","value":18},{"id":139,"name":"Biological Sample 140","route":"RESONANCE","rarity":"EXOTIC","value":6},{"id":140,"name":"Ancient Claw 141","route":"NUTRITION","rarity":"COMMON","value":13},{"id":141,"name":"Mineral Plate 142","route":"SIGNAL","rarity":"UNUSUAL","value":20},{"id":142,"name":"Signal Shard 143","route":"RESEARCH","rarity":"RARE","value":8},{"id":143,"name":"Unknown Spore 144","route":"FABRICATION","rarity":"EXOTIC","value":15},{"id":144,"name":"Bone Fragment 145","route":"RECONSTRUCTION","rarity":"COMMON","value":3},{"id":145,"name":"Resonance Crystal 146","route":"RESONANCE","rarity":"UNUSUAL","value":10},{"id":146,"name":"Seed Pod 147","route":"NUTRITION","rarity":"RARE","value":17},{"id":147,"name":"Field Transmitter 148","route":"SIGNAL","rarity":"EXOTIC","value":5},{"id":148,"name":"Fossil Feather 149","route":"RESEARCH","rarity":"COMMON","value":12},{"id":149,"name":"Meteoric Alloy 150","route":"FABRICATION","rarity":"UNUSUAL","value":19},{"id":150,"name":"Map Fragment 151","route":"RECONSTRUCTION","rarity":"RARE","value":7},{"id":151,"name":"Biological Sample 152","route":"RESONANCE","rarity":"EXOTIC","value":14},{"id":152,"name":"Ancient Claw 153","route":"NUTRITION","rarity":"COMMON","value":2},{"id":153,"name":"Mineral Plate 154","route":"SIGNAL","rarity":"UNUSUAL","value":9},{"id":154,"name":"Signal Shard 155","route":"RESEARCH","rarity":"RARE","value":16},{"id":155,"name":"Unknown Spore 156","route":"FABRICATION","rarity":"EXOTIC","value":4},{"id":156,"name":"Bone Fragment 157","route":"RECONSTRUCTION","rarity":"COMMON","value":11},{"id":157,"name":"Resonance Crystal 158","route":"RESONANCE","rarity":"UNUSUAL","value":18},{"id":158,"name":"Seed Pod 159","route":"NUTRITION","rarity":"RARE","value":6},{"id":159,"name":"Field Transmitter 160","route":"SIGNAL","rarity":"EXOTIC","value":13},{"id":160,"name":"Fossil Feather 161","route":"RESEARCH","rarity":"COMMON","value":20},{"id":161,"name":"Meteoric Alloy 162","route":"FABRICATION","rarity":"UNUSUAL","value":8},{"id":162,"name":"Map Fragment 163","route":"RECONSTRUCTION","rarity":"RARE","value":15},{"id":163,"name":"Biological Sample 164","route":"RESONANCE","rarity":"EXOTIC","value":3},{"id":164,"name":"Ancient Claw 165","route":"NUTRITION","rarity":"COMMON","value":10},{"id":165,"name":"Mineral Plate 166","route":"SIGNAL","rarity":"UNUSUAL","value":17},{"id":166,"name":"Signal Shard 167","route":"RESEARCH","rarity":"RARE","value":5},{"id":167,"name":"Unknown Spore 168","route":"FABRICATION","rarity":"EXOTIC","value":12},{"id":168,"name":"Bone Fragment 169","route":"RECONSTRUCTION","rarity":"COMMON","value":19},{"id":169,"name":"Resonance Crystal 170","route":"RESONANCE","rarity":"UNUSUAL","value":7},{"id":170,"name":"Seed Pod 171","route":"NUTRITION","rarity":"RARE","value":14},{"id":171,"name":"Field Transmitter 172","route":"SIGNAL","rarity":"EXOTIC","value":2},{"id":172,"name":"Fossil Feather 173","route":"RESEARCH","rarity":"COMMON","value":9},{"id":173,"name":"Meteoric Alloy 174","route":"FABRICATION","rarity":"UNUSUAL","value":16},{"id":174,"name":"Map Fragment 175","route":"RECONSTRUCTION","rarity":"RARE","value":4},{"id":175,"name":"Biological Sample 176","route":"RESONANCE","rarity":"EXOTIC","value":11},{"id":176,"name":"Ancient Claw 177","route":"NUTRITION","rarity":"COMMON","value":18},{"id":177,"name":"Mineral Plate 178","route":"SIGNAL","rarity":"UNUSUAL","value":6},{"id":178,"name":"Signal Shard 179","route":"RESEARCH","rarity":"RARE","value":13},{"id":179,"name":"Unknown Spore 180","route":"FABRICATION","rarity":"EXOTIC","value":20}];
+
+function GL(p){p.gameLoop=p.gameLoop||{graduated:false,fieldLevel:0,expeditions:0,pack:[],returned:[],processed:[],awards:[],storyChapter:0,returnReady:false,lastManifest:null};return p.gameLoop}
+function glAward(p,title,detail){const g=GL(p);if(!g.awards.some(x=>x.title===title))g.awards.push({title,detail,date:new Date().toLocaleDateString(),resident:p.name})}
+function glStage(p){const g=GL(p);if(!g.graduated)return 0;if(g.returnReady)return 5;if(g.pack.length)return 4;if(g.processed.length && g.fieldLevel>0)return 7;return 3}
+window.GL_graduate=function(i){const p=state.sanctuary?.[i];if(!p)return false;const g=GL(p);g.graduated=true;g.fieldLevel=Math.max(1,g.fieldLevel);glAward(p,'Institute Companion Graduation','Permanent companion status · Field Clearance I');acLog(p,'Graduated as a permanent Institute companion');save();render();return false}
+window.GL_expedition=function(i){const p=state.sanctuary?.[i];if(!p)return false;const g=GL(p);if(!g.graduated)return false;g.expeditions++;g.storyChapter++;g.pack=[];let count=4+(g.expeditions%5);for(let n=0;n<count;n++)g.pack.push({...LOOP_LOOT[(g.expeditions*13+n*17)%LOOP_LOOT.length],known:false});g.returnReady=true;g.lastManifest={name:['Buried Observatory','Fossil Rain Basin','Night Glass Ruins','Sunken Signal Vault','Ash Canopy','Frozen Bone Field'][g.expeditions%6],encounters:8+(g.expeditions*3)%17,items:g.pack.length,xp:120+g.expeditions*35};LRC(p).fieldSkill=lrcClamp(LRC(p).fieldSkill+3);acLog(p,'Returned from Twine expedition '+g.lastManifest.name+' with '+g.pack.length+' field objects');save();render();return false}
+window.GL_unpack=function(i){const p=state.sanctuary?.[i];if(!p)return false;const g=GL(p);g.returned.push(...g.pack);g.pack=[];g.returnReady=false;save();render();return false}
+window.GL_process=function(i,n){const p=state.sanctuary?.[i];if(!p)return false;const g=GL(p),x=g.returned[n];if(!x)return false;x.known=true;g.processed.push(x);g.returned.splice(n,1);LRC(p).research=lrcClamp(LRC(p).research+2);AX(p).roomXP+=x.value;if(x.route==='FABRICATION'||x.route==='RESONANCE')FIC(p).recovered.push({name:x.name,type:x.route});acLog(p,'Analyzed '+x.name+' → '+x.route);if(g.processed.length>=5 && g.fieldLevel<2){g.fieldLevel=2;glAward(p,'Field Research II','Completed field recovery, return processing and Institute analysis requirements')}if(g.processed.length>=15 && g.fieldLevel<3){g.fieldLevel=3;glAward(p,'Advanced Expedition Specialist','Fifteen field discoveries processed through Institute departments')}save();render();return false}
+window.GL_printAward=function(i,n){const p=state.sanctuary?.[i];if(!p)return false;state.awardPrint={i,n};state.screen='awardprint';render();return false}
+window.GL_printNow=function(){window.print();return false}
+window.GL_closePrint=function(){state.screen='fullanimalprofile';render();return false}
+function gameLoopMap(p,i){const g=GL(p),s=glStage(p),steps=[['🦴','RECONSTRUCT'],['🏥','STABILIZE'],['🧬','MORPH'],['🎓','GRADUATE'],['📖','TWINE'],['🎒','RETURN'],['🔬','RESEARCH'],['🛠️','CRAFT'],['🎓','ADVANCE']];return `<div class="loopmap"><div class="ac-head"><div><small>PRIMARY VET GODS GAME LOOP</small><h3>${p.name} · COMPANION JOURNEY</h3></div><b>FIELD ${g.fieldLevel||0}</b></div><div class="loopsteps">${steps.map((x,n)=>`<div class="loopstep ${s===n?'on':''}"><span>${x[0]}</span><b>${x[1]}</b></div>`).join('')}</div><div class="fieldpackbar"><span>EXPEDITIONS ${g.expeditions}</span><span>PACK ${g.pack.length}/12</span><span>RETURN BIN ${g.returned.length}</span><span>PROCESSED ${g.processed.length}</span><span>AWARDS ${g.awards.length}</span></div>${!g.graduated?`<button onclick="GL_graduate(${i})">🎓 GRADUATE ${p.name.toUpperCase()} · MAKE PERMANENT COMPANION</button>`:`<button onclick="GL_expedition(${i})">📖 BEGIN NEXT TWINE EXPEDITION WITH ${p.name.toUpperCase()}</button>`}</div>`}
+function fieldPack(p,i){const g=GL(p);if(g.returnReady&&g.lastManifest)return `<div class="returnmanifest"><h3>🚪 INSTITUTE RETURN GATE</h3><b>${g.lastManifest.name}</b><div class="fp-row"><b>Encounters</b><span>${g.lastManifest.encounters}</span></div><div class="fp-row"><b>Field objects</b><span>${g.lastManifest.items}</span></div><div class="fp-row"><b>Expedition XP</b><span>+${g.lastManifest.xp}</span></div><div class="packgrid">${g.pack.map(x=>`<div class="packslot"><b>❓ ${x.name}</b><small>${x.rarity} · UNANALYZED</small></div>`).join('')}</div><button onclick="GL_unpack(${i})">🎒 UNPACK FIELD BAG AT INSTITUTE</button></div>`;return `<div class="fp-card"><h4>🎒 ${p.name.toUpperCase()} · FIELD PACK & RETURN INVENTORY</h4><div class="packgrid">${g.returned.map((x,n)=>`<div class="packslot"><b>❓ ${x.name}</b><small>${x.rarity}<br>Suggested: ${x.route}</small><button onclick="GL_process(${i},${n})">TAKE TO ${x.route}</button></div>`).join('')||'<div class="packslot">No unprocessed return objects.</div>'}</div></div>`}
+function instituteRouting(p){const g=GL(p),groups={};g.processed.forEach(x=>(groups[x.route]||(groups[x.route]=[])).push(x));return `<div class="fp-card"><h4>🔬 DISCOVERY → INSTITUTE ROUTING</h4><div class="routing">${['RECONSTRUCTION','RESONANCE','NUTRITION','SIGNAL','RESEARCH','FABRICATION'].map(k=>`<div class="routecard ${(groups[k]||[]).length?'done':''}"><b>${k}</b><p>${(groups[k]||[]).length} analyzed objects</p><small>${(groups[k]||[]).slice(-4).map(x=>x.name).join('<br>')||'Awaiting field discovery'}</small></div>`).join('')}</div></div>`}
+function advancementRequirements(p){const g=GL(p);return `<div class="fp-card"><h4>🎓 ADVANCED INSTITUTE REQUIREMENTS</h4><div class="req">${g.graduated?'✓':'○'} Permanent companion graduation</div><div class="req">${g.expeditions>=1?'✓':'○'} Complete a Twine expedition</div><div class="req">${g.processed.length>=5?'✓':'○'} Analyze 5 recovered field objects</div><div class="req">${FIC(p).finished.length>=1?'✓':'○'} Fabricate one finished item</div><div class="req">${LRC(p).fieldSkill>=60?'✓':'○'} Field Skill 60</div><div class="req">Field clearance: LEVEL ${g.fieldLevel}</div></div>`}
+function awardWall(p,i){const g=GL(p);return `<div class="fp-card"><h4>🏆 PRINTABLE AWARDS & PDF CENTER</h4><p class="small">Click an award to open its clean print sheet. In the browser print dialog choose your printer, or choose Save as PDF to create a PDF copy.</p><div class="awardwall">${g.awards.map((a,n)=>`<div class="awardcard" onclick="GL_printAward(${i},${n})"><div style="font-size:32px">🏛️</div><h3>${a.title}</h3><small>${a.resident} · ${a.date}</small><p>${a.detail}</p><b>CLICK TO PRINT / SAVE PDF</b></div>`).join('')||'<div class="awardcard">Complete graduation and advanced Institute milestones to earn printable awards.</div>'}</div></div>`}
+function awardPrintPage(){const q=state.awardPrint||{},p=state.sanctuary?.[q.i],a=p?GL(p).awards[q.n]:null;if(!p||!a)return `<div class="pdfcontrols"><button onclick="GL_closePrint()">RETURN</button></div>`;return `<div class="pdfcontrols"><button onclick="GL_closePrint()">← RETURN TO PROFILE</button><button onclick="GL_printNow()">🖨️ PRINT / SAVE AS PDF</button></div><div class="pdfsheet"><div class="seal">🏛️</div><h1>VET GODS INSTITUTE</h1><h2>${a.title}</h2><div class="rule"></div><p style="text-align:center">This Institute record recognizes</p><h1>${p.name}</h1><p style="text-align:center;font-size:18px">${a.detail}</p><div class="rule"></div><p><b>Resident:</b> ${p.name}</p><p><b>Field Clearance:</b> Level ${GL(p).fieldLevel}</p><p><b>Expeditions:</b> ${GL(p).expeditions}</p><p><b>Processed Discoveries:</b> ${GL(p).processed.length}</p><p><b>Date Awarded:</b> ${a.date}</p><div class="sign"><div>Institute Director</div><div>Resident Research Record</div></div></div>`}
+
+function RI(p){
+ p.repairInstitute=p.repairInstitute||{
+   health:100,stability:100,pain:0,hydration:85,energy:80,stress:15,trust:75,mobility:90,
+   oxygen:98,temperature:50,recovery:90,devicePower:70,log:[]
+ };
+ return p.repairInstitute
+}
+function riClamp(v){return Math.max(0,Math.min(100,Number(v)||0))}
+function riLog(p,s){const r=RI(p);r.log.push(new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})+" · "+s);if(r.log.length>100)r.log.shift()}
+window.RI_set=function(i,k,v){const p=state.sanctuary?.[i];if(!p)return false;const r=RI(p);r[k]=riClamp(v);riLog(p,"Control adjusted: "+k+" → "+Math.round(r[k]));save();render();return false}
+window.RI_action=function(i,a){
+ const p=state.sanctuary?.[i];if(!p)return false;const r=RI(p);
+ if(a==="SCAN"){r.stability=riClamp(r.stability+2);r.trust=riClamp(r.trust+1);riLog(p,"Full fictional resident scan completed.");}
+ if(a==="HYDRATE"){r.hydration=riClamp(r.hydration+12);r.stability=riClamp(r.stability+3);riLog(p,"Hydration support cycle completed.");}
+ if(a==="REST"){r.energy=riClamp(r.energy+14);r.stress=riClamp(r.stress-10);r.recovery=riClamp(r.recovery+8);riLog(p,"Recovery/rest cycle completed.");}
+ if(a==="COMFORT"){r.trust=riClamp(r.trust+10);r.stress=riClamp(r.stress-9);riLog(p,"Comfort and trust session completed.");}
+ if(a==="MOBILITY"){r.mobility=riClamp(r.mobility+8);r.stability=riClamp(r.stability+2);riLog(p,"Fictional guarded mobility session completed.");}
+ if(a==="RECLAIM"){r.devicePower=riClamp(r.devicePower-8);r.health=riClamp(r.health+14);r.stability=riClamp(r.stability+10);r.recovery=riClamp(r.recovery+12);r.pain=riClamp(r.pain-12);r.stress=riClamp(r.stress-6);riLog(p,"Resonance Cradle fictional reclamation cycle completed.");}
+ if(a==="FULL"){r.health=100;r.stability=100;r.pain=0;r.hydration=100;r.energy=100;r.stress=0;r.mobility=100;r.oxygen=100;r.recovery=100;r.trust=100;r.temperature=50;riLog(p,"Institute full restoration completed. Resident returned to safe game-state baseline.");glAward(p,"Institute Recovery Clearance","Resident completed a full fictional Institute restoration cycle.");}
+ save();render();return false
+}
+window.RI_open=function(i){const p=state.sanctuary?.[i];if(!p)return false;state.repairResidentIndex=i;state.screen="repairinstitute";save();render();return false}
+window.RI_close=function(i){state.fullProfileIndex=i;state.screen="fullanimalprofile";save();render();return false}
+
+window.GL_returnEarly=function(i){
+ const p=state.sanctuary?.[i];if(!p)return false;const g=GL(p);
+ if(!g.graduated)return false;
+ // Retain only objects already physically in the field pack.
+ const kept=g.pack.map(x=>({...x,earlyReturn:true}));
+ g.returned.push(...kept);g.pack=[];g.returnReady=false;
+ const mission=g.lastManifest?.name||"Active Twine Expedition";
+ g.lastManifest={name:mission,encounters:g.lastManifest?.encounters||0,items:kept.length,xp:0,early:true};
+ acLog(p,"Returned early from "+mission+" · retained "+kept.length+" packed items · completion rewards forfeited.");
+ riLog(p,"Resident returned safely from field operations for Institute review.");
+ state.repairResidentIndex=i;state.screen="repairinstitute";
+ save();render();return false
+}
+function earlyReturnControl(p,i){
+ const g=GL(p);
+ if(!g.graduated)return "";
+ return `<div class="eri-return"><h4>↩ RETURN TO INSTITUTE EARLY</h4><p class="small">Leave the active expedition safely. Only the ${g.pack.length} item${g.pack.length===1?"":"s"} physically inside ${p.name}'s Field Pack will return with you. Mission-completion rewards and anything not collected are forfeited.</p><div class="fieldpackbar"><span>PACK ${g.pack.length}/12</span><span>COMPLETION BONUS: FORFEITED ON EARLY RETURN</span><span>RESIDENT: SAFE RETURN</span></div><button onclick="GL_returnEarly(${i})">↩ RETURN EARLY WITH CURRENT PACK</button></div>`
+}
+function repairInstitute(p,i){
+ const r=RI(p),g=GL(p),vals=[["HEALTH",r.health],["STABILITY",r.stability],["HYDRATION",r.hydration],["ENERGY",r.energy],["TRUST",r.trust],["MOBILITY",r.mobility],["OXYGEN",r.oxygen],["RECOVERY",r.recovery]];
+ const controls=[["health","Health"],["stability","Stability"],["pain","Pain"],["hydration","Hydration"],["energy","Energy"],["stress","Stress"],["trust","Trust"],["mobility","Mobility"],["oxygen","Oxygen"],["temperature","Temperature"],["recovery","Recovery"],["devicePower","Cradle Power"]];
+ return `<div class="eri"><div class="eri-head"><div><small>APEX INSTITUTE · RESIDENT RECOVERY CENTER</small><h3>🏥 ${p.name} · REPAIR & RECOVERY INSTITUTE</h3></div><button onclick="RI_close(${i})">← ANIMAL PROFILE</button></div>
+ <div class="eri-safe">Fictional game system: these controls change resident gameplay statistics only. The Resonance Cradle is a fictional reclamation device.</div>
+ <div class="eri-grid"><main>
+ <div class="eri-card"><h4>RESIDENT TELEMETRY</h4><div class="eri-dials">${vals.map(x=>`<div class="eri-dial"><b>${Math.round(x[1])}</b><small>${x[0]}</small></div>`).join("")}</div><h4>TEMPERATURE / DEVICE BALANCE</h4><div class="eri-temp"><i style="--v:${r.temperature}%"></i></div></div>
+ <div class="eri-card"><h4>RADIO / INSTRUMENT SETTINGS</h4><div class="eri-controls">${controls.map(x=>`<div class="eri-control"><label><b>${x[1]}</b><span>${Math.round(r[x[0]])}</span></label><input type="range" min="0" max="100" value="${r[x[0]]}" onchange="RI_set(${i},'${x[0]}',this.value)"></div>`).join("")}</div></div>
+ </main><aside>
+ <div class="eri-device"><h4>⚛ RESONANCE CRADLE</h4><p><b>Doctor K. Nix</b></p><p class="small">Trace from the source of the mixed-period debris. Resonance Cradle · fictional reclamation device.</p><div class="eri-temp"><i style="--v:${r.devicePower}%"></i></div><button onclick="RI_action(${i},'RECLAIM')">ACTIVATE RECLAMATION CYCLE</button></div>
+ <div class="eri-card"><h4>RECOVERY ACTIONS</h4><button onclick="RI_action(${i},'SCAN')">RUN FULL SCAN</button><button onclick="RI_action(${i},'HYDRATE')">HYDRATION SUPPORT</button><button onclick="RI_action(${i},'REST')">RECOVERY / REST</button><button onclick="RI_action(${i},'COMFORT')">COMFORT & TRUST</button><button onclick="RI_action(${i},'MOBILITY')">GUARDED MOBILITY</button><button onclick="RI_action(${i},'FULL')">✦ COMPLETE INSTITUTE RESTORATION</button></div>
+ <div class="eri-card"><h4>FIELD RETURN INVENTORY</h4><div class="fieldpackbar"><span>RETURN BIN ${g.returned.length}</span><span>PROCESSED ${g.processed.length}</span><span>FIELD ${g.fieldLevel}</span></div>${g.returned.slice(-8).map(x=>`<div class="fp-row"><b>${x.name}</b><span>${x.route}</span></div>`).join("")||"<p class='small'>No returned objects awaiting analysis.</p>"}</div>
+ <div class="eri-card"><h4>RECOVERY LOG</h4><div class="eri-log">${r.log.slice(-30).reverse().map(x=>`<div>${x}</div>`).join("")}</div></div>
+ </aside></div></div>`
+}
+function missionRepairFooter(p,i){
+ return `<div class="eri-mission-footer"><div class="eri-device"><small>MISSION AFTERCARE · DOCTOR K. NIX</small><h4>Trace from the source of the mixed-period debris</h4><p class="small">Resonance Cradle · fictional reclamation device. Return ${p.name} to the Institute to inspect telemetry, adjust gameplay recovery settings, run recovery cycles, and process the actual objects brought home in the Field Pack.</p><button onclick="RI_open(${i})">🏥 ENTER INSTITUTE · REPAIR / RECOVER ${p.name.toUpperCase()}</button></div>${earlyReturnControl(p,i)}</div>`
+}
 function livingResidentConsole(p,i){
  const l=LRC(p),r=RLT(p),q=lrcPrompt(p),tab=l.tab||"LIVE";
  const stats=[["♥","BOND",l.bond],["◉","CURIOSITY",l.curiosity],["◆","CONFIDENCE",l.confidence],["⌁","FIELD",l.fieldSkill],["⌬","RESEARCH",l.research]];
@@ -12094,6 +12429,8 @@ function render(){
   else if(state.screen==="casereview")html=caseReviewScreen();
   else if(state.screen==="morphstudio")html=morphStudioScreen();
   else if(state.screen==="sanctuary")html=sanctuaryScreen();
+  else if(state.screen==="awardprint")html=awardPrintPage();
+  else if(state.screen==="repairinstitute"){const __i=Math.max(0,Math.min((state.sanctuary||[]).length-1,Number(state.repairResidentIndex)||0));const __p=state.sanctuary?.[__i];html=__p?repairInstitute(__p,__i):sanctuaryScreen();}
   else if(state.screen==="fullanimalprofile"){const __i=Math.max(0,Math.min((state.sanctuary||[]).length-1,Number(state.fullProfileIndex)||0));const __p=state.sanctuary?.[__i];html=__p?fullAnimalProfile(__p,__i):sanctuaryScreen();}
   else if(state.screen==="codex")html=codexScreen();
   else if(state.screen==="worldmap")html=worldMapScreen();
@@ -12112,12 +12449,15 @@ function render(){
     html = firstRunGuide()+storyPanel()+html;
   }
   const __wgvCase=active();
-  if(__wgvCase && !["sanctuary","residentsettings","codex","worldmap","morphstory","career","researchtrack","projects","instituteroom","assignment","crafting","fullanimalprofile"].includes(state.screen)){html=wgvHero(__wgvCase,"CLINICAL / RECONSTRUCTION OPERATIONS")+html;}
+  if(__wgvCase && !["sanctuary","residentsettings","codex","worldmap","morphstory","career","researchtrack","projects","instituteroom","assignment","crafting","fullanimalprofile","awardprint","repairinstitute"].includes(state.screen)){html=wgvHero(__wgvCase,"CLINICAL / RECONSTRUCTION OPERATIONS")+html;}
   document.getElementById("main").innerHTML=html;
   requestAnimationFrame(()=>{
-    const root=document.getElementById("main"); let panelNo=1;
-    root.querySelectorAll(".panel,.room-console,.socket-station,.danger-card,.reward-burst,.event-card,.casino-console,.jackpot-box,.form-reveal-card").forEach(el=>{
+    const root=document.getElementById("main"); if(!root)return; let panelNo=1;
+    // Only badge direct structural panels (skip nested casino/jackpot boxes that clutter Vegas map)
+    root.querySelectorAll(".panel,.room-console,.socket-station,.form-reveal-card").forEach(el=>{
       if(el.querySelector(":scope > .panel-number"))return;
+      if(el.closest(".topdown-map") || el.closest(".vegas-side"))return;
+      if(panelNo>12)return; // cap visual noise
       const badge=document.createElement("span");
       badge.className="panel-number"; badge.textContent=panelNo++; el.prepend(badge);
     });
@@ -13085,5 +13425,50 @@ window.VG_openTwineByName=function(name){
   setInterval(function(){const n=rltAdvanceAll(false);if(n){updateStrip();if(state.screen==="sanctuary"||state.screen==="residentsettings"||state.screen==="projects")render();}},60000);
 })();
 </script>
+<style id="vg-command-os-css">
+:root{--osbar:72px;--osdock:68px;--oshud:292px}
+body.vg-os{padding-bottom:var(--osdock)}
+.vg-os .top-shell{z-index:12000}.vg-os .brand-row{padding-left:72px}.vg-os .nav-wrap{display:none}
+#vgMenuBtn{position:fixed;left:14px;top:14px;z-index:13020;width:44px;height:44px;border:1px solid #65dff0;border-radius:12px;background:#071722;color:#eaffff;font-size:21px;box-shadow:0 0 18px #45eaff2b}
+#vgDrawer{position:fixed;left:0;top:0;bottom:0;width:min(330px,88vw);z-index:13010;background:linear-gradient(180deg,#06111b,#071722 60%,#050b12);border-right:1px solid #3b6578;box-shadow:20px 0 60px #000a;transform:translateX(-105%);transition:.22s;padding:78px 12px 90px;overflow:auto}
+#vgDrawer.open{transform:translateX(0)}#vgShade{position:fixed;inset:0;z-index:13000;background:#0009;display:none}#vgShade.open{display:block}
+.vg-d-title{font-size:10px;color:#7ce7ff;letter-spacing:.18em;font-weight:1000;margin:12px 6px 7px}.vg-d-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.vg-d-grid button{min-height:48px;border:1px solid #31576a;border-radius:10px;background:#0a1c28;color:#eafaff;font-size:9px;font-weight:900}.vg-d-grid button:hover{border-color:#6be6ff;background:#103246}
+#vgPatientHud{position:fixed;right:12px;top:128px;width:var(--oshud);z-index:11000;border:1px solid #37687b;border-radius:16px;background:linear-gradient(180deg,#071824f2,#07111bf2);box-shadow:0 18px 50px #0008,inset 0 0 30px #45eaff0b;padding:11px;backdrop-filter:blur(12px)}
+.vg-hud-head{display:flex;gap:9px;align-items:center;border-bottom:1px solid #234656;padding-bottom:9px}.vg-hud-face{width:58px;height:58px;border:1px solid #61dff4;border-radius:50%;display:grid;place-items:center;font-size:31px;background:radial-gradient(circle,#173c4e,#06111a);box-shadow:0 0 18px #45eaff25}.vg-hud-head b{font-size:12px}.vg-hud-head small{display:block;color:#8eacb9;font-size:8px;margin-top:3px}.vg-hud-row{display:grid;grid-template-columns:60px 1fr 38px;gap:6px;align-items:center;margin-top:8px;font-size:8px}.vg-hud-row span{color:#9ab6c1}.vg-hud-row b{text-align:right}.vg-hud-meter{height:7px;border:1px solid #274b5b;background:#061018;border-radius:99px;overflow:hidden}.vg-hud-meter i{display:block;height:100%;background:linear-gradient(90deg,#45eaff,#7cf0b1);transition:.35s}.vg-hud-alert{margin-top:9px;border:1px solid #755d2f;border-radius:8px;background:#201a0b;padding:7px;color:#ffe18a;font-size:8px;line-height:1.4}
+#vgDock{position:fixed;left:0;right:0;bottom:0;z-index:12500;min-height:var(--osdock);background:#040b12f5;border-top:1px solid #31596c;box-shadow:0 -10px 30px #0008;display:flex;align-items:center;justify-content:center;gap:7px;padding:8px 12px;backdrop-filter:blur(12px)}#vgDock button{min-height:46px;min-width:92px;border:1px solid #31586b;border-radius:10px;background:#0b2130;color:#e9fbff;font-size:8px;font-weight:1000}#vgDock button.primary-os{border-color:#62dff4;background:linear-gradient(135deg,#0e526a,#493476)}
+.vg-os main#main{padding-right:calc(var(--oshud) + 24px)}
+#vgHudToggle{display:none}
+@media(max-width:1050px){.vg-os main#main{padding-right:18px}#vgPatientHud{display:none;top:76px;right:8px;left:8px;width:auto;max-height:72vh;overflow:auto}#vgPatientHud.open{display:block}#vgHudToggle{display:block}.vg-os .brand-row{padding-left:68px}.vg-os .resources{max-height:40px;overflow:hidden}#vgDock{justify-content:flex-start;overflow-x:auto}#vgDock button{flex:0 0 auto;min-width:84px}}
+@media(max-width:650px){.vg-os .brand h1{font-size:14px}.vg-os .brand .sub{display:none}.vg-os .brand-row{padding-top:9px;padding-bottom:8px}.vg-os .resources{display:none}#vgPatientHud{top:68px}.vg-d-grid{grid-template-columns:1fr 1fr}}
+@media print{#vgMenuBtn,#vgDrawer,#vgShade,#vgPatientHud,#vgDock{display:none!important}.vg-os main#main{padding-right:18px}.vg-os{padding-bottom:0}}
+</style>
+<button id="vgMenuBtn" aria-label="Open command menu">☰</button><div id="vgShade"></div>
+<aside id="vgDrawer"><div class="vg-d-title">VET GODS · COMMAND OS</div><div id="vgDrawerBody"></div></aside>
+<aside id="vgPatientHud"></aside><nav id="vgDock"></nav>
+<script id="vg-command-os-js">
+(function(){
+ document.body.classList.add('vg-os');
+ const $=id=>document.getElementById(id), menu=$('vgMenuBtn'),drawer=$('vgDrawer'),shade=$('vgShade'),hud=$('vgPatientHud'),dock=$('vgDock');
+ function closeDrawer(){drawer.classList.remove('open');shade.classList.remove('open')}
+ menu.onclick=()=>{drawer.classList.toggle('open');shade.classList.toggle('open')};shade.onclick=closeDrawer;
+ function act(fn){closeDrawer();try{fn()}catch(e){console.warn('GUI action',e)}}
+ window.VG_OS_GO=function(id){act(()=>window.goMeta(id))};window.VG_OS_STAGE=function(){act(()=>window.goStage((window.state&&state.activeCase&&state.activeCase.stage)||0))};
+ function resident(){try{return (window.state&&((state.sanctuary||[])[state.storyResidentIndex]||state.activeCase||state.currentPatient))||null}catch(e){return null}}
+ function currentCase(){try{return typeof window.active==='function'?window.active():null}catch(e){try{return state.activeCase||null}catch(_){return null}}}
+ function meter(label,val,invert){val=Number(val);if(!Number.isFinite(val))val=0;val=Math.max(0,Math.min(100,val));const fill=invert?100-val:val;return `<div class="vg-hud-row"><span>${label}</span><div class="vg-hud-meter"><i style="width:${fill}%"></i></div><b>${Math.round(val)}</b></div>`}
+ function update(){
+  let p=currentCase()||resident()||{};let v=p.vet||{};let oxy=v.oxygen??p.oxygen??92, pain=p.pain??0,hyd=p.hydration??0,stress=p.stress??0,trust=p.trust??0,health=p.health??0,nut=p.nutrition??p.energy??0;
+  let alerts=[];if(oxy<94)alerts.push('LOW O₂');if(pain>30)alerts.push('PAIN HIGH');if(hyd<70)alerts.push('HYDRATION LOW');if(stress>55)alerts.push('STRESS HIGH');
+  hud.innerHTML=`<div class="vg-hud-head"><div class="vg-hud-face">${p.icon||'🐾'}</div><div><b>${p.name||'NO ACTIVE PATIENT'}</b><small>${p.species||p.formName||'Institute standby'} · LIVE PATIENT HUD</small></div></div>${meter('HEALTH',health)}${meter('OXYGEN',oxy)}${meter('HYDRATION',hyd)}${meter('PAIN',pain,true)}${meter('STRESS',stress,true)}${meter('TRUST',trust)}${meter('NUTRITION',nut)}<div class="vg-hud-alert">${alerts.length?'⚠ '+alerts.join(' · '):'● VITALS WITHIN CURRENT GAME TARGETS'}</div>`;
+  $('vgDrawerBody').innerHTML=`<div class="vg-d-title">CLINICAL CARE</div><div class="vg-d-grid"><button onclick="VG_OS_STAGE()">🩺 ACTIVE CASE</button><button onclick="openCaseReview();document.getElementById('vgDrawer').classList.remove('open');document.getElementById('vgShade').classList.remove('open')">📋 CASE REVIEW</button><button onclick="openFossilRecovery()">🦴 RECOVERY</button><button onclick="VG_OS_GO('sanctuary')">💚 SANCTUARY</button></div><div class="vg-d-title">INSTITUTE SYSTEMS</div><div class="vg-d-grid"><button onclick="VG_OS_GO('institute')">🏛 INSTITUTE</button><button onclick="openMorphStudio()">🧬 MORPH LAB</button><button onclick="VG_OS_GO('projects')">🛠 PROJECT LAB</button><button onclick="VG_OS_GO('career')">🎓 CAREER</button></div><div class="vg-d-title">FIELD & ARCHIVES</div><div class="vg-d-grid"><button onclick="VG_OS_GO('worldmap')">🌐 WORLD MAP</button><button onclick="openFirstMorphStory()">✦ RESIDENT QUEST</button><button onclick="VG_OS_GO('codex')">📚 CODEX</button><button onclick="VG_OS_GO('crafting')">💎 CRAFTING</button></div>`;
+  let stage='ACTIVE CASE';try{stage=(window.STAGES&&STAGES[p.stage]?.short)||stage}catch(e){}
+  dock.innerHTML=`<button onclick="document.getElementById('vgDrawer').classList.add('open');document.getElementById('vgShade').classList.add('open')">☰ MENU</button><button class="primary-os" onclick="VG_OS_STAGE()">🩺 ${stage}</button><button onclick="openCaseReview()">📋 REVIEW</button><button onclick="VG_OS_GO('sanctuary')">🐾 PETS</button><button onclick="VG_OS_GO('institute')">🏛 INSTITUTE</button><button id="vgHudToggle">📟 PATIENT HUD</button>`;
+  const ht=$('vgHudToggle');if(ht)ht.onclick=()=>hud.classList.toggle('open');
+ }
+ const oldRender=window.render;if(typeof oldRender==='function')window.render=function(){const r=oldRender.apply(this,arguments);setTimeout(update,0);return r};
+ document.addEventListener('click',()=>setTimeout(update,40),true);document.addEventListener('change',()=>setTimeout(update,40),true);window.addEventListener('load',update);setTimeout(update,100);
+})();
+</script>
+
 </body>
 </html>
