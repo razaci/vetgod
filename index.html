@@ -583,7 +583,7 @@ body{
 <style id="vg-polish-css">
 .case-strip{position:sticky;top:0;z-index:11000;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;padding:6px 8px;background:rgba(2,8,13,.97);border-bottom:1px solid #31586a;backdrop-filter:blur(8px)}
 .case-stat{min-width:0;border:1px solid #24495a;border-radius:8px;padding:5px 7px;background:#071722}.case-stat span{display:block;font-size:6px;color:#7f9eab;letter-spacing:.08em}.case-stat b{display:block;font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.nav-groups{display:flex;align-items:center;gap:5px;margin:4px 0;overflow-x:auto;overflow-y:hidden;padding:2px 1px;scrollbar-width:thin}.nav-group{display:flex;align-items:center;gap:3px;flex:0 0 auto;border:1px solid #24495a;border-radius:7px;padding:3px 4px;background:#06141c}.nav-group>span{display:inline-block;font-size:5px;color:#7f9eab;margin:0 2px 0 0;white-space:nowrap}.nav-group button{width:auto!important;min-height:0!important;margin:0!important;font-size:6px!important;line-height:1!important;padding:5px 6px!important;border-radius:6px!important;white-space:nowrap}
+.nav-groups{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:6px 0}.nav-group{border:1px solid #24495a;border-radius:9px;padding:5px;background:#06141c}.nav-group>span{display:block;font-size:6px;color:#7f9eab;margin-bottom:4px}.nav-group button{width:100%;margin:2px 0;font-size:7px;padding:6px}
 .guide-card{border:1px solid #72dff2;border-radius:14px;padding:12px;background:linear-gradient(145deg,#092532,#201d3c);margin:8px 0}.guide-card h2{margin:2px 0 6px}
 .readiness-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.ready-gauge{border:1px solid #294d5e;border-radius:9px;padding:7px}.ready-gauge span{display:block;font-size:7px;color:#8caab7}.ready-gauge b{font-size:14px}.ready-bar{height:5px;background:#061018;border-radius:9px;overflow:hidden;margin-top:4px}.ready-bar i{display:block;height:100%;background:linear-gradient(90deg,#24bad4,#9b73ef)}
 .lock-why{border:1px solid #7c6132;border-radius:10px;background:#231b0b;padding:9px;margin:7px 0;font-size:9px}.audit-line{padding:7px 0;border-bottom:1px solid #193643;font-size:9px}.studio-grid{display:grid;grid-template-columns:.8fr 1.4fr;gap:9px}.studio-channel{border:1px solid #31576a;border-radius:10px;padding:8px;margin:6px 0}.studio-channel label{display:block;font-size:8px;margin-bottom:4px}.studio-channel select{width:100%;background:#04121a;color:#fff;border:1px solid #426a7b;border-radius:7px;padding:7px}
@@ -592,27 +592,158 @@ body{
 @media(max-width:720px){.case-strip{grid-template-columns:repeat(2,1fr)}.nav-groups,.studio-grid{grid-template-columns:1fr}.readiness-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 
-
-<style id="vg-top-nav-compact-hotfix">
-#nav{font-size:7px}
-#nav>.nav-groups+* button,#nav>button,#nav .nav button,#nav .nav-row button{
-  width:auto!important;min-width:0!important;min-height:0!important;
-  padding:5px 7px!important;margin:2px!important;font-size:6px!important;line-height:1!important;
+<style id="fossil-core-css">.fossil-panel{border:1px solid #665c49;border-radius:14px;padding:12px;background:linear-gradient(145deg,#211a11,#07131a);margin:9px 0}.fossil-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.fossil-bone{border:1px dashed #8d7955;border-radius:8px;min-height:58px;padding:6px;font-size:8px}.fossil-bone.found{background:#302716;border-style:solid}.fossil-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.fossil-stage{text-align:center;font-size:88px;padding:25px;border:1px solid #345365;border-radius:14px;background:radial-gradient(circle,#17313e,#05090c 70%)}@media(max-width:650px){.fossil-grid{grid-template-columns:repeat(3,1fr)}}</style>
+<style id="chronicles-css">
+.chronicle{border:1px solid #3c6476;border-radius:14px;padding:11px;margin:9px 0;background:linear-gradient(145deg,#071923,#18172d)}.chronicle p{font-size:9px;line-height:1.6}.chronicle .stamp{display:inline-block;border:1px solid #75dcec;border-radius:99px;padding:4px 8px;font-size:7px}.cradle{border:1px solid #63d6e9;border-radius:12px;padding:10px;background:radial-gradient(circle at top,#143b49,#061018 70%)}.core{text-align:center;font-size:44px;animation:cp 2s ease-in-out infinite}@keyframes cp{50%{filter:brightness(1.6);transform:scale(1.06)}}.chron-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.chron-grid div{border:1px solid #294c5d;border-radius:8px;padding:7px}.chron-grid span{display:block;font-size:7px;color:#8da9b5}
+</style><style id="three-issue-nav-fix">
+#nav{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto!important;gap:2px!important;padding:3px!important;margin:0!important;align-items:center!important}
+#nav button{flex:0 0 auto!important;width:auto!important;min-width:0!important;height:22px!important;min-height:22px!important;max-height:22px!important;padding:2px 6px!important;margin:0!important;font-size:6px!important;line-height:1!important;border-radius:5px!important}
+#nav button.meta{font-size:6px!important;padding:2px 7px!important}
+</style><style id="campaign-deep-css">.campaignHud{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:8px 0}.campaignHud>div,.campaignBox{border:1px solid #31596b;border-radius:9px;padding:8px;background:#071923}.campaignHud span{display:block;font-size:6px;color:#89a9b6}.campaignChoice{display:block;width:100%;text-align:left;margin:7px 0;padding:11px;border:1px solid #5b8294;border-radius:9px;background:#0a2531;color:#fff;font-weight:900}.campaignItem{display:block;border:1px solid #6d568d;border-radius:8px;padding:7px;margin:5px 0;background:#161127;font-size:8px}@media(max-width:650px){.campaignHud{grid-template-columns:repeat(2,1fr)}}</style><style id="twine-rpg-design">
+.tw-rpg{max-width:1100px;margin:auto}.tw-rpg-grid{display:grid;grid-template-columns:230px minmax(0,1fr) 250px;gap:8px}
+.tw-card{border:1px solid #365e72;border-radius:14px;background:linear-gradient(150deg,#071923,#11162a);padding:11px;margin-bottom:8px}
+.tw-card h2{font-size:24px;margin:5px 0}.tw-card p{font-size:10px;line-height:1.65}.tw-kicker{font-size:7px;letter-spacing:.13em;color:#80dbea}
+.tw-choice{width:100%;text-align:left;padding:10px;margin:5px 0;border:1px solid #52788c;border-radius:9px;background:#092531;color:white;font-weight:900}
+.tw-choice.secret{border-color:#a77cf1;background:#1b1232}.tw-choice.ability{border-color:#66dfb1}.tw-choice.danger{border-color:#dc8b63}
+.tw-chip{display:inline-block;border:1px solid #4b7082;border-radius:999px;padding:4px 6px;margin:2px;font-size:7px}.tw-chip.on{border-color:#77e5ba}
+.tw-map-node{padding:7px;margin:4px 0;border:1px solid #294b5c;border-radius:8px;font-size:8px}.tw-map-node.current{border-color:#75e1f1;background:#0b2b38}.tw-map-node.found{opacity:.8}
+.tw-bar{height:6px;background:#02080b;border-radius:9px;overflow:hidden}.tw-bar i{display:block;height:100%;background:linear-gradient(90deg,#31bdd7,#9d73ef)}
+.tw-nextcards{display:flex;gap:6px;overflow:hidden;margin-top:8px}.tw-nextcards div{min-width:120px;height:54px;border:1px solid #294b5c;border-radius:9px;padding:7px;transform:translateY(12px);opacity:.65;font-size:7px}
+.tw-clue{border-left:3px solid #e1bd65;padding:6px 8px;margin:5px 0;background:#211d10;font-size:8px}.tw-memory{border-left:3px solid #a87bf1;padding:8px;background:#17112b;font-size:9px}
+.tw-prep{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.tw-prep button.selected{outline:2px solid #72e4f4}
+.tw-complete{border:1px solid #72e4f4;border-radius:12px;padding:12px;background:#082934}
+@media(max-width:850px){.tw-rpg-grid{grid-template-columns:1fr}.tw-prep{grid-template-columns:1fr}.tw-left{order:2}.tw-right{order:3}}
+</style><style id="living-expedition-board-css">
+.field30{max-width:1180px;margin:auto}.field30grid{display:grid;grid-template-columns:220px minmax(0,1fr) 260px;gap:8px}
+.f30panel{border:1px solid #31586a;border-radius:13px;padding:10px;background:#071923;margin-bottom:8px}
+.f30scene{min-height:360px;border:1px solid #477387;border-radius:16px;padding:14px;background:radial-gradient(circle at 50% 20%,#173849,#07131c 62%,#03080c);position:relative;overflow:hidden}
+.f30scene h2{font-size:27px;margin:4px 0}.f30spots{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:12px 0}
+.f30spot{min-height:68px;border:1px solid #3b6578;border-radius:10px;background:#09232e;color:#fff;padding:7px;font-size:8px;font-weight:900}.f30spot.done{opacity:.55}.f30spot.hot{border-color:#c597ff}
+.f30actions{display:grid;gap:5px}.f30actions button{padding:9px;text-align:left;border:1px solid #568096;border-radius:9px;background:#0b2936;color:#fff;font-weight:900}
+.f30deck{display:flex;gap:5px}.f30card{flex:1;border:1px solid #526d7a;border-radius:9px;padding:7px;min-height:62px;font-size:7px;background:#0c1b25}
+.f30gridmap{display:grid;grid-template-columns:repeat(4,1fr);gap:3px}.f30cell{aspect-ratio:1;border:1px solid #345769;border-radius:6px;background:#081821;color:#a9c7d2;font-size:7px}.f30cell.dug{background:#172b32}.f30cell.find{border-color:#e2bd67;color:#ffe69a}
+.f30lab{display:grid;grid-template-columns:1fr 1fr;gap:5px}.f30slot{border:1px dashed #4d7182;border-radius:8px;padding:8px;font-size:8px;min-height:48px}
+.f30journal{font-size:7px;line-height:1.55;max-height:220px;overflow:auto}.f30journal div{border-bottom:1px solid #17313d;padding:4px 0}
+.f30clue{border-left:3px solid #e1bd65;background:#211d10;padding:6px;margin:4px 0;font-size:7px}.f30theory{border-left:3px solid #a97cf1;background:#19122b;padding:7px;margin:5px 0;font-size:8px}
+.f30stat{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}.f30stat div{border:1px solid #294a59;border-radius:7px;padding:5px}.f30stat span{display:block;font-size:6px;color:#89a9b5}
+.f30toast{position:sticky;bottom:8px;margin:auto;max-width:520px;background:#0d303e;border:1px solid #6bdced;border-radius:9px;padding:8px;text-align:center;font-size:8px}
+@media(max-width:880px){.field30grid{grid-template-columns:1fr}.f30spots{grid-template-columns:repeat(2,1fr)}}
+</style>
+<style id="vetgods-global-polish">
+:root{
+  --vg-gap:8px; --vg-radius:10px; --vg-radius-lg:14px;
+  --vg-panel:#07151d; --vg-panel2:#0a1c26; --vg-line:#294b5b;
+  --vg-text:#edfaff; --vg-muted:#8faeba; --vg-hot:#70dbea;
+  --vg-shadow:0 8px 22px rgba(0,0,0,.22);
 }
-#nav .nav-groups button{width:auto!important}
-@media(max-width:720px){
-  .nav-groups{display:flex!important;grid-template-columns:none!important}
-  .nav-group{display:flex!important}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{line-height:1.35}
+main,section,.panel,.card,.vg-card,.tw-card,.f30panel{min-width:0}
+h1,h2,h3,h4{line-height:1.08;letter-spacing:.015em}
+h1{margin:5px 0 7px!important}
+h2{margin:5px 0 7px!important}
+h3,h4{margin:4px 0 6px!important}
+p{margin:5px 0 8px}
+hr{border:0;border-top:1px solid var(--vg-line);margin:8px 0}
+
+/* One compact control language */
+button,.btn,.fx-button,.pet-story-btn,.secondary,.primary{
+  min-height:30px;
+  border-radius:8px!important;
+  transition:transform .08s ease,filter .12s ease,border-color .12s ease,background .12s ease!important;
+}
+button:active,.btn:active,.fx-button:active,.pet-story-btn:active{transform:translateY(1px) scale(.99)}
+button:focus-visible{outline:2px solid var(--vg-hot);outline-offset:2px}
+button:disabled{filter:saturate(.4);opacity:.45}
+
+/* Tight, aligned panel system */
+.panel,.card,.vg-card,.tw-card,.f30panel{
+  border-radius:var(--vg-radius)!important;
+  box-shadow:var(--vg-shadow);
+}
+.panel,.card{margin-bottom:var(--vg-gap)!important}
+.grid,.cards,.row,.controls,.actions{gap:var(--vg-gap)!important}
+
+/* Reduce competing animation; preserve meaningful scanners/rewards */
+.panel,.card,.vg-card,.nav-group,#nav button,.pet-story-btn{
+  animation-duration:2.8s!important;
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+
+/* Compact navigation stays compact everywhere */
+#nav{
+  position:relative!important;
+  display:flex!important;flex-wrap:nowrap!important;overflow-x:auto!important;
+  gap:3px!important;padding:3px 2px!important;margin:0 0 5px!important;
+  scrollbar-width:thin;
+}
+#nav button{
+  flex:0 0 auto!important;width:auto!important;min-width:0!important;
+  height:24px!important;min-height:24px!important;max-height:24px!important;
+  padding:2px 7px!important;margin:0!important;font-size:6.5px!important;
+  line-height:1!important;border-radius:6px!important;white-space:nowrap!important;
+}
+
+/* Persistent visual thread */
+#vg-case-strip{
+  position:sticky;top:0;z-index:9000;
+  display:grid;grid-template-columns:minmax(115px,1.2fr) repeat(4,minmax(70px,.7fr));
+  gap:4px;padding:5px 7px;margin:0 0 7px;
+  border:1px solid #31596b;border-radius:9px;
+  background:rgba(4,15,22,.94);backdrop-filter:blur(9px);
+  box-shadow:0 6px 18px rgba(0,0,0,.28);
+}
+#vg-case-strip .vgcs{min-width:0;padding:3px 6px;border-right:1px solid #173744}
+#vg-case-strip .vgcs:last-child{border-right:0}
+#vg-case-strip small{display:block;font-size:5.5px;color:var(--vg-muted);letter-spacing:.09em}
+#vg-case-strip b{display:block;font-size:7.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#vg-case-strip .resident b{font-size:8.5px;color:#eaffff}
+#vg-case-strip .save b{color:#9cefc7}
+
+/* Make overlays feel like the same application */
+.vg-overlay{padding:8px!important;background:rgba(2,7,11,.985)!important}
+.vg-wrap,.tw-rpg,.field30{padding-bottom:18px}
+.vg-head{
+  border-radius:10px!important;padding:7px 9px!important;
+  box-shadow:0 5px 18px rgba(0,0,0,.24)
+}
+.tw-rpg-grid,.field30grid{gap:8px!important}
+.f30scene{min-height:330px!important;border-radius:13px!important}
+.f30spots{gap:5px!important;margin:8px 0!important}
+.f30spot{min-height:58px!important;border-radius:8px!important}
+.tw-choice,.story-choice{margin:5px 0!important;border-radius:8px!important}
+.campaign-hud{gap:4px!important;margin:6px 0!important}
+.campaign-hud>div{padding:5px 7px!important;border-radius:7px!important}
+
+/* Cleaner secondary information */
+small,.small{color:var(--vg-muted)}
+.tw-chip{margin:2px!important}
+.scientist-card,.f30clue,.f30theory,.tw-memory{border-radius:6px}
+
+/* Consistent scrollbars */
+*{scrollbar-width:thin;scrollbar-color:#31596b #06131a}
+*::-webkit-scrollbar{width:7px;height:7px}
+*::-webkit-scrollbar-track{background:#06131a}
+*::-webkit-scrollbar-thumb{background:#31596b;border-radius:9px}
+
+/* Mobile: one tight rhythm */
+@media(max-width:700px){
+  body{font-size:13px}
+  #vg-case-strip{
+    grid-template-columns:1.25fr 1fr 1fr;
+    padding:4px;gap:2px;border-radius:7px
+  }
+  #vg-case-strip .vgcs{padding:3px 4px}
+  #vg-case-strip .optional{display:none}
+  #nav button{height:23px!important;min-height:23px!important;max-height:23px!important;font-size:6px!important;padding:2px 6px!important}
+  .panel,.card,.vg-card,.tw-card,.f30panel{padding:8px!important;border-radius:9px!important}
+  .vg-overlay{padding:5px!important}
+  .f30scene{min-height:300px!important;padding:10px!important}
 }
 </style>
-
-
-<style id="m3d-launch-hotfix">
-#morph3dViewer{z-index:99999!important;pointer-events:auto!important}
-#morph3dViewer.open{display:block!important;visibility:visible!important;opacity:1!important}
-.m3d-launch{pointer-events:auto!important;position:relative;z-index:2}
-</style>
-
 </head>
 <body>
 <div id="app">
@@ -2006,7 +2137,7 @@ function residentSettingsScreen(){
   return hero("Morph Settings · "+p.name,
     "Read-only archive of the transformation choices, body systems, abilities and resident profile preserved on this animal.",p.icon||"🧬")
    +`<div class="panel"><div class="callout good"><b>${rows.length} SETTINGS / READOUTS</b> · This screen cannot alter the morph.<br><b>🛡️ SANCTUARY PROTECTION ACTIVE</b> · This resident cannot be injured, become critical, or lose health.</div>
-   <div class="footer-actions"><button class="primary fx-button" onclick="returnFromResidentSettings()">← RETURN TO SANCTUARY</button><button class="secondary fx-button" onclick="playResidentFromSettings()">🗺️ PLAY THIS MORPH</button><button class="secondary fx-button" onclick="if(typeof window.openNative3D==='function'){window.openNative3D(${i})}else{alert('3D viewer module failed to initialize.')}">🔬 3D MORPH VIEWER</button></div></div>
+   <div class="footer-actions"><button class="primary fx-button" onclick="returnFromResidentSettings()">← RETURN TO SANCTUARY</button><button class="secondary fx-button" onclick="playResidentFromSettings()">🗺️ PLAY THIS MORPH</button><button class="secondary fx-button" onclick='VG_registerResident("settings-current",p);return VG_openTwineObject("settings-current")' >🧭 TWINE EXPEDITION</button><button class="secondary fx-button" onclick='return VG_open3DObject("sanctuary-"+${i})'  >🔬 3D MORPH VIEWER</button></div></div>
    ${groups.map(g=>`<div class="panel"><h3>${g}</h3><div class="rspec-grid">${rows.filter(x=>x.group===g).map(x=>`<div class="rspec-card"><span>${x.key.toUpperCase()}</span><b>${x.value}</b></div>`).join("")}</div></div>`).join("")}`;
 }
 function protectSanctuaryResidents(){
@@ -2021,7 +2152,7 @@ function caseReviewScreen(){
  const c=active();if(!c)return hero("Case Review","No active case.","📋");
  const m=(c.morphs||[]).find(x=>x.id===c.selectedMorph);
  const logs=(state.audit||[]).slice(0,40);
- return hero("Case Review · "+c.name,"Clinical milestones, readiness, morph decision and audit history.","📋")
+ return hero("Case Review · "+c.name,"Clinical milestones, readiness, morph decision and audit history.","📋")+reanimationChronicleHTML(c)
  +`<div class="panel"><h3>CLINICAL READINESS</h3>${clinicalReadiness(c)}</div>
  <div class="panel"><h3>MORPH ACCESS</h3>${morphLockReasons(c).length?morphLockReasons(c).map(x=>`<div class="lock-why">🔒 WHY LOCKED · ${x}</div>`).join(""):`<div class="callout good">✓ Clinical wellbeing criteria are met.</div>`}</div>
  <div class="panel"><h3>CASE MILESTONES</h3><div class="small">Completed stages: ${(c.completedStages||[]).map(i=>STAGES[i]?.label).filter(Boolean).join(" · ")||"None yet"}<br>Selected form: ${m?.name||"Not selected"}<br>Training: ${c.trainingComplete?"Complete":"Pending"}<br>Expedition: ${c.expeditionComplete?"Complete":"Pending"}</div></div>
@@ -2045,51 +2176,17 @@ function morphStudioScreen(){
  <main>${cats.map(cat=>`<div class="panel"><h3>${cat}</h3>${defs.filter(x=>studioCategory(x[0])===cat).map(([k,opts])=>`<div class="studio-channel"><label>${k}</label><select onchange='studioSet(${JSON.stringify(k)},this.value)'>${opts.map(v=>`<option ${custom[k]===v?"selected":""}>${v}</option>`).join("")}</select></div>`).join("")}</div>`).join("")}</main></div>
  <div class="panel"><h3>HUMAN-READABLE SPECIMEN RECORD</h3><div class="small"><b>${c.name}</b> · ${c.species} → ${m.name||"Unselected form"}<br>${Object.entries(custom).map(([k,v])=>`${k}: ${v}`).join(" · ")||"No custom channels selected yet."}</div></div>`;
 }
+const REANIMATION_CHRONICLES=[["Triceratops horridus", "PROJECT THREE CROWNS", "Dr. Mara Venn", "A horn core was recovered beneath glassy soil that did not match the surrounding dig.", "The device produces a repeating three-note resonance around the skull.", "Discover why the skull seems to carry a signal."], ["Ankylosaurus magniventris", "PROJECT IRON GARDEN", "Dr. Elias Rook", "Armor plates were uncovered in an almost perfect defensive ring.", "Its osteoderms create an unusually stable chamber field.", "Learn why nearby specimens stabilize around it."], ["Stegosaurus stenops", "PROJECT LANTERN SPINE", "Dr. Nia Sol", "Several plates faintly fluoresced beneath institute scanners.", "Each plate resonates at a different frequency.", "Rebuild the plate sequence and decode the pattern."], ["Velociraptor mongoliensis", "PROJECT QUIET FOOT", "Dr. Jun Calder", "The skeleton lay beside tiny tracks that vanished beneath untouched stone.", "The device predicts movement before muscle reconstruction.", "Follow the route hidden in the excavation record."], ["Tyrannosaurus rex", "PROJECT LAST THUNDER", "Dr. Amara Vale", "A storm exposed its skull in a sealed fossil bed; mineral bands inside the teeth do not match the site.", "The chamber dampers overload when the jaw is energized.", "Find the source of its low-frequency pulse."], ["Parasaurolophus walkeri", "PROJECT HOLLOW SONG", "Dr. Theo Marr", "A simulation of the crest produced the same tone recorded at the excavation.", "The device amplifies the crest signal without being instructed.", "Track the Hollow Song in Field Operations."], ["Diplodocus carnegii", "PROJECT LONG HORIZON", "Dr. Sera Imani", "Old survey notes beside the enormous fossil mark one center stone: DO NOT MOVE.", "Distributed emitters are needed for its reconstruction.", "Return with the revived resident to investigate the stone."], ["Pteranodon longiceps", "PROJECT SKY VAULT", "Dr. Len Orlov", "Its fragile wing bones came from an inaccessible cliff chamber.", "The device continuously generates airflow around the reconstructed wings.", "Use the revived flyer to reach sealed expedition routes."], ["Mosasaurus hoffmannii", "PROJECT BLACK TIDE", "Dr. Cass Nyx", "Sediment around the skeleton contains fragments from several geological periods\u2014part of the game's central mystery.", "Reanimation requires a pressure-controlled aquatic interface.", "Trace the source of the mixed-period debris."], ["Psittacosaurus mongoliensis", "PROJECT SMALL STAR", "Dr. Yara Fen", "The skeleton was found beside polished stones arranged in a crescent.", "Its fossil signature remains unusually stable at low power.", "Search for matching crescent-stone sites."], ["Archaeopteryx lithographica", "PROJECT FIRST FEATHER", "Dr. Kellan Wu", "Feather impressions concealed a branching mineral trace resembling a map.", "The device turns the feather geometry into a navigation overlay.", "Test whether the revived creature recognizes the map."], ["Dimetrodon grandis", "PROJECT RED SAIL", "Dr. Ivo Mercer", "Iron-rich stone around the sail spines warms when institute systems power up.", "The reconstructed sail feeds thermal changes into chamber sensors.", "Investigate ruins that trigger the same response."]];
 
-function openNative3D(i){
- i=Number(i);
- if(!Number.isInteger(i)||!state.sanctuary||!state.sanctuary[i]){toast("Resident record not found.");return}
- state.viewerResidentIndex=i;state.screen="native3d";save();render();window.scrollTo({top:0,left:0,behavior:"auto"});
+function prehistoricLoreFor(p){
+ const s=String(p?.species||p?.formName||p?.name||"").toLowerCase();
+ let x=REANIMATION_CHRONICLES.find(r=>s.includes(r[0].split(" ")[0].toLowerCase()));
+ if(!x)x=REANIMATION_CHRONICLES[Math.abs(String(p?.caseKey||p?.name||"x").split("").reduce((a,c)=>a+c.charCodeAt(0),0))%REANIMATION_CHRONICLES.length];
+ return {species:x[0],project:x[1],scientist:x[2],backstory:x[3],device:x[4],mystery:x[5]};
 }
-function native3DData(p){
- const r=p.morphRecord||{},snap=r.designSnapshot||{},live=r.livingChoices||snap.livingChoices||{},ch=r.channels||r.customizations||{};
- return {live,ch,features:[...Object.entries(live).map(([k,v])=>[k,v?.value||v]),...Object.entries(ch)]};
-}
-function native3DGlyphs(p){
- const d=native3DData(p),arr=[...Object.values(d.live),...Object.entries(d.ch).slice(0,12).map(([k,v])=>({value:v,glyph:["✦","ϟ","≈","◇","❈","◉","⌘","☾"][k.length%8]}))];
- return arr.slice(0,16).map((q,i)=>`<span class="m3d-glyph" style="--rad:${72+(i%4)*16}px;--spd:${5+i*.45}s;transform:rotate(${i*31}deg)"><i>${q?.glyph||["✦","ϟ","≈","◇"][i%4]}</i></span>`).join("");
-}
-function native3DTransform(){const e=document.getElementById("native3dRig");if(e)e.style.transform=`translate(-50%,-50%) rotateX(${state.n3rx||0}deg) rotateY(${state.n3ry||0}deg) scale(${state.n3zoom||1})`}
-function native3DView(v){
- state.n3auto=false;
- if(v==="front"){state.n3ry=0;state.n3rx=0}if(v==="side"){state.n3ry=90;state.n3rx=0}if(v==="rear"){state.n3ry=180;state.n3rx=0}if(v==="top"){state.n3ry=0;state.n3rx=-55}
- native3DTransform();
-}
-function native3DZoom(n){state.n3zoom=Math.max(.65,Math.min(1.55,(state.n3zoom||1)+n));native3DTransform()}
-function native3DReset(){state.n3rx=0;state.n3ry=0;state.n3zoom=1;state.n3auto=false;native3DTransform()}
-function native3DToggleAuto(){state.n3auto=!state.n3auto}
-function native3DBack(){state.screen="sanctuary";save();render();window.scrollTo(0,0)}
-function native3DSettings(){const i=Number(state.viewerResidentIndex);state.residentSettingsIndex=i;state.screen="residentsettings";save();render();window.scrollTo(0,0)}
-function native3DScreen(){
- const i=Number(state.viewerResidentIndex),p=(state.sanctuary||[])[i];
- if(!p){state.screen="sanctuary";return sanctuaryScreen()}
- const d=native3DData(p);
- setTimeout(native3DBind,0);
- return hero("3D Morph Inspection · "+p.name,"Conceptual pseudo-3D visualization · not a medically accurate anatomical reconstruction.","🔬")
- +`<div class="panel"><div class="m3d-stage" id="native3dStage"><div class="m3d-label">DRAG TO ROTATE<br>R RESET · SPACE AUTO · 1–4 VIEWS · +/- ZOOM<br>CONCEPTUAL DISPLAY</div><div class="m3d-grid"></div><div class="m3d-platform"></div><div class="m3d-rig" id="native3dRig"><div class="m3d-animal">${p.icon||"🐾"}</div>${native3DGlyphs(p)}</div><div class="m3d-name">${p.name} · ${p.formName||"Morph"}</div></div>
- <div class="m3d-controls" style="margin-top:8px"><button class="m3d-btn" onclick="native3DReset()">RESET</button><button class="m3d-btn" onclick="native3DView('front')">FRONT</button><button class="m3d-btn" onclick="native3DView('side')">SIDE</button><button class="m3d-btn" onclick="native3DView('rear')">REAR</button><button class="m3d-btn" onclick="native3DView('top')">TOP</button><button class="m3d-btn" onclick="native3DZoom(.1)">＋</button><button class="m3d-btn" onclick="native3DZoom(-.1)">－</button><button class="m3d-btn" onclick="native3DToggleAuto()">↻ AUTO</button></div></div>
- <div class="panel"><h3>TRANSFORMATION FEATURES</h3>${d.features.length?d.features.map(x=>`<div class="m3d-feature"><b>${x[0]}</b>${x[1]}</div>`).join(""):'<div class="small muted">No detailed morph channels were retained for this older resident.</div>'}</div>
- <div class="panel"><div class="footer-actions"><button class="primary fx-button" onclick="native3DBack()">← RETURN TO SANCTUARY</button><button class="secondary fx-button" onclick="native3DSettings()">🧬 COMPLETE MORPH DATA</button></div></div>`;
-}
-function native3DBind(){
- const st=document.getElementById("native3dStage");if(!st)return;
- state.n3rx=state.n3rx||0;state.n3ry=state.n3ry||0;state.n3zoom=state.n3zoom||1;native3DTransform();
- let down=false,lx=0,ly=0,vx=0,vy=0;
- st.onpointerdown=e=>{down=true;lx=e.clientX;ly=e.clientY;state.n3auto=false;try{st.setPointerCapture(e.pointerId)}catch(_){}};
- st.onpointermove=e=>{if(!down)return;vx=(e.clientX-lx)*.55;vy=-(e.clientY-ly)*.35;state.n3ry=(state.n3ry||0)+vx;state.n3rx=Math.max(-60,Math.min(60,(state.n3rx||0)+vy));lx=e.clientX;ly=e.clientY;native3DTransform()};
- st.onpointerup=()=>{down=false};
- if(!window.__native3dKeys){window.__native3dKeys=true;document.addEventListener("keydown",e=>{if(state.screen!=="native3d")return;if(e.key==="Escape")native3DBack();else if(e.key==="r"||e.key==="R")native3DReset();else if(e.code==="Space"){e.preventDefault();native3DToggleAuto()}else if(e.key==="1")native3DView("front");else if(e.key==="2")native3DView("side");else if(e.key==="3")native3DView("rear");else if(e.key==="4")native3DView("top");else if(e.key==="+"||e.key==="=")native3DZoom(.1);else if(e.key==="-")native3DZoom(-.1)})}
- if(!window.__native3dLoop){window.__native3dLoop=true;const loop=()=>{if(state.screen==="native3d"&&state.n3auto){state.n3ry=(state.n3ry||0)+.18;native3DTransform()}requestAnimationFrame(loop)};requestAnimationFrame(loop)}
+function reanimationChronicleHTML(p){
+ const L=prehistoricLoreFor(p);
+ return `<div class="chronicle"><span class="stamp">${L.project}</span><h3>${L.species} · RECOVERY DOSSIER</h3><p>${L.backstory}</p><div class="chron-grid"><div><span>LEAD SCIENTIST</span><b>${L.scientist}</b></div><div><span>UNRESOLVED INVESTIGATION</span><b>${L.mystery}</b></div></div></div><div class="cradle"><div class="eyebrow">RESONANCE CRADLE · FICTIONAL REANIMATION DEVICE</div><div class="core">◉</div><p class="small">${L.device}</p><div class="small">The Institute uses the Cradle to read a fossil's fictional resonance pattern, construct a life matrix, and attempt reanimation. Successful subjects still require veterinary stabilization before morph research.</div></div>`;
 }
 function sanctuaryScreen(){protectSanctuaryResidents();
   if(!state.sanctuary.length){
@@ -2116,7 +2213,7 @@ function petCard(p,i){
       <button onclick="petCare(${i},'food')">OFFER FOOD</button><button onclick="petCare(${i},'water')">OFFER WATER</button>
       <button onclick="petCare(${i},'comfort')">COMFORT</button><button onclick="petCare(${i},'train')">TRAIN</button>
     </div>
-    <button class="pet-story-btn" onclick="openMorphStory(${i})">🗺️ CONTINUE ${p.name.toUpperCase()}'S STORY · SEARCH FOR ITEMS</button><button class="rspec-btn" onclick="openResidentSettings(${i})">🧬 VIEW ALL MORPH SETTINGS · READ ONLY</button><button class="m3d-launch" onclick="if(typeof window.openNative3D==='function'){window.openNative3D(${i})}else{alert('3D viewer module failed to initialize.')}">🔬 3D MORPH VIEWER · INSPECT CREATURE</button>
+    ${reanimationChronicleHTML(p)}${VG_registerResident("sanctuary-"+i,p)}<button class="pet-story-btn" onclick='return VG_openTwineObject("sanctuary-"+${i})'>🧭 TWINE EXPEDITION · INVESTIGATE MYSTERY</button><button class="pet-story-btn" onclick="openMorphStory(${i})">🗺️ CONTINUE ${p.name.toUpperCase()}'S STORY · SEARCH FOR ITEMS</button><button class="rspec-btn" onclick="openResidentSettings(${i})">🧬 VIEW ALL MORPH SETTINGS · READ ONLY</button><button class="m3d-launch" onclick='return VG_open3DObject("sanctuary-"+${i})'  >🔬 3D MORPH VIEWER · INSPECT CREATURE</button>
   </div>`;
 }
 
@@ -3267,7 +3364,7 @@ function currentCaseStatusStrip(){
 }
 function groupedQuickNav(){
  return `<div class="nav-groups">
- <div class="nav-group"><span>CLINICAL CARE</span><button onclick="goStage(active().stage)">Active Case</button><button onclick="openCaseReview()">Case Review</button></div>
+ <div class="nav-group"><span>CLINICAL CARE</span><button onclick="openFossilRecovery()">🦴 Archaeological Recovery</button><button onclick="goStage(active().stage)">Active Case</button><button onclick="openCaseReview()">Case Review</button></div>
  <div class="nav-group"><span>MORPHOLOGY</span><button onclick="goMeta('institute')">Institute</button><button onclick="openMorphStudio()">Morph Studio</button></div>
  <div class="nav-group"><span>FIELD OPERATIONS</span><button onclick="goMeta('worldmap')">World Map</button><button onclick="openFirstMorphStory()">Resident Quest</button></div>
  <div class="nav-group"><span>ARCHIVE & SANCTUARY</span><button onclick="goMeta('sanctuary')">Sanctuary</button><button onclick="goMeta('codex')">Codex</button></div></div>`;
@@ -3283,7 +3380,7 @@ function morphLockReasons(c){
 }
 function firstRunGuide(){
  if(localStorage.getItem("vgClinicalGuideSeen"))return"";
- return `<div class="guide-card"><div class="eyebrow">FIRST-RUN INSTITUTE GUIDE</div><h2>Clinical care comes first.</h2><p>Stabilize pain, hydration, breathing, stress and recovery before morph research begins. Morphology is unlocked only after the resident is clinically ready.</p><button class="primary fx-button" onclick="localStorage.setItem('vgClinicalGuideSeen','1');render()">UNDERSTOOD · BEGIN CASE</button></div>`;
+ return `<div class="guide-card"><div class="eyebrow">FIRST-RUN INSTITUTE GUIDE</div><h2>Recover life first. Clinical care second. Morph last.</h2><p>Every incoming case begins as prehistoric fossil remains. Excavate, identify, assemble, reconstruct and reanimate the specimen. Then stabilize pain, hydration, breathing, stress and recovery before morph research begins.</p><button class="primary fx-button" onclick="localStorage.setItem('vgClinicalGuideSeen','1');render()">UNDERSTOOD · BEGIN CASE</button></div>`;
 }
 function addAudit(note){state.audit=state.audit||[];state.audit.unshift({time:new Date().toLocaleString(),note});state.audit=state.audit.slice(0,120)}
 function render(){
@@ -3291,12 +3388,11 @@ function render(){
 
   ensureAdvancedState();evaluateCareerUnlocks();
   document.getElementById("resourceBar").innerHTML=resourceBar();
-  document.getElementById("nav").innerHTML=groupedQuickNav()+nav();
+  document.getElementById("nav").innerHTML=nav();
   const cs=document.getElementById("caseStatusStrip");if(cs)cs.innerHTML=currentCaseStatusStrip();
   let html="";
   if(state.screen==="institute")html=instituteScreen();
   else if(state.screen==="residentsettings")html=residentSettingsScreen();
-  else if(state.screen==="native3d")html=native3DScreen();
   else if(state.screen==="casereview")html=caseReviewScreen();
   else if(state.screen==="morphstudio")html=morphStudioScreen();
   else if(state.screen==="sanctuary")html=sanctuaryScreen();
@@ -3313,7 +3409,7 @@ function render(){
     const id=stageId();
     html=({intake:intakeScreen,triage:triageScreen,exam:examScreen,diagnostics:diagnosticsScreen,treatment:treatmentScreen,vetrecovery:vetRecoveryScreen,eligibility:eligibilityScreen,resonance:resonanceScreen,prep:prepScreen,tree:treeScreen,chamber:chamberScreen,recovery:recoveryScreen,training:trainingScreen,expedition:expeditionScreen}[id]||intakeScreen)();
   }
-  if(state.screen!=="native3d" && state.screen!=="casereview" && state.screen!=="morphstudio" && state.screen!=="residentsettings" && state.screen!=="sanctuary" && state.screen!=="codex" && state.screen!=="worldmap" && state.screen!=="morphstory" && state.screen!=="career" && state.screen!=="researchtrack" && state.screen!=="projects" && state.screen!=="instituteroom" && state.screen!=="assignment" && state.screen!=="crafting"){
+  if(state.screen!=="casereview" && state.screen!=="morphstudio" && state.screen!=="residentsettings" && state.screen!=="sanctuary" && state.screen!=="codex" && state.screen!=="worldmap" && state.screen!=="morphstory" && state.screen!=="career" && state.screen!=="researchtrack" && state.screen!=="projects" && state.screen!=="instituteroom" && state.screen!=="assignment" && state.screen!=="crafting"){
     html = firstRunGuide()+storyPanel()+html;
   }
   document.getElementById("main").innerHTML=html;
@@ -3544,16 +3640,6 @@ function beginVetGodsStory(){
   save();render();
 }
 window.beginVetGodsStory=beginVetGodsStory;
-
-// Native 3D controls must be exported here, BEFORE this IIFE closes.
-window.openNative3D=openNative3D;
-window.native3DReset=native3DReset;
-window.native3DView=native3DView;
-window.native3DZoom=native3DZoom;
-window.native3DToggleAuto=native3DToggleAuto;
-window.native3DBack=native3DBack;
-window.native3DSettings=native3DSettings;
-
 render();
 setTimeout(showStoryIntro,80);
 })();
@@ -3813,27 +3899,347 @@ function draw(){
 })();
 </script>
 
-
-<script id="sanctuary-3d-launch-fix">
+<script id="fossil-core-js">
 (function(){
- window.launchSanctuary3D=function(i){
-   i=Number(i);
-   const residents=(window.state&&state.sanctuary)||[];
-   if(!Number.isInteger(i)||!residents[i]){
-     if(typeof window.toast==="function")toast("3D viewer: resident record not found.");
-     return;
+const CASES=[
+['Ceratopsian','Triceratops horridus','🦏'],['Armored Dinosaur','Ankylosaurus magniventris','🦖'],['Stegosaur','Stegosaurus stenops','🦕'],['Small Theropod','Velociraptor mongoliensis','🦖'],['Large Theropod','Tyrannosaurus rex','🦖'],['Hadrosaur','Parasaurolophus walkeri','🦕'],['Sauropod','Diplodocus carnegii','🦕'],['Pterosaur','Pteranodon longiceps','🦅'],['Marine Reptile','Mosasaurus hoffmannii','🐋'],['Small Herbivore','Psittacosaurus mongoliensis','🦎'],['Early Bird','Archaeopteryx lithographica','🦅'],['Synapsid','Dimetrodon grandis','🦎']];
+const BONES=['skull','jaw','vertebrae','ribs','pelvis','left forelimb','right forelimb','left hindlimb','right hindlimb','tail'];
+function c(){try{return active()}catch(e){return null}}
+function ensure(){let x=c();if(!x)return null;if(!x.fossil){let n=Math.abs(String(x.caseKey||x.name).split('').reduce((a,z)=>a+z.charCodeAt(0),0)),q=CASES[n%CASES.length];x.fossil={group:q[0],species:q[1],living:q[2],bones:[...BONES],found:[],cleaned:0,scanned:false,identified:false,assembled:0,reconstructed:false,reanimated:false};x.prehistoricSpecies=q[1];x.alive=false;x.icon='🦴';if(typeof save==='function')save()}return x.fossil}
+function draw(){let x=c(),f=ensure(),e=document.getElementById('fossilRecoveryOverlay');if(!e){e=document.createElement('div');e.id='fossilRecoveryOverlay';e.style='position:fixed;inset:0;z-index:45000;overflow:auto;background:#020609;color:#fff;padding:12px;display:none';document.body.appendChild(e)}if(!f)return;e.innerHTML=`<div style="max-width:980px;margin:auto"><div class="fossil-panel"><button onclick="closeFossilRecovery()" style="float:right">RETURN</button><div style="font-size:8px;color:#9ab2bd">ARCHAEOLOGICAL RECOVERY · ACTUAL GAMEPLAY</div><h1>🦴 ${f.identified?f.species:'Unidentified Prehistoric Specimen'}</h1><p>Excavate → clean → scan → identify → assemble → reconstruct → reanimate. No image assets are required.</p></div><div class="fossil-panel"><div class="fossil-stage">${f.reanimated?f.living:(f.assembled>=f.bones.length?'☠️':'🦴')}</div><div class="fossil-grid">${f.bones.map(b=>`<div class="fossil-bone ${f.found.includes(b)?'found':''}">${f.found.includes(b)?'🦴 '+b:'undisturbed matrix'}</div>`).join('')}</div></div><div class="fossil-panel fossil-actions"><button onclick="fossilDig()">⛏ EXCAVATE</button><button onclick="fossilClean()">🖌 CLEAN</button><button onclick="fossilScan()">⌁ 3D SCAN</button><button onclick="fossilIdentify()">🔎 IDENTIFY</button><button onclick="fossilAssemble()">🦴 ASSEMBLE</button><button onclick="fossilReconstruct()">🧬 RECONSTRUCT</button><button onclick="fossilReanimate()">⚡ REANIMATE</button></div><div class="fossil-panel"><b>Recovered ${f.found.length}/${f.bones.length}</b> · Cleaned ${f.cleaned}/${f.bones.length} · Skeleton ${f.assembled}/${f.bones.length} · Life: ${f.reanimated?'RESTORED':'FOSSIL'}</div></div>`;e.style.display='block'}
+window.openFossilRecovery=function(){ensure();draw()};window.closeFossilRecovery=function(){document.getElementById('fossilRecoveryOverlay').style.display='none'};
+window.fossilDig=function(){let f=ensure(),left=f.bones.filter(b=>!f.found.includes(b));if(left.length)f.found.push(left[Math.floor(Math.random()*left.length)]);save();draw()};
+window.fossilClean=function(){let f=ensure();if(!f.found.length)return toast('Excavate fossil material first.');f.cleaned=Math.min(f.found.length,f.cleaned+1);save();draw()};
+window.fossilScan=function(){let f=ensure();if(f.cleaned<5)return toast('Clean at least five fossil elements first.');f.scanned=true;save();draw()};
+window.fossilIdentify=function(){let f=ensure();if(!f.scanned)return toast('Complete the scan first.');f.identified=true;save();draw()};
+window.fossilAssemble=function(){let f=ensure();if(!f.identified)return toast('Identify the specimen first.');if(f.found.length<f.bones.length)return toast('Recover all fossil elements first.');f.assembled=Math.min(f.bones.length,f.assembled+2);save();draw()};
+window.fossilReconstruct=function(){let f=ensure();if(f.assembled<f.bones.length)return toast('Finish skeleton assembly first.');f.reconstructed=true;save();draw()};
+window.fossilReanimate=function(){let x=c(),f=ensure();if(!f.reconstructed)return toast('Complete reconstruction first.');f.reanimated=true;x.alive=true;x.icon=f.living;x.species=f.species;x.health=58;x.hydration=55;x.energy=42;x.stress=68;x.pain=18;if(typeof addAudit==='function')addAudit('Reanimation successful: '+f.species+'. Veterinary stabilization required.');save();draw();toast('⚡ LIFE SIGNS DETECTED · CLINICAL STABILIZATION REQUIRED')};
+})();
+</script>
+<script id="direct-working-tools">
+(function(){
+ window.VG_RESIDENT_OBJECTS=window.VG_RESIDENT_OBJECTS||{};
+ window.VG_registerResident=function(key,obj){window.VG_RESIDENT_OBJECTS[String(key)]=obj;return ""};
+ window.VG_getRegisteredResident=function(key){return window.VG_RESIDENT_OBJECTS[String(key)]||null};
+ function residents(){return (typeof state!=="undefined" && Array.isArray(state.sanctuary))?state.sanctuary:[]}
+ function residentIndexByName(name){
+   const a=residents(), target=String(name||"");
+   let n=a.findIndex(x=>String(x?.name||"")===target);
+   if(n<0)n=a.findIndex(x=>String(x?.originalName||"")===target);
+   return n;
+ }
+ 
+ window.VG_openTwineObject=function(key){
+   const p=VG_getRegisteredResident(key);if(!p){alert("Resident card needs to be reopened. Return to Sanctuary and try once more.");return false}
+   const e=make("VG_WORKING_TWINE");e.__resident=p;VG_campaign(p);VG_drawTwine();e.style.display="block";e.scrollTop=0;return false;
+ };
+ window.VG_open3DObject=function(key){
+   const p=VG_getRegisteredResident(key);if(!p){alert("Resident card needs to be reopened. Return to Sanctuary and try once more.");return false}
+   const e=make("VG_WORKING_3D");e.__resident=p;e.dataset.ry="0";e.dataset.zoom="1";VG_draw3D();e.style.display="block";e.scrollTop=0;return false;
+ };
+window.VG_openTwineByName=function(name){
+   const n=residentIndexByName(name);
+   if(n<0){alert("This resident is visible, but its Sanctuary record could not be linked.");return false}
+   return VG_openTwine(n);
+ };
+ window.VG_open3DByName=function(name){
+   const n=residentIndexByName(name);
+   if(n<0){alert("This resident is visible, but its Sanctuary record could not be linked.");return false}
+   return VG_open3D(n);
+ };
+
+ function getResident(i){
+   const a=residents(),n=Number(i);
+   if(Number.isInteger(n)&&a[n])return a[n];
+   try{if(Number.isInteger(Number(state.storyResidentIndex))&&a[Number(state.storyResidentIndex)])return a[Number(state.storyResidentIndex)]}catch(e){}
+   return null;
+ }
+ function make(id){
+   let e=document.getElementById(id);
+   if(!e){e=document.createElement("div");e.id=id;e.style.cssText="display:none;position:fixed;inset:0;z-index:1000000;background:#02070c;color:white;overflow:auto;padding:12px";document.body.appendChild(e)}
+   return e;
+ }
+ window.VG_closeTool=function(id){const e=document.getElementById(id);if(e)e.style.display="none"};
+
+ window.VG_openTwine=function(i){
+   const p=getResident(i);if(!p){alert("Resident unavailable.");return false}
+   const e=make("VG_WORKING_TWINE"); e.dataset.i=String(i); e.dataset.step="0"; e.dataset.item="";
+   VG_drawTwine();e.style.display="block";e.scrollTop=0;return false;
+ };
+ window.VG_twineChoice=function(choice){
+   const e=make("VG_WORKING_TWINE");let s=Number(e.dataset.step||0);
+   e.dataset.choice=choice;e.dataset.step=String(s+1);VG_drawTwine();return false;
+ };
+ window.VG_twineFinish=function(){
+   const e=make("VG_WORKING_TWINE"),i=Number(e.dataset.i),p=e.__resident||getResident(i);if(!p)return false;
+   const items=["Resonance Shard","Ancient Survey Key","Fossil Signal Prism","Buried Field Decoder","Temporal Mineral Sample"];
+   const item=items[Math.abs(String(p.name).split("").reduce((a,c)=>a+c.charCodeAt(0),0))%items.length];
+   p.fieldItems=p.fieldItems||[];if(!p.fieldItems.includes(item))p.fieldItems.push(item);p.mastery=(p.mastery||0)+10;e.dataset.item=item;e.dataset.step="3";
+   try{if(typeof save==="function")save()}catch(x){} VG_drawTwine();return false;
+ };
+
+ window.VG_campaign=function(p){
+   p.campaign=p.campaign||{};
+   const c=p.campaign;
+   const defaults={chapter:1,node:0,phase:"prep",science:0,instinct:0,compassion:0,risk:0,exploration:0,resonance:0,
+     decisions:[],artifacts:[],clues:[],locations:["Base Camp"],research:[],scientist:{Venn:0,Rook:0,Sol:0},
+     prep:{tool:"",artifact:"",ability:""},equipped:{},bond:0,courage:0,curiosity:0,fieldXP:0,completed:false,chapterRuns:0};
+   Object.keys(defaults).forEach(k=>{if(c[k]===undefined)c[k]=JSON.parse(JSON.stringify(defaults[k]))});
+   return c;
+ };
+ const VG_CHAPTERS=[
+  ["ACT I · BONES","Original Dig","Base Camp","Fossil Shelf","Buried Survey Station","Resonance Chamber"],
+  ["ACT II · BREATH","Reanimation Echo","Institute Outpost","Echo Trench","Abandoned Relay","Cradle Annex"],
+  ["ACT III · MEMORY","Place Remembered","Dust Camp","Memory Ridge","Sunken Archive","Ancient Threshold"],
+  ["ACT IV · SIGNAL","Shared Frequency","Signal Camp","Prism Canyon","Silent Observatory","Frequency Vault"],
+  ["ACT V · BELOW","Under the Fossil Layer","Deep Camp","Collapsed Descent","Substrata Ruins","Impossible Chamber"],
+  ["ACT VI · FIRST INSTITUTE","Lost Researchers","Old Camp","Forgotten Laboratory","Founder Tunnel","First Institute"],
+  ["ACT VII · RESONANCE","Convergence","Convergence Camp","Seven Gates","Resonance Nexus","The Living Archive"]
+ ];
+ const VG_TOOLS=["Field Scanner","Climbing Rig","Acoustic Recorder","Excavation Kit","Portable Cradle Reader"];
+ const VG_ABILITIES=["Flight","Aquatic Adaptation","Enhanced Scent","Armor","Night Vision","Resonance Sense","Climbing","Burrowing"];
+ const VG_ARTS=["Resonance Shard","Survey Key","Signal Prism","Field Decoder","Memory Stone","Cradle Lens","Convergence Core"];
+ const VG_SCI={Venn:["Dr. Mara Venn","Biological information"],Rook:["Dr. Elias Rook","External signal theory"],Sol:["Dr. Nia Sol","Mineral resonance"]};
+ function vgHasAbility(p,name){
+   const s=JSON.stringify(p.morphRecord||p).toLowerCase();
+   const keys={Flight:["wing","flight","aerial"],"Aquatic Adaptation":["aquatic","fin","gill","tide"],"Enhanced Scent":["scent","olfactory"],Armor:["armor","shell","plate"],"Night Vision":["night","vision","eye"],"Resonance Sense":["resonance","signal"],Climbing:["climb","grip"],Burrowing:["burrow","dig"]};
+   return (keys[name]||[name.toLowerCase()]).some(k=>s.includes(k));
+ }
+ function vgSave(){try{save()}catch(e){}}
+ function vgResident(){const e=make("VG_WORKING_TWINE");return e.__resident||getResident(Number(e.dataset.i))}
+ function vgLog(c,s){c.decisions.push(s);if(c.decisions.length>100)c.decisions.shift()}
+ window.VG_prepPick=function(type,val){const p=vgResident();if(!p)return false;const c=VG_campaign(p);c.prep[type]=val;vgSave();VG_drawTwine();return false};
+ window.VG_launchExpedition=function(){const p=vgResident();if(!p)return false;const c=VG_campaign(p);if(!c.prep.tool){alert("Choose one field tool first.");return false}c.phase="field";c.node=0;c.chapterRuns++;vgLog(c,"Departed with "+c.prep.tool+(c.prep.ability?" and "+c.prep.ability:""));vgSave();VG_drawTwine();return false};
+ window.VG_storyAct=function(kind){
+   const p=vgResident();if(!p)return false;const c=VG_campaign(p),ch=VG_CHAPTERS[c.chapter-1];
+   c[kind]=(c[kind]||0)+1;c.fieldXP++;c.curiosity+=kind==="exploration"?2:1;c.bond+=kind==="compassion"||kind==="instinct"?1:0;c.courage+=kind==="risk"?2:0;
+   if(c.node===0&&!c.locations.includes(ch[3]))c.locations.push(ch[3]);
+   if(c.node===1&&!c.locations.includes(ch[4]))c.locations.push(ch[4]);
+   if(c.node===2&&!c.locations.includes(ch[5]))c.locations.push(ch[5]);
+   const clue=["Tool marks beneath the fossil layer","Repeating three-band signal","Unknown Institute insignia","Mineral sample with matching resonance","Resident recognition response","Partial founder transmission"][(c.node+c.chapter)%6];
+   if(!c.clues.includes(clue))c.clues.push(clue);
+   vgLog(c,kind+" choice · "+clue);c.node++;vgSave();VG_drawTwine();return false;
+ };
+ window.VG_useAbility=function(name){
+   const p=vgResident();if(!p)return false;const c=VG_campaign(p);c.resonance++;c.fieldXP+=2;c.node++;vgLog(c,"Morph ability used: "+name);vgSave();VG_drawTwine();return false;
+ };
+ window.VG_storyScientist=function(k){const p=vgResident();if(!p)return false;const c=VG_campaign(p);c.scientist[k]++;c.science++;c.node++;vgLog(c,"Evidence transmitted to "+VG_SCI[k][0]);vgSave();VG_drawTwine();return false};
+ window.VG_finishChapter=function(){
+   const p=vgResident();if(!p)return false;const c=VG_campaign(p),a=VG_ARTS[c.chapter-1];
+   if(!c.artifacts.includes(a))c.artifacts.push(a);p.fieldItems=p.fieldItems||[];if(!p.fieldItems.includes(a))p.fieldItems.push(a);
+   p.mastery=(p.mastery||0)+10;c.fieldXP+=5;vgLog(c,"Recovered "+a+" and returned to Institute.");
+   c.phase="return";vgSave();VG_drawTwine();return false;
+ };
+ window.VG_nextChapter=function(){const p=vgResident();if(!p)return false;const c=VG_campaign(p);if(c.chapter<7){c.chapter++;c.node=0;c.phase="prep";c.prep={tool:"",artifact:"",ability:""}}else c.completed=true;vgSave();VG_drawTwine();return false};
+ window.VG_useArtifact=function(a,k){const p=vgResident();if(!p)return false;const c=VG_campaign(p),key=a+":"+k;if(c.research.includes(key))return false;c.research.push(key);c[k]=(c[k]||0)+1;vgLog(c,a+" used in "+k+" research");vgSave();VG_drawTwine();return false};
+
+ window.VG_drawTwine=function(){
+   const e=make("VG_WORKING_TWINE"),p=vgResident();if(!p)return;const c=VG_campaign(p),ch=VG_CHAPTERS[Math.min(6,c.chapter-1)];
+   const abilities=VG_ABILITIES.filter(a=>vgHasAbility(p,a));
+   const pct=Math.min(100,Math.round(((c.chapter-1)*4+Math.min(c.node,4))/(7*4)*100));
+   if(c.phase==="board"){e.innerHTML=F30_render(p,c,F30(p));return}
+   let center="";
+   if(c.completed){
+     center=`<div class="tw-complete"><h2>THE LIVING ARCHIVE</h2><p>${p.name}'s campaign is complete. Seven expeditions connected fossil recovery, reanimation, morph research and the buried Institute mystery.</p><button class="tw-choice" onclick="VG_closeTool('VG_WORKING_TWINE')">RETURN TO SANCTUARY</button></div>`;
+   } else if(c.phase==="prep"){
+     center=`<div class="tw-card"><div class="tw-kicker">${ch[0]} · EXPEDITION PREPARATION</div><h2>${ch[1]}</h2><p>Choose one field tool, one recovered artifact if available, and one morph capability. Preparation changes the options that can appear in the expedition.</p>
+     <b>FIELD TOOL</b><div class="tw-prep">${VG_TOOLS.map(x=>`<button class="vg-btn ${c.prep.tool===x?"selected":""}" onclick='VG_prepPick("tool",${JSON.stringify(x)})'>${x}</button>`).join("")}</div>
+     <b>ARTIFACT</b><div class="tw-prep">${(c.artifacts.length?c.artifacts:["None"]).map(x=>`<button class="vg-btn ${c.prep.artifact===x?"selected":""}" onclick='VG_prepPick("artifact",${JSON.stringify(x)})'>${x}</button>`).join("")}</div>
+     <b>MORPH CAPABILITY</b><div class="tw-prep">${(abilities.length?abilities:["General Field Training"]).map(x=>`<button class="vg-btn ${c.prep.ability===x?"selected":""}" onclick='VG_prepPick("ability",${JSON.stringify(x)})'>${x}</button>`).join("")}</div>
+     <button class="tw-choice" onclick="VG_launchExpedition()">🧭 DEPART FOR ${ch[2].toUpperCase()}</button><button class="tw-choice secret" onclick="VG_openLivingBoard()">🏕️ OPEN 30-MINUTE LIVING EXPEDITION BOARD</button></div>`;
+   } else if(c.phase==="return"){
+     const a=VG_ARTS[c.chapter-1];
+     center=`<div class="tw-complete"><div class="tw-kicker">CHAPTER FINALE · RETURN TO INSTITUTE</div><h2>${a} Recovered</h2><p>${p.name} returns safely. The artifact, clues, map discoveries and decisions are now part of this resident's permanent record.</p><button class="tw-choice" onclick="VG_useArtifact('${a}','science')">🔬 RESEARCH ARTIFACT</button><button class="tw-choice" onclick="VG_useArtifact('${a}','resonance')">◉ INSTALL IN CRADLE RESEARCH</button><button class="tw-choice" onclick="VG_useArtifact('${a}','exploration')">🧭 REGISTER FOR FIELD USE</button><button class="tw-choice secret" onclick="VG_nextChapter()">CONTINUE TO NEXT ACT →</button></div>`;
+   } else {
+     let title,txt,choices="";
+     if(c.node===0){title=ch[2];txt=`At base camp, ${p.name} reacts to a signal beyond the surveyed boundary. A normal expedition route and a creature-led route diverge ahead.`;choices=`<button class="tw-choice" onclick="VG_storyAct('science')">🔬 SCAN THE EXCAVATION GRID</button><button class="tw-choice" onclick="VG_storyAct('instinct')">🐾 TRUST ${p.name.toUpperCase()}'S INSTINCT</button><button class="tw-choice" onclick="VG_storyAct('exploration')">🧭 LEAVE THE MARKED ROUTE</button>`}
+     else if(c.node===1){title=ch[3];txt="The first clue points toward terrain ordinary equipment cannot easily cross. Your morph design can now matter.";choices=`<button class="tw-choice" onclick="VG_storyAct('compassion')">💙 SEARCH CAREFULLY WITH THE RESIDENT</button>${abilities.slice(0,3).map(a=>`<button class="tw-choice ability" onclick='VG_useAbility(${JSON.stringify(a)})'>🧬 USE MORPH ABILITY · ${a}</button>`).join("")}${c.prep.artifact?`<button class="tw-choice secret" onclick="VG_storyAct('resonance')">◆ USE ${c.prep.artifact}</button>`:""}`}
+     else if(c.node===2){title=ch[4];txt="An abandoned research station contains conflicting records. Someone investigated this signal before the current Institute existed.";choices=Object.keys(VG_SCI).map(k=>`<button class="tw-choice" onclick="VG_storyScientist('${k}')"><b>TRANSMIT TO ${VG_SCI[k][0]}</b><br><span class="story-require">${VG_SCI[k][1]}</span></button>`).join("")}
+     else if(c.node===3){title=ch[5];txt="Clues converge on a sealed structure. Your earlier choices determine whether an additional route appears.";const secret=c.science>=2||c.instinct>=2||c.resonance>=2||c.exploration>=2;choices=`${secret?`<button class="tw-choice secret" onclick="VG_storyAct('resonance')">✦ SECRET ROUTE · CONNECT THE CLUES</button>`:""}<button class="tw-choice danger" onclick="VG_storyAct('risk')">⚠ ENTER THE PRIMARY CHAMBER</button>`}
+     else {title="Chapter Discovery";txt=`The expedition resolves around a recoverable ${VG_ARTS[c.chapter-1]}. This is a conclusive chapter ending, not a dead end.`;choices=`<button class="tw-choice secret" onclick="VG_finishChapter()">◆ RECOVER ARTIFACT · RETURN TO INSTITUTE</button>`}
+     choices+=`<button class="tw-choice secret" onclick="VG_openLivingBoard()">🏕️ ENTER LIVING EXPEDITION BOARD</button>`;
+     center=`<div class="tw-card"><div class="tw-kicker">CURRENT LOCATION · ${title}</div><h2>${title}</h2>${c.node===2?`<div class="tw-memory">RESONANCE ECHO: ${p.name} pauses as if recognizing the shape of the buried structure. The game records this as an unexplained reconstructed-memory event.</div>`:""}<p>${txt}</p>${choices}<div class="tw-nextcards"><div>NEXT POSSIBILITY<br>Discovery</div><div>NEXT POSSIBILITY<br>Creature Event</div><div>NEXT POSSIBILITY<br>Artifact/Puzzle</div></div></div>`;
    }
-   // Persist which Sanctuary resident is being inspected.
-   state.viewerResidentIndex=i;
-   if(typeof window.save==="function")save();
-   if(typeof window.openMorph3d!=="function"){
-     if(typeof window.toast==="function")toast("3D viewer module did not load.");
-     return;
-   }
-   window.openMorph3d(i);
+   const map=ch.slice(2).map((x,j)=>`<div class="tw-map-node ${c.locations.includes(x)?"found":""} ${(c.phase==="field"&&Math.min(c.node,3)===j)?"current":""}">${c.locations.includes(x)?"◆":"◇"} ${x}</div>`).join("");
+   const clues=c.clues.slice(-8).map(x=>`<div class="tw-clue">CLUE · ${x}</div>`).join("")||"<small>No clues recovered.</small>";
+   const arts=c.artifacts.map(a=>`<div class="artifact-card"><b>◆ ${a}</b><br><button onclick="VG_useArtifact('${a}','science')">Research</button> <button onclick="VG_useArtifact('${a}','resonance')">Cradle</button> <button onclick="VG_useArtifact('${a}','exploration')">Field</button></div>`).join("")||"<small>No artifacts yet.</small>";
+   e.innerHTML=`<div class="tw-rpg"><div class="vg-head"><div><small>${ch[0]} · ${p.name}</small><br><b>🧭 RESONANCE EXPEDITION DECK</b></div><button class="vg-btn" onclick="VG_closeTool('VG_WORKING_TWINE')">✕ CLOSE</button></div>
+   <div class="campaign-hud"><div><span>CAMPAIGN</span><b>${pct}%</b><div class="tw-bar"><i style="width:${pct}%"></i></div></div><div><span>FIELD XP</span><b>${c.fieldXP}</b></div><div><span>BOND</span><b>${c.bond}</b></div><div><span>CLUES</span><b>${c.clues.length}</b></div></div>
+   <div class="tw-rpg-grid"><aside class="tw-left"><div class="tw-card"><b>🦖 ${p.name}</b><div style="font-size:54px">${p.icon||"🦖"}</div><small>${p.formName||p.species||""}</small><br>${abilities.map(a=>`<span class="tw-chip on">${a}</span>`).join("")||'<span class="tw-chip">General Training</span>'}<hr><small>Curiosity ${c.curiosity} · Courage ${c.courage}<br>Science ${c.science} · Instinct ${c.instinct}<br>Exploration ${c.exploration} · Resonance ${c.resonance}</small></div><div class="tw-card"><b>EXPEDITION MAP</b>${map}</div></aside>
+   <main>${center}</main>
+   <aside class="tw-right"><div class="tw-card"><b>INVESTIGATION BOARD</b>${clues}</div><div class="tw-card"><b>FIELD INVENTORY</b>${arts}</div><div class="tw-card"><b>SCIENTIST COMMS</b>${Object.keys(VG_SCI).map(k=>`<div class="scientist-card"><b>${VG_SCI[k][0]}</b><br><small>Trust ${c.scientist[k]||0}</small></div>`).join("")}</div><div class="tw-card"><b>RECENT DECISIONS</b><div style="font-size:7px;max-height:130px;overflow:auto">${c.decisions.slice(-10).reverse().map(x=>"• "+x+"<br>").join("")||"No decisions yet."}</div></div></aside></div></div>`;
+   e.querySelectorAll(".vg-btn,.artifact-card button").forEach(b=>{b.style.cssText+=";margin:3px;padding:6px;border:1px solid #5fbfd0;border-radius:7px;background:#0b2936;color:white;font-weight:bold;font-size:7px"});
+ };
+
+ const F30_LOCATIONS=["Base Camp","Fossil Wall","Collapsed Tunnel","Research Tent","Excavation Pit","Underground Pool","Ancient Door","Lower Laboratory"];
+ const F30_SPOTS=[
+  ["Fossil Wall","🦴","Layered bones and mineral traces cover the exposed wall."],
+  ["Collapsed Tunnel","⛰️","A blocked passage carries a faint repeating vibration."],
+  ["Research Tent","⛺","Abandoned field equipment and damaged notes remain inside."],
+  ["Excavation Pit","⛏️","A marked 4×4 grid waits for careful excavation."],
+  ["Underground Pool","🌊","Dark water conceals a submerged ledge and metallic reflection."],
+  ["Ancient Door","🚪","A constructed doorway sits beneath strata older than the current dig."],
+  ["Lower Laboratory","⚙️","A hidden laboratory contains dormant Institute-compatible machinery."]
+ ];
+ const F30_EVENTS=[
+  ["DISCOVERY","A mineral seam flashes with the same spectrum as the Resonance Cradle."],
+  ["CREATURE MEMORY","The resident freezes and looks toward a place it has never visited in its reconstructed life."],
+  ["SCIENTIST TRANSMISSION","A scientist requests a live sample and challenges your current theory."],
+  ["EQUIPMENT","The field scanner reports two contradictory depths for the same object."],
+  ["HIDDEN PASSAGE","Airflow reveals a narrow route behind the excavation wall."],
+  ["MYSTERY","A symbol matches one found at a completely different fossil recovery site."]
+ ];
+ function F30(p){
+   const c=VG_campaign(p);
+   c.board=c.board||{location:"Base Camp",visited:["Base Camp"],searched:[],grid:{},samples:[],journal:[],heldCards:[],deck:18,energy:12,actions:0,theories:[],labA:"",labB:"",last:"Expedition board ready.",major:false};
+   return c.board;
+ }
+ function f30stamp(){const d=new Date();return d.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})}
+ function f30log(b,s){b.journal.push(f30stamp()+" — "+s);if(b.journal.length>80)b.journal.shift();b.last=s}
+ function f30save(){try{save()}catch(e){}}
+ window.VG_openLivingBoard=function(){
+   const p=vgResident();if(!p)return false;const c=VG_campaign(p);c.phase="board";F30(p);VG_drawTwine();return false
+ };
+ window.F30_visit=function(name){
+   const p=vgResident(),b=F30(p);b.location=name;if(!b.visited.includes(name))b.visited.push(name);b.actions++;b.energy=Math.max(0,b.energy-1);f30log(b,"Moved to "+name+".");f30save();VG_drawTwine();return false
+ };
+ window.F30_search=function(name){
+   const p=vgResident(),c=VG_campaign(p),b=F30(p);if(!b.searched.includes(name))b.searched.push(name);
+   const clue=["Three-band transmission","Unknown excavation marks","Fossil mineral anomaly","Missing-team equipment","Subsurface power trace","Resident recognition event","Founder-era insignia"][b.searched.length%7];
+   if(!c.clues.includes(clue))c.clues.push(clue);b.actions++;b.energy=Math.max(0,b.energy-1);f30log(b,"Investigated "+name+" and recorded clue: "+clue+".");f30save();VG_drawTwine();return false
+ };
+ window.F30_dig=function(cell,tool){
+   const p=vgResident(),c=VG_campaign(p),b=F30(p);if(b.grid[cell])return false;
+   const n=cell.charCodeAt(0)+Number(cell[1])+c.chapter;
+   let result=(n%5===0)?"Fossil Fragment":(n%7===0)?"Mineral Sample":(n%9===0)?"Machine Component":"Stone Matrix";
+   b.grid[cell]=result;b.actions++;b.energy=Math.max(0,b.energy-1);
+   if(result!=="Stone Matrix"&&!b.samples.includes(result))b.samples.push(result);
+   if(result!=="Stone Matrix"){const clue="Excavation "+cell+": "+result;if(!c.clues.includes(clue))c.clues.push(clue)}
+   f30log(b,"Excavated sector "+cell+" with "+tool+": "+result+".");f30save();VG_drawTwine();return false
+ };
+ window.F30_drawCard=function(){
+   const p=vgResident(),b=F30(p);if(b.deck<=0||b.heldCards.length>=3)return false;
+   const ev=F30_EVENTS[(b.deck+b.actions)%F30_EVENTS.length];b.deck--;b.heldCards.push(ev);f30log(b,"Drew "+ev[0]+" card.");f30save();VG_drawTwine();return false
+ };
+ window.F30_playCard=function(i){
+   const p=vgResident(),c=VG_campaign(p),b=F30(p),ev=b.heldCards.splice(i,1)[0];if(!ev)return false;
+   if(ev[0]==="DISCOVERY"||ev[0]==="MYSTERY"){const clue=ev[1];if(!c.clues.includes(clue))c.clues.push(clue)}
+   if(ev[0]==="CREATURE MEMORY"){c.bond++;c.resonance++}
+   if(ev[0]==="HIDDEN PASSAGE"&&!b.visited.includes("Lower Laboratory"))b.visited.push("Lower Laboratory");
+   b.actions++;f30log(b,"Played "+ev[0]+": "+ev[1]);f30save();VG_drawTwine();return false
+ };
+ window.F30_labPick=function(slot,item){const p=vgResident(),b=F30(p);b[slot]=item;VG_drawTwine();return false};
+ window.F30_analyze=function(){
+   const p=vgResident(),c=VG_campaign(p),b=F30(p);if(!b.labA||!b.labB){b.last="Load two discoveries into the field workstation.";VG_drawTwine();return false}
+   const theory="Connection: "+b.labA+" + "+b.labB;
+   if(!b.theories.includes(theory))b.theories.push(theory);c.science++;c.resonance++;b.actions++;
+   f30log(b,"Field workstation established "+theory+".");b.labA="";b.labB="";
+   if(b.theories.length>=2&&c.clues.length>=6&&!b.major){b.major=true;if(!b.visited.includes("Ancient Door"))b.visited.push("Ancient Door");f30log(b,"MAJOR DISCOVERY: a constructed chamber has been located beneath sector C4.")}
+   f30save();VG_drawTwine();return false
+ };
+ window.F30_companion=function(action){
+   const p=vgResident(),c=VG_campaign(p),b=F30(p);if(action==="follow"){c.bond+=2;c.instinct++;if(!b.visited.includes("Ancient Door"))b.visited.push("Ancient Door");f30log(b,p.name+" led the team toward a concealed structure.")}
+   if(action==="observe"){c.curiosity+=2;c.resonance++;f30log(b,"Observed "+p.name+" quietly; a resonance behavior was recorded.")}
+   if(action==="scan"){c.science++;f30log(b,"Scanned the wall indicated by "+p.name+".")}
+   b.actions++;f30save();VG_drawTwine();return false
+ };
+ window.F30_rest=function(){const p=vgResident(),b=F30(p);b.energy=Math.min(12,b.energy+5);f30log(b,"Established a short field camp and restored expedition energy.");f30save();VG_drawTwine();return false};
+ window.F30_return=function(){const p=vgResident(),c=VG_campaign(p),b=F30(p);c.phase="field";c.fieldXP+=Math.floor(b.actions/3);vgLog(c,"Returned from living expedition board with "+c.clues.length+" clues and "+b.theories.length+" theories.");f30save();VG_drawTwine();return false};
+
+ function F30_render(p,c,b){
+   const abilities=VG_ABILITIES.filter(a=>vgHasAbility(p,a));
+   const cells=[];for(const r of ["A","B","C","D"])for(let n=1;n<=4;n++)cells.push(r+n);
+   const samplePool=[...new Set([...(b.samples||[]),...(c.artifacts||[]),...(p.fieldItems||[])])];
+   const spots=F30_SPOTS.map(x=>`<button class="f30spot ${b.searched.includes(x[0])?"done":""} ${x[0]===b.location?"hot":""}" onclick='F30_visit(${JSON.stringify(x[0])})'>${x[1]} ${x[0]}<br><small>${x[2]}</small></button>`).join("");
+   return `<div class="field30"><div class="vg-head"><div><small>LIVING EXPEDITION BOARD · ${p.name}</small><br><b>CURRENT LOCATION · ${b.location}</b></div><button class="vg-btn" onclick="F30_return()">← STORY DECK</button></div>
+   <div class="campaign-hud"><div><span>FIELD ENERGY</span><b>${b.energy}/12</b></div><div><span>ACTIONS</span><b>${b.actions}</b></div><div><span>CLUES</span><b>${c.clues.length}</b></div><div><span>DECK</span><b>${b.deck}</b></div></div>
+   <div class="field30grid"><aside>
+    <div class="f30panel"><b>🦖 ${p.name}</b><div style="font-size:58px">${p.icon||"🦖"}</div><small>Bond ${c.bond} · Courage ${c.courage} · Curiosity ${c.curiosity}</small><br>${abilities.map(a=>`<span class="tw-chip on">${a}</span>`).join("")||'<span class="tw-chip">General Field Training</span>'}<div class="f30actions"><button onclick="F30_companion('follow')">🐾 FOLLOW COMPANION</button><button onclick="F30_companion('observe')">👁 OBSERVE QUIETLY</button><button onclick="F30_companion('scan')">🔬 SCAN WHAT IT FOUND</button></div></div>
+    <div class="f30panel"><b>EXPEDITION LOCATIONS</b>${F30_LOCATIONS.filter(x=>b.visited.includes(x)).map(x=>`<div class="tw-map-node ${x===b.location?"current":""}" onclick='F30_visit(${JSON.stringify(x)})'>◆ ${x}</div>`).join("")}</div>
+    <div class="f30panel"><b>FIELD JOURNAL</b><div class="f30journal">${b.journal.slice().reverse().map(x=>`<div>${x}</div>`).join("")||"<div>No field entries yet.</div>"}</div></div>
+   </aside><main>
+    <div class="f30scene"><div class="tw-kicker">EXPLORE WITHOUT LEAVING THIS PAGE</div><h2>${b.location}</h2><p>Inspect locations, excavate the grid, play expedition cards, work with ${p.name}, connect clues and analyze discoveries. The page changes around your investigation rather than sending you through menus.</p><div class="f30spots">${spots}</div>
+    <div class="f30actions"><button onclick='F30_search(${JSON.stringify(b.location)})'>🔎 INVESTIGATE CURRENT LOCATION</button><button onclick="F30_drawCard()">🃏 DRAW EXPEDITION CARD</button><button onclick="F30_rest()">⛺ ESTABLISH SHORT FIELD CAMP</button></div>
+    ${b.major?`<div class="tw-memory"><b>MAJOR DISCOVERY</b><br>A constructed chamber has been located beneath excavation sector C4. The resident recognizes the doorway and the Resonance Cradle signature is present.</div>`:""}</div>
+    <div class="f30panel"><b>EXCAVATION GRID · A1–D4</b><p class="small">Choose a sector. Each square is persistent for this resident.</p><div class="f30gridmap">${cells.map(cell=>`<button class="f30cell ${b.grid[cell]?"dug":""} ${b.grid[cell]&&b.grid[cell]!=="Stone Matrix"?"find":""}" onclick='F30_dig(${JSON.stringify(cell)},"Brush + Scanner")'>${cell}<br>${b.grid[cell]||"?"}</button>`).join("")}</div></div>
+    <div class="f30panel"><b>HELD EXPEDITION CARDS · MAX 3</b><div class="f30deck">${b.heldCards.map((x,i)=>`<button class="f30card" onclick="F30_playCard(${i})"><b>${x[0]}</b><br>${x[1]}</button>`).join("")||'<div class="f30card">Draw cards to inject discoveries, memories, equipment problems and hidden passages into this location.</div>'}</div></div>
+    <div class="f30panel"><b>PORTABLE FIELD WORKSTATION</b><div class="f30lab"><div class="f30slot"><b>SLOT A</b><br>${b.labA||"Empty"}</div><div class="f30slot"><b>SLOT B</b><br>${b.labB||"Empty"}</div></div><div>${samplePool.map(x=>`<span class="tw-chip" onclick='F30_labPick(${b.labA?JSON.stringify("labB"):JSON.stringify("labA")},${JSON.stringify(x)})'>${x}</span>`).join("")||"<small>Excavate or recover artifacts to obtain samples.</small>"}</div><button class="story-choice" onclick="F30_analyze()">🔬 CONNECT + ANALYZE LOADED DISCOVERIES</button></div>
+   </main><aside>
+    <div class="f30panel"><b>INVESTIGATION BOARD</b>${c.clues.slice(-12).map(x=>`<div class="f30clue">${x}</div>`).join("")||"<small>No clues yet.</small>"}${b.theories.map(x=>`<div class="f30theory">THEORY · ${x}</div>`).join("")}</div>
+    <div class="f30panel"><b>INVENTORY / SAMPLES</b>${samplePool.map(x=>`<span class="tw-chip on">${x}</span>`).join("")||"<small>Empty.</small>"}</div>
+    <div class="f30panel"><b>INSTITUTE UPLINK</b><div class="scientist-card"><b>Dr. Mara Venn</b><br><small>Biological resonance research</small></div><div class="scientist-card"><b>Dr. Elias Rook</b><br><small>Signal-origin investigation</small></div><div class="scientist-card"><b>Dr. Nia Sol</b><br><small>Mineral/site analysis</small></div><button class="vg-btn" onclick="VG_open3DObject('settings-current')">3D INSPECTION*</button><p class="small">*3D remains available from the resident's normal Sanctuary controls if this temporary board context has no viewer registration.</p></div>
+   </aside></div><div class="f30toast">${b.last}</div></div>`;
+ }
+ window.VG_open3D=function(i){
+   const p=getResident(i);if(!p){alert("Resident unavailable.");return false}
+   const e=make("VG_WORKING_3D");e.dataset.i=String(i);e.dataset.ry="0";e.dataset.zoom="1";
+   VG_draw3D();e.style.display="block";e.scrollTop=0;return false;
+ };
+ window.VG_rotate3D=function(n){const e=make("VG_WORKING_3D");e.dataset.ry=String(Number(e.dataset.ry||0)+n);VG_apply3D()};
+ window.VG_zoom3D=function(n){const e=make("VG_WORKING_3D");e.dataset.zoom=String(Math.max(.6,Math.min(1.6,Number(e.dataset.zoom||1)+n)));VG_apply3D()};
+ window.VG_apply3D=function(){const e=make("VG_WORKING_3D"),r=e.querySelector("#VG_RIG");if(r)r.style.transform=`translate(-50%,-50%) rotateY(${e.dataset.ry||0}deg) scale(${e.dataset.zoom||1})`};
+ window.VG_draw3D=function(){
+   const e=make("VG_WORKING_3D"),p=e.__resident||getResident(Number(e.dataset.i));if(!p)return;
+   const rec=p.morphRecord||{},data=rec.channels||rec.customizations||rec.designSnapshot?.channels||{};
+   e.innerHTML=`<div style="max-width:950px;margin:auto"><div style="position:sticky;top:0;background:#02070c;padding:8px;border-bottom:1px solid #31596b"><small>CONCEPTUAL PSEUDO-3D · NOT MEDICAL ANATOMY</small><br><b>🔬 ${p.name} · ${p.formName||p.species||"Resident"}</b><button style="float:right" onclick="VG_closeTool('VG_WORKING_3D')">✕ CLOSE</button></div>
+   <div id="VG_STAGE" style="height:430px;position:relative;overflow:hidden;border:1px solid #557b8d;border-radius:16px;margin-top:10px;background:radial-gradient(circle,#173b4b,#02070c 70%);perspective:800px;touch-action:none"><div style="position:absolute;left:8px;top:8px;font-size:8px">DRAG OR USE BUTTONS TO ROTATE</div><div id="VG_RIG" style="position:absolute;left:50%;top:50%;width:210px;height:210px;transform:translate(-50%,-50%);transition:transform .15s"><div style="position:absolute;inset:0;border:2px solid #63d9ee;border-radius:50%;transform:rotateX(70deg)"></div><div style="font-size:115px;text-align:center;padding-top:35px">${p.icon||"🦖"}</div></div></div>
+   <div style="margin-top:8px"><button onclick="VG_rotate3D(-30)">← ROTATE</button><button onclick="VG_rotate3D(30)">ROTATE →</button><button onclick="VG_zoom3D(.1)">＋ ZOOM</button><button onclick="VG_zoom3D(-.1)">－ ZOOM</button><button onclick="document.getElementById('VG_WORKING_3D').dataset.ry='0';document.getElementById('VG_WORKING_3D').dataset.zoom='1';VG_apply3D()">RESET</button></div>
+   <div style="border:1px solid #31596b;border-radius:12px;padding:10px;margin-top:8px"><b>SAVED MORPH FEATURES</b><br>${Object.entries(data).slice(0,60).map(([k,v])=>`<span style="display:inline-block;border:1px solid #45697a;border-radius:99px;padding:4px 7px;margin:3px;font-size:8px">${k}: ${v}</span>`).join("")||"Resident morph record retained."}</div></div>`;
+   e.querySelectorAll("button").forEach(b=>{b.style.cssText="margin:5px;padding:9px;border:1px solid #63d9ee;border-radius:8px;background:#0b2936;color:white;font-weight:bold"});
+   const st=e.querySelector("#VG_STAGE");let down=false,lx=0;st.onpointerdown=q=>{down=true;lx=q.clientX;st.setPointerCapture(q.pointerId)};st.onpointermove=q=>{if(!down)return;VG_rotate3D((q.clientX-lx)*.5);lx=q.clientX};st.onpointerup=()=>down=false;st.onpointercancel=()=>down=false;
  };
 })();
 </script>
-
+<script id="vetgods-global-polish-js">
+(function(){
+  function safe(v,f){return (v===undefined||v===null||v==="")?f:v}
+  function activeResident(){
+    try{
+      if(window.state){
+        if(state.activePatient) return state.activePatient;
+        if(state.activeCase) return state.activeCase;
+        if(state.currentPatient) return state.currentPatient;
+        if(Array.isArray(state.sanctuary) && state.sanctuary.length) return state.sanctuary[0];
+      }
+    }catch(e){}
+    return null;
+  }
+  function stage(){
+    try{return safe(state.careStage||state.stage||state.currentStage||state.phase,"Institute") }catch(e){return "Institute"}
+  }
+  function form(p){
+    return safe(p&&(p.formName||p.morphName||p.form||p.species),"Unassigned");
+  }
+  function stability(p){
+    if(!p)return "Standby";
+    const v=p.stability ?? p.health ?? p.condition ?? p.vitals?.stability;
+    return typeof v==="number" ? Math.round(v)+"%" : safe(v,"Stable");
+  }
+  function updateStrip(){
+    let bar=document.getElementById("vg-case-strip");
+    if(!bar){
+      bar=document.createElement("div");bar.id="vg-case-strip";
+      const nav=document.getElementById("nav");
+      if(nav&&nav.parentNode) nav.parentNode.insertBefore(bar,nav.nextSibling);
+      else document.body.insertBefore(bar,document.body.firstChild);
+    }
+    const p=activeResident();
+    let saved="Local";
+    try{ if(localStorage) saved="Saved"; }catch(e){}
+    bar.innerHTML=
+      '<div class="vgcs resident"><small>ACTIVE RESIDENT</small><b>'+safe(p&&p.name,"No active case")+'</b></div>'+
+      '<div class="vgcs"><small>CARE STAGE</small><b>'+stage()+'</b></div>'+
+      '<div class="vgcs"><small>STABILITY</small><b>'+stability(p)+'</b></div>'+
+      '<div class="vgcs optional"><small>MORPH</small><b>'+form(p)+'</b></div>'+
+      '<div class="vgcs save optional"><small>SAVE STATUS</small><b>● '+saved+'</b></div>';
+  }
+  window.VG_updateCaseStrip=updateStrip;
+  document.addEventListener("click",function(){setTimeout(updateStrip,30)},true);
+  document.addEventListener("change",function(){setTimeout(updateStrip,30)},true);
+  window.addEventListener("load",updateStrip);
+  setTimeout(updateStrip,100);
+})();
+</script>
 </body>
 </html>
