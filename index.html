@@ -188,19 +188,58 @@ main{max-width:1500px;margin:auto;padding:16px 18px 70px}
 .world.selected{border-color:#c09cff;background:#18132b}
 .world h3{font-size:11px;margin:0 0 5px}
 .world p{font-size:8px;color:#91aebb;line-height:1.5;margin:0}
-.sanctuary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.sanctuary-grid{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr))!important;
+  gap:14px!important;
+  align-items:start!important;
+  margin-top:12px!important;
+}
 .pet{
-  border:1px solid #345366;border-radius:13px;background:#0a1924;padding:11px
+  border:1px solid #3d6a7e!important;
+  border-radius:16px!important;
+  background:linear-gradient(165deg,#0c1f2c,#09141e 55%,#0a1824)!important;
+  padding:14px!important;
+  min-height:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:8px!important;
+  box-shadow:0 10px 28px rgba(0,0,0,.28)!important;
+  position:relative!important;
+  overflow:visible!important;
 }
-.pet .face{font-size:36px}
-.pet h3{font-size:12px;margin:5px 0 2px}
-.pet-actions{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:8px}
-.pet-story-btn{
-  width:100%;margin-top:7px;min-height:38px;border-radius:8px;
-  border:1px solid #7765ad;background:#201b3c;color:#eadfff;
-  font-size:7px;font-weight:1000;letter-spacing:.05em
+.pet .face{font-size:48px!important;line-height:1!important;text-align:center!important;filter:drop-shadow(0 0 12px rgba(110,220,255,.25))}
+.pet h3{font-size:15px!important;margin:2px 0 0!important;text-align:center!important;letter-spacing:.02em}
+.pet .pet-meta{font-size:9px!important;color:#93b0bc!important;text-align:center!important;line-height:1.5}
+.pet .pet-tags{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin:4px 0}
+.pet .pet-tags span{font-size:7px;border:1px solid #3a5f72;border-radius:999px;padding:3px 7px;color:#a8c9d6;background:#081722}
+.pet .metric-grid{margin-top:4px!important}
+.pet-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:6px!important;margin-top:6px!important}
+.pet-actions button{min-height:36px!important;font-size:8px!important;font-weight:900!important;border-radius:8px!important}
+.pet-story-btn,.pet-detail-btn{
+  width:100%!important;margin-top:5px!important;min-height:40px!important;border-radius:9px!important;
+  border:1px solid #7765ad!important;background:#201b3c!important;color:#eadfff!important;
+  font-size:8px!important;font-weight:1000!important;letter-spacing:.04em!important;
+  display:block!important;
 }
-.pet-story-btn:hover{background:#2b2550;border-color:#a995ed}
+.pet-story-btn:hover,.pet-detail-btn:hover{background:#2b2550!important;border-color:#a995ed!important}
+.pet-detail-btn{border-color:#4d8a9e!important;background:#102a38!important;color:#dff8ff!important}
+.pet-detail-btn:hover{border-color:#6bcde6!important;background:#153849!important}
+.pet .pet-detail-block{
+  border:1px solid #2f5364;border-radius:11px;padding:9px;background:#07151e;margin-top:4px;
+  font-size:8px;line-height:1.55;color:#a9c3cd
+}
+.pet .pet-detail-block b{color:#e8fbff;display:block;margin-bottom:3px;font-size:9px}
+.pet .pet-detail-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+.pet .pet-detail-row > div{border:1px solid #294b5b;border-radius:8px;padding:6px;background:#081722}
+.pet .pet-detail-row span{display:block;font-size:6.5px;color:#7f9eab;letter-spacing:.06em}
+.pet .pet-detail-row strong{display:block;font-size:10px;margin-top:2px;color:#eefaff}
+.pet-lrc-wrap{display:none;margin-top:8px}
+.pet-lrc-wrap.open{display:block}
+@media(max-width:720px){
+  .sanctuary-grid{grid-template-columns:1fr!important}
+  .pet .pet-detail-row{grid-template-columns:1fr}
+}
 .story-card{
   border:1px solid #5d4e87;border-radius:14px;
   background:linear-gradient(180deg,#15152b,#0b1320);padding:14px
@@ -237,11 +276,11 @@ main{max-width:1500px;margin:auto;padding:16px 18px 70px}
 .toast.show{display:block}
 @media(max-width:1050px){
   .grid,.hero-grid{grid-template-columns:1fr}
-  .morph-grid,.sanctuary-grid{grid-template-columns:1fr 1fr}
+  .morph-grid{grid-template-columns:1fr 1fr}.sanctuary-grid{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))!important}
 }
 @media(max-width:720px){
   .brand-row{grid-template-columns:1fr}.resources{justify-content:flex-start}
-  .action-grid,.action-grid.three,.morph-grid,.sanctuary-grid,.world-grid{grid-template-columns:1fr}
+  .action-grid,.action-grid.three,.morph-grid,.world-grid{grid-template-columns:1fr}.sanctuary-grid{grid-template-columns:1fr!important}
   .gate-list{grid-template-columns:1fr}.stagebar{grid-template-columns:repeat(5,1fr)}
 }
 
@@ -809,8 +848,8 @@ small,.small{color:var(--vg-muted)}
 .lrc-possession{display:inline-block;border:1px solid #4b7082;border-radius:8px;padding:5px;margin:2px;font-size:6.5px}.lrc-fav{border-color:#d4b46c}
 @media(max-width:650px){.lrc-stats{grid-template-columns:repeat(3,1fr)}.lrc-actions{grid-template-columns:repeat(2,1fr)}}
 </style><style id="legacy-pet-actions-polish">
-.pet>.pet-actions{opacity:.58;border-top:1px solid #173744;margin-top:5px;padding-top:5px}
-.pet>.pet-actions:before{content:"QUICK CARE";display:block;width:100%;font-size:5.5px;color:#71909d;letter-spacing:.12em}
+.pet>.pet-actions{opacity:1;border-top:1px solid #173744;margin-top:5px;padding-top:5px}
+.pet>.pet-actions:before{content:"QUICK CARE";display:block;width:100%;font-size:5.5px;color:#71909d;letter-spacing:.12em;margin-bottom:4px}
 </style><style id="resident-life-dashboard-css">
 .rld{border:1px solid #31596b;border-radius:12px;padding:9px;margin:8px 0;background:#061820}
 .rld-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:7px}.rld-card{border:1px solid #294e60;border-radius:9px;padding:8px;background:#081d27;margin-bottom:6px}
@@ -11401,17 +11440,53 @@ function openFirstMorphStory(){
 }
 function petCard(p,i){
   updateResident(p);
-  return `<div class="pet" id="resident-${i}"><div class="face">${p.icon}</div><h3>${p.name} · ${p.formName}</h3>
-    <div class="small muted">${p.species} · ${p.habitat}<br>${p.temperament}</div>
-    <div class="metric-grid" style="margin-top:8px">${animatedGauge("HEALTH",p.health)}${animatedGauge("HYDRATION",p.hydration)}${animatedGauge("COMFORT",p.comfort)}${animatedGauge("BOND",p.bond)}</div>
-    ${livingResidentConsole(p,i)}
-    <div class="pet-actions">
-      <button onclick="petCare(${i},'food')">OFFER FOOD</button><button onclick="petCare(${i},'water')">OFFER WATER</button>
-      <button onclick="petCare(${i},'comfort')">COMFORT</button><button onclick="petCare(${i},'train')">TRAIN</button>
+  const tags = (p.tags||[]).slice(0,6).map(t=>`<span>${String(t).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]))}</span>`).join("") || `<span>adaptive</span>`;
+  const theme = p.theme || (p.morphRecord&&p.morphRecord.theme) || "—";
+  const catalyst = (p.morphRecord&&p.morphRecord.catalyst) || "—";
+  const abilities = ((p.morphRecord&&p.morphRecord.abilities)||[]).slice(0,4);
+  const mastery = p.mastery!=null ? p.mastery : 0;
+  const bond = p.bond!=null ? p.bond : 0;
+  const esc = (x)=>String(x??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
+  return `<div class="pet" id="resident-${i}">
+    <div class="face">${esc(p.icon||"🐾")}</div>
+    <h3>${esc(p.name)} · ${esc(p.formName||"Morph")}</h3>
+    <div class="pet-meta">${esc(p.species||"")} · ${esc(p.habitat||"")}<br>${esc(p.temperament||"")}</div>
+    <div class="pet-tags">${tags}</div>
+    <div class="metric-grid">${typeof animatedGauge==="function"?animatedGauge("HEALTH",p.health)+animatedGauge("HYDRATION",p.hydration)+animatedGauge("COMFORT",p.comfort)+animatedGauge("BOND",p.bond):""}</div>
+    <div class="pet-detail-block">
+      <b>RESIDENT DETAILS</b>
+      <div class="pet-detail-row">
+        <div><span>THEME</span><strong>${esc(theme)}</strong></div>
+        <div><span>CATALYST</span><strong>${esc(catalyst)}</strong></div>
+        <div><span>MASTERY</span><strong>${esc(mastery)}</strong></div>
+        <div><span>BOND</span><strong>${esc(bond)}</strong></div>
+      </div>
+      ${abilities.length?`<div style="margin-top:7px"><span style="font-size:6.5px;color:#7f9eab;letter-spacing:.06em">ABILITIES</span><div class="pet-tags" style="justify-content:flex-start;margin-top:4px">${abilities.map(a=>`<span>✦ ${esc(a)}</span>`).join("")}</div></div>`:""}
     </div>
-    ${reanimationChronicleHTML(p)}${VG_registerResident("sanctuary-"+i,p)}<button class="pet-story-btn" onclick='return VG_openTwineObject("sanctuary-"+${i})'>🧭 TWINE EXPEDITION · INVESTIGATE MYSTERY</button><button class="pet-story-btn" onclick="openMorphStory(${i})">🗺️ CONTINUE ${p.name.toUpperCase()}'S STORY · SEARCH FOR ITEMS</button><button class="rspec-btn" onclick="openResidentSettings(${i})">🧬 VIEW ALL MORPH SETTINGS · READ ONLY</button><button class="m3d-launch" onclick='return VG_open3DObject("sanctuary-"+${i})'  >🔬 3D MORPH VIEWER · INSPECT CREATURE</button>
+    <div class="pet-actions">
+      <button onclick="petCare(${i},'food')">OFFER FOOD</button>
+      <button onclick="petCare(${i},'water')">OFFER WATER</button>
+      <button onclick="petCare(${i},'comfort')">COMFORT</button>
+      <button onclick="petCare(${i},'train')">TRAIN</button>
+    </div>
+    ${typeof VG_registerResident==="function"?VG_registerResident("sanctuary-"+i,p):""}
+    <button class="pet-story-btn" onclick="openMorphStory(${i})">🗺️ ${esc(p.name).toUpperCase()}'S STORY · SEARCH FOR ITEMS</button>
+    <button class="pet-story-btn" onclick='return VG_openTwineObject("sanctuary-"+${i})'>🧭 TWINE EXPEDITION</button>
+    <button class="pet-detail-btn" onclick='return VG_open3DObject("sanctuary-"+${i})'>🔬 3D MORPH VIEWER</button>
+    <button class="pet-detail-btn" onclick="openResidentSettings(${i})">🧬 FULL MORPH SETTINGS</button>
+    <button class="pet-detail-btn" onclick="vgOpenMorphRecord(${i},'build')">📚 COMPLETE MORPH RECORD</button>
+    <button class="pet-detail-btn" onclick="togglePetLRC(${i})">🎛 LIVING CONSOLE (EXPAND)</button>
+    <div class="pet-lrc-wrap" id="pet-lrc-${i}">${typeof livingResidentConsole==="function"?livingResidentConsole(p,i):""}</div>
   </div>`;
 }
+
+window.togglePetLRC=function(i){
+  const el=document.getElementById("pet-lrc-"+i);
+  if(!el)return;
+  el.classList.toggle("open");
+  const btn=el.previousElementSibling;
+  if(btn&&btn.classList.contains("pet-detail-btn"))btn.textContent=el.classList.contains("open")?"🎛 HIDE LIVING CONSOLE":"🎛 LIVING CONSOLE (EXPAND)";
+};
 
 
 function morphStoryData(p){
