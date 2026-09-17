@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>VET GODS · Veterinary Morph Institute</title>
+<title>VET GODS · Canonical Animal Portrait Edition</title>
 <style>
 :root{
   --bg:#050b13;--bg2:#07131f;--panel:#0b1926;--panel2:#0e2231;
@@ -1733,6 +1733,16 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 }
 </style>
 
+<style id="vg-canonical-portrait-css">
+.vg-canonical-animal{display:block;width:100%;height:100%;object-fit:cover;object-position:center;border-radius:inherit}
+.vg-inline-portrait{display:inline-block;width:42px;height:42px;object-fit:cover;border-radius:50%;vertical-align:middle;border:1px solid #66dff0;box-shadow:0 0 12px #55dfff35;margin-right:7px}
+.vg-card-portrait{width:100%;height:150px;object-fit:cover;border-radius:12px;border:1px solid #3c6c80;box-shadow:inset 0 0 18px #55dfff18}
+.vg-stage-portrait{width:100%;height:100%;object-fit:contain;object-position:center;filter:drop-shadow(0 0 16px #5de6ff55)}
+.vg-round-portrait{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.feed-animal .vg-stage-portrait,.lw-creature .vg-stage-portrait,.rld-animal .vg-stage-portrait{max-width:140px;max-height:140px}
+.lw-creature,.rld-animal{overflow:visible}.vg-hud-face{overflow:hidden;border-radius:50%}
+.vg-animal-row-face{overflow:hidden}.vg-portrait-fallback{font-size:inherit}
+</style>
 </head>
 <body>
 <div id="app">
@@ -2499,7 +2509,7 @@ function patientSide(){
   const c=active();
   return `<div class="panel">
     <h3>ACTIVE CREATURE</h3>
-    <div style="font-size:42px">${c.icon}</div>
+    <div style="width:84px;height:84px">${VG_creaturePortraitHTML("vg-round-portrait",c.name)}</div>
     <h3 style="font-size:15px;margin-top:5px">${c.name} · ${c.species}</h3>
     <div class="small muted">${c.sex} · ${c.temperament}<br>${c.origin}</div>
     <div class="metric-grid" style="margin-top:10px">
@@ -2525,7 +2535,7 @@ function hero(title,desc,icon=null){
       <div class="status-pill">Morph: <strong>${c.selectedMorph?morph().name:"UNSELECTED"}</strong></div>
       <div class="status-pill">Room status: <strong>${c.areaComplete?"COMPLETE":"WORKING"}</strong></div>
     </div>${stagebar()}
-  </div><div class="creature-emblem"><div class="ring"></div><div class="animal">${icon||c.icon}</div></div></div></section>`;
+  </div><div class="creature-emblem"><div class="ring"></div><div class="animal">${icon?icon:VG_creaturePortraitHTML("vg-round-portrait",c.name)}</div></div></div></section>`;
 }
 function morph(){return active().morphs.find(m=>m.id===active().selectedMorph)||null}
 function gate(title,checks){
@@ -3295,7 +3305,7 @@ function rldScene(p){
  const r=RLT(p),c=rltConfig(p),night=p.activeMorphConfig?.preset==="Night Search",icons={
  "Sanctuary Habitat":["🌿","🪵","🌱"],"Feeding Station":["🥣","🌿","▣"],"Water Station":["💧","≈","🪨"],"Rest Nest":["🛏️","🌙","✦"],"Observation Deck":["🔭","✦","◉"],"Morphology Lab":["⚗️","◉","⌬"],"Fossil Garden":["🦴","🪨","⛏️"],"Training Yard":["◫","⚑","◎"],"Medical Check":["✚","▥","🌡️"],"Research Wing":["🔬","📡","⌬"]
  };const a=icons[r.location]||["🌿","🪨","✦"];
- return `<div class="rld-viewport ${night?"night":""}"><i class="rld-stars"></i><span class="rld-label">${r.location} · ${r.activity}</span><div class="rld-scene"><span>${a[0]}</span><span class="rld-animal">${p.icon||"🐾"}</span><span>${a[1]}</span><span>${a[2]}</span></div></div>`;
+ return `<div class="rld-viewport ${night?"night":""}"><i class="rld-stars"></i><span class="rld-label">${r.location} · ${r.activity}</span><div class="rld-scene"><span>${a[0]}</span><span class="rld-animal">${VG_portraitHTML(p,"vg-stage-portrait",p.name)}</span><span>${a[1]}</span><span>${a[2]}</span></div></div>`;
 }
 function residentLifeDashboard(p,i){
  const d=rldSync(p),l=LRC(p),r=RLT(p),hist=r.history.slice(-12),focus=d.focus||"Balanced";
@@ -3381,7 +3391,7 @@ function livingWorld(p,i){
  const stations=LW_STATIONS.map(x=>`<div class="lw-station ${w.station===x[0]?"hot":""}" style="left:${x[1]}%;top:${x[2]}%" onclick='LW_station(${i},${JSON.stringify(x[0])})'>${x[3]}<small>${x[0]}</small>${w.questionStation===x[0]?'<b class="lw-question">?</b>':""}</div>`).join("");
  return `<div class="lw ${w.mode==="ROAD"?"lw-road":""} ${w.cam?"lw-cam":""}"><div class="mcc-head"><div><small>RESIDENT LIVING WORLD · DAY ${w.day}</small><h3>🐾 ${p.name}'S HABITAT</h3></div><b>${w.mode} MODE</b></div>
  <div class="lw-mode">${["ACTIVE","WATCH","ROAD"].map(x=>`<button class="${w.mode===x?"on":""}" onclick="LW_mode(${i},'${x}')">${x}</button>`).join("")}<button onclick="LW_cam(${i},${!w.cam})">${w.cam?"EXIT KODA CAM":"📹 KODA CAM"}</button></div>
- <div class="lw-stage ${sky}"><div class="lw-sky"></div><span class="lw-worldlabel">${phase.toUpperCase()} · ${w.weather.toUpperCase()} · ${w.station}</span>${stations}<div class="lw-creature" style="left:${sp[1]+2}%;top:${Math.max(18,sp[2]-14)}%">${p.icon||"🐾"}<b>${p.name}</b></div></div>
+ <div class="lw-stage ${sky}"><div class="lw-sky"></div><span class="lw-worldlabel">${phase.toUpperCase()} · ${w.weather.toUpperCase()} · ${w.station}</span>${stations}<div class="lw-creature" style="left:${sp[1]+2}%;top:${Math.max(18,sp[2]-14)}%">${VG_portraitHTML(p,"vg-stage-portrait",p.name)}<b>${p.name}</b></div></div>
  <div class="lw-ticker"><span>📡 ${ticker}</span></div>
  <div class="lw-card"><b>✦ APEX INSTITUTE WORLD ONLINE</b><small>Open the APEX tab for the permanent resident record, modular expeditions, advanced work sessions, discovery archive and credential wall.</small></div>${lushInstituteLayer(p,i)}${megaConsolePanel(p,i)}<div class="lw-card"><b>🏛️ INSTITUTE QUALIFICATION LINK</b><div class="mc-ledrow">${inetUnlockSummary(p)}</div><small>Certificates earned in the Institute Network unlock and support systems across the resident's life, field, food, fabrication, morphology and archaeology gameplay.</small></div><div class="lw-grid"><main>
   <div class="lw-card"><b>INSTRUMENT CLUSTER</b><div class="lw-gauges">${lwGauges(p)}</div></div>
@@ -3619,7 +3629,7 @@ window.FS_resetHunger=function(i){const p=state.sanctuary?.[i];if(!p)return fals
 function feedingSimulator(p,i){
  const s=FS(p),rec=fsRecommend(p),rfood=FI_FOODS[rec];
  return `<div class="feed-sim"><div class="mcc-head"><div><small>DYNAMIC RESIDENT FEEDING SIMULATION</small><h3>🥣 FEED ${p.name}</h3></div><b>RECOMMENDED: ${rfood.icon} ${rfood.name}</b></div>
- <div class="feed-stage"><div class="feed-reaction">${s.reaction}</div><div class="feed-animal">${p.icon||"🐾"}</div><div class="feed-bowl">🥣</div></div>
+ <div class="feed-stage"><div class="feed-reaction">${s.reaction}</div><div class="feed-animal">${VG_portraitHTML(p,"vg-stage-portrait",p.name)}</div><div class="feed-bowl">🥣</div></div>
  <div class="feed-stats">${[["HUNGER",s.hunger],["MOOD",s.mood],["TRUST",s.trust],["FOODS TRIED",Object.values(s.prefs).filter(x=>x.tries).length]].map(x=>`<div class="feed-stat"><small>${x[0]}</small><b>${x[1]}</b></div>`).join("")}</div>
  <div class="fi-card"><b>CHOOSE WHAT TO OFFER</b><p class="small">The gold-highlighted choice is the game's current recommendation. You may offer something else; this resident remembers its individual fictional preferences and can like, nibble, dislike, or refuse it.</p><div class="feed-choicegrid">${FI_FOODS.map((x,n)=>{const pr=s.prefs[n],st=fsState(pr);return `<div class="feed-choice ${n===rec?"recommended":""}"><b>${x.icon} ${x.name}</b>${n===rec?" ★ RECOMMENDED":""}<br><small>${x.type} · learned preference: ${st}${pr.tries?" · tried "+pr.tries+"×":""}</small><button onclick="FS_feed(${i},${n})">🥣 OFFER THIS FOOD</button></div>`}).join("")}</div></div>
  <div class="fi-grid"><main><div class="fi-card"><b>LEARNED FOOD PERSONALITY</b><div class="feed-prefgrid">${FI_FOODS.map((x,n)=>{const st=fsState(s.prefs[n]);return `<div class="feed-pref ${st.toLowerCase()}">${x.icon} <b>${x.name}</b><br>${st} · score ${s.prefs[n].score}</div>`}).join("")}</div></div></main>
@@ -11616,7 +11626,7 @@ function animalListRow(p,i){
   updateResident(p);
   const form=p.formName||p.species||"Resident";
   const loc=(p.lifeTelemetry&&p.lifeTelemetry.location)||p.habitat||"Sanctuary";
-  return `<button class="vg-animal-row" onclick="return FP_open(${i})" aria-label="Open ${p.name}'s full animal page"><span class="vg-animal-row-face">${p.icon||"🐾"}</span><span class="vg-animal-row-main"><b>${p.name}</b><small>${p.species||"Animal"} · ${form}</small></span><span class="vg-animal-row-loc">${loc}</span><span class="vg-animal-row-open">OPEN ANIMAL ›</span></button>`;
+  return `<button class="vg-animal-row" onclick="return FP_open(${i})" aria-label="Open ${p.name}'s full animal page"><span class="vg-animal-row-face">${VG_portraitHTML(p,"vg-round-portrait",p.name)}</span><span class="vg-animal-row-main"><b>${p.name}</b><small>${p.species||"Animal"} · ${form}</small></span><span class="vg-animal-row-loc">${loc}</span><span class="vg-animal-row-open">OPEN ANIMAL ›</span></button>`;
 }
 
 function openFirstMorphStory(){
@@ -11625,7 +11635,7 @@ function openFirstMorphStory(){
 }
 function petCard(p,i){
   updateResident(p);
-  return `<div class="pet" id="resident-${i}"><div class="face">${p.icon}</div><h3>${p.name} · ${p.formName}</h3>
+  return `<div class="pet" id="resident-${i}"><div class="face">${VG_portraitHTML(p,"vg-round-portrait",p.name)}</div><h3>${p.name} · ${p.formName}</h3>
     <div class="small muted">${p.species} · ${p.habitat}<br>${p.temperament}</div>
     <div class="metric-grid" style="margin-top:8px">${animatedGauge("HEALTH",p.health)}${animatedGauge("HYDRATION",p.hydration)}${animatedGauge("COMFORT",p.comfort)}${animatedGauge("BOND",p.bond)}</div>
     ${livingResidentConsole(p,i)}
@@ -12516,7 +12526,7 @@ function morphStoryScreen(){
     return hero(p.name+"'s Adventure Complete",
       "The expedition is complete. Everything collected during the story is now part of this resident's Sanctuary inventory.","🏕️")
       +`<div class="story-card">
-        <h2>${p.icon} ${p.name} returned home</h2>
+        <h2>${VG_portraitHTML(p,"vg-inline-portrait",p.name)} ${p.name} returned home</h2>
         <div class="story-beat"><b>ITEMS BROUGHT BACK</b><br>${a.inventory.length?a.inventory.join(" · "):"No items collected"}</div>
         <div class="story-beat"><b>FIELD FLAGS</b><br>${Object.keys(a.flags).filter(k=>a.flags[k]).join(" · ")||"No special discoveries"}</div>
         <div class="footer-actions">
@@ -12549,7 +12559,7 @@ function morphStoryScreen(){
     </div>
     <aside>
       <div class="panel">
-        <h3>${p.icon} ${p.name} · ${p.formName}</h3>
+        <h3>${VG_portraitHTML(p,"vg-inline-portrait",p.name)} ${p.name} · ${p.formName}</h3>
         ${metric("ADVENTURE ENERGY",a.energy)}
         ${metric("BOND",p.bond)}
         ${metric("MASTERY",p.mastery)}
@@ -13382,7 +13392,7 @@ function draw(i,tab){
  if(tab==="quests")body=`<div class="vgr-card"><h3>Quest & Field History</h3>${(g.r.quests||[]).map(x=>`<div class="vgr-item">${esc(x)}</div>`).join("")||`<div class="vgr-small">No completed quest milestones logged yet. Continue this morph's field story to build its record.</div>`}<button class="vg-record-btn" onclick="vgRecordQuest(${i})">🗺️ PLAY ${esc(p.formName||p.name)} IN QUEST AREA</button></div>`;
  if(tab==="items")body=`<div class="vgr-card"><h3>Recovered Item Archive · ${g.items.length}</h3><div class="vgr-small">These are discoveries tied to this resident. They remain visible here even when used as research references in the Institute.</div>${g.items.map(x=>`<div class="vgr-item">🎒 ${esc(typeof x==="string"?x:(x.name||"Recovered item"))}</div>`).join("")||`<div class="vgr-small">No recovered items yet.</div>`}</div>`;
  if(tab==="life")body=`<div class="vgr-grid"><div class="vgr-card"><h3>Resident Milestones</h3><div class="vgr-item">🏥 Veterinary case completed</div><div class="vgr-item">🧬 ${esc(p.formName)} morph established</div><div class="vgr-item">🏡 Sanctuary residence established</div>${(g.r.milestones||[]).map(x=>`<div class="vgr-item">✓ ${esc(x)}</div>`).join("")}</div><div class="vgr-card"><h3>Field Notes</h3>${logs.map(x=>`<div class="vgr-item">${esc(x)}</div>`).join("")||`<div class="vgr-small">Field notes will accumulate as this animal explores.</div>`}</div></div>`;
- root().innerHTML=`<div class="vgr-shell"><div class="vgr-top"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><div><div class="vgr-small">PERMANENT RESIDENT RECORD</div><div style="font-size:27px;font-weight:1000">${esc(p.icon)} ${esc(p.name)} · ${esc(p.formName)}</div></div><button class="vgr-tab" onclick="vgCloseMorphRecord()">RETURN</button></div><div class="vgr-tabs">${tabs.map(x=>`<button class="vgr-tab ${tab===x[0]?"on":""}" onclick="vgOpenMorphRecord(${i},'${x[0]}')">${x[1]}</button>`).join("")}</div></div>${body}</div>`;
+ root().innerHTML=`<div class="vgr-shell"><div class="vgr-top"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><div><div class="vgr-small">PERMANENT RESIDENT RECORD</div><div style="font-size:27px;font-weight:1000">${VG_portraitHTML(p,"vg-inline-portrait",p.name)} ${esc(p.name)} · ${esc(p.formName)}</div></div><button class="vgr-tab" onclick="vgCloseMorphRecord()">RETURN</button></div><div class="vgr-tabs">${tabs.map(x=>`<button class="vgr-tab ${tab===x[0]?"on":""}" onclick="vgOpenMorphRecord(${i},'${x[0]}')">${x[1]}</button>`).join("")}</div></div>${body}</div>`;
 }
 function sync(){
  (state.sanctuary||[]).forEach((p,i)=>{
@@ -13502,7 +13512,7 @@ function draw(){
 window.lmgResidentPreview=function(p){
  const choices=p.morphRecord?.livingChoices||p.morphRecord?.designSnapshot?.livingChoices||{};
  const gs=Object.values(choices).map((q,i)=>`<span class="lmg-glyph" style="--rad:${45+(i%3)*12}px;--spd:${5+i*.6}s;transform:rotate(${i*51}deg)"><i>${esc(q.glyph||"✦")}</i></span>`).join("");
- return `<div class="lmg-stage" style="position:relative;top:auto;height:240px"><div class="lmg-floor"></div><div class="lmg-creature" style="width:130px;height:130px"><div class="lmg-body">${esc(p.icon||"🐾")}</div>${gs}</div><div class="lmg-name">${esc(p.name)} · ${esc(p.formName)}</div></div>`;
+ return `<div class="lmg-stage" style="position:relative;top:auto;height:240px"><div class="lmg-floor"></div><div class="lmg-creature" style="width:130px;height:130px"><div class="lmg-body">${VG_portraitHTML(p,"vg-stage-portrait",p.name)}</div>${gs}</div><div class="lmg-name">${esc(p.name)} · ${esc(p.formName)}</div></div>`;
 }
 })();
 </script>
@@ -13532,7 +13542,7 @@ window.m3dExportProfile=function(){const p=P(),b=build(p);const text=["VET GODS 
 function buttons(){document.querySelectorAll("[data-m3d-auto]").forEach(b=>b.classList.toggle("on",auto))}
 function draw(){
  const p=P(),b=build(p),fs=features(p);if(!p)return;
- let animal=p.icon||"🐾";let overlay=mode==="skeleton"?"☠":mode==="abilities"?"✦":mode==="movement"?"↝":animal;
+ let animal=VG_portraitHTML(p,"vg-stage-portrait",p.name);let overlay=mode==="skeleton"?"☠":mode==="abilities"?"✦":mode==="movement"?"↝":animal;
  root().innerHTML=`<div class="m3d-shell"><div class="m3d-head"><div class="m3d-controls" style="justify-content:space-between"><div><div style="font-size:8px;color:#92b5c2">CONCEPTUAL PSEUDO-3D VISUALIZATION · NOT A MEDICALLY ACCURATE ANATOMICAL RECONSTRUCTION</div><div style="font-size:29px;font-weight:1000">🔬 ${esc(p.name)} · ${esc(p.formName)}</div></div><button class="m3d-btn" onclick="closeMorph3d()">RETURN</button></div></div>
  <div class="m3d-layout"><main><div class="m3d-stage" id="m3dStage"><div class="m3d-label">DRAG TO ROTATE · INERTIA ENABLED<br>R RESET · SPACE AUTO · 1–4 VIEWS · +/- ZOOM · ESC CLOSE<br>ORIENTATION Y ${Math.round(ry)}° / X ${Math.round(rx)}°<br>MODE · ${esc(mode.toUpperCase())}</div><div class="m3d-grid"></div><div class="m3d-platform"></div><div class="m3d-rig"><div class="m3d-animal">${overlay}</div>${parts(p)}${glyphs(p)}</div><div class="m3d-name">${esc(p.name)} · ${esc(p.formName)}</div></div>
  <div class="m3d-card"><div class="m3d-controls"><button class="m3d-btn" onclick="m3dReset()">RESET CAMERA</button><button class="m3d-btn" onclick="m3dView('front')">FRONT</button><button class="m3d-btn" onclick="m3dView('side')">SIDE</button><button class="m3d-btn" onclick="m3dView('rear')">REAR</button><button class="m3d-btn" onclick="m3dView('top')">TOP</button><button class="m3d-btn" onclick="m3dZoom(.1)">＋</button><button class="m3d-btn" onclick="m3dZoom(-.1)">－</button><button class="m3d-btn ${auto?"on":""}" data-m3d-auto onclick="m3dAuto()">↻ AUTO ROTATE</button><button class="m3d-btn" onclick="m3dExportProfile()">EXPORT PROFILE</button></div></div>
@@ -13718,7 +13728,7 @@ window.VG_openTwineByName=function(name){
    const arts=c.artifacts.map(a=>`<div class="artifact-card"><b>◆ ${a}</b><br><button onclick="VG_useArtifact('${a}','science')">Research</button> <button onclick="VG_useArtifact('${a}','resonance')">Cradle</button> <button onclick="VG_useArtifact('${a}','exploration')">Field</button></div>`).join("")||"<small>No artifacts yet.</small>";
    e.innerHTML=`<div class="tw-rpg"><div class="vg-head"><div><small>${ch[0]} · ${p.name}</small><br><b>🧭 RESONANCE EXPEDITION DECK</b></div><button class="vg-btn" onclick="VG_closeTool('VG_WORKING_TWINE')">✕ CLOSE</button></div>
    <div class="campaign-hud"><div><span>CAMPAIGN</span><b>${pct}%</b><div class="tw-bar"><i style="width:${pct}%"></i></div></div><div><span>FIELD XP</span><b>${c.fieldXP}</b></div><div><span>BOND</span><b>${c.bond}</b></div><div><span>CLUES</span><b>${c.clues.length}</b></div></div>
-   <div class="tw-rpg-grid"><aside class="tw-left"><div class="tw-card"><b>🦖 ${p.name}</b><div style="font-size:54px">${p.icon||"🦖"}</div><small>${p.formName||p.species||""}</small><br>${abilities.map(a=>`<span class="tw-chip on">${a}</span>`).join("")||'<span class="tw-chip">General Training</span>'}<hr><small>Curiosity ${c.curiosity} · Courage ${c.courage}<br>Science ${c.science} · Instinct ${c.instinct}<br>Exploration ${c.exploration} · Resonance ${c.resonance}</small></div><div class="tw-card"><b>EXPEDITION MAP</b>${map}</div>${VG_amazonSupplyPanel(p,null)}</aside>
+   <div class="tw-rpg-grid"><aside class="tw-left"><div class="tw-card"><b>🦖 ${p.name}</b><div style="width:110px;height:110px;margin:8px auto">${VG_portraitHTML(p,"vg-round-portrait",p.name)}</div><small>${p.formName||p.species||""}</small><br>${abilities.map(a=>`<span class="tw-chip on">${a}</span>`).join("")||'<span class="tw-chip">General Training</span>'}<hr><small>Curiosity ${c.curiosity} · Courage ${c.courage}<br>Science ${c.science} · Instinct ${c.instinct}<br>Exploration ${c.exploration} · Resonance ${c.resonance}</small></div><div class="tw-card"><b>EXPEDITION MAP</b>${map}</div>${VG_amazonSupplyPanel(p,null)}</aside>
    <main>${center}</main>
    <aside class="tw-right"><div class="tw-card"><b>INVESTIGATION BOARD</b>${clues}</div><div class="tw-card"><b>FIELD INVENTORY</b>${arts}</div><div class="tw-card"><b>SCIENTIST COMMS</b>${Object.keys(VG_SCI).map(k=>`<div class="scientist-card"><b>${VG_SCI[k][0]}</b><br><small>Trust ${c.scientist[k]||0}</small></div>`).join("")}</div><div class="tw-card"><b>RECENT DECISIONS</b><div style="font-size:7px;max-height:130px;overflow:auto">${c.decisions.slice(-10).reverse().map(x=>"• "+x+"<br>").join("")||"No decisions yet."}</div></div></aside></div></div>`;
    e.querySelectorAll(".vg-btn,.artifact-card button").forEach(b=>{b.style.cssText+=";margin:3px;padding:6px;border:1px solid #5fbfd0;border-radius:7px;background:#0b2936;color:white;font-weight:bold;font-size:7px"});
@@ -13841,7 +13851,7 @@ window.VG_openTwineByName=function(name){
    return `<div class="field30"><div class="vg-head"><div><small>LIVING EXPEDITION BOARD · ${p.name}</small><br><b>CURRENT LOCATION · ${b.location}</b></div><button class="vg-btn" onclick="F30_return()">← STORY DECK</button></div>
    <div class="campaign-hud"><div><span>FIELD ENERGY</span><b>${b.energy}/12</b></div><div><span>ACTIONS</span><b>${b.actions}</b></div><div><span>CLUES</span><b>${c.clues.length}</b></div><div><span>DECK</span><b>${b.deck}</b></div></div>
    <div class="field30grid"><aside>
-    <div class="f30panel"><b>🦖 ${p.name}</b><div style="font-size:58px">${p.icon||"🦖"}</div><small>Bond ${c.bond} · Courage ${c.courage} · Curiosity ${c.curiosity}</small><br>${abilities.map(a=>`<span class="tw-chip on">${a}</span>`).join("")||'<span class="tw-chip">General Field Training</span>'}<div class="f30actions"><button onclick="F30_companion('follow')">🐾 FOLLOW COMPANION</button><button onclick="F30_companion('observe')">👁 OBSERVE QUIETLY</button><button onclick="F30_companion('scan')">🔬 SCAN WHAT IT FOUND</button></div></div>
+    <div class="f30panel"><b>🦖 ${p.name}</b><div style="width:120px;height:120px;margin:8px auto">${VG_portraitHTML(p,"vg-round-portrait",p.name)}</div><small>Bond ${c.bond} · Courage ${c.courage} · Curiosity ${c.curiosity}</small><br>${abilities.map(a=>`<span class="tw-chip on">${a}</span>`).join("")||'<span class="tw-chip">General Field Training</span>'}<div class="f30actions"><button onclick="F30_companion('follow')">🐾 FOLLOW COMPANION</button><button onclick="F30_companion('observe')">👁 OBSERVE QUIETLY</button><button onclick="F30_companion('scan')">🔬 SCAN WHAT IT FOUND</button></div></div>
     <div class="f30panel"><b>EXPEDITION LOCATIONS</b>${F30_LOCATIONS.filter(x=>b.visited.includes(x)).map(x=>`<div class="tw-map-node ${x===b.location?"current":""}" onclick='F30_visit(${JSON.stringify(x)})'>◆ ${x}</div>`).join("")}</div>
     <div class="f30panel"><b>FIELD JOURNAL</b><div class="f30journal">${b.journal.slice().reverse().map(x=>`<div>${x}</div>`).join("")||"<div>No field entries yet.</div>"}</div></div>
    </aside><main>
@@ -13973,7 +13983,7 @@ window.VG_openTwineByName=function(name){
    const e=make("VG_WORKING_3D"),p=e.__resident||getResident(Number(e.dataset.i));if(!p)return;
    const rec=p.morphRecord||{},data=rec.channels||rec.customizations||rec.designSnapshot?.channels||{};
    e.innerHTML=`<div style="max-width:950px;margin:auto"><div style="position:sticky;top:0;background:#02070c;padding:8px;border-bottom:1px solid #31596b"><small>CONCEPTUAL PSEUDO-3D · NOT MEDICAL ANATOMY</small><br><b>🔬 ${p.name} · ${p.formName||p.species||"Resident"}</b><button style="float:right" onclick="VG_closeTool('VG_WORKING_3D')">✕ CLOSE</button></div>
-   <div id="VG_STAGE" style="height:430px;position:relative;overflow:hidden;border:1px solid #557b8d;border-radius:16px;margin-top:10px;background:radial-gradient(circle,#173b4b,#02070c 70%);perspective:800px;touch-action:none"><div style="position:absolute;left:8px;top:8px;font-size:8px">DRAG OR USE BUTTONS TO ROTATE</div><div id="VG_RIG" style="position:absolute;left:50%;top:50%;width:210px;height:210px;transform:translate(-50%,-50%);transition:transform .15s"><div style="position:absolute;inset:0;border:2px solid #63d9ee;border-radius:50%;transform:rotateX(70deg)"></div><div style="font-size:115px;text-align:center;padding-top:35px">${p.icon||"🦖"}</div></div></div>
+   <div id="VG_STAGE" style="height:430px;position:relative;overflow:hidden;border:1px solid #557b8d;border-radius:16px;margin-top:10px;background:radial-gradient(circle,#173b4b,#02070c 70%);perspective:800px;touch-action:none"><div style="position:absolute;left:8px;top:8px;font-size:8px">DRAG OR USE BUTTONS TO ROTATE</div><div id="VG_RIG" style="position:absolute;left:50%;top:50%;width:210px;height:210px;transform:translate(-50%,-50%);transition:transform .15s"><div style="position:absolute;inset:0;border:2px solid #63d9ee;border-radius:50%;transform:rotateX(70deg)"></div><div style="width:170px;height:170px;margin:20px auto 0">${VG_portraitHTML(p,"vg-round-portrait",p.name)}</div></div></div>
    <div style="margin-top:8px"><button onclick="VG_rotate3D(-30)">← ROTATE</button><button onclick="VG_rotate3D(30)">ROTATE →</button><button onclick="VG_zoom3D(.1)">＋ ZOOM</button><button onclick="VG_zoom3D(-.1)">－ ZOOM</button><button onclick="document.getElementById('VG_WORKING_3D').dataset.ry='0';document.getElementById('VG_WORKING_3D').dataset.zoom='1';VG_apply3D()">RESET</button></div>
    ${MCC_render(p,data)}${IHR_render(p)}${VG_amazonSupplyPanel(p,null)}</div>`;
    e.querySelectorAll("button").forEach(b=>{b.style.cssText="margin:5px;padding:9px;border:1px solid #63d9ee;border-radius:8px;background:#0b2936;color:white;font-weight:bold"});
@@ -14070,7 +14080,7 @@ body.vg-os{padding-bottom:var(--osdock)}
  function update(){
   let p=currentCase()||resident()||{};let v=p.vet||{};let oxy=v.oxygen??p.oxygen??92, pain=p.pain??0,hyd=p.hydration??0,stress=p.stress??0,trust=p.trust??0,health=p.health??0,nut=p.nutrition??p.energy??0;
   let alerts=[];if(oxy<94)alerts.push('LOW O₂');if(pain>30)alerts.push('PAIN HIGH');if(hyd<70)alerts.push('HYDRATION LOW');if(stress>55)alerts.push('STRESS HIGH');
-  hud.innerHTML=`<div class="vg-hud-head"><div class="vg-hud-face">${p.icon||'🐾'}</div><div><b>${p.name||'NO ACTIVE PATIENT'}</b><small>${p.species||p.formName||'Institute standby'} · LIVE PATIENT HUD</small></div></div>${meter('HEALTH',health)}${meter('OXYGEN',oxy)}${meter('HYDRATION',hyd)}${meter('PAIN',pain,true)}${meter('STRESS',stress,true)}${meter('TRUST',trust)}${meter('NUTRITION',nut)}<div class="vg-hud-alert">${alerts.length?'⚠ '+alerts.join(' · '):'● VITALS WITHIN CURRENT GAME TARGETS'}</div>`;
+  hud.innerHTML=`<div class="vg-hud-head"><div class="vg-hud-face">${VG_portraitHTML(p,"vg-round-portrait",p.name)}</div><div><b>${p.name||'NO ACTIVE PATIENT'}</b><small>${p.species||p.formName||'Institute standby'} · LIVE PATIENT HUD</small></div></div>${meter('HEALTH',health)}${meter('OXYGEN',oxy)}${meter('HYDRATION',hyd)}${meter('PAIN',pain,true)}${meter('STRESS',stress,true)}${meter('TRUST',trust)}${meter('NUTRITION',nut)}<div class="vg-hud-alert">${alerts.length?'⚠ '+alerts.join(' · '):'● VITALS WITHIN CURRENT GAME TARGETS'}</div>`;
   $('vgDrawerBody').innerHTML=`<div class="vg-d-title">CLINICAL CARE</div><div class="vg-d-grid"><button onclick="VG_OS_STAGE()">🩺 ACTIVE PATIENT / CLINIC</button><button onclick="openCaseReview();document.getElementById('vgDrawer').classList.remove('open');document.getElementById('vgShade').classList.remove('open')">📋 PATIENT CASE REVIEW</button><button onclick="openFossilRecovery()">🦴 FOSSIL RECOVERY</button><button onclick="VG_OS_GO('sanctuary')">🐾 MY ANIMALS</button></div><div class="vg-d-title">INSTITUTE SYSTEMS</div><div class="vg-d-grid"><button onclick="VG_OS_GO('institute')">🏛 VETERINARY MORPH INSTITUTE</button><button onclick="openMorphStudio()">🧬 ANIMAL MORPH LAB</button><button onclick="VG_OS_GO('projects')">🛠 INSTITUTE PROJECT LAB</button><button onclick="VG_OS_GO('career')">🎓 VETERINARY CAREER CENTER</button></div><div class="vg-d-title">FIELD & ARCHIVES</div><div class="vg-d-grid"><button onclick="VG_OS_GO('worldmap')">🌐 EXPEDITION WORLD MAP</button><button onclick="openFirstMorphStory()">✦ ANIMAL STORY / EXPEDITION</button><button onclick="VG_OS_GO('codex')">📚 ANIMAL MORPH CODEX</button><button onclick="VG_OS_GO('crafting')">💎 SOCKET CRAFTING STATION</button></div>`;
   let stage='ACTIVE CASE';try{stage=(window.STAGES&&STAGES[p.stage]?.short)||stage}catch(e){}
   dock.innerHTML=`<button onclick="document.getElementById('vgDrawer').classList.add('open');document.getElementById('vgShade').classList.add('open')">☰ MENU</button><button class="primary-os" onclick="VG_OS_STAGE()">🩺 ${stage}</button><button onclick="openCaseReview()">📋 REVIEW</button><button onclick="VG_OS_GO('sanctuary')">🐾 MY ANIMALS</button><button onclick="VG_OS_GO('institute')">🏛 VETERINARY MORPH INSTITUTE</button><button id="vgHudToggle">📟 PATIENT HUD</button>`;
@@ -14252,13 +14262,30 @@ function getResidentArt(p) {
   return null;
 }
 
+
+// === CANONICAL ANIMAL PORTRAIT SYSTEM ===
+// One Base64 master portrait per animal/form. Every animal renderer uses this source.
+function VG_portraitHTML(p, cls, alt){
+  var art=getResidentArt(p);
+  cls=cls||'vg-canonical-animal';
+  alt=alt||(p&&p.name)||'Animal';
+  if(!art) return '<span class="vg-portrait-fallback">'+((p&&p.icon)||'🐾')+'</span>';
+  return '<img class="'+cls+'" src="'+art+'" alt="'+String(alt).replace(/"/g,'&quot;')+'" loading="lazy" decoding="async">';
+}
+function VG_creaturePortraitHTML(cls,alt){
+  var c=(window.state&&window.state.creature)||null, art=getCreatureArt();
+  cls=cls||'vg-canonical-animal'; alt=alt||(c&&c.name)||'Animal';
+  if(!art) return '<span class="vg-portrait-fallback">'+((c&&c.icon)||'🐾')+'</span>';
+  return '<img class="'+cls+'" src="'+art+'" alt="'+String(alt).replace(/"/g,'&quot;')+'" loading="lazy" decoding="async">';
+}
+
 // === Portrait Injection ===
 function injectPortraits() {
   // 1. Creature emblem in hero area
   var emblems = document.querySelectorAll('.creature-emblem .animal');
   var art = getCreatureArt();
   emblems.forEach(function(el) {
-    if (el.dataset.vgArt) return; // already done
+    if (el.querySelector && el.querySelector('img')) return; if (el.dataset.vgArt) return; // already done
     if (art) {
       el.dataset.vgArt = art;
       // Keep emoji as fallback, add image overlay
@@ -14276,7 +14303,7 @@ function injectPortraits() {
   var rows = document.querySelectorAll('.vg-animal-row-face');
   var residents = (window.state && window.state.sanctuary) || [];
   rows.forEach(function(el, i) {
-    if (el.dataset.vgArt) return;
+    if ((el.querySelector && el.querySelector('img')) || el.dataset.vgArt) return;
     var p = residents[i];
     var rArt = getResidentArt(p);
     if (rArt) {
@@ -14294,7 +14321,7 @@ function injectPortraits() {
   // 3. Pet card faces
   var petFaces = document.querySelectorAll('.pet .face');
   petFaces.forEach(function(el, i) {
-    if (el.dataset.vgArt) return;
+    if ((el.querySelector && el.querySelector('img')) || el.dataset.vgArt) return;
     var p = residents[i];
     var rArt = getResidentArt(p);
     if (rArt) {
