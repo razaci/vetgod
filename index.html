@@ -14168,7 +14168,56 @@ main button{touch-action:manipulation}main button:not(.nav button){min-height:38
  if(typeof oldOpen==='function') window.VG_openEvolution=function(i){oldOpen(i);setTimeout(()=>{let p=state?.sanctuary?.[Number(i)],v=visual(p),art=document.querySelector('#vgEvolutionLab .evoArt');if(!p||!v||!art)return;art.innerHTML=VG_evolutionPortrait(p);let ident=document.createElement('div');ident.className='evoIdentity';ident.innerHTML=`<div><b>${p.name} · ${v.species}</b><span>PASS 2 CANONICAL BASE APPEARANCE · ${v.look}</span></div><div class="evoVisualDNA">${v.dna.map(x=>`<i>${x}</i>`).join('')}</div>`;art.parentElement.appendChild(ident);let panel=document.querySelector('#vgEvolutionLab .evoPanel:last-child');if(panel){let box=document.createElement('div');box.innerHTML=`<h4>VISUAL IDENTITY LOCK</h4><div class="callout good">${p.name}'s base species, silhouette, eye identity and surface identity are now registered as the canonical starting look. Later evolution passes modify this identity instead of replacing the resident with a generic animal.</div><div class="evoPortraitStrip"><div class="evoPortraitMini"><b>BASE</b><span>${v.species}</span></div><div class="evoPortraitMini"><b>SURFACE</b><span>${v.dna[0]}</span></div><div class="evoPortraitMini"><b>FRAME</b><span>${v.dna[2]}</span></div></div>`;panel.appendChild(box)}} ,0)};
 })();
 </script>
-\n<script id="evolution-pass6-js">\n(function(){\n const GEAR=[\n  {id:'fieldHarness',name:'Field Harness',icon:'🦺',slot:'back',desc:'Mission-ready rescue harness.'},\n  {id:'resonanceCollar',name:'Resonance Collar',icon:'💠',slot:'neck',desc:'Institute identity and resonance monitor.'},\n  {id:'opticArray',name:'Optic Array',icon:'🥽',slot:'head',desc:'Visual research scanner.'},\n  {id:'medPack',name:'Resident Med Pack',icon:'🧰',slot:'side',desc:'Compact fictional field-care kit.'},\n  {id:'socketGem',name:'Socketed Field Gem',icon:'💎',slot:'neck',desc:'Displays a recovered socket artifact.'},\n  {id:'missionBadge',name:'Mission Badge',icon:'🏅',slot:'side',desc:'Shows expedition accomplishments.'},\n  {id:'neuroCrown',name:'Neuro Research Crown',icon:'🧠',slot:'head',desc:'Fictional neuroscience interface.'},\n  {id:'morphHalo',name:'Morph Halo',icon:'⭕',slot:'aura',desc:'Evolution stabilization field.'}\n ];\n window.VG_EVO_GEAR=GEAR;\n function key(id){return 'vg_evo_gear_'+id}\n function load(id){try{return JSON.parse(localStorage.getItem(key(id))||'{}')}catch(e){return {}}}\n function save(id,v){localStorage.setItem(key(id),JSON.stringify(v))}\n function residentId(){\n   try{if(window.currentPet&&currentPet.id)return currentPet.id}catch(e){}\n   try{if(window.selectedPet&&selectedPet.id)return selectedPet.id}catch(e){}\n   return localStorage.getItem('vg_evo_last_resident')||'lyra';\n }\n window.vgToggleEvolutionGear=function(id,gearId){const v=load(id);v[gearId]=!v[gearId];save(id,v);vgRenderEvolutionGear(id);try{if(window.render)render()}catch(e){}};\n window.vgRenderEvolutionGear=function(id){\n   id=id||residentId(); localStorage.setItem('vg_evo_last_resident',id); const state=load(id);\n   document.querySelectorAll('[data-vg-evo-gear]').forEach(el=>{\n    const rack=el.querySelector('.evo-gear-rack'); if(!rack)return;\n    rack.innerHTML=GEAR.map(g=>`<button class="evo-gear-card ${state[g.id]?'on':''}" onclick="vgToggleEvolutionGear('${id}','${g.id}')"><b>${g.icon} ${g.name}</b><span>${state[g.id]?'EQUIPPED · tap to remove':'Tap to equip'} · ${g.desc}</span></button>`).join('');\n    const wear=el.querySelector('.evo-wearables'); if(wear) wear.innerHTML=GEAR.filter(g=>state[g.id]).map(g=>`<span class="evo-wearable ${g.slot}" title="${g.name}">${g.icon}</span>`).join('');\n    const out=el.querySelector('.evo-loadout-readout'); if(out){const a=GEAR.filter(g=>state[g.id]);out.textContent=a.length?'VISIBLE LOADOUT: '+a.map(x=>x.name).join(' • '):'VISIBLE LOADOUT: Natural form — no equipment equipped.'}\n   });\n };\n function inject(){\n   const candidates=[...document.querySelectorAll('button')].filter(b=>/EVOLVE ANIMAL|EVOLUTION STUDIO/i.test(b.textContent||''));\n   candidates.forEach(b=>{if(b.dataset.vgGearHook)return;b.dataset.vgGearHook='1';b.addEventListener('click',()=>setTimeout(addPanel,80))});\n   addPanel();\n }\n function addPanel(){\n   if(document.querySelector('[data-vg-evo-gear]')){vgRenderEvolutionGear();return}\n   const studio=document.querySelector('#evolutionStudio,.evolution-studio,#evoStudio,#animalEvolutionStudio') || [...document.querySelectorAll('h1,h2,h3')].find(x=>/EVOLUTION STUDIO/i.test(x.textContent||''))?.parentElement;\n   if(!studio)return;\n   const id=residentId();\n   const box=document.createElement('section');box.className='panel';box.setAttribute('data-vg-evo-gear','1');\n   let face='🐺'; try{face=(window.currentPet&&currentPet.face)||(window.selectedPet&&selectedPet.face)||face}catch(e){}\n   box.innerHTML=`<h3>VISIBLE EQUIPMENT & ARTIFACT LOADOUT</h3><div class="small muted">Pass 6 · Equip objects to this resident. The loadout is saved per animal and becomes part of its canonical evolved presentation.</div><div class="evo-wearable-stage"><div class="evo-wearable-animal">${face}</div><div class="evo-wearables"></div></div><div class="evo-loadout-readout"></div><div class="evo-gear-rack"></div>`;\n   studio.appendChild(box);vgRenderEvolutionGear(id);\n }\n document.addEventListener('click',()=>setTimeout(inject,30));\n if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',inject);else inject();\n})();\n</script>\n
+\n<script id="evolution-pass6-js">
+(function(){
+ const GEAR=[
+  {id:'fieldHarness',name:'Field Harness',icon:'🦺',slot:'back',desc:'Mission-ready rescue harness.'},
+  {id:'resonanceCollar',name:'Resonance Collar',icon:'💠',slot:'neck',desc:'Institute identity and resonance monitor.'},
+  {id:'opticArray',name:'Optic Array',icon:'🥽',slot:'head',desc:'Visual research scanner.'},
+  {id:'medPack',name:'Resident Med Pack',icon:'🧰',slot:'side',desc:'Compact fictional field-care kit.'},
+  {id:'socketGem',name:'Socketed Field Gem',icon:'💎',slot:'neck',desc:'Displays a recovered socket artifact.'},
+  {id:'missionBadge',name:'Mission Badge',icon:'🏅',slot:'side',desc:'Shows expedition accomplishments.'},
+  {id:'neuroCrown',name:'Neuro Research Crown',icon:'🧠',slot:'head',desc:'Fictional neuroscience interface.'},
+  {id:'morphHalo',name:'Morph Halo',icon:'⭕',slot:'aura',desc:'Evolution stabilization field.'}
+ ];
+ window.VG_EVO_GEAR=GEAR;
+ function key(id){return 'vg_evo_gear_'+id}
+ function load(id){try{return JSON.parse(localStorage.getItem(key(id))||'{}')}catch(e){return {}}}
+ function save(id,v){localStorage.setItem(key(id),JSON.stringify(v))}
+ function residentId(){
+   try{if(window.currentPet&&currentPet.id)return currentPet.id}catch(e){}
+   try{if(window.selectedPet&&selectedPet.id)return selectedPet.id}catch(e){}
+   return localStorage.getItem('vg_evo_last_resident')||'lyra';
+ }
+ window.vgToggleEvolutionGear=function(id,gearId){const v=load(id);v[gearId]=!v[gearId];save(id,v);vgRenderEvolutionGear(id);try{if(window.render)render()}catch(e){}};
+ window.vgRenderEvolutionGear=function(id){
+   id=id||residentId(); localStorage.setItem('vg_evo_last_resident',id); const state=load(id);
+   document.querySelectorAll('[data-vg-evo-gear]').forEach(el=>{
+    const rack=el.querySelector('.evo-gear-rack'); if(!rack)return;
+    rack.innerHTML=GEAR.map(g=>`<button class="evo-gear-card ${state[g.id]?'on':''}" onclick="vgToggleEvolutionGear('${id}','${g.id}')"><b>${g.icon} ${g.name}</b><span>${state[g.id]?'EQUIPPED · tap to remove':'Tap to equip'} · ${g.desc}</span></button>`).join('');
+    const wear=el.querySelector('.evo-wearables'); if(wear) wear.innerHTML=GEAR.filter(g=>state[g.id]).map(g=>`<span class="evo-wearable ${g.slot}" title="${g.name}">${g.icon}</span>`).join('');
+    const out=el.querySelector('.evo-loadout-readout'); if(out){const a=GEAR.filter(g=>state[g.id]);out.textContent=a.length?'VISIBLE LOADOUT: '+a.map(x=>x.name).join(' • '):'VISIBLE LOADOUT: Natural form — no equipment equipped.'}
+   });
+ };
+ function inject(){
+   const candidates=[...document.querySelectorAll('button')].filter(b=>/EVOLVE ANIMAL|EVOLUTION STUDIO/i.test(b.textContent||''));
+   candidates.forEach(b=>{if(b.dataset.vgGearHook)return;b.dataset.vgGearHook='1';b.addEventListener('click',()=>setTimeout(addPanel,80))});
+   addPanel();
+ }
+ function addPanel(){
+   if(document.querySelector('[data-vg-evo-gear]')){vgRenderEvolutionGear();return}
+   const studio=document.querySelector('#evolutionStudio,.evolution-studio,#evoStudio,#animalEvolutionStudio') || [...document.querySelectorAll('h1,h2,h3')].find(x=>/EVOLUTION STUDIO/i.test(x.textContent||''))?.parentElement;
+   if(!studio)return;
+   const id=residentId();
+   const box=document.createElement('section');box.className='panel';box.setAttribute('data-vg-evo-gear','1');
+   let face='🐺'; try{face=(window.currentPet&&currentPet.face)||(window.selectedPet&&selectedPet.face)||face}catch(e){}
+   box.innerHTML=`<h3>VISIBLE EQUIPMENT & ARTIFACT LOADOUT</h3><div class="small muted">Pass 6 · Equip objects to this resident. The loadout is saved per animal and becomes part of its canonical evolved presentation.</div><div class="evo-wearable-stage"><div class="evo-wearable-animal">${face}</div><div class="evo-wearables"></div></div><div class="evo-loadout-readout"></div><div class="evo-gear-rack"></div>`;
+   studio.appendChild(box);vgRenderEvolutionGear(id);
+ }
+ document.addEventListener('click',()=>setTimeout(inject,30));
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',inject);else inject();
+})();
+</script>\n
 <style id="vg-evolution-pass7-css">
 /* PASS 7/10 — evolving personal habitats for the first twelve residents */
 .evoHabitatDeck{max-width:1420px;margin:14px auto 30px;border:1px solid #47758a;border-radius:20px;padding:14px;background:linear-gradient(145deg,#06141e,#10162a);box-shadow:0 18px 55px #0008;position:relative;overflow:hidden}
@@ -14286,6 +14335,54 @@ main button{touch-action:manipulation}main button:not(.nav button){min-height:38
 })();
 </script>
 
+
+<!-- VET GODS : FIRST COMPANION YELLOW NEXT-STEP GUIDE / LOOP FIX -->
+<style id="vg-next-guide-css">
+#vgNextGuide{position:sticky;top:104px;z-index:4500;max-width:1500px;margin:8px auto 12px;padding:0 18px;pointer-events:none}
+#vgNextGuide .vgng{pointer-events:auto;border:2px solid #ffe36b;border-radius:14px;background:linear-gradient(135deg,#2b2407,#171507 60%,#302607);box-shadow:0 0 0 2px #ffe36b22,0 10px 34px #0009,0 0 28px #ffd84d35;padding:10px 12px;display:grid;grid-template-columns:auto 1fr auto;gap:11px;align-items:center}
+#vgNextGuide .vgngIcon{width:45px;height:45px;border-radius:50%;display:grid;place-items:center;background:#ffe36b;color:#161200;font-size:24px;box-shadow:0 0 18px #ffe36b88}
+#vgNextGuide small{display:block;color:#ffe987;font-size:8px;font-weight:1000;letter-spacing:.13em}#vgNextGuide b{display:block;color:#fff7c6;font-size:14px;margin:2px 0}#vgNextGuide p{margin:0;color:#d9cc8c;font-size:9px;line-height:1.35}
+#vgNextGuide button{min-height:45px;border:2px solid #fff1a3;border-radius:10px;background:linear-gradient(180deg,#ffe66d,#e2ad23);color:#171100;padding:8px 14px;font-size:9px;font-weight:1000;box-shadow:0 0 18px #ffe36b44;white-space:nowrap}
+#vgNextGuide button:active{transform:translateY(1px)}
+.vg-next-target{outline:3px solid #ffe36b!important;box-shadow:0 0 0 5px #ffe36b22,0 0 28px #ffe36b66!important;animation:vgNextPulse 1.35s ease-in-out infinite!important}
+@keyframes vgNextPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.22)}}
+@media(max-width:720px){#vgNextGuide{top:92px;padding:0 8px}#vgNextGuide .vgng{grid-template-columns:auto 1fr}#vgNextGuide button{grid-column:1/-1;width:100%}}
+</style>
+<script id="vg-next-guide-js">
+(function(){
+ function first(){try{return state?.sanctuary?.[0]||null}catch(e){return null}}
+ function idx(){return 0}
+ function gl(p){try{return typeof GL==='function'?GL(p):(p.gameLoop||={graduated:false,fieldLevel:0,pack:[],returned:[],processed:[],returnReady:false})}catch(e){return p.gameLoop||{}}}
+ function cg(p){try{return typeof CG==='function'?CG(p):(p.campaign||={chapter:0,inMission:false,completed:[],pack:[],pending:[]})}catch(e){return p.campaign||{}}}
+ function plan(){
+  const p=first(); if(!p)return null; const g=gl(p),c=cg(p),ch=(window.CGCH||[])[Math.min(c.chapter||0,29)];
+  if(!g.graduated)return {icon:'🎓',title:'MAKE '+p.name.toUpperCase()+' YOUR PERMANENT COMPANION',desc:'Your animal is built. This is the next real progression step — graduate the resident and unlock the field journey.',label:'GRADUATE & ADVANCE',act:'VG_NEXT_graduate()'};
+  if(c.inMission)return {icon:'📖',title:'CONTINUE '+p.name.toUpperCase()+"'S ACTIVE STORY",desc:'Do not go back into settings. Return directly to the active Twine chapter and make the next field choice.',label:'CONTINUE STORY',act:'VG_NEXT_story()'};
+  if(g.returnReady || (g.pack&&g.pack.length))return {icon:'🎒',title:'RETURN WITH THE FIELD PACK',desc:'The chapter is finished. Bring the discoveries home instead of looping back into feature/settings screens.',label:'RETURN PACK & ADVANCE',act:'VG_NEXT_return()'};
+  if(g.returned&&g.returned.length)return {icon:'🔬',title:'ANALYZE THE RETURNED DISCOVERIES',desc:'Process the recovered objects now. This raises field clearance and unlocks later chapters.',label:'ANALYZE ALL & ADVANCE',act:'VG_NEXT_process()'};
+  if((c.completed||[]).includes(29))return {icon:'🏆',title:p.name.toUpperCase()+' COMPLETED THE 30-CHAPTER FIELD STORY',desc:'The main companion campaign is complete. Continue with evolution, care, missions, research, or another animal.',label:'OPEN MY PET',act:'VG_NEXT_profile()'};
+  if(ch && Number(g.fieldLevel||0)<Number(ch.clear||1))return {icon:'⚡',title:'FIELD CLEARANCE '+ch.clear+' REQUIRED',desc:'You need more analyzed field discoveries before Chapter '+((c.chapter||0)+1)+'. Run a recovery expedition, then the yellow guide will bring the pack home and process it.',label:'RUN CLEARANCE EXPEDITION',act:'VG_NEXT_clearance()'};
+  return {icon:'🗺️',title:'NEXT: CHAPTER '+((c.chapter||0)+1)+' · '+(ch?.name||'FIELD MISSION'),desc:'This is the next story step for '+p.name+'. Press here — you do not need to revisit all the feature/settings panels first.',label:'START NEXT CHAPTER',act:'VG_NEXT_startChapter()'};
+ }
+ window.VG_NEXT_profile=function(){const p=first();if(!p)return false;state.fullProfileIndex=0;state.screen='fullanimalprofile';try{save()}catch(e){}render();return false};
+ window.VG_NEXT_graduate=function(){const p=first();if(!p)return false;try{GL_graduate(0)}catch(e){const g=gl(p);g.graduated=true;g.fieldLevel=Math.max(1,g.fieldLevel||0);try{save()}catch(x){}}setTimeout(VG_NEXT_profile,40);return false};
+ window.VG_NEXT_story=function(){const p=first();if(!p)return false;state.fullProfileIndex=0;state.screen='campaign';try{save()}catch(e){}render();return false};
+ window.VG_NEXT_startChapter=function(){const p=first();if(!p)return false;const g=gl(p),c=cg(p),ch=(window.CGCH||[])[Math.min(c.chapter||0,29)];if(!g.graduated)return VG_NEXT_graduate();if(ch&&Number(g.fieldLevel||0)<Number(ch.clear||1))return VG_NEXT_clearance();try{CG_start(0)}catch(e){c.inMission=true;c.node=0;c.pack=[];c.pending=[];state.fullProfileIndex=0;state.screen='campaign';try{save()}catch(x){}render()}return false};
+ window.VG_NEXT_return=function(){const p=first();if(!p)return false;const g=gl(p),c=cg(p);if(c.pack&&c.pack.length){g.pack=(g.pack||[]).concat(c.pack.map(x=>({...x})));c.pack=[]}if(g.pack&&g.pack.length){g.returned=(g.returned||[]).concat(g.pack.map(x=>({...x})));g.pack=[]}g.returnReady=false;try{save()}catch(e){}render();return false};
+ window.VG_NEXT_process=function(){const p=first();if(!p)return false;const g=gl(p);let guard=100;while(g.returned&&g.returned.length&&guard-->0){try{GL_process(0,0)}catch(e){let x=g.returned.shift();if(x){x.known=true;(g.processed||=[]).push(x)}}}try{save()}catch(e){}render();return false};
+ window.VG_NEXT_clearance=function(){const p=first();if(!p)return false;const g=gl(p);if(!g.graduated)return VG_NEXT_graduate();try{GL_expedition(0)}catch(e){}setTimeout(draw,50);return false};
+ function targetButton(label){document.querySelectorAll('.vg-next-target').forEach(x=>x.classList.remove('vg-next-target'));if(!label)return;const words=label.replace(/[^A-Z ]/gi,'').trim().split(/\s+/).filter(x=>x.length>3).slice(0,2);const btn=[...document.querySelectorAll('button')].find(b=>words.every(w=>(b.textContent||'').toUpperCase().includes(w.toUpperCase())));if(btn)btn.classList.add('vg-next-target')}
+ function draw(){
+  const p=first();let old=document.getElementById('vgNextGuide');if(!p){old?.remove();return}const q=plan();if(!q)return;
+  if(!old){old=document.createElement('div');old.id='vgNextGuide';const top=document.querySelector('.top-shell');if(top&&top.parentNode)top.insertAdjacentElement('afterend',old);else document.body.prepend(old)}
+  old.innerHTML=`<div class="vgng"><div class="vgngIcon">${q.icon}</div><div><small>FIRST COMPANION · ALWAYS KNOW WHAT TO DO NEXT</small><b>${q.title}</b><p>${q.desc}</p></div><button onclick="${q.act}">▶ ${q.label}</button></div>`;
+  targetButton(q.label);
+ }
+ const oldRender=window.render;if(typeof oldRender==='function'&&!oldRender.__vgNextWrapped){const w=function(){const r=oldRender.apply(this,arguments);setTimeout(draw,20);return r};w.__vgNextWrapped=true;window.render=w}
+ const mo=new MutationObserver(()=>{clearTimeout(window.__vgngt);window.__vgngt=setTimeout(draw,60)});if(document.documentElement)mo.observe(document.documentElement,{childList:true,subtree:true});
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(draw,100));else setTimeout(draw,100);
+})();
+</script>
 </body>
 </html><style id="vg-road-campaign-pass1-css">
 .roadBoard{margin-top:12px;border:1px solid #365f73;border-radius:18px;padding:13px;background:linear-gradient(145deg,#07131d,#11172a);box-shadow:0 16px 38px #0007}.roadHead{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.roadHead h3{margin:3px 0;font-size:18px}.roadBadges{display:flex;gap:5px;flex-wrap:wrap}.roadBadges span{border:1px solid #395d70;border-radius:999px;padding:5px 8px;font-size:7px;background:#071822}.roadMap{position:relative;min-height:110px;margin:10px 0;border:1px solid #294d5e;border-radius:13px;background:linear-gradient(90deg,#071722,#10162a);overflow:hidden;padding:15px}.roadLine{position:absolute;left:7%;right:7%;top:54%;height:4px;background:#183544;border-radius:99px}.roadLine i{display:block;height:100%;background:linear-gradient(90deg,#54dfff,#a879ff,#ffd66f);border-radius:99px}.roadStops{position:relative;display:flex;justify-content:space-between;align-items:flex-start;z-index:2}.roadStop{width:52px;text-align:center;font-size:7px;color:#7896a4}.roadStop b{display:grid;place-items:center;width:31px;height:31px;margin:auto;border-radius:50%;border:1px solid #345c70;background:#081722;font-size:15px}.roadStop.on b{border-color:#ffd66f;box-shadow:0 0 16px #ffd66f55}.roadStop.done b{border-color:#67df9e;background:#10271e}.missionGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.missionCard{border:1px solid #315568;border-radius:12px;background:#091923;padding:10px;min-height:135px;color:#eefaff;text-align:left}.missionCard:hover{border-color:#6edcf4}.missionCard strong{display:block;font-size:11px;margin:5px 0}.missionCard span{display:block;font-size:8px;color:#93afba;line-height:1.5}.missionCard em{display:block;margin-top:8px;color:#ffd66f;font-size:7px;font-style:normal;font-weight:900}.missionScene{border:1px solid #3e6577;border-radius:14px;padding:12px;background:radial-gradient(circle at 50% 0,#173349,#07121b 55%);min-height:230px}.missionScene .sceneAnimal{width:120px;height:120px;margin:4px auto}.missionScene h2{text-align:center;margin:5px}.missionScene p{font-size:9px;line-height:1.65;color:#a8c1cb;max-width:780px;margin:8px auto;text-align:center}.missionStats{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:8px 0}.missionStats div{border:1px solid #294b5c;border-radius:8px;background:#071620;padding:7px;text-align:center}.missionStats small{display:block;font-size:6px;color:#7f9eab}.missionStats b{font-size:13px}.missionChoices{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.missionChoice{min-height:105px;border:1px solid #46687a;border-radius:12px;background:linear-gradient(160deg,#102534,#10152a);color:#fff;padding:10px;text-align:left}.missionChoice .ico{font-size:26px}.missionChoice strong{display:block;margin:5px 0}.missionChoice span{font-size:8px;color:#9eb6c0;line-height:1.45}.missionChoice em{display:block;margin-top:7px;color:#7cf0b1;font-size:7px;font-style:normal}.roadLog{max-height:150px;overflow:auto;border:1px solid #294858;border-radius:10px;background:#051018;padding:8px;font-size:8px;color:#91adba;line-height:1.55}.roadLog div+div{border-top:1px solid #142934;margin-top:4px;padding-top:4px}@media(max-width:760px){.missionGrid,.missionChoices{grid-template-columns:1fr}.missionStats{grid-template-columns:repeat(2,1fr)}.roadStop{font-size:6px;width:38px}.roadStop b{width:27px;height:27px}}
@@ -14575,5 +14672,320 @@ window.VG_CERT_TRACKS=TRACKS;
   let deck=h.closest('.evoHabitatDeck');if(!deck)return;let box=document.createElement('div');box.innerHTML=`<div class="vg8MotionControls"><button onclick="VG8_move(${i},'food','${p.name} walks to the food bowl and lingers for a meal.')">🥣 WALK TO FOOD</button><button onclick="VG8_move(${i},'water','${p.name} walks to fresh water and drinks.')">💧 WALK TO WATER</button><button onclick="VG8_move(${i},'toy','${p.name} goes to the enrichment station to play.')">🎾 PLAY / ENRICH</button><button onclick="VG8_move(${i},'rest','${p.name} settles into the resting station.')">🛏️ REST / SLEEP</button><button onclick="VG8_move(${i},'center','${p.name} returns to center stage.')">🐾 CENTER STAGE</button></div><div class="vg8MotionControls"><button onclick="VG8_react(${i},'happy')">💗 HAPPY REACTION</button><button onclick="VG8_scan(${i})">📡 FORM SCAN</button><button onclick="VG8_transform(${i})">✨ EVOLUTION REVEAL</button><button onclick="VG8_react(${i},'sleep')">🌙 CALM / BREATHE</button><button onclick="VG8_move(${i},'toy','${p.name} investigates their favorite toy.')">🧸 FAVORITE TOY</button></div><div class="vg8MotionReadout"><div><b>${m.visits}</b><span>STATION VISITS</span></div><div><b>${m.reactions}</b><span>REACTIONS</span></div><div><b>${String(m.last).toUpperCase()}</b><span>CURRENT ACTIVITY</span></div><div><b>LIVE</b><span>PASS 8 MOTION</span></div></div>`;deck.appendChild(box);say(`${p.name} is now a living resident: breathing, reacting, moving and lingering in the habitat.`)}
  const oldOpen=window.VG_openEvolution;if(typeof oldOpen==='function')window.VG_openEvolution=function(i){let r=oldOpen(i);setTimeout(()=>decorate(Number(i)),60);return r};
  const oldEvolve=window.VG_evolveNow;if(typeof oldEvolve==='function')window.VG_evolveNow=function(i){let p=pet(i),before=Number(p?.visualEvolutionStage||p?.visualEvolution?.stage||0),r=oldEvolve(i);setTimeout(()=>{let q=pet(i),after=Number(q?.visualEvolutionStage||q?.visualEvolution?.stage||0);if(after>before){decorate(Number(i));transform(Number(i))}},100);return r};
+})();
+</script>
+
+
+<!-- VET GODS : VISIBLE 4-STAGE COMPANION PATH + 10-STAGE VISUAL EVOLUTION PATH -->
+<style id="vg-visible-development-paths-css">
+.vgDevPaths{margin:10px 0 14px;border:2px solid #ffe36b;border-radius:16px;background:linear-gradient(145deg,#241f08,#0b1720 48%,#171226);box-shadow:0 0 24px #ffd84d22;padding:12px}
+.vgDevTitle{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.vgDevTitle h3{margin:3px 0;color:#fff5b5;font-size:17px}.vgDevTitle small{color:#ffe36b;font-weight:1000;letter-spacing:.12em}
+.vgDevRail{display:grid;gap:7px;margin-top:9px}.vgDevRail.four{grid-template-columns:repeat(4,1fr)}.vgDevRail.ten{grid-template-columns:repeat(5,1fr)}
+.vgDevStep{position:relative;min-height:72px;border:1px solid #405b68;border-radius:10px;background:#081620;color:#a7bdc6;padding:8px;text-align:left}
+.vgDevStep b{display:block;font-size:9px;color:#e9f8ff}.vgDevStep span{display:block;font-size:7px;line-height:1.35;margin-top:4px}
+.vgDevStep.done{border-color:#4e8a64;background:#0d241a}.vgDevStep.done b{color:#91edb4}
+.vgDevStep.current{border:2px solid #ffe36b;background:linear-gradient(145deg,#332a09,#102431);box-shadow:0 0 20px #ffe36b44;animation:vgPathPulse 1.5s ease-in-out infinite}
+.vgDevStep.current b,.vgDevStep.current span{color:#fff3a3}.vgDevStep.locked{opacity:.52}
+.vgDevStep em{position:absolute;right:6px;top:5px;font-style:normal;font-size:7px;color:#ffe36b}
+.vgDevNext{width:100%;margin-top:9px;min-height:48px;border:2px solid #fff1a3;border-radius:10px;background:linear-gradient(180deg,#ffe66d,#dda91e);color:#171100;font-weight:1000;font-size:10px}
+.vgTenRail{margin:10px 0;border:1px solid #6b5b2a;border-radius:13px;padding:10px;background:#0a1520}
+.vgTenRail h4{margin:0 0 7px;color:#ffe88e}.vgTenGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.vgTenNode{border:1px solid #365564;border-radius:8px;padding:7px;background:#07151e;min-height:60px}
+.vgTenNode b{display:block;font-size:8px}.vgTenNode span{display:block;font-size:6.5px;color:#8eaab6;margin-top:3px}
+.vgTenNode.done{border-color:#3f7655;background:#0d2118}.vgTenNode.current{border:2px solid #ffe36b;background:#2b240b;box-shadow:0 0 16px #ffe36b44}
+.vgTenNode.current b,.vgTenNode.current span{color:#fff0a2}
+@keyframes vgPathPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.18)}}
+@media(max-width:800px){.vgDevRail.four{grid-template-columns:repeat(2,1fr)}.vgDevRail.ten,.vgTenGrid{grid-template-columns:repeat(2,1fr)}}
+</style>
+<script id="vg-visible-development-paths-js">
+(function(){
+ const FOUR=[
+  ['CARE & BOND','Feed, water, play and build the resident bond.'],
+  ['RESEARCH & EVOLVE','Develop anatomy, traits, form and habitat.'],
+  ['FIELD MISSIONS','Take the finished companion into the Road Campaign.'],
+  ['CERTIFY & LEGACY','Earn Institute certifications and preserve the official form.']
+ ];
+ const TEN=[
+  ['1 · BASE','Canonical resident'],
+  ['2 · IDENTITY','Species & portrait'],
+  ['3 · ANATOMY','Body development'],
+  ['4 · TRAITS','Eyes & markings'],
+  ['5 · BRANCH','Evolution direction'],
+  ['6 · GEAR','Equipment & artifacts'],
+  ['7 · HABITAT','Personal environment'],
+  ['8 · MOTION','Living reactions'],
+  ['9 · LINEAGE','Saved forms'],
+  ['10 · OFFICIAL','Cemented form']
+ ];
+ function pet(i){return state?.sanctuary?.[Number(i)]}
+ function evo(p){return p?.visualEvolution||p?.evolution||{}}
+ function road(p){return p?.roadCampaign||{}}
+ function fourStage(p){
+   const v=evo(p),r=road(p),bond=Number(p?.bond||0);
+   if(bond<55)return 0;
+   if(!(v.stage>=2 || p?.visualEvolutionStage>=2 || v.xp>=120))return 1;
+   if(!(r.missions>0 || (r.completed||[]).length))return 2;
+   return 3;
+ }
+ function tenStage(p){
+   const v=evo(p);
+   if(v.cemented || v.officialFormId || v.officialSignature)return 9;
+   let s=Number(v.stage ?? p?.visualEvolutionStage ?? 0);
+   if((v.lineage||[]).length>1)return Math.max(8,Math.min(8,s+4));
+   if(p?.evolutionMotion||p?.livingMotion)return 7;
+   if(p?.habitatEvolution||v.habitatTier)return 6;
+   if(p?.evolutionEquipment||v.equipment)return 5;
+   if(v.branch || p?.visualEvolutionBranch)return 4;
+   if(v.visibleTraits)return 3;
+   if(p?.evolutionAnatomy || s>=2)return 2;
+   if(p?.canonicalArt || p?.portraitCurrent || p?.portraitOriginal)return 1;
+   return 0;
+ }
+ window.VG_DEV_open=function(i,n){
+   const p=pet(i); if(!p)return false;
+   if(n===0){ try{MS(p).tab='CARE';state.morphSanctuaryIndex=Number(i);state.screen='morphsanctuarydetail'}catch(e){} }
+   if(n===1){ if(typeof VG_openEvolution==='function')return VG_openEvolution(Number(i)); }
+   if(n===2){ if(typeof VG_openRoadCampaign==='function')return VG_openRoadCampaign(Number(i)); }
+   if(n===3){ if(typeof VG_openCertCenter==='function')return VG_openCertCenter(); }
+   try{save()}catch(e){};render();return false;
+ };
+ function pathHTML(p,i){
+   const fs=fourStage(p),ts=tenStage(p);
+   return `<section class="vgDevPaths">
+    <div class="vgDevTitle"><div><small>YOUR COMPANION DEVELOPMENT ROADMAP</small><h3>${p.name} · TWO VISIBLE PROGRESSION SYSTEMS</h3></div><div class="status-pill"><strong>4-PHASE JOURNEY ${fs+1}/4</strong> · VISUAL EVOLUTION ${ts+1}/10</div></div>
+    <div class="small muted">These are the two development systems we built. They now stay visible in My Pets instead of being buried behind settings.</div>
+    <div class="vgDevRail four">${FOUR.map((x,n)=>`<button class="vgDevStep ${n<fs?'done':n===fs?'current':'locked'}" onclick="VG_DEV_open(${i},${n})"><em>${n<fs?'✓ DONE':n===fs?'DO THIS NEXT':'UP NEXT'}</em><b>${n+1}. ${x[0]}</b><span>${x[1]}</span></button>`).join('')}</div>
+    <button class="vgDevNext" onclick="VG_DEV_open(${i},${fs})">▶ YELLOW NEXT STEP · ${FOUR[fs][0]}</button>
+    <div class="vgTenRail"><h4>10-STAGE ANIMAL APPEARANCE EVOLUTION</h4><div class="vgTenGrid">${TEN.map((x,n)=>`<div class="vgTenNode ${n<ts?'done':n===ts?'current':''}"><b>${n<ts?'✓ ':n===ts?'▶ ':''}${x[0]}</b><span>${x[1]}</span></div>`).join('')}</div>
+    <button class="vgDevNext" onclick="VG_openEvolution(${i})">✨ OPEN ${String(p.name).toUpperCase()} · CONTINUE VISUAL STAGE ${Math.min(10,ts+1)}</button></div>
+   </section>`;
+ }
+ const oldDetail=window.morphSanctuaryDetail;
+ if(typeof oldDetail==='function'){
+   window.morphSanctuaryDetail=function(p,i){
+     let h=oldDetail.apply(this,arguments);
+     if(!p)return h;
+     const card=pathHTML(p,i);
+     const marker='<div class="msTabs">';
+     const pos=h.indexOf(marker);
+     if(pos>=0){const end=h.indexOf('</div>',pos)+6;h=h.slice(0,end)+card+h.slice(end)}
+     else h=card+h;
+     return h;
+   };
+ }
+ const oldOpen=window.VG_openEvolution;
+ if(typeof oldOpen==='function'){
+   window.VG_openEvolution=function(i){
+     const r=oldOpen.apply(this,arguments);
+     setTimeout(()=>{
+       const p=pet(i),lab=document.getElementById('vgEvolutionLab');if(!p||!lab)return;
+       lab.querySelectorAll('.vgTenRail.vgInjected').forEach(x=>x.remove());
+       const ts=tenStage(p),box=document.createElement('section');box.className='vgTenRail vgInjected';
+       box.innerHTML=`<h4>🟡 ${p.name.toUpperCase()} · VISUAL EVOLUTION ROADMAP · STAGE ${ts+1} OF 10</h4><div class="vgTenGrid">${TEN.map((x,n)=>`<div class="vgTenNode ${n<ts?'done':n===ts?'current':''}"><b>${n<ts?'✓ ':n===ts?'▶ ':''}${x[0]}</b><span>${x[1]}</span></div>`).join('')}</div><div class="callout warn"><b>DO THIS NEXT:</b> Work the highlighted yellow stage. The ten-stage rail remains visible every time you open Evolution Studio.</div>`;
+       const head=lab.querySelector('.evoHead'); if(head)head.after(box); else lab.prepend(box);
+     },120);
+     return r;
+   };
+ }
+ // Add the roadmap to the first companion's My Pets detail automatically after each render.
+ const oldRender=window.render;
+ if(typeof oldRender==='function'&&!oldRender.__vgPathsWrapped){
+   const wrap=function(){const r=oldRender.apply(this,arguments);setTimeout(()=>{
+     const p=pet(0);if(!p)return;
+     const main=document.querySelector('main'); if(!main)return;
+     if((String(state.screen||'').toLowerCase().includes('sanctuary')||String(state.screen||'').toLowerCase().includes('profile'))&&!main.querySelector('.vgDevPaths')){
+       const host=main.querySelector('.msDetail,.panel,.hero');if(host)host.insertAdjacentHTML('afterend',pathHTML(p,0));
+     }
+   },80);return r};wrap.__vgPathsWrapped=true;window.render=wrap;
+ }
+})();
+</script>
+
+
+<!-- VET GODS : PRODUCTION COMPANION INTEGRATION / MAKE THE BUILT SYSTEMS VISIBLE -->
+<style id="vg-production-companion-css">
+#vgProductionDeck{margin:10px 0 16px;border:1px solid #557384;border-radius:18px;overflow:hidden;background:radial-gradient(circle at 50% 18%,#17354a 0,#08131d 45%,#05090f 100%);box-shadow:0 18px 50px #0009,inset 0 0 60px #36d5ff0d}
+.vgProdTop{padding:12px 14px;border-bottom:1px solid #314957;background:linear-gradient(90deg,#07141d,#112c3d,#151408)}
+.vgProdTop small{color:#ffe66b;font-weight:1000;letter-spacing:.15em}.vgProdTop h2{margin:3px 0;color:white;font-size:20px}
+.vgProdGrid{display:grid;grid-template-columns:minmax(280px,1.15fr) minmax(270px,.85fr);gap:12px;padding:12px}
+.vgCreatureBay{position:relative;min-height:470px;border:1px solid #345766;border-radius:16px;overflow:hidden;background:radial-gradient(circle at 50% 42%,#214d66,#07131d 62%);display:flex;align-items:center;justify-content:center}
+.vgCreatureBay:before{content:"";position:absolute;inset:5%;border:1px solid #5ee7ff33;border-radius:50%;box-shadow:0 0 50px #4be5ff18,inset 0 0 50px #4be5ff10;animation:vgSpinGlow 9s linear infinite}
+.vgCreatureBay:after{content:"";position:absolute;left:8%;right:8%;top:50%;height:2px;background:linear-gradient(90deg,transparent,#ffe66b99,transparent);box-shadow:0 0 15px #ffe66b;animation:vgScan 3.8s ease-in-out infinite}
+.vgCreatureImage{position:relative;z-index:3;width:min(88%,540px);height:410px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 18px 22px #000b)}
+.vgCreatureImage img{width:100%;height:100%;object-fit:contain;border-radius:18px}
+.vgAura{position:absolute;z-index:2;width:72%;height:72%;border-radius:50%;border:2px solid #ffe66b66;box-shadow:0 0 45px #ffe66b35,inset 0 0 55px #68e8ff22;animation:vgAura 2.4s ease-in-out infinite}
+.vgMark{position:absolute;z-index:5;left:50%;top:30%;transform:translate(-50%,-50%);font-size:32px;filter:drop-shadow(0 0 8px #ffe66b)}
+.vgEyes{position:absolute;z-index:6;left:50%;top:38%;transform:translateX(-50%);font-size:12px;letter-spacing:22px;text-shadow:0 0 8px #fff,0 0 18px #ffe66b;color:#fff7b2}
+.vgWear{position:absolute;z-index:7;padding:5px 8px;border:1px solid #ffe66b88;border-radius:999px;background:#07131ddd;box-shadow:0 0 12px #ffe66b33;font-size:8px;font-weight:900}
+.vgWear.w1{left:6%;top:9%}.vgWear.w2{right:6%;top:9%}.vgWear.w3{left:6%;bottom:9%}.vgWear.w4{right:6%;bottom:9%}
+.vgCreatureLabel{position:absolute;z-index:8;left:10px;right:10px;bottom:10px;border:1px solid #486779;border-radius:12px;background:#061019e8;padding:9px 11px;backdrop-filter:blur(7px)}
+.vgCreatureLabel h3{margin:0;color:#fff}.vgCreatureLabel div{font-size:8px;color:#a9c4d0;margin-top:3px}
+.vgProdSide{display:grid;gap:9px;align-content:start}.vgProdPanel{border:1px solid #304b5a;border-radius:12px;background:#08141d;padding:10px}
+.vgProdPanel h4{margin:0 0 7px;color:#ffe785;font-size:10px}.vgProdPanel p{margin:4px 0;color:#9eb8c4;font-size:8px;line-height:1.45}
+.vgModGrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.vgMod{border:1px solid #2d4b59;border-radius:9px;padding:7px;background:#0a1a24;min-height:48px}.vgMod b{display:block;color:#e9faff;font-size:8px}.vgMod span{display:block;color:#8fa9b5;font-size:7px;margin-top:3px}
+.vgMod.on{border-color:#ffe36b;background:#29240b;box-shadow:0 0 13px #ffe36b22}.vgMod.on b{color:#fff0a3}
+.vgProdActions{display:grid;grid-template-columns:1fr 1fr;gap:7px}.vgProdActions button{min-height:45px;border:1px solid #557584;border-radius:9px;background:#102936;color:#e9f9ff;font-weight:900;font-size:8px}
+.vgProdActions .hot{grid-column:1/-1;border:2px solid #fff0a0;background:linear-gradient(#ffe66b,#d6a51d);color:#181100;font-size:10px}
+.vgPhaseBar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.vgPhase{border:1px solid #35505c;border-radius:8px;padding:7px;background:#07131b;font-size:7px;color:#829ca8}.vgPhase b{display:block;color:#dbeef5;font-size:8px}.vgPhase.current{border:2px solid #ffe36b;background:#2a240a;color:#fff0a0}.vgPhase.done{border-color:#4d7e5e;background:#0c2117;color:#9edeb4}
+.vgGameMods{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.vgGameMod{border:1px solid #315160;border-radius:9px;background:#091a24;padding:7px}.vgGameMod b{color:#eaf9ff;font-size:8px}.vgGameMod span{display:block;color:#8da8b4;font-size:7px;margin-top:3px}
+.vgGameMod.on{border-color:#5fc5dd;box-shadow:inset 0 0 18px #52d9ff0c}.vgGameMod strong{float:right;color:#ffe66b;font-size:7px}
+@keyframes vgAura{50%{transform:scale(1.04);opacity:.72}}@keyframes vgScan{0%,100%{transform:translateY(-150px);opacity:.2}50%{transform:translateY(150px);opacity:1}}@keyframes vgSpinGlow{50%{box-shadow:0 0 80px #4be5ff2d,inset 0 0 70px #ffe66b10}}
+@media(max-width:820px){.vgProdGrid{grid-template-columns:1fr}.vgCreatureBay{min-height:430px}.vgCreatureImage{height:365px}.vgPhaseBar{grid-template-columns:repeat(2,1fr)}}
+</style>
+<script id="vg-production-companion-js">
+(function(){
+ const esc=x=>String(x??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+ function pet(i){return state?.sanctuary?.[Number(i)]}
+ function ve(p){p.visualEvolution=p.visualEvolution||{};return p.visualEvolution}
+ function img(p){try{return window.VG10_portrait?VG10_portrait(p,''):animalPortraitHTML(p,'stageAnimal')}catch(e){return `<div style="font-size:150px">${p.icon||'🐾'}</div>`}}
+ function stage(p){let v=ve(p);return Math.max(0,Math.min(9,Number(v.productionStage ?? v.stage ?? p.visualEvolutionStage ?? 0)))}
+ function branch(p){let v=ve(p);return v.branch?.name||v.branch||p.visualEvolutionBranch||p.formName||'Natural Development'}
+ function traitText(p,k,fallback){let v=ve(p),t=v.visibleTraits||v.traits||{};let x=t[k]||v[k]||p[k];if(Array.isArray(x))x=x.join(' · ');return x||fallback}
+ function gear(p){let v=ve(p),a=[];let pools=[v.equipment,p.evolutionEquipment,p.visibleEquipment,p.fieldGear,p.gear];pools.forEach(q=>{if(Array.isArray(q))a.push(...q);else if(q&&typeof q==='object')Object.values(q).forEach(x=>{if(x)a.push(typeof x==='string'?x:(x.name||x.icon||'Equipped'))})});return [...new Set(a.map(x=>typeof x==='string'?x:(x?.name||String(x))))].slice(0,4)}
+ function four(p){let r=p.roadCampaign||p.campaign||{},v=ve(p);if(Number(p.bond||0)<55)return 0;if(stage(p)<2)return 1;if(!((r.completed||[]).length||r.missions||r.chapter>0))return 2;return 3}
+ function nextLabel(p){const f=four(p);return ['CARE & BOND','EVOLVE APPEARANCE','FIELD MISSIONS','CERTIFICATIONS & LEGACY'][f]}
+ function action(i,n){if(n===0){state.morphSanctuaryIndex=i;state.screen='morphsanctuarydetail';try{MS(pet(i)).tab='CARE'}catch(e){};save();render()}else if(n===1&&window.VG_openEvolution)VG_openEvolution(i);else if(n===2){if(window.VG_openRoadCampaign)VG_openRoadCampaign(i);else{state.fullProfileIndex=i;state.screen='campaignmap';save();render()}}else if(n===3){if(window.VG_openCertCenter)VG_openCertCenter();else{state.screen='certcenter';save();render()}}return false}
+ window.VG_PROD_action=action;
+ function html(p,i){
+   const v=ve(p),st=stage(p),f=four(p),g=gear(p),eyes=traitText(p,'eyes','Natural eyes'),mark=traitText(p,'markings','Natural coat pattern'),sense=traitText(p,'sensory','Baseline senses'),aura=traitText(p,'aura','No active aura');
+   const phases=[['CARE & BOND','Resident care'],['RESEARCH & EVOLVE','10-stage visual development'],['FIELD MISSIONS','Road campaign'],['CERTIFY & LEGACY','Institute portfolio']];
+   const mods=[
+    ['Canonical AI Portrait',!!(p.portraitBaseAI||p.portraitCurrent),'One resident image reused throughout the game'],
+    ['Anatomy Development',st>=2,'Head · body · limbs · tail/wings/fins'],
+    ['Visible Trait Layer',st>=3,eyes+' · '+mark],
+    ['Branch Evolution',st>=4,branch(p)],
+    ['Wearable Loadout',st>=5,g.length?g.join(' · '):'Harness · artifacts · research gear'],
+    ['Evolving Habitat',st>=6,(p.evolutionHabitat?.name||v.habitat||'Personal resident environment')],
+    ['Living Motion',st>=7,'Breathing · station travel · reactions · rest'],
+    ['Lineage Archive',st>=8,((v.lineage||p.evolutionLineage||[]).length||0)+' saved visual forms'],
+    ['Official Form',st>=9,(v.cemented||v.officialFormId)?'Cemented canonical appearance':'Final resident form'],
+    ['Road Campaign',!!(p.roadCampaign||p.campaign),'Regions · missions · field loot · gear'],
+    ['Branching Twine',true,'Persistent choices · field pack · return loop'],
+    ['Institute Certifications',true,'Specializations · transcript · double-signature awards']
+   ];
+   return `<section id="vgProductionDeck">
+    <div class="vgProdTop"><small>VET GODS · PRODUCTION COMPANION DECK</small><h2>${esc(p.name)} · THE BUILT SYSTEMS ARE NOW THE MAIN DISPLAY</h2></div>
+    <div class="vgProdGrid">
+     <div class="vgCreatureBay">
+      <div class="vgAura"></div><div class="vgCreatureImage">${img(p)}</div>
+      ${st>=3?`<div class="vgEyes">● ●</div><div class="vgMark">✦</div>`:''}
+      ${g.map((x,n)=>`<div class="vgWear w${n+1}">${esc(x)}</div>`).join('')}
+      <div class="vgCreatureLabel"><h3>${esc(p.name)} · ${esc(branch(p))}</h3><div>VISUAL STAGE ${st+1}/10 · ${esc(eyes)} · ${esc(mark)} · ${esc(sense)} · ${esc(aura)}</div></div>
+     </div>
+     <div class="vgProdSide">
+      <div class="vgProdPanel"><h4>🟡 CURRENT GAME PHASE</h4><div class="vgPhaseBar">${phases.map((x,n)=>`<div class="vgPhase ${n<f?'done':n===f?'current':''}"><b>${n<f?'✓ ':n===f?'▶ ':''}${x[0]}</b>${x[1]}</div>`).join('')}</div></div>
+      <div class="vgProdPanel"><h4>10-PASS VISUAL BUILD · LIVE ON THIS RESIDENT</h4><div class="vgModGrid">${mods.slice(0,9).map((x,n)=>`<div class="vgMod ${x[1]?'on':''}"><b>${x[1]?'✓ ':''}${x[0]}</b><span>${esc(x[2])}</span></div>`).join('')}</div></div>
+      <div class="vgProdPanel"><h4>4-PASS GAME DEVELOPMENT · LIVE SYSTEMS</h4><div class="vgGameMods">${mods.slice(9).map(x=>`<div class="vgGameMod on"><strong>ONLINE</strong><b>${x[0]}</b><span>${x[2]}</span></div>`).join('')}</div></div>
+      <div class="vgProdActions">
+       <button onclick="VG_PROD_action(${i},0)">❤️ CARE / TOYS / FOOD / WATER</button>
+       <button onclick="VG_PROD_action(${i},1)">🧬 OPEN 10-STAGE EVOLUTION</button>
+       <button onclick="VG_PROD_action(${i},2)">🗺️ OPEN ROAD CAMPAIGN</button>
+       <button onclick="VG_PROD_action(${i},3)">🎓 OPEN CERTIFICATIONS</button>
+       <button class="hot" onclick="VG_PROD_action(${i},${f})">▶ DO THIS NEXT · ${nextLabel(p)}</button>
+      </div>
+     </div>
+    </div>
+   </section>`;
+ }
+ window.VG_PROD_html=html;
+
+ // Put the professional deck at the TOP of the individual My Pets animal, not buried after old panels.
+ const od=window.morphSanctuaryDetail;
+ if(typeof od==='function'){
+   window.morphSanctuaryDetail=function(p,i){
+     let h=od.apply(this,arguments);
+     if(!p)return h;
+     // Old knowledge stays accessible, but the new production deck is now the first thing the player sees.
+     return html(p,i)+`<details class="panel" style="margin-top:8px"><summary style="cursor:pointer;color:#9fc6d5;font-weight:900">OLDER / ADVANCED INSTITUTE PANELS · OPEN WHEN NEEDED</summary><div style="margin-top:10px">${h}</div></details>`;
+   }
+ }
+
+ // Evolution Studio: force the resident art and the actual visual mods to dominate the top.
+ const oo=window.VG_openEvolution;
+ if(typeof oo==='function'){
+   window.VG_openEvolution=function(i){
+     let r=oo.apply(this,arguments);
+     setTimeout(()=>{
+       const p=pet(i),lab=document.getElementById('vgEvolutionLab');if(!p||!lab)return;
+       let hero=lab.querySelector('.vgProdEvoHero');
+       if(!hero){hero=document.createElement('section');hero.className='vgProdEvoHero';hero.innerHTML=html(p,i);lab.prepend(hero)}
+       else hero.innerHTML=html(p,i);
+     },120);return r;
+   }
+ }
+
+ // Every stage portrait now uses the canonical resident art plus a stage indicator.
+ const osp=window.stagePortrait;
+ window.stagePortrait=function(p){return `<div style="position:relative">${img(p)}<div style="position:absolute;left:6px;bottom:6px;padding:4px 7px;border-radius:8px;background:#07131ddd;border:1px solid #ffe36b;color:#ffe36b;font-size:7px;font-weight:1000">EVOLUTION ${stage(p)+1}/10 · ${esc(branch(p))}</div></div>`};
+
+ // Make the first companion's production deck easy to reach from Sanctuary cards.
+ setTimeout(()=>{try{render()}catch(e){}},250);
+})();
+</script>
+
+
+<style id="vg-test-ready-cleanup-css">
+/* Final cleanup: one roadmap, one companion deck, no duplicate injected rails. */
+.vgProdEvoHero .vgDevPaths,.vgProdEvoHero .vgTenRail.vgInjected{display:none!important}
+#vgProductionDeck + .vgDevPaths{display:none!important}
+#vgProductionDeck details summary{min-height:40px;display:flex;align-items:center}
+.vgProdActions button,.vgDevNext{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.vgProdActions button:active,.vgDevNext:active{transform:translateY(1px);filter:brightness(.94)}
+.vgProdTop{position:relative}.vgProdTop:after{content:"TEST READY";position:absolute;right:12px;top:12px;padding:4px 7px;border:1px solid #ffe36b;border-radius:999px;color:#ffe36b;font-size:7px;font-weight:1000;letter-spacing:.12em}
+.vgProdPanel{overflow:hidden}.vgMod,.vgGameMod,.vgPhase{word-break:normal;overflow-wrap:anywhere}
+@media(max-width:520px){
+ .vgProdGrid{padding:8px;gap:8px}.vgCreatureBay{min-height:365px}.vgCreatureImage{height:315px}
+ .vgProdSide{gap:7px}.vgProdPanel{padding:8px}.vgModGrid,.vgGameMods{grid-template-columns:1fr}
+ .vgProdActions{grid-template-columns:1fr}.vgProdActions .hot{grid-column:1}
+ .vgWear{font-size:7px;max-width:42%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+}
+</style>
+<script id="vg-test-ready-cleanup-js">
+(function(){
+ function safePet(i){return state&&state.sanctuary&&state.sanctuary[Number(i)]}
+ function safeSaveRender(){try{save()}catch(e){}try{render()}catch(e){console.error("VET GODS render:",e)}}
+ // Harden navigation: never silently do nothing.
+ const oldAction=window.VG_PROD_action;
+ window.VG_PROD_action=function(i,n){
+   const p=safePet(i);
+   if(!p){try{toast("Resident not found. Return to My Pets and reopen the animal.")}catch(e){}return false}
+   try{
+     if(n===0){
+       state.morphSanctuaryIndex=Number(i);state.screen="morphsanctuarydetail";
+       try{if(typeof MS==="function")MS(p).tab="CARE"}catch(e){}
+       safeSaveRender();return false;
+     }
+     if(n===1){
+       if(typeof window.VG_openEvolution==="function"){window.VG_openEvolution(Number(i));return false}
+       state.morphSanctuaryIndex=Number(i);state.screen="morphsanctuarydetail";safeSaveRender();
+       try{toast("Evolution Studio is available from this resident's development deck.")}catch(e){}return false;
+     }
+     if(n===2){
+       state.fullProfileIndex=Number(i);
+       if(typeof window.VG_openRoadCampaign==="function"){window.VG_openRoadCampaign(Number(i));return false}
+       state.screen="campaignmap";safeSaveRender();return false;
+     }
+     if(n===3){
+       if(typeof window.VG_openCertCenter==="function"){window.VG_openCertCenter();return false}
+       state.fullProfileIndex=Number(i);state.screen="certcenter";safeSaveRender();return false;
+     }
+   }catch(e){console.error("VET GODS navigation:",e);try{toast("That module hit an error. Your resident is still saved.")}catch(x){}}
+   return false;
+ };
+ // Remove duplicate roadmaps after every render; the Production Companion Deck is authoritative.
+ function cleanup(){
+   const decks=[...document.querySelectorAll("#vgProductionDeck")];
+   decks.slice(1).forEach(x=>x.remove());
+   const mainDeck=decks[0];
+   if(mainDeck){
+     let el=mainDeck.nextElementSibling;
+     while(el && el.classList && el.classList.contains("vgDevPaths")){let nx=el.nextElementSibling;el.remove();el=nx}
+   }
+   document.querySelectorAll(".vgProdEvoHero .vgDevPaths,.vgProdEvoHero .vgTenRail.vgInjected").forEach(x=>x.remove());
+ }
+ const ro=new MutationObserver(()=>cleanup());
+ document.addEventListener("DOMContentLoaded",()=>{cleanup();ro.observe(document.body,{childList:true,subtree:true})},{once:true});
+ setTimeout(cleanup,250);
 })();
 </script>
