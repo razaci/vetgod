@@ -1896,4 +1896,1583 @@ ensure5();
 window.VetGodsParanormal5={renderResolution,renderArchive,fileCase};
 })();
 </script>
+
+<style id="institution-p1-css">
+.rx{border:1px solid #666;margin-top:8px}.rx h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.rx-grid{display:grid;grid-template-columns:repeat(2,1fr)}.rx-cell{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.rx-cell small{display:block;color:#777}.rx-cell b{color:#fff}
+.rx-form{display:grid;grid-template-columns:120px 1fr;border-bottom:1px dotted #444;align-items:center}.rx-form label{padding:6px;color:#888;font-size:9px}.rx-form input,.rx-form select,.rx-form textarea{margin:4px;background:#000;color:#ddd;border:1px solid #666;padding:6px;font:9px "Courier New",monospace}.rx-form textarea{min-height:58px;resize:vertical}
+.rx-btns{display:grid;grid-template-columns:repeat(2,1fr)}.rx-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.rx-btns button:hover{background:#c9c9c9;color:#000}
+.rx-stage{display:flex;overflow:auto;border:1px solid #666;margin-top:8px}.rx-stage span{flex:1;min-width:85px;text-align:center;padding:5px;border-right:1px dotted #555;font-size:8px;color:#666}.rx-stage .done{color:#aaa}.rx-stage .now{background:#c9c9c9;color:#000;font-weight:900}
+.rx-ticket{padding:8px;white-space:pre-wrap;font-size:9px;line-height:1.55}.rx-ticket b{color:#fff}
+.rx-queue{padding:6px;border-bottom:1px dotted #444;font-size:9px}.rx-queue b{color:#fff}.rx-queue small{display:block;color:#777}
+@media(max-width:600px){.rx-grid,.rx-btns{grid-template-columns:1fr}.rx-form{grid-template-columns:1fr}.rx-form label{padding-bottom:0}}
+</style>
+<script id="institution-p1-js">
+(function(){
+"use strict";
+function A(){return state.animals[state.active]}
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+const ST=["REPORTER","PATIENT","CONCERN","TRIAGE","ADMIT"];
+function ensureR(){
+ state.reception=state.reception||{draft:null,queue:[],completed:[],counter:1,log:[]};
+ save();
+}
+function newDraft(){
+ let a=A(),r=state.reception;
+ r.draft={stage:0,caseNo:"VG-"+String(r.counter++).padStart(5,"0"),animalId:a.id,
+ reporterFirst:"",reporterLast:"",relation:"REPORTER",phone:"",concern:"",
+ onset:"UNKNOWN",priority:"ROUTINE",arrival:"WALK-IN",notes:"",
+ triage:{health:a.health,oxygen:a.oxygen,pain:a.pain,hydration:a.hydration,stress:a.stress},
+ admitted:false,created:Date.now()};
+ save();
+}
+function stage(d){return '<div class="rx-stage">'+ST.map((x,i)=>'<span class="'+(i<d.stage?"done":i===d.stage?"now":"")+'">'+(i<d.stage?"[X] ":i===d.stage?"[>] ":"[ ] ")+x+'</span>').join("")+'</div>'}
+function inp(id,label,val,type="text"){return '<div class="rx-form"><label>'+label+'</label><input id="'+id+'" type="'+type+'" value="'+esc(val||"")+'"></div>'}
+function sel(id,label,val,opts){return '<div class="rx-form"><label>'+label+'</label><select id="'+id+'">'+opts.map(x=>'<option '+(x===val?"selected":"")+'>'+x+'</option>').join("")+'</select></div>'}
+function ta(id,label,val){return '<div class="rx-form"><label>'+label+'</label><textarea id="'+id+'">'+esc(val||"")+'</textarea></div>'}
+function esc(v){return String(v).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function syncForm(){
+ let d=state.reception.draft;if(!d)return;
+ ["reporterFirst","reporterLast","phone","concern","notes"].forEach(k=>{let e=document.querySelector("#rx_"+k);if(e)d[k]=e.value});
+ ["relation","onset","priority","arrival"].forEach(k=>{let e=document.querySelector("#rx_"+k);if(e)d[k]=e.value});
+ save();
+}
+function renderReception(){
+ ensureR();page="reception";nav();let r=state.reception;if(!r.draft)newDraft();let d=r.draft,a=state.animals.find(x=>x.id===d.animalId)||A();
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\RECEPTION&gt;</div>'+
+ '<div class="rx"><h4>RECEPTION.EXE — CASE '+d.caseNo+'</h4><div class="rx-grid">'+
+ cell("PATIENT",a.icon+" "+a.name,a.species)+cell("CASE NUMBER",d.caseNo,"persistent intake record")+
+ cell("ARRIVAL",d.arrival,"intake channel")+cell("PRIORITY",d.priority,"fictional triage priority")+'</div></div>'+stage(d)+
+ formFor(d,a)+
+ '<div class="rx"><h4>RECEPTION COMMANDS</h4><div class="rx-btns">'+commands(d)+'</div></div>'+
+ '<div class="rx"><h4>WAITING / ADMISSION QUEUE</h4>'+(r.queue.length?r.queue.slice(0,8).map(q=>'<div class="rx-queue"><b>'+q.caseNo+' · '+q.patient+' · '+q.priority+'</b><small>'+q.reporter+' · '+q.concern+'</small></div>').join(""):'<div class="rx-queue">NO CASES WAITING.</div>')+'</div>'+
+ '<div class="out"><h4>RECEPTION LOG</h4><pre id="out">'+(r.log.length?r.log.slice(0,14).join("\n"):"RECEPTION TERMINAL READY.")+'</pre></div>';
+ document.querySelectorAll("[data-rx]").forEach(b=>b.onclick=()=>cmd(b.dataset.rx));
+}
+function cell(k,v,n){return '<div class="rx-cell"><small>'+k+'</small><b>'+v+'</b><small>'+n+'</small></div>'}
+function formFor(d,a){
+ if(d.stage===0)return '<div class="rx"><h4>REPORTER / OWNER INFORMATION</h4>'+inp("rx_reporterFirst","FIRST NAME",d.reporterFirst)+inp("rx_reporterLast","LAST NAME",d.reporterLast)+sel("rx_relation","RELATION",d.relation,["REPORTER","OWNER","RESCUER","HANDLER","FACILITY STAFF"])+inp("rx_phone","CONTACT / FILE NOTE",d.phone)+'</div>';
+ if(d.stage===1)return '<div class="rx"><h4>PATIENT CONFIRMATION</h4><div class="rx-ticket"><b>'+a.icon+' '+a.name+'</b>\nSpecies: '+a.species+'\nCase ID: '+a.caseId+'\nCurrent stage: '+a.stage+'\nHealth '+a.health+'% · O2 '+a.oxygen+'% · Pain '+a.pain+'% · Hydration '+a.hydration+'% · Stress '+a.stress+'%</div>'+sel("rx_arrival","ARRIVAL",d.arrival,["WALK-IN","RESCUE TRANSFER","SANCTUARY TRANSFER","MISSION RETURN","RESEARCH TRANSFER"])+'</div>';
+ if(d.stage===2)return '<div class="rx"><h4>PRESENTING CONCERN</h4>'+ta("rx_concern","REASON FOR VISIT",d.concern)+sel("rx_onset","ONSET",d.onset,["UNKNOWN","JUST NOW","TODAY","1-3 DAYS","LONGER TERM"])+ta("rx_notes","INTAKE NOTES",d.notes)+'</div>';
+ if(d.stage===3)return '<div class="rx"><h4>FICTIONAL TRIAGE SNAPSHOT</h4><div class="rx-grid">'+cell("HEALTH",a.health+"%","current")+cell("OXYGEN",a.oxygen+"%","current")+cell("PAIN",a.pain+"%","0 = none")+cell("HYDRATION",a.hydration+"%","current")+cell("STRESS",a.stress+"%","current")+cell("BRAIN NEED",a.dynamic?.currentNeed||"OBSERVE","dynamic engine")+'</div>'+sel("rx_priority","TRIAGE PRIORITY",d.priority,["ROUTINE","PRIORITY","URGENT","CRITICAL"])+'</div>';
+ return '<div class="rx"><h4>ADMISSION TICKET</h4><div class="rx-ticket">'+ticket(d,a)+'</div></div>';
+}
+function commands(d){
+ if(d.stage<4)return '<button data-rx="next">[01] SAVE + NEXT INTAKE STEP</button><button data-rx="back">[02] PREVIOUS STEP</button><button data-rx="patient">[03] CHANGE ACTIVE PATIENT</button><button data-rx="cancel">[04] CANCEL DRAFT</button>';
+ return '<button data-rx="admit">[01] ADMIT TO CLINIC</button><button data-rx="queue">[02] PLACE IN WAITING QUEUE</button><button data-rx="back">[03] EDIT INTAKE</button><button data-rx="new">[04] NEW INTAKE</button>';
+}
+function ticket(d,a){
+ let reporter=((d.reporterFirst+" "+d.reporterLast).trim()||"UNNAMED REPORTER");
+ return "CASE: "+d.caseNo+"\nPATIENT: "+a.name+" / "+a.species+"\nREPORTED BY: "+reporter+" / "+d.relation+
+ "\nARRIVAL: "+d.arrival+"\nPRIORITY: "+d.priority+"\nCONCERN: "+(d.concern||"NO CONCERN ENTERED")+
+ "\nONSET: "+d.onset+"\n\nTRIAGE\nHealth "+a.health+"% / O2 "+a.oxygen+"% / Pain "+a.pain+"% / Hydration "+a.hydration+"% / Stress "+a.stress+"%"+
+ "\n\nNEXT ROUTE: CLINIC.EXE";
+}
+function cmd(c){
+ let r=state.reception,d=r.draft;if(!d)return;syncForm();let a=state.animals.find(x=>x.id===d.animalId)||A();
+ if(c==="next"){d.stage=Math.min(4,d.stage+1);r.log.unshift(d.caseNo+" · INTAKE STEP "+ST[d.stage]);save();return renderReception()}
+ if(c==="back"){d.stage=Math.max(0,d.stage-1);save();return renderReception()}
+ if(c==="patient"){state.active=(state.active+1)%state.animals.length;d.animalId=A().id;r.log.unshift(d.caseNo+" · PATIENT CHANGED TO "+A().name);save();return renderReception()}
+ if(c==="cancel"){r.log.unshift(d.caseNo+" · DRAFT CANCELLED");r.draft=null;save();newDraft();return renderReception()}
+ if(c==="new"){r.draft=null;newDraft();return renderReception()}
+ if(c==="queue"){
+   r.queue.unshift({caseNo:d.caseNo,patient:a.name,animalId:a.id,priority:d.priority,reporter:(d.reporterFirst+" "+d.reporterLast).trim()||"UNNAMED",concern:d.concern||"NO CONCERN",time:Date.now()});
+   r.completed.push({...d,status:"WAITING"});r.log.unshift(d.caseNo+" · PLACED IN WAITING QUEUE");r.draft=null;save();newDraft();return renderReception();
+ }
+ if(c==="admit"){
+   d.admitted=true;a.stage="INTAKE";a.disposition="ACTIVE CASE";a.caseId=d.caseNo;
+   a.reporter={first:d.reporterFirst,last:d.reporterLast,relation:d.relation,contact:d.phone};
+   a.presentingConcern=d.concern;a.intakeNotes=d.notes;a.triagePriority=d.priority;a.arrivalMode=d.arrival;
+   a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · RECEPTION ADMISSION "+d.caseNo+" · "+d.priority+" · "+(d.concern||"NO CONCERN"));
+   r.completed.push({...d,status:"ADMITTED",patient:a.name});r.log.unshift(d.caseNo+" · ADMITTED TO CLINIC · "+a.name);r.draft=null;save();return open("care");
+ }
+}
+const oldProgram=program;
+program=function(k){if(k==="reception")return renderReception();return oldProgram(k)};
+function addLink(){
+ if(page!=="home"||document.querySelector("#rxHomeLink"))return;let cmds=document.querySelector(".p10-buttons");if(!cmds)return;
+ let b=document.createElement("button");b.id="rxHomeLink";b.textContent="[08] RECEPTION.EXE";b.onclick=renderReception;cmds.appendChild(b);
+}
+const oldHome=home;home=function(){oldHome();addLink()};
+ensureR();addLink();
+window.VetGodsReception1={renderReception,newDraft};
+})();
+</script>
+
+<style id="institution-p2-css">
+.dx{border:1px solid #666;margin-top:8px}.dx h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.dx-grid{display:grid;grid-template-columns:repeat(2,1fr)}
+.dx-card{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.dx-card small{display:block;color:#777}.dx-card b{color:#fff}
+.dx-btns{display:grid;grid-template-columns:repeat(2,1fr)}
+.dx-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}
+.dx-btns button:hover,.dx-btns button.done{background:#c9c9c9;color:#000}.dx-btns small{display:block;color:#777;margin-top:3px}
+.dx-body{display:grid;grid-template-columns:110px 1fr}.dx-map{padding:8px;border-right:1px dotted #555;white-space:pre;font-size:9px;line-height:1.3;text-align:center}
+.dx-zones{display:grid;grid-template-columns:repeat(2,1fr)}.dx-zone{padding:6px;border-bottom:1px dotted #444;border-right:1px dotted #444;font-size:9px}.dx-zone b{color:#fff}.dx-zone small{display:block;color:#777}
+.dx-find{padding:6px;border-bottom:1px dotted #444;font-size:9px;line-height:1.45}.dx-find b{color:#fff}.dx-find small{display:block;color:#777}
+.dx-meter{display:grid;grid-template-columns:115px 1fr 40px;gap:6px;padding:5px 7px;border-bottom:1px dotted #444;font-size:9px}.dx-meter span{color:#888}.dx-meter b{color:#fff;text-align:right}
+.dx-bar{height:8px;border:1px solid #555}.dx-bar i{display:block;height:100%;background:#aaa}
+@media(max-width:600px){.dx-grid,.dx-btns,.dx-zones{grid-template-columns:1fr}.dx-body{grid-template-columns:1fr}.dx-map{border-right:0;border-bottom:1px dotted #555}}
+</style>
+<script id="institution-p2-js">
+(function(){
+"use strict";
+function A(){return state.animals[state.active]}
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+const TESTS=[
+ ["physical","PHYSICAL.EXE","Hands-on fictional exam and body-zone findings."],
+ ["imaging","IMAGING.EXE","Generate a fictional imaging report."],
+ ["lab","LAB.EXE","Run fictional blood/chemistry-style game values."],
+ ["sample","SAMPLE.EXE","Catalog a case specimen for the record."],
+ ["neuro","NEUROSCREEN.EXE","Read the existing fictional brain/behavior network."],
+ ["review","EVIDENCE.EXE","Synthesize findings without forcing a diagnosis."]
+];
+function ensureD(){
+ state.animals.forEach(a=>a.diagnostics=a.diagnostics||{runs:{},findings:[],samples:[],zones:{HEAD:"UNEXAMINED",CHEST:"UNEXAMINED",ABDOMEN:"UNEXAMINED",LIMBS:"UNEXAMINED",SKIN:"UNEXAMINED",NEURO:"UNEXAMINED"},evidence:0,uncertainty:100,review:"NOT REVIEWED"});
+ save();
+}
+function finding(a,type,text,weight){
+ a.diagnostics.findings.unshift({time:new Date().toLocaleTimeString(),type,text,weight});
+ a.diagnostics.findings=a.diagnostics.findings.slice(0,30);
+ a.diagnostics.evidence=clamp(a.diagnostics.evidence+weight);
+ a.diagnostics.uncertainty=clamp(100-a.diagnostics.evidence*.72);
+}
+function meter(k,v){return '<div class="dx-meter"><span>'+k+'</span><div class="dx-bar"><i style="width:'+clamp(v)+'%"></i></div><b>'+clamp(v)+'%</b></div>'}
+function renderDiagnostics(){
+ ensureD();page="diagnostics";nav();let a=A(),d=a.diagnostics;
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\DIAGNOSTICS\\'+a.name.toUpperCase()+'&gt;</div>'+
+ '<div class="dx"><h4>DIAGNOSTICS.EXE — '+a.caseId+'</h4><div class="dx-grid">'+
+ card("PATIENT",a.icon+" "+a.name,a.species)+card("CONCERN",a.presentingConcern||"NO RECEPTION CONCERN","intake record")+
+ card("TRIAGE",a.triagePriority||"NOT SET","reception priority")+card("CASE STAGE",a.stage,"current care stage")+'</div></div>'+
+ '<div class="dx"><h4>BODY MAP</h4><div class="dx-body"><div class="dx-map">   /\\_/\\\\\n  ( o.o )\n   > ^ <\n\n[HEAD]\n[CHEST]\n[ABDOMEN]\n[LIMBS]\n[SKIN]\n[NEURO]</div><div class="dx-zones">'+Object.entries(d.zones).map(([k,v])=>'<div class="dx-zone"><b>'+k+'</b><small>'+v+'</small></div>').join("")+'</div></div></div>'+
+ '<div class="dx"><h4>DIAGNOSTIC WORKSTATIONS</h4><div class="dx-btns">'+TESTS.map((t,i)=>'<button class="'+(d.runs[t[0]]?"done":"")+'" data-dx="'+t[0]+'">['+String(i+1).padStart(2,"0")+'] '+t[1]+'<small>'+t[2]+'</small></button>').join("")+'</div></div>'+
+ '<div class="dx"><h4>CASE EVIDENCE STATE</h4>'+meter("EVIDENCE DEPTH",d.evidence)+meter("UNCERTAINTY",d.uncertainty)+'</div>'+
+ '<div class="dx"><h4>FINDINGS</h4>'+(d.findings.length?d.findings.map(f=>'<div class="dx-find"><b>'+f.type+'</b><small>'+f.text+'</small><small>'+f.time+' · evidence +'+f.weight+'</small></div>').join(""):'<div class="dx-find">NO DIAGNOSTIC FINDINGS YET.</div>')+'</div>'+
+ '<div class="dx"><h4>DEPARTMENT ROUTING</h4><div class="dx-btns"><button data-route="clinic">[C1] RETURN CLINIC</button><button data-route="brain">[C2] OPEN BRAIN.EXE</button><button data-route="reception">[C3] RECEPTION.EXE</button><button data-route="feedback">[C4] FEEDBACK.EXE</button></div></div>'+
+ '<div class="out"><h4>DIAGNOSTIC OUTPUT</h4><pre id="out">'+d.review+'</pre></div>';
+ document.querySelectorAll("[data-dx]").forEach(b=>b.onclick=()=>run(b.dataset.dx));
+ document.querySelectorAll("[data-route]").forEach(b=>b.onclick=()=>route(b.dataset.route));
+}
+function card(k,v,n){return '<div class="dx-card"><small>'+k+'</small><b>'+v+'</b><small>'+n+'</small></div>'}
+function run(k){
+ let a=A(),d=a.diagnostics;if(d.runs[k]&&k!=="review"){d.review=(k.toUpperCase()+" already completed. Existing result retained.");save();return renderDiagnostics()}
+ if(k==="physical"){
+  d.runs.physical=true;d.zones.HEAD=a.stress>65?"GUARDED RESPONSE":"NO MAJOR GAME FLAG";d.zones.CHEST=a.oxygen<93?"RESPIRATORY FLAG":"NO MAJOR GAME FLAG";d.zones.ABDOMEN=a.hydration<60?"HYDRATION FLAG":"NO MAJOR GAME FLAG";d.zones.LIMBS=a.pain>45?"GUARDED MOBILITY":"MOBILITY ACCEPTABLE";d.zones.SKIN=a.hydration<55?"DRYNESS FLAG":"NO MAJOR GAME FLAG";d.zones.NEURO=a.brain?.decision||"OBSERVE";
+  finding(a,"PHYSICAL EXAM","Body zones examined. Current game stats generated targeted flags.",18);
+ }
+ if(k==="imaging"){
+  d.runs.imaging=true;let txt=a.pain>55?"Fictional imaging flags a region for treatment review; no definitive diagnosis assigned.":"Fictional imaging shows no high-priority structural game flag.";
+  finding(a,"IMAGING",txt,17);
+ }
+ if(k==="lab"){
+  d.runs.lab=true;let hydrationMarker=clamp(100-a.hydration+35),stressMarker=clamp(a.stress),recoveryMarker=clamp(a.dynamic?.recoveryDrive||50);
+  finding(a,"LAB PANEL","Sim values: hydration marker "+hydrationMarker+" / stress marker "+stressMarker+" / recovery marker "+recoveryMarker+".",20);
+ }
+ if(k==="sample"){
+  d.runs.sample=true;let id="SP-"+a.caseId+"-"+String(d.samples.length+1).padStart(2,"0");d.samples.push({id,type:"FICTIONAL DIAGNOSTIC SPECIMEN",time:Date.now()});
+  finding(a,"SPECIMEN",id+" catalogued and attached to this patient record.",12);
+ }
+ if(k==="neuro"){
+  d.runs.neuro=true;d.zones.NEURO=(a.brain?.need||a.dynamic?.currentNeed||"OBSERVE")+" / "+(a.brain?.intent||"MONITOR");
+  finding(a,"NEURO / BEHAVIOR SCREEN","Need "+(a.brain?.need||a.dynamic?.currentNeed||"OBSERVE")+"; intent "+(a.brain?.intent||"MONITOR ENVIRONMENT")+"; handling "+(a.dynamic?.handlingEase||50)+"%.",16);
+ }
+ if(k==="review"){
+  let n=Object.keys(d.runs).length;
+  d.runs.review=true;
+  d.review="EVIDENCE REVIEW\nCompleted diagnostic modules: "+n+"/5 core modules\nEvidence depth: "+d.evidence+"%\nRemaining uncertainty: "+d.uncertainty+"%\n\n"+
+  (n>=4?"CASE READY FOR TREATMENT-PLANNING DEPARTMENT.\nFindings are attached to the resident record.":"MORE DIAGNOSTIC WORK RECOMMENDED BY GAME LOGIC.\nComplete additional modules before treatment planning.")+
+  "\n\nThis is fictional gameplay output, not real veterinary diagnosis.";
+  finding(a,"EVIDENCE REVIEW",n>=4?"Diagnostic package substantially developed.":"Diagnostic package remains incomplete.",8);
+ }
+ a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · DIAGNOSTICS · "+k.toUpperCase());
+ if(window.VetGodsDynamicStats5)window.VetGodsDynamicStats5.lifeEvent(a,"DIAGNOSTICS","Completed "+k.toUpperCase()+" in Diagnostics.");
+ save();renderDiagnostics();
+}
+function route(k){
+ if(k==="clinic")return open("care");
+ if(k==="reception")return program("reception");
+ if(k==="brain")return window.VetGodsDynamicStats2.renderBrain();
+ if(k==="feedback")return window.VetGodsDynamicStats4.renderFeedback();
+}
+const oldProgram=program;
+program=function(k){if(k==="diagnostics")return renderDiagnostics();return oldProgram(k)};
+function addClinicLink(){
+ if(page!=="care"||document.querySelector("#dxClinicLink"))return;let out=document.querySelector(".out");if(!out)return;
+ let b=document.createElement("button");b.id="dxClinicLink";b.className="action";b.textContent="[DX] TRANSFER TO DIAGNOSTICS.EXE";b.onclick=renderDiagnostics;out.insertAdjacentElement("beforebegin",b);
+}
+const oldOpen=open;
+open=function(k){let r=oldOpen(k);if(k==="care")addClinicLink();return r};
+function addHome(){
+ if(page!=="home"||document.querySelector("#dxHomeLink"))return;let cmds=document.querySelector(".p10-buttons");if(!cmds)return;
+ let b=document.createElement("button");b.id="dxHomeLink";b.textContent="[09] DIAGNOSTICS.EXE";b.onclick=renderDiagnostics;cmds.appendChild(b);
+}
+const oldHome=home;home=function(){oldHome();addHome()};
+ensureD();addHome();addClinicLink();
+window.VetGodsDiagnostics2={renderDiagnostics,run};
+})();
+</script>
+
+<style id="institution-p3-css">
+.tx{border:1px solid #666;margin-top:8px}.tx h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.tx-grid{display:grid;grid-template-columns:repeat(2,1fr)}
+.tx-card{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.tx-card small{display:block;color:#777}.tx-card b{color:#fff}
+.tx-btns{display:grid;grid-template-columns:repeat(2,1fr)}.tx-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.tx-btns button:hover,.tx-btns button.on{background:#c9c9c9;color:#000}.tx-btns small{display:block;color:#777;margin-top:3px}
+.tx-plan{padding:6px;border-bottom:1px dotted #444;font-size:9px;line-height:1.45}.tx-plan b{color:#fff}.tx-plan small{display:block;color:#777}
+.tx-meter{display:grid;grid-template-columns:110px 1fr 42px;gap:6px;padding:5px 7px;border-bottom:1px dotted #444;font-size:9px}.tx-meter span{color:#888}.tx-meter b{color:#fff;text-align:right}.tx-bar{height:8px;border:1px solid #555}.tx-bar i{display:block;height:100%;background:#aaa}
+.tx-flow{display:flex;overflow:auto;border:1px solid #666;margin-top:8px}.tx-flow span{flex:1;min-width:90px;text-align:center;padding:5px;border-right:1px dotted #555;font-size:8px;color:#666}.tx-flow .done{color:#aaa}.tx-flow .now{background:#c9c9c9;color:#000;font-weight:900}
+.tx-output{padding:8px;white-space:pre-wrap;font-size:9px;line-height:1.55}
+@media(max-width:600px){.tx-grid,.tx-btns{grid-template-columns:1fr}.tx-meter{grid-template-columns:90px 1fr 38px}}
+</style>
+<script id="institution-p3-js">
+(function(){
+"use strict";
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+function A(){return state.animals[state.active]}
+const OPTIONS=[
+ ["oxygen","OXYGEN SUPPORT","Supports low oxygen game stat.",{oxygen:8,stress:-2},5],
+ ["fluids","IV FLUID SUPPORT","Raises hydration and supports recovery.",{hydration:12,health:3},8],
+ ["water","OFFER WATER","Gentle hydration option for stable residents.",{hydration:7,stress:-1},2],
+ ["pain","PAIN CONTROL","Reduces fictional pain stat.",{pain:-12,stress:-4,trust:2},6],
+ ["nutrition","NUTRITION SUPPORT","Raises nutrition/energy-related state.",{nutrition:10,health:2},4],
+ ["comfort","COMFORT / CALMING","Reduces stress and improves trust.",{stress:-10,trust:6},3],
+ ["mobility","ASSISTED MOBILITY","Supports mobility when condition allows.",{mobility:8,stress:-2},4],
+ ["rest","PROTECTED REST","Allows recovery with reduced stimulation.",{stress:-6,health:4},2]
+];
+function ensureT(){
+ state.animals.forEach(a=>{
+  a.treatment=a.treatment||{plan:[],performed:[],reassessments:[],stage:0,readiness:0,last:"NO TREATMENT PLAN",route:"UNDECIDED"};
+  if(a.nutrition==null)a.nutrition=65;if(a.mobility==null)a.mobility=65;
+ });
+ save();
+}
+function flow(t){return '<div class="tx-flow">'+["PLAN","PERFORM","REASSESS","ROUTE"].map((x,i)=>'<span class="'+(i<t.stage?"done":i===t.stage?"now":"")+'">'+(i<t.stage?"[X] ":i===t.stage?"[>] ":"[ ] ")+x+'</span>').join("")+'</div>'}
+function meter(k,v){return '<div class="tx-meter"><span>'+k+'</span><div class="tx-bar"><i style="width:'+clamp(v)+'%"></i></div><b>'+clamp(v)+'%</b></div>'}
+function renderTreatment(){
+ ensureT();page="treatment";nav();let a=A(),t=a.treatment,d=a.diagnostics||{};
+ let completed=Object.keys(d.runs||{}).filter(k=>k!=="review").length;
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\TREATMENT\\'+a.name.toUpperCase()+'&gt;</div>'+
+ '<div class="tx"><h4>TREATMENT.EXE — '+a.caseId+'</h4><div class="tx-grid">'+
+ card("PATIENT",a.icon+" "+a.name,a.species)+card("DIAGNOSTICS",completed+"/5 core modules",(d.evidence||0)+"% evidence depth")+
+ card("CONCERN",a.presentingConcern||"NO CONCERN","reception record")+card("CURRENT ROUTE",t.route,"treatment disposition")+'</div></div>'+flow(t)+
+ '<div class="tx"><h4>LIVE PATIENT STATE</h4>'+meter("HEALTH",a.health)+meter("OXYGEN",a.oxygen)+meter("HYDRATION",a.hydration)+meter("PAIN",100-a.pain)+meter("NUTRITION",a.nutrition)+meter("MOBILITY",a.mobility)+meter("CALM / STRESS",100-a.stress)+meter("TRUST",a.trust)+'</div>'+
+ '<div class="tx"><h4>TREATMENT PLAN BUILDER</h4><div class="tx-btns">'+OPTIONS.map((o,i)=>'<button class="'+(t.plan.includes(o[0])?"on":"")+'" data-plan="'+o[0]+'">['+String(i+1).padStart(2,"0")+'] '+o[1]+' · '+o[4]+' CR<small>'+o[2]+'</small></button>').join("")+'</div></div>'+
+ '<div class="tx"><h4>ACTIVE PLAN</h4>'+(t.plan.length?t.plan.map(k=>{let o=OPTIONS.find(x=>x[0]===k);return '<div class="tx-plan"><b>'+o[1]+'</b><small>'+(t.performed.includes(k)?"PERFORMED":"PLANNED / WAITING")+' · cost '+o[4]+' credits</small></div>'}).join(""):'<div class="tx-plan">NO INTERVENTIONS SELECTED.</div>')+'</div>'+
+ '<div class="tx"><h4>TREATMENT COMMANDS</h4><div class="tx-btns"><button data-tx="perform">[P1] PERFORM NEXT PLANNED ACTION<small>Applies one intervention at a time.</small></button><button data-tx="reassess">[P2] REASSESS PATIENT<small>Recalculate connected systems and readiness.</small></button><button data-tx="clear">[P3] CLEAR UNPERFORMED PLAN<small>Performed care remains in history.</small></button><button data-tx="diagnostics">[P4] RETURN DIAGNOSTICS<small>Gather more evidence.</small></button></div></div>'+
+ (t.stage>=2?'<div class="tx"><h4>DISPOSITION ROUTER</h4><div class="tx-btns"><button data-route="recovery">[R1] RECOVERY CANDIDATE</button><button data-route="surgery">[R2] SURGERY REVIEW</button><button data-route="diagnostics">[R3] MORE DIAGNOSTICS</button><button data-route="clinic">[R4] RETURN CLINIC</button></div></div>':'')+
+ '<div class="out"><h4>TREATMENT OUTPUT</h4><pre id="out">'+t.last+'</pre></div>';
+ document.querySelectorAll("[data-plan]").forEach(b=>b.onclick=()=>toggle(b.dataset.plan));
+ document.querySelectorAll("[data-tx]").forEach(b=>b.onclick=()=>cmd(b.dataset.tx));
+ document.querySelectorAll("[data-route]").forEach(b=>b.onclick=()=>route(b.dataset.route));
+}
+function card(k,v,n){return '<div class="tx-card"><small>'+k+'</small><b>'+v+'</b><small>'+n+'</small></div>'}
+function toggle(k){
+ let t=A().treatment;if(t.performed.includes(k))return;
+ t.plan=t.plan.includes(k)?t.plan.filter(x=>x!==k):[...t.plan,k];t.stage=t.plan.length?1:0;t.last=(t.plan.length?"PLAN UPDATED.":"PLAN EMPTY.");save();renderTreatment();
+}
+function perform(){
+ let a=A(),t=a.treatment,k=t.plan.find(x=>!t.performed.includes(x));if(!k){t.last="NO UNPERFORMED PLAN ACTIONS.";save();return}
+ let o=OPTIONS.find(x=>x[0]===k),cost=o[4];
+ if(typeof state.funds==="number"&&state.funds<cost){t.last="INSUFFICIENT CLINIC FUNDS FOR "+o[1]+".";save();return}
+ if(typeof state.funds==="number")state.funds-=cost;
+ Object.entries(o[3]).forEach(([stat,v])=>{if(a[stat]==null)a[stat]=50;a[stat]=clamp(a[stat]+v)});
+ t.performed.push(k);t.stage=2;t.last=o[1]+" PERFORMED.\nCost: "+cost+" credits.\nConnected patient stats updated.";
+ a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · TREATMENT · "+o[1]+" · -"+cost+" CR");
+ if(window.VetGodsDynamicStats5)window.VetGodsDynamicStats5.lifeEvent(a,"TREATMENT",o[1]+" changed the continuing patient state.");
+ save();
+}
+function reassess(){
+ let a=A(),t=a.treatment;
+ if(window.VetGodsDynamicStats1)window.VetGodsDynamicStats1.recalc(a,"TREATMENT REASSESS");
+ if(window.VetGodsDynamicStats2)window.VetGodsDynamicStats2.compute(a,"TREATMENT REASSESS");
+ let stable=(a.health*.2)+(a.oxygen*.2)+(a.hydration*.15)+((100-a.pain)*.15)+(a.nutrition*.1)+(a.mobility*.08)+((100-a.stress)*.07)+(a.trust*.05);
+ t.readiness=clamp(stable);t.stage=3;
+ let recommendation=t.readiness>=72?"RECOVERY CANDIDATE":a.pain>65||a.health<40?"SURGERY / ADVANCED REVIEW":"CONTINUE TREATMENT OR DIAGNOSTICS";
+ t.route=recommendation;t.reassessments.unshift({time:Date.now(),readiness:t.readiness,route:recommendation});
+ t.last="REASSESSMENT COMPLETE\nReadiness: "+t.readiness+"%\nSuggested game route: "+recommendation+"\nCurrent need: "+(a.dynamic?.currentNeed||"OBSERVE")+"\nBrain intent: "+(a.brain?.intent||"MONITOR");
+ save();
+}
+function cmd(c){
+ if(c==="perform"){perform();return renderTreatment()}
+ if(c==="reassess"){reassess();return renderTreatment()}
+ if(c==="clear"){let t=A().treatment;t.plan=t.plan.filter(k=>t.performed.includes(k));t.last="UNPERFORMED PLAN CLEARED.";save();return renderTreatment()}
+ if(c==="diagnostics")return program("diagnostics");
+}
+function route(c){
+ let a=A(),t=a.treatment;
+ if(c==="diagnostics"){t.route="MORE DIAGNOSTICS";save();return program("diagnostics")}
+ if(c==="clinic"){t.route="CLINIC";save();return open("care")}
+ if(c==="recovery"){t.route="RECOVERY CANDIDATE";a.stage="RECOVERY REVIEW";t.last="RECOVERY ROUTE SELECTED.\nRecovery department arrives in Phase 5.";save();return renderTreatment()}
+ if(c==="surgery"){t.route="SURGERY REVIEW";a.stage="SURGERY REVIEW";t.last="SURGERY REVIEW ROUTE SELECTED.\nSurgery department arrives in Phase 4.";save();return renderTreatment()}
+}
+const oldProgram=program;
+program=function(k){if(k==="treatment")return renderTreatment();return oldProgram(k)};
+function addDxLink(){
+ if(page!=="diagnostics"||document.querySelector("#txDxLink"))return;let out=document.querySelector(".out");if(!out)return;
+ let b=document.createElement("button");b.id="txDxLink";b.className="action";b.textContent="[TX] BUILD TREATMENT PLAN";b.onclick=renderTreatment;out.insertAdjacentElement("beforebegin",b);
+}
+const oldDx=window.VetGodsDiagnostics2.renderDiagnostics;
+window.VetGodsDiagnostics2.renderDiagnostics=function(){oldDx();addDxLink()};
+function addHome(){
+ if(page!=="home"||document.querySelector("#txHomeLink"))return;let cmds=document.querySelector(".p10-buttons");if(!cmds)return;
+ let b=document.createElement("button");b.id="txHomeLink";b.textContent="[10] TREATMENT.EXE";b.onclick=renderTreatment;cmds.appendChild(b);
+}
+const oldHome=home;home=function(){oldHome();addHome()};
+ensureT();addHome();addDxLink();
+window.VetGodsTreatment3={renderTreatment,perform,reassess};
+})();
+</script>
+
+<style id="institution-p4-css">
+.sx{border:1px solid #666;margin-top:8px}.sx h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.sx-grid{display:grid;grid-template-columns:repeat(2,1fr)}.sx-card{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.sx-card small{display:block;color:#777}.sx-card b{color:#fff}
+.sx-btns{display:grid;grid-template-columns:repeat(2,1fr)}.sx-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.sx-btns button:hover,.sx-btns button.on{background:#c9c9c9;color:#000}.sx-btns small{display:block;color:#777;margin-top:3px}
+.sx-flow{display:flex;overflow:auto;border:1px solid #666;margin-top:8px}.sx-flow span{flex:1;min-width:82px;text-align:center;padding:5px;border-right:1px dotted #555;font-size:8px;color:#666}.sx-flow .done{color:#aaa}.sx-flow .now{background:#c9c9c9;color:#000;font-weight:900}
+.sx-meter{display:grid;grid-template-columns:105px 1fr 40px;gap:6px;padding:5px 7px;border-bottom:1px dotted #444;font-size:9px}.sx-meter span{color:#888}.sx-meter b{color:#fff;text-align:right}.sx-bar{height:8px;border:1px solid #555}.sx-bar i{display:block;height:100%;background:#aaa}
+.sx-log{padding:6px;border-bottom:1px dotted #444;font-size:9px;line-height:1.45}.sx-log b{color:#fff}.sx-log small{display:block;color:#777}
+.sx-screen{padding:8px;white-space:pre-wrap;font-size:9px;line-height:1.55}
+@media(max-width:600px){.sx-grid,.sx-btns{grid-template-columns:1fr}.sx-meter{grid-template-columns:88px 1fr 36px}}
+</style>
+<script id="institution-p4-js">
+(function(){
+"use strict";
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+function A(){return state.animals[state.active]}
+const STEPS=["REVIEW","PRE-OP","MONITOR","PROCEDURE","CLOSURE","TRANSFER"];
+const PROCEDURES=[
+ ["repair","FICTIONAL REPAIR PROCEDURE","General game procedure for a flagged structural problem.",14],
+ ["wound","WOUND CARE PROCEDURE","Fictional operative wound-cleaning/repair sequence.",10],
+ ["explore","EXPLORATORY PROCEDURE","Game-only investigation when diagnostics remain uncertain.",16],
+ ["stabilize","ADVANCED STABILIZATION","Operative-theater stabilization sequence.",12]
+];
+function ensureS(){
+ state.animals.forEach(a=>a.surgery=a.surgery||{step:0,procedure:"",prep:{identity:false,diagnostics:false,comfort:false,monitor:false},monitor:{oxygen:a.oxygen,stability:70,stress:a.stress,recovery:50},events:[],operative:[],complete:false,transfer:false,last:"SURGERY REVIEW READY"});
+ save();
+}
+function flow(x){return '<div class="sx-flow">'+STEPS.map((v,i)=>'<span class="'+(i<x.step?"done":i===x.step?"now":"")+'">'+(i<x.step?"[X] ":i===x.step?"[>] ":"[ ] ")+v+'</span>').join("")+'</div>'}
+function meter(k,v){return '<div class="sx-meter"><span>'+k+'</span><div class="sx-bar"><i style="width:'+clamp(v)+'%"></i></div><b>'+clamp(v)+'%</b></div>'}
+function renderSurgery(){
+ ensureS();page="surgery";nav();let a=A(),x=a.surgery,dx=a.diagnostics||{},tx=a.treatment||{};
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\SURGERY\\'+a.name.toUpperCase()+'&gt;</div>'+
+ '<div class="sx"><h4>SURGERY.EXE — '+a.caseId+'</h4><div class="sx-grid">'+
+ card("PATIENT",a.icon+" "+a.name,a.species)+card("TREATMENT ROUTE",tx.route||"UNDECIDED","pre-surgical routing")+
+ card("DIAGNOSTIC EVIDENCE",(dx.evidence||0)+"%","uncertainty "+(dx.uncertainty??100)+"%")+card("PROCEDURE",procName(x.procedure),"fictional procedure record")+'</div></div>'+flow(x)+
+ '<div class="sx"><h4>OPERATING THEATER MONITOR</h4>'+meter("OXYGEN",x.monitor.oxygen)+meter("STABILITY",x.monitor.stability)+meter("CALM",100-x.monitor.stress)+meter("RECOVERY",x.monitor.recovery)+'</div>'+
+ section(x,a)+
+ '<div class="sx"><h4>OPERATIVE RECORD</h4>'+(x.operative.length?x.operative.map(e=>'<div class="sx-log"><b>'+e.step+'</b><small>'+e.time+' · '+e.text+'</small></div>').join(""):'<div class="sx-log">NO OPERATIVE EVENTS RECORDED.</div>')+'</div>'+
+ '<div class="sx"><h4>DEPARTMENT ROUTING</h4><div class="sx-btns"><button data-sroute="treatment">[R1] TREATMENT.EXE</button><button data-sroute="diagnostics">[R2] DIAGNOSTICS.EXE</button><button data-sroute="clinic">[R3] CLINIC.EXE</button>'+(x.complete?'<button data-sroute="recovery">[R4] TRANSFER TO RECOVERY</button>':'')+'</div></div>'+
+ '<div class="out"><h4>SURGERY OUTPUT</h4><pre id="out">'+x.last+'</pre></div>';
+ document.querySelectorAll("[data-sx]").forEach(b=>b.onclick=()=>act(b.dataset.sx));
+ document.querySelectorAll("[data-proc]").forEach(b=>b.onclick=()=>choose(b.dataset.proc));
+ document.querySelectorAll("[data-prep]").forEach(b=>b.onclick=()=>prep(b.dataset.prep));
+ document.querySelectorAll("[data-sroute]").forEach(b=>b.onclick=()=>route(b.dataset.sroute));
+}
+function card(k,v,n){return '<div class="sx-card"><small>'+k+'</small><b>'+v+'</b><small>'+n+'</small></div>'}
+function procName(k){let p=PROCEDURES.find(x=>x[0]===k);return p?p[1]:"NOT SELECTED"}
+function section(x,a){
+ if(x.step===0)return '<div class="sx"><h4>PROCEDURE REVIEW</h4><div class="sx-screen">Review the diagnostic and treatment record, then choose a fictional operative path. This module is game simulation, not procedural veterinary instruction.</div><div class="sx-btns">'+PROCEDURES.map((p,i)=>'<button class="'+(x.procedure===p[0]?"on":"")+'" data-proc="'+p[0]+'">['+(i+1)+'] '+p[1]+' · '+p[3]+' CR<small>'+p[2]+'</small></button>').join("")+'</div></div>';
+ if(x.step===1)return '<div class="sx"><h4>PRE-OP CHECKLIST</h4><div class="sx-btns">'+Object.entries({identity:"VERIFY PATIENT / CASE",diagnostics:"REVIEW DIAGNOSTIC PACKAGE",comfort:"COMFORT / PAIN PLAN",monitor:"CONNECT FICTIONAL MONITOR"}).map(([k,v])=>'<button class="'+(x.prep[k]?"on":"")+'" data-prep="'+k+'">'+(x.prep[k]?"[X] ":"[ ] ")+v+'</button>').join("")+'<button data-sx="preop">[NEXT] COMPLETE PRE-OP</button></div></div>';
+ if(x.step===2)return '<div class="sx"><h4>MONITORING STAGE</h4><div class="sx-screen">The theater is monitoring the resident before the fictional procedure begins. Stabilize the game gauges before proceeding.</div><div class="sx-btns"><button data-sx="oxygen">[01] ADJUST OXYGEN SUPPORT</button><button data-sx="calm">[02] CALM / COMFORT</button><button data-sx="stability">[03] STABILITY CHECK</button><button data-sx="begin">[04] BEGIN PROCEDURE</button></div></div>';
+ if(x.step===3)return '<div class="sx"><h4>PROCEDURE STAGE</h4><div class="sx-screen">'+procName(x.procedure)+'\nProgress the fictional procedure through controlled game checkpoints. No real surgical instructions are represented.</div><div class="sx-btns"><button data-sx="checkpoint">[01] COMPLETE PROCEDURE CHECKPOINT</button><button data-sx="monitor">[02] RECHECK MONITORS</button><button data-sx="closure">[03] MOVE TO CLOSURE</button></div></div>';
+ if(x.step===4)return '<div class="sx"><h4>CLOSURE / POST-OP</h4><div class="sx-screen">Finalize the fictional operative record and prepare the resident for recovery transfer.</div><div class="sx-btns"><button data-sx="close">[01] COMPLETE CLOSURE</button><button data-sx="post">[02] POST-OP MONITOR CHECK</button></div></div>';
+ return '<div class="sx"><h4>TRANSFER READY</h4><div class="sx-screen">Procedure complete.\nResident: '+a.name+'\nRecovery readiness: '+x.monitor.recovery+'%\nThe operative record is preserved on this animal.</div></div>';
+}
+function log(x,step,text){x.operative.unshift({time:new Date().toLocaleTimeString(),step,text});x.last=step+"\n"+text}
+function choose(k){let a=A(),x=a.surgery,p=PROCEDURES.find(v=>v[0]===k);if(!p)return;x.procedure=k;x.step=1;log(x,"PROCEDURE SELECTED",p[1]+" / planned game cost "+p[3]+" credits.");save();renderSurgery()}
+function prep(k){let x=A().surgery;x.prep[k]=!x.prep[k];x.last="PRE-OP CHECKLIST UPDATED.";save();renderSurgery()}
+function act(c){
+ let a=A(),x=a.surgery,p=PROCEDURES.find(v=>v[0]===x.procedure);
+ if(c==="preop"){
+  if(!Object.values(x.prep).every(Boolean)){x.last="PRE-OP BLOCKED.\nComplete all four checklist items.";save();return renderSurgery()}
+  let cost=p?.[3]||10;if(typeof state.funds==="number"&&state.funds<cost){x.last="PRE-OP BLOCKED.\nInsufficient fictional clinic funds.";save();return renderSurgery()}
+  if(typeof state.funds==="number")state.funds-=cost;x.step=2;log(x,"PRE-OP COMPLETE","Checklist verified. Procedure cost "+cost+" credits committed.");
+ }
+ else if(c==="oxygen"){x.monitor.oxygen=clamp(x.monitor.oxygen+6);a.oxygen=clamp(a.oxygen+4);log(x,"MONITOR","Oxygen-support game setting adjusted.")}
+ else if(c==="calm"){x.monitor.stress=clamp(x.monitor.stress-8);a.stress=clamp(a.stress-5);a.trust=clamp(a.trust+2);log(x,"MONITOR","Comfort intervention reduced fictional stress.")}
+ else if(c==="stability"){x.monitor.stability=clamp((x.monitor.oxygen*.35)+((100-x.monitor.stress)*.25)+(a.health*.25)+((100-a.pain)*.15));log(x,"STABILITY CHECK","Calculated theater stability "+x.monitor.stability+"%.")}
+ else if(c==="begin"){
+  if(x.monitor.oxygen<88||x.monitor.stability<55){x.last="BEGIN BLOCKED.\nImprove fictional oxygen/stability gauges first.";save();return renderSurgery()}
+  x.step=3;log(x,"PROCEDURE START","Fictional operative sequence started.");
+ }
+ else if(c==="checkpoint"){x.monitor.stability=clamp(x.monitor.stability-3);x.monitor.recovery=clamp(x.monitor.recovery+8);log(x,"PROCEDURE CHECKPOINT","Operative checkpoint completed; monitors remain active.")}
+ else if(c==="monitor"){x.monitor.oxygen=clamp((x.monitor.oxygen+a.oxygen)/2);x.monitor.stability=clamp(x.monitor.stability+2);log(x,"MONITOR RECHECK","Theater gauges recalculated.")}
+ else if(c==="closure"){x.step=4;log(x,"PROCEDURE COMPLETE","Moved to fictional closure/post-op stage.")}
+ else if(c==="post"){x.monitor.recovery=clamp((a.health*.3)+(a.oxygen*.25)+((100-a.pain)*.2)+((100-a.stress)*.15)+(a.trust*.1));log(x,"POST-OP CHECK","Recovery readiness recalculated to "+x.monitor.recovery+"%.")}
+ else if(c==="close"){x.step=5;x.complete=true;a.health=clamp(a.health+6);a.pain=clamp(a.pain+5);a.stage="POST-OP";x.monitor.recovery=clamp(x.monitor.recovery+12);log(x,"CLOSURE COMPLETE","Operative record finalized. Resident is ready for Recovery department transfer.");a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · SURGERY · "+procName(x.procedure)+" COMPLETE");if(window.VetGodsDynamicStats5)window.VetGodsDynamicStats5.lifeEvent(a,"SURGERY","Completed fictional operative-theater case and entered post-op state.")}
+ save();renderSurgery();
+}
+function route(k){
+ let a=A(),x=a.surgery;
+ if(k==="treatment")return program("treatment");
+ if(k==="diagnostics")return program("diagnostics");
+ if(k==="clinic")return open("care");
+ if(k==="recovery"){x.transfer=true;a.stage="RECOVERY";x.last="TRANSFER ORDER CREATED.\nRECOVERY.EXE arrives in Phase 5.";save();return renderSurgery()}
+}
+const oldProgram=program;
+program=function(k){if(k==="surgery")return renderSurgery();return oldProgram(k)};
+const oldTreatment=window.VetGodsTreatment3.renderTreatment;
+window.VetGodsTreatment3.renderTreatment=function(){oldTreatment();let a=A();if(!a.treatment||a.treatment.stage<2||document.querySelector("#sxTxLink"))return;let out=document.querySelector(".out");if(!out)return;let b=document.createElement("button");b.id="sxTxLink";b.className="action";b.textContent="[SX] OPEN SURGERY REVIEW";b.onclick=renderSurgery;out.insertAdjacentElement("beforebegin",b)};
+function addHome(){if(page!=="home"||document.querySelector("#sxHomeLink"))return;let cmds=document.querySelector(".p10-buttons");if(!cmds)return;let b=document.createElement("button");b.id="sxHomeLink";b.textContent="[11] SURGERY.EXE";b.onclick=renderSurgery;cmds.appendChild(b)}
+const oldHome=home;home=function(){oldHome();addHome()};
+ensureS();addHome();
+window.VetGodsSurgery4={renderSurgery};
+})();
+</script>
+
+<style id="institution-p5-css">
+.wd{border:1px solid #666;margin-top:8px}.wd h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.wd-grid{display:grid;grid-template-columns:repeat(2,1fr)}.wd-card{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.wd-card small{display:block;color:#777}.wd-card b{color:#fff}
+.wd-btns{display:grid;grid-template-columns:repeat(2,1fr)}.wd-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.wd-btns button:hover,.wd-btns button.on{background:#c9c9c9;color:#000}.wd-btns small{display:block;color:#777;margin-top:3px}
+.wd-bed{padding:7px;border-bottom:1px dotted #444;font-size:9px;line-height:1.45}.wd-bed b{color:#fff}.wd-bed small{display:block;color:#777}
+.wd-flow{display:flex;overflow:auto;border:1px solid #666;margin-top:8px}.wd-flow span{flex:1;min-width:85px;text-align:center;padding:5px;border-right:1px dotted #555;font-size:8px;color:#666}.wd-flow .done{color:#aaa}.wd-flow .now{background:#c9c9c9;color:#000;font-weight:900}
+.wd-meter{display:grid;grid-template-columns:110px 1fr 42px;gap:6px;padding:5px 7px;border-bottom:1px dotted #444;font-size:9px}.wd-meter span{color:#888}.wd-meter b{color:#fff;text-align:right}.wd-bar{height:8px;border:1px solid #555}.wd-bar i{display:block;height:100%;background:#aaa}
+.wd-log{padding:6px;border-bottom:1px dotted #444;font-size:9px;line-height:1.45}.wd-log b{color:#fff}.wd-log small{display:block;color:#777}
+@media(max-width:600px){.wd-grid,.wd-btns{grid-template-columns:1fr}.wd-meter{grid-template-columns:90px 1fr 38px}}
+</style>
+<script id="institution-p5-js">
+(function(){
+"use strict";
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+function A(){return state.animals[state.active]}
+const CARE=[
+ ["water","OFFER WATER",{hydration:8,stress:-1},2],
+ ["food","OFFER FOOD",{nutrition:9,health:1},3],
+ ["pain","PAIN SUPPORT",{pain:-9,stress:-3},5],
+ ["comfort","COMFORT / BEDDING",{stress:-8,trust:4},2],
+ ["oxygen","OXYGEN SUPPORT",{oxygen:6,stress:-1},4],
+ ["mobility","GENTLE MOBILITY",{mobility:6,stress:-1},3],
+ ["rest","PROTECTED REST",{health:4,stress:-5},2],
+ ["observe","WARD OBSERVATION",{},0]
+];
+function ensureW(){
+ state.recoveryWard=state.recoveryWard||{beds:[null,null,null,null,null,null],log:[]};
+ state.animals.forEach(a=>{
+   if(a.nutrition==null)a.nutrition=65;if(a.mobility==null)a.mobility=65;
+   a.recovery=a.recovery||{admitted:false,bed:null,cycles:0,care:[],checks:[],readiness:0,status:"NOT ADMITTED",disposition:"UNDECIDED",last:"RECOVERY WARD READY"};
+ });
+ save();
+}
+function admit(a){
+ ensureW();let r=a.recovery;if(r.admitted)return true;
+ let i=state.recoveryWard.beds.findIndex(x=>x==null);
+ if(i<0){r.last="ADMISSION BLOCKED.\nAll six recovery beds are occupied.";save();return false}
+ state.recoveryWard.beds[i]=a.id;r.admitted=true;r.bed=i+1;r.status="INPATIENT";r.disposition="UNDECIDED";a.stage="RECOVERY";
+ state.recoveryWard.log.unshift("BED "+(i+1)+" · "+a.name+" ADMITTED");a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · RECOVERY · ADMITTED BED "+(i+1));save();return true;
+}
+function flow(r){let n=r.disposition!=="UNDECIDED"?4:r.readiness>=72?3:r.cycles?2:r.admitted?1:0;return '<div class="wd-flow">'+["ADMIT","CARE","RECOVER","REASSESS","DISPOSITION"].map((x,i)=>'<span class="'+(i<n?"done":i===n?"now":"")+'">'+(i<n?"[X] ":i===n?"[>] ":"[ ] ")+x+'</span>').join("")+'</div>'}
+function meter(k,v,invert=false){let z=invert?100-v:v;return '<div class="wd-meter"><span>'+k+'</span><div class="wd-bar"><i style="width:'+clamp(z)+'%"></i></div><b>'+clamp(v)+'%</b></div>'}
+function renderRecovery(){
+ ensureW();page="recovery";nav();let a=A(),r=a.recovery;
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\RECOVERY\\'+a.name.toUpperCase()+'&gt;</div>'+
+ '<div class="wd"><h4>RECOVERY.EXE — INPATIENT WARD</h4><div class="wd-grid">'+card("PATIENT",a.icon+" "+a.name,a.species)+card("WARD STATUS",r.status,r.admitted?"BED "+r.bed:"not occupying bed")+card("RECOVERY CYCLES",r.cycles,"completed care cycles")+card("DISPOSITION",r.disposition,"current destination")+'</div></div>'+flow(r)+
+ '<div class="wd"><h4>WARD BEDS</h4>'+state.recoveryWard.beds.map((id,i)=>{let x=state.animals.find(a=>a.id===id);return '<div class="wd-bed"><b>BED '+(i+1)+' · '+(x?x.icon+" "+x.name:"OPEN")+'</b><small>'+(x?x.species+" · "+x.recovery.status:"AVAILABLE FOR ADMISSION")+'</small></div>'}).join("")+'</div>'+
+ '<div class="wd"><h4>LIVE RECOVERY STATE</h4>'+meter("HEALTH",a.health)+meter("OXYGEN",a.oxygen)+meter("HYDRATION",a.hydration)+meter("PAIN",a.pain,true)+meter("NUTRITION",a.nutrition)+meter("MOBILITY",a.mobility)+meter("STRESS",a.stress,true)+meter("TRUST",a.trust)+meter("READINESS",r.readiness)+'</div>'+
+ (!r.admitted?'<div class="wd"><h4>ADMISSION</h4><div class="wd-btns"><button data-wd="admit">[01] ADMIT TO OPEN BED<small>Places this resident into the persistent ward.</small></button><button data-wd="surgery">[02] RETURN SURGERY</button><button data-wd="treatment">[03] RETURN TREATMENT</button></div></div>':
+ '<div class="wd"><h4>INPATIENT CARE</h4><div class="wd-btns">'+CARE.map((c,i)=>'<button data-care="'+c[0]+'">['+String(i+1).padStart(2,"0")+'] '+c[1]+' · '+c[3]+' CR<small>Applies to '+a.name+' in bed '+r.bed+'.</small></button>').join("")+'</div></div>'+
+ '<div class="wd"><h4>WARD COMMANDS</h4><div class="wd-btns"><button data-wd="cycle">[C1] RUN RECOVERY CYCLE<small>Advances recovery after care.</small></button><button data-wd="check">[C2] REASSESS FOR DISCHARGE<small>Calculates readiness from connected stats.</small></button><button data-wd="treatment">[C3] TRANSFER BACK TO TREATMENT</button><button data-wd="surgery">[C4] POST-OP REVIEW</button></div></div>')+
+ (r.admitted&&r.readiness>=72?'<div class="wd"><h4>DISPOSITION</h4><div class="wd-btns"><button data-wd="home">[D1] DISCHARGE HOME<small>Closes inpatient stay and frees bed.</small></button><button data-wd="sanctuary">[D2] TRANSFER TO SANCTUARY<small>Keeps resident in your persistent animal system.</small></button><button data-wd="continue">[D3] CONTINUE RECOVERY<small>Remain admitted.</small></button></div></div>':'')+
+ '<div class="wd"><h4>RECOVERY HISTORY</h4>'+(r.care.length?r.care.slice(0,14).map(e=>'<div class="wd-log"><b>'+e.action+'</b><small>'+e.time+' · '+e.note+'</small></div>').join(""):'<div class="wd-log">NO RECOVERY CARE RECORDED.</div>')+'</div>'+
+ '<div class="out"><h4>WARD OUTPUT</h4><pre id="out">'+r.last+'</pre></div>';
+ document.querySelectorAll("[data-care]").forEach(b=>b.onclick=()=>care(b.dataset.care));
+ document.querySelectorAll("[data-wd]").forEach(b=>b.onclick=()=>cmd(b.dataset.wd));
+}
+function card(k,v,n){return '<div class="wd-card"><small>'+k+'</small><b>'+v+'</b><small>'+n+'</small></div>'}
+function care(k){
+ let a=A(),r=a.recovery,c=CARE.find(x=>x[0]===k);if(!r.admitted||!c)return;
+ let cost=c[3];if(typeof state.funds==="number"&&state.funds<cost){r.last="INSUFFICIENT FICTIONAL CLINIC FUNDS.";save();return renderRecovery()}
+ if(typeof state.funds==="number")state.funds-=cost;
+ Object.entries(c[2]).forEach(([stat,v])=>{if(a[stat]==null)a[stat]=50;a[stat]=clamp(a[stat]+v)});
+ r.care.unshift({time:new Date().toLocaleTimeString(),action:c[1],note:"Bed "+r.bed+" · cost "+cost+" credits"});
+ r.last=c[1]+" COMPLETE.\nResident remains admitted in bed "+r.bed+".";
+ if(window.VetGodsDynamicStats5)window.VetGodsDynamicStats5.lifeEvent(a,"RECOVERY CARE",c[1]+" performed during inpatient recovery.");
+ save();renderRecovery();
+}
+function readiness(a){
+ return clamp(a.health*.2+a.oxygen*.17+a.hydration*.14+(100-a.pain)*.14+a.nutrition*.1+a.mobility*.1+(100-a.stress)*.08+a.trust*.07);
+}
+function cmd(c){
+ let a=A(),r=a.recovery;
+ if(c==="admit"){admit(a);return renderRecovery()}
+ if(c==="treatment"){if(r.admitted)release(a,"TRANSFERRED TO TREATMENT");save();return program("treatment")}
+ if(c==="surgery"){if(r.admitted)release(a,"TRANSFERRED TO SURGERY REVIEW");save();return program("surgery")}
+ if(c==="cycle"){
+   if(!r.admitted)return;
+   r.cycles++;a.health=clamp(a.health+3);a.stress=clamp(a.stress-2);a.hydration=clamp(a.hydration-1);a.nutrition=clamp(a.nutrition-1);
+   r.readiness=readiness(a);r.care.unshift({time:new Date().toLocaleTimeString(),action:"RECOVERY CYCLE "+r.cycles,note:"Readiness recalculated to "+r.readiness+"%"});
+   r.last="RECOVERY CYCLE "+r.cycles+" COMPLETE.\nReadiness "+r.readiness+"%.\nNeeds continue to change while admitted.";
+   if(window.VetGodsDynamicStats1)window.VetGodsDynamicStats1.recalc(a,"RECOVERY CYCLE");
+   if(window.VetGodsDynamicStats2)window.VetGodsDynamicStats2.compute(a,"RECOVERY CYCLE");
+ }
+ if(c==="check"){
+   r.readiness=readiness(a);let ok=r.readiness>=72&&a.oxygen>=90&&a.pain<=45&&a.hydration>=55;
+   r.checks.unshift({time:Date.now(),readiness:r.readiness,eligible:ok});
+   r.last="DISCHARGE REASSESSMENT\nReadiness: "+r.readiness+"%\nOxygen: "+a.oxygen+"%\nPain: "+a.pain+"%\nHydration: "+a.hydration+"%\n\n"+(ok?"DISPOSITION OPTIONS UNLOCKED.":"CONTINUED INPATIENT CARE REQUIRED BY GAME LOGIC.");
+   if(!ok&&r.readiness>=72)r.readiness=71;
+ }
+ if(c==="continue"){r.disposition="UNDECIDED";r.last="RECOVERY CONTINUED.\nBed "+r.bed+" remains assigned.";save();return renderRecovery()}
+ if(c==="home"){r.disposition="HOME";a.stage="DISCHARGED";a.disposition="HOME";release(a,"DISCHARGED HOME");a.history.unshift(new Date().toLocaleTimeString()+" · RECOVERY · DISCHARGED HOME");}
+ if(c==="sanctuary"){r.disposition="SANCTUARY";a.stage="SANCTUARY";a.disposition="SANCTUARY";release(a,"TRANSFERRED TO SANCTUARY");a.history.unshift(new Date().toLocaleTimeString()+" · RECOVERY · TRANSFERRED TO SANCTUARY");}
+ save();renderRecovery();
+}
+function release(a,status){
+ let r=a.recovery;if(r.bed)state.recoveryWard.beds[r.bed-1]=null;r.admitted=false;r.status=status;r.last=status+".\nRecovery bed released.";r.bed=null;
+ state.recoveryWard.log.unshift(a.name+" · "+status);
+}
+const oldProgram=program;
+program=function(k){if(k==="recovery")return renderRecovery();return oldProgram(k)};
+const oldSurgery=window.VetGodsSurgery4.renderSurgery;
+window.VetGodsSurgery4.renderSurgery=function(){oldSurgery();let a=A();if(!a.surgery?.complete||document.querySelector("#wdSxLink"))return;let out=document.querySelector(".out");if(!out)return;let b=document.createElement("button");b.id="wdSxLink";b.className="action";b.textContent="[RECOVERY] TRANSFER TO INPATIENT WARD";b.onclick=()=>{admit(a);renderRecovery()};out.insertAdjacentElement("beforebegin",b)};
+function addHome(){if(page!=="home"||document.querySelector("#wdHomeLink"))return;let cmds=document.querySelector(".p10-buttons");if(!cmds)return;let b=document.createElement("button");b.id="wdHomeLink";b.textContent="[12] RECOVERY.EXE";b.onclick=renderRecovery;cmds.appendChild(b)}
+const oldHome=home;home=function(){oldHome();addHome()};
+ensureW();addHome();
+window.VetGodsRecovery5={renderRecovery,admit,readiness};
+})();
+</script>
+
+<style id="institution-p6-css">
+.ph{border:1px solid #666;margin-top:8px}.ph h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.ph-grid{display:grid;grid-template-columns:repeat(2,1fr)}
+.ph-card,.ph-row{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.ph-card small,.ph-row small{display:block;color:#777}.ph-card b,.ph-row b{color:#fff}
+.ph-stock{display:grid;grid-template-columns:1fr 48px 58px 70px;gap:5px;align-items:center;padding:6px;border-bottom:1px dotted #444;font-size:9px}.ph-stock button,.ph-btns button{background:#000;color:#c9c9c9;border:1px solid #555;padding:5px;font:8px "Courier New",monospace}.ph-stock button:hover,.ph-btns button:hover{background:#c9c9c9;color:#000}
+.ph-stock .low{color:#fff;font-weight:900}.ph-btns{display:grid;grid-template-columns:repeat(2,1fr);gap:0}.ph-btns button{border-width:0 1px 1px 0;padding:7px;text-align:left;font-weight:700}
+.ph-rx{padding:7px;border-bottom:1px dotted #444;font-size:9px;line-height:1.5}.ph-rx b{color:#fff}.ph-rx small{display:block;color:#777}
+.ph-note{padding:7px;color:#999;font-size:9px;line-height:1.5}
+@media(max-width:600px){.ph-grid,.ph-btns{grid-template-columns:1fr}.ph-stock{grid-template-columns:1fr 40px 52px 62px}}
+</style>
+<script id="institution-p6-js">
+(function(){
+"use strict";
+function A(){return state.animals[state.active]}
+const ITEMS=[
+ ["pain","PAIN SUPPORT KIT",6,4,"Treatment / Recovery","fictional pain-support inventory"],
+ ["fluids","FLUID SUPPORT KIT",8,4,"Treatment","fictional IV-fluid support stock"],
+ ["oxygen","OXYGEN CIRCUIT PACK",5,5,"Treatment / Recovery / Surgery","oxygen-support consumable"],
+ ["nutrition","NUTRITION PACK",4,6,"Treatment / Recovery","feeding/nutrition stock"],
+ ["comfort","COMFORT PACK",3,7,"Treatment / Recovery","bedding/calming materials"],
+ ["diagnostic","DIAGNOSTIC KIT",7,5,"Diagnostics","exam/lab consumables"],
+ ["specimen","SPECIMEN KIT",5,5,"Diagnostics","sample collection supplies"],
+ ["surgical","THEATER KIT",12,3,"Surgery","fictional operating-theater supply pack"],
+ ["recovery","WARD CARE KIT",5,5,"Recovery","general inpatient-care supplies"]
+];
+function ensureP(){
+ state.pharmacy=state.pharmacy||{stock:{},dispensed:[],orders:[],log:[],lowAt:2};
+ ITEMS.forEach(i=>{if(state.pharmacy.stock[i[0]]==null)state.pharmacy.stock[i[0]]=i[3]});
+ save();
+}
+function renderPharmacy(){
+ ensureP();page="pharmacy";nav();let p=state.pharmacy,a=A();
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\PHARMACY&gt;</div>'+
+ '<div class="ph"><h4>PHARMACY.EXE — CENTRAL SUPPLY</h4><div class="ph-grid">'+card("ACTIVE PATIENT",a.icon+" "+a.name,a.caseId)+card("CLINIC FUNDS",(typeof state.funds==="number"?state.funds:"--")+" CR","fictional institutional credits")+card("STOCK TYPES",ITEMS.length,"shared department inventory")+card("LOW-STOCK LEVEL","≤ "+p.lowAt,"automatic warning threshold")+'</div></div>'+
+ '<div class="ph"><h4>INVENTORY / PURCHASE</h4>'+ITEMS.map(i=>stockRow(i,p)).join("")+'</div>'+
+ '<div class="ph"><h4>PATIENT DISPENSARY — '+a.name+'</h4><div class="ph-btns">'+ITEMS.slice(0,5).map(i=>'<button data-disp="'+i[0]+'">[RX] DISPENSE '+i[1]+'<small>Moves one unit into '+a.name+"'s case supply record.</small></button>").join("")+'</div></div>'+
+ '<div class="ph"><h4>DEPARTMENT ROUTING</h4><div class="ph-btns"><button data-proute="treatment">[01] TREATMENT.EXE</button><button data-proute="recovery">[02] RECOVERY.EXE</button><button data-proute="diagnostics">[03] DIAGNOSTICS.EXE</button><button data-proute="surgery">[04] SURGERY.EXE</button></div></div>'+
+ '<div class="ph"><h4>DISPENSING RECORD</h4>'+(p.dispensed.length?p.dispensed.slice(0,14).map(x=>'<div class="ph-rx"><b>'+x.item+' → '+x.patient+'</b><small>'+x.time+' · case '+x.caseId+'</small></div>').join(""):'<div class="ph-rx">NO SUPPLIES DISPENSED YET.</div>')+'</div>'+
+ '<div class="ph-note">All items and effects in PHARMACY.EXE are fictional game inventory. This system is not medication or veterinary treatment guidance.</div>'+
+ '<div class="out"><h4>PHARMACY LOG</h4><pre id="out">'+(p.log.length?p.log.slice(0,15).join("\n"):"CENTRAL SUPPLY ONLINE.")+'</pre></div>';
+ document.querySelectorAll("[data-buy]").forEach(b=>b.onclick=()=>buy(b.dataset.buy));
+ document.querySelectorAll("[data-disp]").forEach(b=>b.onclick=()=>dispense(b.dataset.disp));
+ document.querySelectorAll("[data-proute]").forEach(b=>b.onclick=()=>route(b.dataset.proute));
+}
+function card(k,v,n){return '<div class="ph-card"><small>'+k+'</small><b>'+v+'</b><small>'+n+'</small></div>'}
+function stockRow(i,p){
+ let n=p.stock[i[0]],low=n<=p.lowAt;
+ return '<div class="ph-stock"><span><b>'+i[1]+'</b><small>'+i[4]+' · '+i[5]+'</small></span><b class="'+(low?"low":"")+'">'+n+'</b><span>'+i[2]+' CR</span><button data-buy="'+i[0]+'">BUY +1</button></div>';
+}
+function buy(k){
+ ensureP();let p=state.pharmacy,i=ITEMS.find(x=>x[0]===k);if(!i)return;
+ if(typeof state.funds==="number"&&state.funds<i[2]){p.log.unshift("PURCHASE BLOCKED · "+i[1]+" · insufficient clinic funds");save();return renderPharmacy()}
+ if(typeof state.funds==="number")state.funds-=i[2];p.stock[k]++;p.orders.unshift({item:i[1],cost:i[2],time:Date.now()});p.log.unshift("PURCHASED +1 "+i[1]+" · -"+i[2]+" CR · STOCK "+p.stock[k]);save();renderPharmacy();
+}
+function patientStock(a){a.caseSupplies=a.caseSupplies||{};return a.caseSupplies}
+function dispense(k){
+ ensureP();let p=state.pharmacy,a=A(),i=ITEMS.find(x=>x[0]===k);if(!i)return;
+ if(p.stock[k]<=0){p.log.unshift("DISPENSE BLOCKED · "+i[1]+" OUT OF STOCK");save();return renderPharmacy()}
+ p.stock[k]--;let ps=patientStock(a);ps[k]=(ps[k]||0)+1;
+ p.dispensed.unshift({item:i[1],patient:a.name,caseId:a.caseId,time:new Date().toLocaleTimeString()});
+ p.log.unshift("DISPENSED "+i[1]+" → "+a.name+" · CENTRAL STOCK "+p.stock[k]+" · CASE STOCK "+ps[k]);
+ a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · PHARMACY · "+i[1]+" DISPENSED");
+ save();renderPharmacy();
+}
+function consume(a,k,department){
+ ensureP();let ps=patientStock(a);
+ if((ps[k]||0)>0){ps[k]--;state.pharmacy.log.unshift(department+" USED CASE "+k.toUpperCase()+" SUPPLY · "+a.name+" · remaining "+ps[k]);save();return true}
+ state.pharmacy.log.unshift(department+" REQUEST BLOCKED · "+a.name+" has no dispensed "+k+" supply");save();return false;
+}
+function route(k){if(k==="recovery")return program("recovery");if(k==="treatment")return program("treatment");if(k==="diagnostics")return program("diagnostics");if(k==="surgery")return program("surgery")}
+const oldProgram=program;program=function(k){if(k==="pharmacy")return renderPharmacy();return oldProgram(k)};
+function addHome(){if(page!=="home"||document.querySelector("#phHomeLink"))return;let c=document.querySelector(".p10-buttons");if(!c)return;let b=document.createElement("button");b.id="phHomeLink";b.textContent="[13] PHARMACY.EXE";b.onclick=renderPharmacy;c.appendChild(b)}
+const oldHome=home;home=function(){oldHome();addHome()};
+function attachShortcut(renderFn,key){
+ return function(){renderFn();if(document.querySelector("#ph-"+key))return;let out=document.querySelector(".out");if(!out)return;let b=document.createElement("button");b.id="ph-"+key;b.className="action";b.textContent="[PHARMACY] CENTRAL SUPPLY";b.onclick=renderPharmacy;out.insertAdjacentElement("beforebegin",b)}
+}
+if(window.VetGodsTreatment3){let f=window.VetGodsTreatment3.renderTreatment;window.VetGodsTreatment3.renderTreatment=attachShortcut(f,"tx")}
+if(window.VetGodsRecovery5){let f=window.VetGodsRecovery5.renderRecovery;window.VetGodsRecovery5.renderRecovery=attachShortcut(f,"wd")}
+if(window.VetGodsDiagnostics2){let f=window.VetGodsDiagnostics2.renderDiagnostics;window.VetGodsDiagnostics2.renderDiagnostics=attachShortcut(f,"dx")}
+if(window.VetGodsSurgery4){let f=window.VetGodsSurgery4.renderSurgery;window.VetGodsSurgery4.renderSurgery=attachShortcut(f,"sx")}
+ensureP();addHome();
+window.VetGodsPharmacy6={renderPharmacy,buy,dispense,consume,items:ITEMS};
+})();
+</script>
+
+<style id="institution-p7-css">
+.nt{border:1px solid #666;margin-top:8px}.nt h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.nt-grid{display:grid;grid-template-columns:repeat(2,1fr)}.nt-card,.nt-row{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.nt-card small,.nt-row small{display:block;color:#777}.nt-card b,.nt-row b{color:#fff}
+.nt-btns{display:grid;grid-template-columns:repeat(2,1fr)}.nt-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.nt-btns button:hover,.nt-btns button.on{background:#c9c9c9;color:#000}.nt-btns small{display:block;color:#777;margin-top:3px}
+.nt-meter{display:grid;grid-template-columns:110px 1fr 42px;gap:6px;padding:5px 7px;border-bottom:1px dotted #444;font-size:9px}.nt-meter span{color:#888}.nt-meter b{color:#fff;text-align:right}.nt-bar{height:8px;border:1px solid #555}.nt-bar i{display:block;height:100%;background:#aaa}
+.nt-log{padding:6px;border-bottom:1px dotted #444;font-size:9px;line-height:1.45}.nt-log b{color:#fff}.nt-log small{display:block;color:#777}
+.nt-flow{display:flex;overflow:auto;border:1px solid #666;margin-top:8px}.nt-flow span{flex:1;min-width:86px;text-align:center;padding:5px;border-right:1px dotted #555;font-size:8px;color:#666}.nt-flow .done{color:#aaa}.nt-flow .now{background:#c9c9c9;color:#000;font-weight:900}
+@media(max-width:600px){.nt-grid,.nt-btns{grid-template-columns:1fr}.nt-meter{grid-template-columns:90px 1fr 38px}}
+</style>
+<script id="institution-p7-js">
+(function(){
+"use strict";
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+function A(){return state.animals[state.active]}
+const MEALS=[
+ ["recovery","RECOVERY MEAL","Gentle fictional recovery ration.",8,4],
+ ["hydration","HYDRATION MEAL","High-moisture game meal.",5,3],
+ ["energy","ENERGY MEAL","Supports fictional energy/nutrition.",10,4],
+ ["comfort","COMFORT MEAL","Familiar-style meal supporting calm/trust.",6,3],
+ ["species","SPECIES PROFILE MEAL","Prepared from the resident's game feeding profile.",9,5]
+];
+function profile(a){
+ let s=(a.species||"").toLowerCase();
+ if(/owl|bird|eagle|hawk|falcon/.test(s))return ["AVIAN","small portions / enrichment feeding","QUIET"];
+ if(/snake|lizard|gecko|reptile|turtle/.test(s))return ["REPTILE","species-profile feeding schedule","LOW STIMULATION"];
+ if(/cat|feline/.test(s))return ["FELINE","small frequent game meals","WARM / QUIET"];
+ if(/dog|wolf|canine|husky/.test(s))return ["CANINE","balanced game ration","SOCIAL / CALM"];
+ if(/insect|ant|beetle|spider|arachnid/.test(s))return ["MICRO / EXOTIC","habitat-linked feeding","HABITAT CONTROL"];
+ if(/fish|whale|dolphin|aquatic/.test(s))return ["AQUATIC","aquatic profile ration","WATER SYSTEM"];
+ return ["GENERAL EXOTIC","individualized fictional feeding profile","OBSERVE RESPONSE"];
+}
+function ensureN(){
+ state.nutritionDept=state.nutritionDept||{prepared:{recovery:3,hydration:3,energy:3,comfort:3,species:3},log:[]};
+ state.animals.forEach(a=>{
+  if(a.nutrition==null)a.nutrition=65;if(a.hydration==null)a.hydration=65;
+  a.nutritionCare=a.nutritionCare||{appetite:65,energy:65,preference:"UNKNOWN",plan:[],meals:[],refusals:0,stage:0,last:"NUTRITION ASSESSMENT READY"};
+ });
+ save();
+}
+function meter(k,v){return '<div class="nt-meter"><span>'+k+'</span><div class="nt-bar"><i style="width:'+clamp(v)+'%"></i></div><b>'+clamp(v)+'%</b></div>'}
+function flow(n){return '<div class="nt-flow">'+["PROFILE","PLAN","PREPARE","FEED","REASSESS"].map((x,i)=>'<span class="'+(i<n.stage?"done":i===n.stage?"now":"")+'">'+(i<n.stage?"[X] ":i===n.stage?"[>] ":"[ ] ")+x+'</span>').join("")+'</div>'}
+function renderNutrition(){
+ ensureN();page="nutrition";nav();let a=A(),n=a.nutritionCare,p=profile(a),dept=state.nutritionDept;
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\NUTRITION\\'+a.name.toUpperCase()+'&gt;</div>'+
+ '<div class="nt"><h4>NUTRITION.EXE — '+a.caseId+'</h4><div class="nt-grid">'+card("PATIENT",a.icon+" "+a.name,a.species)+card("FEEDING CLASS",p[0],p[1])+card("ENVIRONMENT",p[2],"fictional feeding preference")+card("CURRENT LOCATION",a.stage,a.disposition||"ACTIVE CASE")+'</div></div>'+flow(n)+
+ '<div class="nt"><h4>LIVE NUTRITION STATE</h4>'+meter("NUTRITION",a.nutrition)+meter("HYDRATION",a.hydration)+meter("APPETITE",n.appetite)+meter("ENERGY",n.energy)+meter("CALM",100-a.stress)+meter("TRUST",a.trust)+'</div>'+
+ '<div class="nt"><h4>MEAL PLAN</h4><div class="nt-btns">'+MEALS.map((m,i)=>'<button class="'+(n.plan.includes(m[0])?"on":"")+'" data-nplan="'+m[0]+'">['+String(i+1).padStart(2,"0")+'] '+m[1]+'<small>'+m[2]+'</small></button>').join("")+'</div></div>'+
+ '<div class="nt"><h4>PREP KITCHEN INVENTORY</h4>'+MEALS.map(m=>'<div class="nt-row"><b>'+m[1]+' · '+(dept.prepared[m[0]]||0)+' READY</b><small>Prep cost '+m[4]+' CR · feed value '+m[3]+'</small></div>').join("")+'<div class="nt-btns">'+MEALS.map(m=>'<button data-prepmeal="'+m[0]+'">[PREP] '+m[1]+' · '+m[4]+' CR</button>').join("")+'</div></div>'+
+ '<div class="nt"><h4>FEEDING COMMANDS</h4><div class="nt-btns"><button data-nt="feed">[F1] OFFER NEXT PLANNED MEAL<small>Resident can accept or refuse based on current game state.</small></button><button data-nt="water">[F2] OFFER WATER<small>Separate from IV-fluid treatment.</small></button><button data-nt="reassess">[F3] REASSESS NUTRITION<small>Updates appetite, energy and care plan.</small></button><button data-nt="clear">[F4] CLEAR MEAL PLAN</button></div></div>'+
+ '<div class="nt"><h4>FEEDING HISTORY</h4>'+(n.meals.length?n.meals.slice(0,14).map(x=>'<div class="nt-log"><b>'+x.meal+' · '+x.result+'</b><small>'+x.time+' · nutrition '+x.nutrition+'% · hydration '+x.hydration+'%</small></div>').join(""):'<div class="nt-log">NO FEEDING EVENTS RECORDED.</div>')+'</div>'+
+ '<div class="nt"><h4>DEPARTMENT ROUTING</h4><div class="nt-btns"><button data-nroute="treatment">[R1] TREATMENT.EXE</button><button data-nroute="recovery">[R2] RECOVERY.EXE</button><button data-nroute="pharmacy">[R3] PHARMACY.EXE</button><button data-nroute="clinic">[R4] CLINIC.EXE</button></div></div>'+
+ '<div class="out"><h4>NUTRITION OUTPUT</h4><pre id="out">'+n.last+'</pre></div>';
+ document.querySelectorAll("[data-nplan]").forEach(b=>b.onclick=()=>toggle(b.dataset.nplan));
+ document.querySelectorAll("[data-prepmeal]").forEach(b=>b.onclick=()=>prep(b.dataset.prepmeal));
+ document.querySelectorAll("[data-nt]").forEach(b=>b.onclick=()=>act(b.dataset.nt));
+ document.querySelectorAll("[data-nroute]").forEach(b=>b.onclick=()=>route(b.dataset.nroute));
+}
+function card(k,v,n){return '<div class="nt-card"><small>'+k+'</small><b>'+v+'</b><small>'+n+'</small></div>'}
+function toggle(k){let n=A().nutritionCare;n.plan=n.plan.includes(k)?n.plan.filter(x=>x!==k):[...n.plan,k];n.stage=n.plan.length?1:0;n.last="MEAL PLAN UPDATED · "+n.plan.length+" ITEM(S).";save();renderNutrition()}
+function prep(k){
+ let dept=state.nutritionDept,m=MEALS.find(x=>x[0]===k);if(!m)return;
+ if(typeof state.funds==="number"&&state.funds<m[4]){A().nutritionCare.last="PREP BLOCKED · insufficient fictional clinic funds.";save();return renderNutrition()}
+ if(typeof state.funds==="number")state.funds-=m[4];dept.prepared[k]=(dept.prepared[k]||0)+1;dept.log.unshift("PREPARED "+m[1]+" · -"+m[4]+" CR");A().nutritionCare.stage=Math.max(A().nutritionCare.stage,2);save();renderNutrition();
+}
+function act(c){
+ let a=A(),n=a.nutritionCare,dept=state.nutritionDept;
+ if(c==="clear"){n.plan=[];n.last="MEAL PLAN CLEARED.";save();return renderNutrition()}
+ if(c==="water"){a.hydration=clamp(a.hydration+7);n.appetite=clamp(n.appetite+2);a.stress=clamp(a.stress-1);n.meals.unshift({time:new Date().toLocaleTimeString(),meal:"WATER",result:"ACCEPTED",nutrition:a.nutrition,hydration:a.hydration});n.last="WATER ACCEPTED.\nHydration updated separately from IV-fluid treatment.";n.stage=Math.max(n.stage,3);}
+ if(c==="feed"){
+  let k=n.plan[0];if(!k){n.last="NO MEAL PLANNED.";save();return renderNutrition()}
+  let m=MEALS.find(x=>x[0]===k);if((dept.prepared[k]||0)<=0){n.last=m[1]+" NOT PREPARED.\nUse PREP KITCHEN first.";save();return renderNutrition()}
+  dept.prepared[k]--;
+  let accept=clamp(n.appetite+(100-a.stress)*.25+a.trust*.15)>=45;
+  if(accept){a.nutrition=clamp(a.nutrition+m[3]);n.energy=clamp(n.energy+Math.round(m[3]*.7));a.health=clamp(a.health+2);n.appetite=clamp(n.appetite-6);a.stress=clamp(a.stress-2);n.preference=m[1];n.last=a.name+" ACCEPTED "+m[1]+".\nNutrition and energy updated.";}
+  else{n.refusals++;n.appetite=clamp(n.appetite+4);a.stress=clamp(a.stress+2);n.last=a.name+" REFUSED "+m[1]+".\nMeal response recorded; try comfort, reassessment or another plan.";}
+  n.meals.unshift({time:new Date().toLocaleTimeString(),meal:m[1],result:accept?"ACCEPTED":"REFUSED",nutrition:a.nutrition,hydration:a.hydration});n.stage=3;
+  a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · NUTRITION · "+m[1]+" "+(accept?"ACCEPTED":"REFUSED"));
+ }
+ if(c==="reassess"){
+  n.appetite=clamp(45+(100-a.stress)*.25+a.trust*.15-(a.pain||0)*.15);n.energy=clamp(a.health*.35+a.nutrition*.35+a.hydration*.2+(100-a.stress)*.1);n.stage=4;
+  n.last="NUTRITION REASSESSMENT\nAppetite: "+n.appetite+"%\nEnergy: "+n.energy+"%\nNutrition: "+a.nutrition+"%\nHydration: "+a.hydration+"%\nPreferred recent meal: "+n.preference+"\nRefusals: "+n.refusals;
+  if(window.VetGodsDynamicStats1)window.VetGodsDynamicStats1.recalc(a,"NUTRITION REASSESS");
+  if(window.VetGodsDynamicStats2)window.VetGodsDynamicStats2.compute(a,"NUTRITION REASSESS");
+ }
+ save();renderNutrition();
+}
+function route(k){if(k==="treatment")return program("treatment");if(k==="recovery")return program("recovery");if(k==="pharmacy")return program("pharmacy");if(k==="clinic")return open("care")}
+const oldProgram=program;program=function(k){if(k==="nutrition")return renderNutrition();return oldProgram(k)};
+function addHome(){if(page!=="home"||document.querySelector("#ntHomeLink"))return;let c=document.querySelector(".p10-buttons");if(!c)return;let b=document.createElement("button");b.id="ntHomeLink";b.textContent="[14] NUTRITION.EXE";b.onclick=renderNutrition;c.appendChild(b)}
+const oldHome=home;home=function(){oldHome();addHome()};
+function shortcut(fn,id){return function(){fn();if(document.querySelector("#nt-"+id))return;let out=document.querySelector(".out");if(!out)return;let b=document.createElement("button");b.id="nt-"+id;b.className="action";b.textContent="[NUTRITION] FEEDING DEPARTMENT";b.onclick=renderNutrition;out.insertAdjacentElement("beforebegin",b)}}
+if(window.VetGodsTreatment3){let f=window.VetGodsTreatment3.renderTreatment;window.VetGodsTreatment3.renderTreatment=shortcut(f,"tx")}
+if(window.VetGodsRecovery5){let f=window.VetGodsRecovery5.renderRecovery;window.VetGodsRecovery5.renderRecovery=shortcut(f,"wd")}
+ensureN();addHome();
+window.VetGodsNutrition7={renderNutrition,profile};
+})();
+</script>
+
+<style id="institution-p8-css">
+.sy{border:1px solid #666;margin-top:8px}.sy h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.sy-grid{display:grid;grid-template-columns:repeat(2,1fr)}
+.sy-card{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.sy-card small{display:block;color:#777}.sy-card b{color:#fff}
+.sy-res{display:grid;grid-template-columns:46px 1fr 75px;gap:6px;align-items:center;padding:7px;border-bottom:1px dotted #444;font-size:9px}.sy-res .ico{font-size:24px;text-align:center}.sy-res b{color:#fff}.sy-res small{display:block;color:#777}.sy-res button,.sy-btns button{background:#000;color:#c9c9c9;border:1px solid #555;padding:6px;font:8px "Courier New",monospace}.sy-res button:hover,.sy-btns button:hover,.sy-btns button.on{background:#c9c9c9;color:#000}
+.sy-btns{display:grid;grid-template-columns:repeat(2,1fr)}.sy-btns button{border-width:0 1px 1px 0;text-align:left;font-weight:700}.sy-btns small{display:block;color:#777;margin-top:3px}
+.sy-meter{display:grid;grid-template-columns:105px 1fr 40px;gap:6px;padding:5px 7px;border-bottom:1px dotted #444;font-size:9px}.sy-meter span{color:#888}.sy-meter b{color:#fff;text-align:right}.sy-bar{height:8px;border:1px solid #555}.sy-bar i{display:block;height:100%;background:#aaa}
+.sy-map{padding:8px;white-space:pre-wrap;font-size:9px;line-height:1.5}.sy-log{padding:6px;border-bottom:1px dotted #444;font-size:9px}.sy-log b{color:#fff}.sy-log small{display:block;color:#777}
+@media(max-width:600px){.sy-grid,.sy-btns{grid-template-columns:1fr}.sy-res{grid-template-columns:40px 1fr 68px}.sy-meter{grid-template-columns:88px 1fr 36px}}
+</style>
+<script id="institution-p8-js">
+(function(){
+"use strict";
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+function A(){return state.animals[state.active]}
+const HAB=["QUIET DEN","OPEN RUN","TREE / PERCH","WARM ROCK","AQUATIC BAY","MICRO HABITAT","RECOVERY GARDEN","SOCIAL COMMONS"];
+const LOC=["BED","FOOD STATION","WATER STATION","TOY / ENRICHMENT","QUIET ZONE","OBSERVATION WINDOW","SOCIAL AREA"];
+function ensureY(){
+ state.sanctuary2=state.sanctuary2||{residents:[],log:[],cycle:0};
+ state.animals.forEach(a=>{
+  a.sanctuary=a.sanctuary||{resident:false,habitat:"UNASSIGNED",bed:"UNASSIGNED",location:"QUIET ZONE",favorite:"UNKNOWN",activity:"RESTING",cycles:0,enrichment:50,social:50,bond:50,history:[],lastMove:Date.now()};
+  if(a.disposition==="SANCTUARY"||a.stage==="SANCTUARY"){a.sanctuary.resident=true;if(!state.sanctuary2.residents.includes(a.id))state.sanctuary2.residents.push(a.id)}
+ });
+ save();
+}
+function residents(){ensureY();return state.sanctuary2.residents.map(id=>state.animals.find(a=>a.id===id)).filter(Boolean)}
+function meter(k,v){return '<div class="sy-meter"><span>'+k+'</span><div class="sy-bar"><i style="width:'+clamp(v)+'%"></i></div><b>'+clamp(v)+'%</b></div>'}
+function renderSanctuary(){
+ ensureY();page="sanctuary2";nav();let rs=residents(),a=A(),is=a.sanctuary.resident;
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\SANCTUARY&gt;</div>'+
+ '<div class="sy"><h4>SANCTUARY.EXE 2.0 — RESIDENT CONTROL</h4><div class="sy-grid">'+card("RESIDENTS",rs.length,"persistent sanctuary population")+card("SANCTUARY CYCLE",state.sanctuary2.cycle,"slow simulation step")+card("ACTIVE ANIMAL",a.icon+" "+a.name,is?"resident":"not enrolled")+card("LOCATION",a.sanctuary.location,a.sanctuary.activity)+'</div></div>'+
+ '<div class="sy"><h4>RESIDENT DIRECTORY — CLICK ONE ANIMAL</h4>'+(rs.length?rs.map(x=>'<div class="sy-res"><div class="ico">'+x.icon+'</div><span><b>'+x.name+' · '+x.species+'</b><small>'+x.sanctuary.habitat+' · '+x.sanctuary.location+' · '+x.sanctuary.activity+'</small></span><button data-res="'+x.id+'">OPEN</button></div>').join(""):'<div class="sy-log">NO SANCTUARY RESIDENTS. Transfer an eligible animal from Recovery or enroll the active animal for sandbox play.</div>')+'</div>'+
+ (is?residentPanel(a):'<div class="sy"><h4>ACTIVE ANIMAL</h4><div class="sy-btns"><button data-sy="enroll">[01] ENROLL '+a.name.toUpperCase()+'<small>Add this animal to the persistent sanctuary population.</small></button><button data-sy="recovery">[02] RECOVERY.EXE</button></div></div>')+
+ '<div class="sy"><h4>SANCTUARY COMMAND</h4><div class="sy-btns"><button data-sy="cycle">[C1] RUN SLOW SANCTUARY CYCLE<small>Residents move once, linger, and update needs.</small></button><button data-sy="nutrition">[C2] NUTRITION.EXE</button><button data-sy="recovery">[C3] RECOVERY.EXE</button><button data-sy="clinic">[C4] CLINIC.EXE</button></div></div>'+
+ '<div class="sy"><h4>FACILITY MAP</h4><div class="sy-map">[QUIET DEN]----[SOCIAL COMMONS]----[OPEN RUN]\n      |                 |                 |\n [WATER]----------[CENTRAL PATH]------[FOOD]\n      |                 |                 |\n[TREE/PERCH]----[RECOVERY GARDEN]----[WARM ROCK]\n      |                                   |\n[AQUATIC BAY]                       [MICRO HABITAT]\n\nResidents linger at destinations instead of rapidly bouncing between stations.</div></div>'+
+ '<div class="out"><h4>SANCTUARY LOG</h4><pre id="out">'+(state.sanctuary2.log.length?state.sanctuary2.log.slice(0,16).join("\n"):"SANCTUARY SIMULATION ONLINE.")+'</pre></div>';
+ document.querySelectorAll("[data-res]").forEach(b=>b.onclick=()=>openResident(b.dataset.res));
+ document.querySelectorAll("[data-sy]").forEach(b=>b.onclick=()=>act(b.dataset.sy));
+ document.querySelectorAll("[data-hab]").forEach(b=>b.onclick=()=>setHab(b.dataset.hab));
+ document.querySelectorAll("[data-loc]").forEach(b=>b.onclick=()=>move(b.dataset.loc));
+}
+function card(k,v,n){return '<div class="sy-card"><small>'+k+'</small><b>'+v+'</b><small>'+n+'</small></div>'}
+function residentPanel(a){
+ let y=a.sanctuary;
+ return '<div class="sy"><h4>RESIDENT FILE — '+a.name.toUpperCase()+'</h4><div class="sy-grid">'+card("HABITAT",y.habitat,"assigned environment")+card("BED",y.bed,"persistent sleeping station")+card("FAVORITE",y.favorite,"learned location")+card("ACTIVITY",y.activity,"current slow behavior")+'</div>'+
+ meter("HEALTH",a.health)+meter("HYDRATION",a.hydration)+meter("NUTRITION",a.nutrition||65)+meter("CALM",100-a.stress)+meter("TRUST",a.trust)+meter("ENRICHMENT",y.enrichment)+meter("SOCIAL",y.social)+meter("BOND",y.bond)+'</div>'+
+ '<div class="sy"><h4>HABITAT ASSIGNMENT</h4><div class="sy-btns">'+HAB.map((h,i)=>'<button class="'+(y.habitat===h?"on":"")+'" data-hab="'+h+'">['+String(i+1).padStart(2,"0")+'] '+h+'</button>').join("")+'</div></div>'+
+ '<div class="sy"><h4>DIRECT ACTIVITY / LOCATION</h4><div class="sy-btns">'+LOC.map((l,i)=>'<button class="'+(y.location===l?"on":"")+'" data-loc="'+l+'">['+String(i+1).padStart(2,"0")+'] '+l+'</button>').join("")+'</div></div>'+
+ '<div class="sy"><h4>RESIDENT HISTORY</h4>'+(y.history.length?y.history.slice(0,12).map(x=>'<div class="sy-log"><b>'+x.action+'</b><small>'+x.time+' · '+x.note+'</small></div>').join(""):'<div class="sy-log">NO SANCTUARY EVENTS YET.</div>')+'</div>';
+}
+function openResident(id){let i=state.animals.findIndex(a=>a.id===id);if(i>=0){state.active=i;save();renderSanctuary()}}
+function setHab(h){let a=A(),y=a.sanctuary;y.habitat=h;if(y.bed==="UNASSIGNED")y.bed="BED-"+String(state.active+1).padStart(2,"0");event(a,"HABITAT ASSIGNED",h+" / "+y.bed);save();renderSanctuary()}
+function move(l){let a=A(),y=a.sanctuary;y.location=l;y.activity=activity(l);y.lastMove=Date.now();if(y.favorite==="UNKNOWN"||Math.random()<.18)y.favorite=l;applyLocation(a,l);event(a,"MOVED",l+" · "+y.activity);save();renderSanctuary()}
+function activity(l){return {"BED":"SLEEPING / RESTING","FOOD STATION":"EATING","WATER STATION":"DRINKING","TOY / ENRICHMENT":"PLAY / ENRICHMENT","QUIET ZONE":"QUIET OBSERVATION","OBSERVATION WINDOW":"WATCHING","SOCIAL AREA":"SOCIALIZING"}[l]||"WANDERING"}
+function applyLocation(a,l){let y=a.sanctuary;if(l==="BED"){a.health=clamp(a.health+2);a.stress=clamp(a.stress-5)}if(l==="FOOD STATION"){a.nutrition=clamp((a.nutrition||65)+6)}if(l==="WATER STATION"){a.hydration=clamp(a.hydration+6)}if(l==="TOY / ENRICHMENT"){y.enrichment=clamp(y.enrichment+9);a.stress=clamp(a.stress-3)}if(l==="QUIET ZONE"){a.stress=clamp(a.stress-5)}if(l==="SOCIAL AREA"){y.social=clamp(y.social+7);y.bond=clamp(y.bond+3);a.trust=clamp(a.trust+2)}}
+function event(a,action,note){let y=a.sanctuary;y.history.unshift({time:new Date().toLocaleTimeString(),action,note});state.sanctuary2.log.unshift(a.name+" · "+action+" · "+note);a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · SANCTUARY · "+action+" · "+note)}
+function cycle(){
+ let rs=residents();state.sanctuary2.cycle++;
+ rs.forEach((a,i)=>{let y=a.sanctuary;y.cycles++;a.hydration=clamp(a.hydration-1);a.nutrition=clamp((a.nutrition||65)-1);y.enrichment=clamp(y.enrichment-1);
+   // linger most cycles; only some residents move, preventing speed-demon behavior
+   if((state.sanctuary2.cycle+i)%3===0){let choices=LOC.filter(x=>x!==y.location),l=choices[(state.sanctuary2.cycle+i*2)%choices.length];y.location=l;y.activity=activity(l);y.lastMove=Date.now();applyLocation(a,l);event(a,"AUTONOMOUS MOVE",l+" · lingering until a later cycle")}
+   else event(a,"LINGER",y.location+" · "+y.activity);
+   if(window.VetGodsDynamicStats1)window.VetGodsDynamicStats1.recalc(a,"SANCTUARY CYCLE");
+   if(window.VetGodsDynamicStats2)window.VetGodsDynamicStats2.compute(a,"SANCTUARY CYCLE");
+ });
+ save();renderSanctuary();
+}
+function act(c){
+ let a=A(),y=a.sanctuary;
+ if(c==="enroll"){y.resident=true;a.stage="SANCTUARY";a.disposition="SANCTUARY";if(!state.sanctuary2.residents.includes(a.id))state.sanctuary2.residents.push(a.id);event(a,"ENROLLED","Resident entered Sanctuary 2.0");save();return renderSanctuary()}
+ if(c==="cycle")return cycle();
+ if(c==="nutrition")return program("nutrition");
+ if(c==="recovery")return program("recovery");
+ if(c==="clinic")return open("care");
+}
+const oldProgram=program;program=function(k){if(k==="sanctuary2")return renderSanctuary();return oldProgram(k)};
+function addHome(){if(page!=="home"||document.querySelector("#syHomeLink"))return;let c=document.querySelector(".p10-buttons");if(!c)return;let b=document.createElement("button");b.id="syHomeLink";b.textContent="[15] SANCTUARY.EXE";b.onclick=renderSanctuary;c.appendChild(b)}
+const oldHome=home;home=function(){oldHome();addHome()};
+if(window.VetGodsRecovery5){let f=window.VetGodsRecovery5.renderRecovery;window.VetGodsRecovery5.renderRecovery=function(){f();if(document.querySelector("#syRecLink"))return;let out=document.querySelector(".out");if(!out)return;let b=document.createElement("button");b.id="syRecLink";b.className="action";b.textContent="[SANCTUARY] RESIDENT CONTROL";b.onclick=renderSanctuary;out.insertAdjacentElement("beforebegin",b)}}
+ensureY();addHome();
+window.VetGodsSanctuary8={renderSanctuary,cycle,openResident};
+})();
+</script>
+
+<style id="institution-p9-css">
+.hb{border:1px solid #666;margin-top:8px}.hb h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.hb-grid{display:grid;grid-template-columns:repeat(2,1fr)}.hb-card,.hb-row{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.hb-card small,.hb-row small{display:block;color:#777}.hb-card b,.hb-row b{color:#fff}
+.hb-btns{display:grid;grid-template-columns:repeat(2,1fr)}.hb-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.hb-btns button:hover,.hb-btns button.on{background:#c9c9c9;color:#000}.hb-btns small{display:block;color:#777;margin-top:3px}
+.hb-meter{display:grid;grid-template-columns:105px 1fr 40px;gap:6px;padding:5px 7px;border-bottom:1px dotted #444;font-size:9px}.hb-meter span{color:#888}.hb-meter b{color:#fff;text-align:right}.hb-bar{height:8px;border:1px solid #555}.hb-bar i{display:block;height:100%;background:#aaa}
+.hb-room{padding:7px;border-bottom:1px dotted #444;font-size:9px;line-height:1.45}.hb-room b{color:#fff}.hb-room small{display:block;color:#777}
+@media(max-width:600px){.hb-grid,.hb-btns{grid-template-columns:1fr}.hb-meter{grid-template-columns:88px 1fr 36px}}
+</style>
+<script id="institution-p9-js">
+(function(){
+"use strict";
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+function A(){return state.animals[state.active]}
+const TYPES=[
+ ["QUIET DEN","Low-stimulation resident space."],["OPEN RUN","Movement and exercise habitat."],
+ ["TREE / PERCH","Vertical arboreal/avian habitat."],["WARM ROCK","Warm-zone reptile-style game habitat."],
+ ["AQUATIC BAY","Water-system resident environment."],["MICRO HABITAT","Small exotic/insect habitat."],
+ ["RECOVERY GARDEN","Protected rehabilitation habitat."],["SOCIAL COMMONS","Shared social resident environment."]
+];
+const EQUIP=[
+ ["water","WATER STATION",8],["feed","FEEDING STATION",8],["bed","REST / BED MODULE",10],
+ ["enrich","ENRICHMENT MODULE",12],["climate","CLIMATE CONTROL",16],["filter","AIR / WATER FILTER",14],
+ ["monitor","ENVIRONMENT MONITOR",15],["barrier","SAFETY BARRIER",12]
+];
+function baseRoom(name,i){return {id:"HB"+(i+1),name,type:name,temp:65,humidity:55,clean:82,air:86,water:82,enrich:55,safety:85,condition:88,equipment:[],level:1,residents:[],log:[]}}
+function ensureH(){
+ state.habitatDept=state.habitatDept||{rooms:TYPES.map((x,i)=>baseRoom(x[0],i)),active:0,log:[],cycles:0};
+ let d=state.habitatDept;
+ TYPES.forEach((x,i)=>{if(!d.rooms[i])d.rooms[i]=baseRoom(x[0],i)});
+ // Sync sanctuary residents to habitat rooms.
+ if(state.sanctuary2)state.sanctuary2.residents.forEach(id=>{
+   let a=state.animals.find(x=>x.id===id);if(!a)return;
+   let idx=d.rooms.findIndex(r=>r.type===a.sanctuary.habitat);
+   if(idx>=0&&!d.rooms[idx].residents.includes(id))d.rooms[idx].residents.push(id);
+ });
+ save();
+}
+function R(){return state.habitatDept.rooms[state.habitatDept.active]}
+function meter(k,v){return '<div class="hb-meter"><span>'+k+'</span><div class="hb-bar"><i style="width:'+clamp(v)+'%"></i></div><b>'+clamp(v)+'%</b></div>'}
+function renderHabitat(){
+ ensureH();page="habitat";nav();let d=state.habitatDept,r=R(),a=A();
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\HABITAT\\'+r.id+'&gt;</div>'+
+ '<div class="hb"><h4>HABITAT.EXE — ENVIRONMENTAL CONTROL</h4><div class="hb-grid">'+card("ACTIVE HABITAT",r.id+" · "+r.type,"level "+r.level)+card("RESIDENTS",r.residents.length,"assigned to this environment")+card("CONDITION",r.condition+"%","equipment/facility condition")+card("ACTIVE ANIMAL",a.icon+" "+a.name,a.sanctuary?.habitat||"UNASSIGNED")+'</div></div>'+
+ '<div class="hb"><h4>HABITAT DIRECTORY</h4><div class="hb-btns">'+d.rooms.map((x,i)=>'<button class="'+(i===d.active?"on":"")+'" data-room="'+i+'">['+x.id+'] '+x.type+'<small>'+x.residents.length+' resident(s) · condition '+x.condition+'%</small></button>').join("")+'</div></div>'+
+ '<div class="hb"><h4>ENVIRONMENT READOUT</h4>'+meter("TEMPERATURE",r.temp)+meter("HUMIDITY",r.humidity)+meter("CLEANLINESS",r.clean)+meter("AIR QUALITY",r.air)+meter("WATER SYSTEM",r.water)+meter("ENRICHMENT",r.enrich)+meter("SAFETY",r.safety)+meter("CONDITION",r.condition)+'</div>'+
+ '<div class="hb"><h4>ENVIRONMENT CONTROLS</h4><div class="hb-btns"><button data-hact="tempup">[01] TEMP +</button><button data-hact="tempdown">[02] TEMP -</button><button data-hact="humid">[03] HUMIDITY SERVICE</button><button data-hact="clean">[04] CLEAN HABITAT · 4 CR</button><button data-hact="air">[05] SERVICE AIR · 4 CR</button><button data-hact="water">[06] SERVICE WATER · 4 CR</button><button data-hact="enrich">[07] REFRESH ENRICHMENT · 5 CR</button><button data-hact="inspect">[08] SAFETY INSPECTION</button></div></div>'+
+ '<div class="hb"><h4>INSTALLED EQUIPMENT</h4>'+(r.equipment.length?r.equipment.map(k=>{let e=EQUIP.find(x=>x[0]===k);return '<div class="hb-row"><b>'+e[1]+'</b><small>ONLINE · habitat '+r.id+'</small></div>'}).join(""):'<div class="hb-row">NO EQUIPMENT MODULES INSTALLED.</div>')+
+ '<div class="hb-btns">'+EQUIP.map(e=>'<button class="'+(r.equipment.includes(e[0])?"on":"")+'" data-equip="'+e[0]+'">[INSTALL] '+e[1]+' · '+e[2]+' CR</button>').join("")+'</div></div>'+
+ '<div class="hb"><h4>RESIDENT ASSIGNMENT</h4><div class="hb-btns"><button data-hact="assign">[A1] ASSIGN '+a.name.toUpperCase()+' TO '+r.type+'<small>Updates Sanctuary and Habitat together.</small></button><button data-hact="remove">[A2] REMOVE '+a.name.toUpperCase()+' FROM HABITAT</button></div>'+
+ (r.residents.length?r.residents.map(id=>{let x=state.animals.find(a=>a.id===id);return x?'<div class="hb-room"><b>'+x.icon+' '+x.name+' · '+x.species+'</b><small>'+suitability(x,r)+' · '+x.sanctuary.activity+'</small></div>':""}).join(""):'<div class="hb-room">NO RESIDENTS ASSIGNED.</div>')+'</div>'+
+ '<div class="hb"><h4>FACILITY COMMANDS</h4><div class="hb-btns"><button data-hact="cycle">[C1] RUN ENVIRONMENT CYCLE<small>Slow degradation + equipment effects + resident response.</small></button><button data-hact="upgrade">[C2] UPGRADE HABITAT · '+(20*r.level)+' CR<small>Improves condition, safety and enrichment.</small></button><button data-route="sanctuary2">[C3] SANCTUARY.EXE</button><button data-route="nutrition">[C4] NUTRITION.EXE</button></div></div>'+
+ '<div class="out"><h4>HABITAT LOG</h4><pre id="out">'+(r.log.length?r.log.slice(0,16).join("\n"):"ENVIRONMENTAL SYSTEM ONLINE.")+'</pre></div>';
+ document.querySelectorAll("[data-room]").forEach(b=>b.onclick=()=>{d.active=+b.dataset.room;save();renderHabitat()});
+ document.querySelectorAll("[data-hact]").forEach(b=>b.onclick=()=>act(b.dataset.hact));
+ document.querySelectorAll("[data-equip]").forEach(b=>b.onclick=()=>install(b.dataset.equip));
+ document.querySelectorAll("[data-route]").forEach(b=>b.onclick=()=>program(b.dataset.route));
+}
+function card(k,v,n){return '<div class="hb-card"><small>'+k+'</small><b>'+v+'</b><small>'+n+'</small></div>'}
+function spend(n){if(typeof state.funds==="number"&&state.funds<n)return false;if(typeof state.funds==="number")state.funds-=n;return true}
+function suitability(a,r){
+ let s=(a.species||"").toLowerCase(),t=r.type,score=60;
+ if(/owl|bird|eagle|hawk/.test(s)&&t==="TREE / PERCH")score=95;
+ else if(/snake|lizard|gecko|reptile/.test(s)&&t==="WARM ROCK")score=95;
+ else if(/fish|whale|dolphin|aquatic/.test(s)&&t==="AQUATIC BAY")score=95;
+ else if(/ant|beetle|insect|spider/.test(s)&&t==="MICRO HABITAT")score=95;
+ else if(/dog|wolf|canine|cat|feline/.test(s)&&(t==="OPEN RUN"||t==="QUIET DEN"))score=90;
+ else if(t==="RECOVERY GARDEN")score=78;
+ return "SUITABILITY "+score+"%";
+}
+function log(r,x){r.log.unshift(new Date().toLocaleTimeString()+" · "+x);state.habitatDept.log.unshift(r.id+" · "+x)}
+function install(k){
+ let r=R(),e=EQUIP.find(x=>x[0]===k);if(!e||r.equipment.includes(k))return;
+ if(!spend(e[2])){log(r,"INSTALL BLOCKED · insufficient funds");save();return renderHabitat()}
+ r.equipment.push(k);r.condition=clamp(r.condition+3);log(r,"INSTALLED "+e[1]+" · -"+e[2]+" CR");save();renderHabitat();
+}
+function act(c){
+ let d=state.habitatDept,r=R(),a=A();
+ if(c==="tempup"){r.temp=clamp(r.temp+3);log(r,"TEMPERATURE SETTING +3")}
+ if(c==="tempdown"){r.temp=clamp(r.temp-3);log(r,"TEMPERATURE SETTING -3")}
+ if(c==="humid"){r.humidity=clamp(r.humidity+7);log(r,"HUMIDITY SYSTEM SERVICED")}
+ if(["clean","air","water"].includes(c)){if(!spend(4)){log(r,"SERVICE BLOCKED · insufficient funds");save();return renderHabitat()}let k=c==="clean"?"clean":c;r[k]=clamp(r[k]+14);log(r,c.toUpperCase()+" SERVICE · -4 CR")}
+ if(c==="enrich"){if(!spend(5)){log(r,"ENRICHMENT BLOCKED · insufficient funds");save();return renderHabitat()}r.enrich=clamp(r.enrich+15);log(r,"ENRICHMENT REFRESH · -5 CR")}
+ if(c==="inspect"){r.safety=clamp((r.condition+r.clean+r.air)/3);log(r,"SAFETY INSPECTION · "+r.safety+"%")}
+ if(c==="upgrade"){let cost=20*r.level;if(!spend(cost)){log(r,"UPGRADE BLOCKED · insufficient funds");save();return renderHabitat()}r.level++;r.condition=clamp(r.condition+12);r.safety=clamp(r.safety+8);r.enrich=clamp(r.enrich+8);log(r,"UPGRADED TO LEVEL "+r.level+" · -"+cost+" CR")}
+ if(c==="assign"){
+   if(!a.sanctuary?.resident){log(r,"ASSIGNMENT BLOCKED · "+a.name+" is not a Sanctuary resident");save();return renderHabitat()}
+   d.rooms.forEach(x=>x.residents=x.residents.filter(id=>id!==a.id));r.residents.push(a.id);a.sanctuary.habitat=r.type;a.sanctuary.location="BED";log(r,a.name+" ASSIGNED · "+suitability(a,r));a.sanctuary.history.unshift({time:new Date().toLocaleTimeString(),action:"HABITAT ASSIGNMENT",note:r.id+" · "+r.type});
+ }
+ if(c==="remove"){r.residents=r.residents.filter(id=>id!==a.id);if(a.sanctuary)a.sanctuary.habitat="UNASSIGNED";log(r,a.name+" REMOVED FROM HABITAT")}
+ if(c==="cycle"){
+   d.cycles++;r.clean=clamp(r.clean-3);r.air=clamp(r.air-2);r.water=clamp(r.water-2);r.condition=clamp(r.condition-1);r.enrich=clamp(r.enrich-1);
+   if(r.equipment.includes("filter")){r.air=clamp(r.air+3);r.water=clamp(r.water+3)}
+   if(r.equipment.includes("climate")){r.temp=clamp(r.temp+(65-r.temp)*.25);r.humidity=clamp(r.humidity+(55-r.humidity)*.25)}
+   if(r.equipment.includes("enrich"))r.enrich=clamp(r.enrich+2);
+   r.residents.forEach(id=>{let x=state.animals.find(a=>a.id===id);if(!x)return;let env=(r.clean+r.air+r.water+r.enrich+r.safety+r.condition)/6;if(env>=75){x.stress=clamp(x.stress-2);x.trust=clamp(x.trust+1);x.sanctuary.enrichment=clamp(x.sanctuary.enrichment+2)}else{x.stress=clamp(x.stress+3)}});
+   log(r,"ENVIRONMENT CYCLE "+d.cycles+" · resident environment recalculated");
+ }
+ save();renderHabitat();
+}
+const oldProgram=program;program=function(k){if(k==="habitat")return renderHabitat();return oldProgram(k)};
+function addHome(){if(page!=="home"||document.querySelector("#hbHomeLink"))return;let c=document.querySelector(".p10-buttons");if(!c)return;let b=document.createElement("button");b.id="hbHomeLink";b.textContent="[16] HABITAT.EXE";b.onclick=renderHabitat;c.appendChild(b)}
+const oldHome=home;home=function(){oldHome();addHome()};
+if(window.VetGodsSanctuary8){let f=window.VetGodsSanctuary8.renderSanctuary;window.VetGodsSanctuary8.renderSanctuary=function(){f();if(document.querySelector("#hbSyLink"))return;let out=document.querySelector(".out");if(!out)return;let b=document.createElement("button");b.id="hbSyLink";b.className="action";b.textContent="[HABITAT] ENVIRONMENTAL CONTROL";b.onclick=renderHabitat;out.insertAdjacentElement("beforebegin",b)}}
+ensureH();addHome();
+window.VetGodsHabitat9={renderHabitat,suitability};
+})();
+</script>
+
+<style id="institution-p10-css">
+.ny{border:1px solid #666;margin-top:8px}.ny h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.ny-grid{display:grid;grid-template-columns:repeat(2,1fr)}.ny-card,.ny-row{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.ny-card small,.ny-row small{display:block;color:#777}.ny-card b,.ny-row b{color:#fff}
+.ny-btns{display:grid;grid-template-columns:repeat(2,1fr)}.ny-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.ny-btns button:hover,.ny-btns button.on{background:#c9c9c9;color:#000}.ny-btns small{display:block;color:#777;margin-top:3px}
+.ny-meter{display:grid;grid-template-columns:105px 1fr 40px;gap:6px;padding:5px 7px;border-bottom:1px dotted #444;font-size:9px}.ny-meter span{color:#888}.ny-meter b{color:#fff;text-align:right}.ny-bar{height:8px;border:1px solid #555}.ny-bar i{display:block;height:100%;background:#aaa}
+.ny-bed{display:grid;grid-template-columns:42px 1fr 70px;gap:6px;align-items:center;padding:7px;border-bottom:1px dotted #444;font-size:9px}.ny-bed .ico{font-size:22px;text-align:center}.ny-bed b{color:#fff}.ny-bed small{display:block;color:#777}.ny-bed button{background:#000;color:#ccc;border:1px solid #555;padding:5px;font:8px "Courier New",monospace}
+.ny-flow{display:flex;overflow:auto;border:1px solid #666;margin-top:8px}.ny-flow span{flex:1;min-width:80px;text-align:center;padding:5px;border-right:1px dotted #555;font-size:8px;color:#666}.ny-flow .done{color:#aaa}.ny-flow .now{background:#c9c9c9;color:#000;font-weight:900}
+@media(max-width:600px){.ny-grid,.ny-btns{grid-template-columns:1fr}.ny-meter{grid-template-columns:88px 1fr 36px}}
+</style>
+<script id="institution-p10-js">
+(function(){
+"use strict";
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+function A(){return state.animals[state.active]}
+const STAGES=["INTAKE","DEPENDENT","JUVENILE","WEANING","READY"];
+function ensureN(){
+ state.nurseryDept=state.nurseryDept||{beds:[null,null,null,null,null,null,null,null],residents:[],cycle:0,log:[]};
+ state.animals.forEach(a=>a.nursery=a.nursery||{resident:false,bed:null,stage:"INTAKE",ageCycle:0,warmth:78,feeding:68,hydration:a.hydration||65,comfort:65,bond:50,growth:10,parentId:null,care:[],last:"NURSERY INTAKE READY"});
+ save();
+}
+function residents(){return state.nurseryDept.residents.map(id=>state.animals.find(a=>a.id===id)).filter(Boolean)}
+function meter(k,v){return '<div class="ny-meter"><span>'+k+'</span><div class="ny-bar"><i style="width:'+clamp(v)+'%"></i></div><b>'+clamp(v)+'%</b></div>'}
+function flow(n){let ix=Math.max(0,STAGES.indexOf(n.stage));return '<div class="ny-flow">'+STAGES.map((x,i)=>'<span class="'+(i<ix?"done":i===ix?"now":"")+'">'+(i<ix?"[X] ":i===ix?"[>] ":"[ ] ")+x+'</span>').join("")+'</div>'}
+function renderNursery(){
+ ensureN();page="nursery";nav();let d=state.nurseryDept,a=A(),n=a.nursery;
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\NURSERY&gt;</div>'+
+ '<div class="ny"><h4>NURSERY.EXE — DEVELOPMENT WING</h4><div class="ny-grid">'+card("NURSERY RESIDENTS",d.residents.length,"persistent juvenile population")+card("CYCLE",d.cycle,"slow development cycle")+card("ACTIVE ANIMAL",a.icon+" "+a.name,n.resident?"BED "+n.bed:"not enrolled")+card("GROWTH STAGE",n.stage,"fictional development state")+'</div></div>'+
+ '<div class="ny"><h4>NURSERY BEDS</h4>'+d.beds.map((id,i)=>{let x=state.animals.find(a=>a.id===id);return '<div class="ny-bed"><div class="ico">'+(x?x.icon:"·")+'</div><span><b>BED '+(i+1)+' · '+(x?x.name:"OPEN")+'</b><small>'+(x?x.species+" · "+x.nursery.stage+" · growth "+x.nursery.growth+"%":"AVAILABLE")+'</small></span>'+(x?'<button data-nres="'+x.id+'">OPEN</button>':'<span></span>')+'</div>'}).join("")+'</div>'+
+ (n.resident?residentPanel(a):'<div class="ny"><h4>INTAKE</h4><div class="ny-btns"><button data-ny="admit">[01] ADMIT '+a.name.toUpperCase()+' TO NURSERY<small>Assigns an open nursery bed.</small></button><button data-ny="sanctuary">[02] SANCTUARY.EXE</button></div></div>')+
+ '<div class="ny"><h4>WING COMMAND</h4><div class="ny-btns"><button data-ny="cycle">[C1] RUN NURSERY CYCLE<small>Slow care/development update for all residents.</small></button><button data-ny="nutrition">[C2] NUTRITION.EXE</button><button data-ny="habitat">[C3] HABITAT.EXE</button><button data-ny="clinic">[C4] CLINIC.EXE</button></div></div>'+
+ '<div class="out"><h4>NURSERY LOG</h4><pre id="out">'+(d.log.length?d.log.slice(0,16).join("\n"):"NURSERY SYSTEM ONLINE.")+'</pre></div>';
+ document.querySelectorAll("[data-nres]").forEach(b=>b.onclick=()=>openResident(b.dataset.nres));
+ document.querySelectorAll("[data-ny]").forEach(b=>b.onclick=()=>act(b.dataset.ny));
+}
+function card(k,v,n){return '<div class="ny-card"><small>'+k+'</small><b>'+v+'</b><small>'+n+'</small></div>'}
+function residentPanel(a){
+ let n=a.nursery;
+ return flow(n)+'<div class="ny"><h4>DEVELOPMENT FILE — '+a.name.toUpperCase()+'</h4>'+
+ meter("GROWTH",n.growth)+meter("WARMTH",n.warmth)+meter("FEEDING",n.feeding)+meter("HYDRATION",n.hydration)+meter("COMFORT",n.comfort)+meter("BOND",n.bond)+meter("HEALTH",a.health)+
+ '</div><div class="ny"><h4>DAILY CARE</h4><div class="ny-btns"><button data-ny="feed">[01] NURSERY FEEDING</button><button data-ny="water">[02] HYDRATION CARE</button><button data-ny="warm">[03] WARMTH / ENVIRONMENT</button><button data-ny="comfort">[04] COMFORT / NEST</button><button data-ny="bond">[05] SOCIAL / PARENT BOND</button><button data-ny="check">[06] DEVELOPMENT CHECK</button></div></div>'+
+ '<div class="ny"><h4>PARENT / CARE RELATION</h4><div class="ny-btns"><button data-ny="parent">[P1] LINK ANOTHER ANIMAL AS PARENT/CARE PARTNER<small>Cycles through available animals and records the relationship.</small></button><button data-ny="clearparent">[P2] CLEAR RELATION</button></div><div class="ny-row"><b>'+(n.parentId?(state.animals.find(x=>x.id===n.parentId)?.name||"UNKNOWN"):"NO LINKED PARENT / CARE PARTNER")+'</b><small>fictional social relationship record</small></div></div>'+
+ (n.stage==="READY"?'<div class="ny"><h4>GRADUATION / TRANSFER</h4><div class="ny-btns"><button data-ny="graduate">[G1] GRADUATE TO SANCTUARY<small>Frees nursery bed and transfers resident.</small></button><button data-ny="continue">[G2] CONTINUE NURSERY CARE</button></div></div>':'')+
+ '<div class="ny"><h4>CARE HISTORY</h4>'+(n.care.length?n.care.slice(0,12).map(x=>'<div class="ny-row"><b>'+x.action+'</b><small>'+x.time+' · '+x.note+'</small></div>').join(""):'<div class="ny-row">NO NURSERY CARE RECORDED.</div>')+'</div>';
+}
+function event(a,action,note){let n=a.nursery;n.care.unshift({time:new Date().toLocaleTimeString(),action,note});state.nurseryDept.log.unshift(a.name+" · "+action+" · "+note);a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · NURSERY · "+action)}
+function admit(a){
+ let d=state.nurseryDept,n=a.nursery;if(n.resident)return;let i=d.beds.findIndex(x=>x==null);if(i<0){n.last="NURSERY FULL.";return}
+ d.beds[i]=a.id;if(!d.residents.includes(a.id))d.residents.push(a.id);n.resident=true;n.bed=i+1;n.stage="INTAKE";a.stage="NURSERY";event(a,"ADMITTED","Bed "+n.bed+" assigned");
+}
+function release(a){let d=state.nurseryDept,n=a.nursery;if(n.bed)d.beds[n.bed-1]=null;d.residents=d.residents.filter(id=>id!==a.id);n.resident=false;n.bed=null}
+function openResident(id){let i=state.animals.findIndex(a=>a.id===id);if(i>=0){state.active=i;save();renderNursery()}}
+function act(c){
+ let a=A(),n=a.nursery,d=state.nurseryDept;
+ if(c==="admit"){admit(a)}
+ else if(c==="feed"){n.feeding=clamp(n.feeding+10);a.nutrition=clamp((a.nutrition||65)+5);n.growth=clamp(n.growth+2);event(a,"FEEDING","Nursery feeding completed")}
+ else if(c==="water"){n.hydration=clamp(n.hydration+10);a.hydration=clamp(a.hydration+5);event(a,"HYDRATION","Hydration care completed")}
+ else if(c==="warm"){n.warmth=clamp(n.warmth+10);n.comfort=clamp(n.comfort+3);event(a,"ENVIRONMENT","Warmth/environment adjusted")}
+ else if(c==="comfort"){n.comfort=clamp(n.comfort+10);a.stress=clamp(a.stress-4);event(a,"COMFORT","Nest/quiet care completed")}
+ else if(c==="bond"){n.bond=clamp(n.bond+8);a.trust=clamp(a.trust+3);event(a,"BOND","Social care completed")}
+ else if(c==="check"){let score=(n.feeding+n.hydration+n.warmth+n.comfort+n.bond+a.health)/6;n.growth=clamp(n.growth+(score>=70?5:2));updateStage(n);event(a,"DEVELOPMENT CHECK","Growth "+n.growth+"% · stage "+n.stage)}
+ else if(c==="parent"){let pool=state.animals.filter(x=>x.id!==a.id);if(pool.length){let cur=pool.findIndex(x=>x.id===n.parentId);n.parentId=pool[(cur+1)%pool.length].id;event(a,"RELATION LINKED",state.animals.find(x=>x.id===n.parentId).name)}}
+ else if(c==="clearparent"){n.parentId=null;event(a,"RELATION CLEARED","No linked parent/care partner")}
+ else if(c==="cycle"){cycle();return}
+ else if(c==="graduate"){release(a);n.stage="READY";a.stage="SANCTUARY";a.disposition="SANCTUARY";if(window.VetGodsSanctuary8){a.sanctuary.resident=true;if(!state.sanctuary2.residents.includes(a.id))state.sanctuary2.residents.push(a.id)}event(a,"GRADUATED","Transferred to Sanctuary");save();return program("sanctuary2")}
+ else if(c==="continue"){n.last="NURSERY CARE CONTINUED."}
+ else if(c==="nutrition"){save();return program("nutrition")}
+ else if(c==="habitat"){save();return program("habitat")}
+ else if(c==="sanctuary"){save();return program("sanctuary2")}
+ else if(c==="clinic"){save();return open("care")}
+ save();renderNursery();
+}
+function updateStage(n){n.stage=n.growth>=80?"READY":n.growth>=60?"WEANING":n.growth>=35?"JUVENILE":n.growth>=15?"DEPENDENT":"INTAKE"}
+function cycle(){
+ let d=state.nurseryDept;d.cycle++;
+ residents().forEach((a,i)=>{let n=a.nursery;n.ageCycle++;n.feeding=clamp(n.feeding-3);n.hydration=clamp(n.hydration-2);n.comfort=clamp(n.comfort-1);if(n.feeding>=55&&n.hydration>=55&&n.warmth>=55){n.growth=clamp(n.growth+3);a.health=clamp(a.health+1)}else a.stress=clamp(a.stress+2);updateStage(n);event(a,"NURSERY CYCLE "+d.cycle,"Stage "+n.stage+" · growth "+n.growth+"%")});
+ save();renderNursery();
+}
+const oldProgram=program;program=function(k){if(k==="nursery")return renderNursery();return oldProgram(k)};
+function addHome(){if(page!=="home"||document.querySelector("#nyHomeLink"))return;let c=document.querySelector(".p10-buttons");if(!c)return;let b=document.createElement("button");b.id="nyHomeLink";b.textContent="[17] NURSERY.EXE";b.onclick=renderNursery;c.appendChild(b)}
+const oldHome=home;home=function(){oldHome();addHome()};
+ensureN();addHome();
+window.VetGodsNursery10={renderNursery,admit,cycle};
+})();
+</script>
+
+<style id="institution-p11-css">
+.rh{border:1px solid #666;margin-top:8px}.rh h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.rh-grid{display:grid;grid-template-columns:repeat(2,1fr)}.rh-card,.rh-row{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.rh-card small,.rh-row small{display:block;color:#777}.rh-card b,.rh-row b{color:#fff}
+.rh-btns{display:grid;grid-template-columns:repeat(2,1fr)}.rh-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.rh-btns button:hover,.rh-btns button.on{background:#c9c9c9;color:#000}.rh-btns small{display:block;color:#777;margin-top:3px}
+.rh-meter{display:grid;grid-template-columns:105px 1fr 40px;gap:6px;padding:5px 7px;border-bottom:1px dotted #444;font-size:9px}.rh-meter span{color:#888}.rh-meter b{color:#fff;text-align:right}.rh-bar{height:8px;border:1px solid #555}.rh-bar i{display:block;height:100%;background:#aaa}
+.rh-flow{display:flex;overflow:auto;border:1px solid #666;margin-top:8px}.rh-flow span{flex:1;min-width:90px;text-align:center;padding:5px;border-right:1px dotted #555;font-size:8px;color:#666}.rh-flow .done{color:#aaa}.rh-flow .now{background:#c9c9c9;color:#000;font-weight:900}
+.rh-log{padding:6px;border-bottom:1px dotted #444;font-size:9px;line-height:1.45}.rh-log b{color:#fff}.rh-log small{display:block;color:#777}
+@media(max-width:600px){.rh-grid,.rh-btns{grid-template-columns:1fr}.rh-meter{grid-template-columns:88px 1fr 36px}}
+</style>
+<script id="institution-p11-js">
+(function(){
+"use strict";
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+function A(){return state.animals[state.active]}
+const TRACKS=[
+ ["mobility","MOBILITY TRACK","Movement confidence and fictional physical recovery."],
+ ["strength","STRENGTH TRACK","Gradual conditioning game track."],
+ ["balance","BALANCE TRACK","Coordination and controlled movement game track."],
+ ["confidence","CONFIDENCE TRACK","Trust, calm and environmental confidence."],
+ ["enrichment","ENRICHMENT TRACK","Cognitive/environmental engagement."],
+ ["return","RETURN-TO-HABITAT TRACK","Preparation for normal Sanctuary activity."]
+];
+function ensureR(){
+ state.rehabDept=state.rehabDept||{stations:["MOBILITY LANE","QUIET MAT","BALANCE DECK","ENRICHMENT BAY","GARDEN WALK","OBSERVATION BAY"],cycle:0,log:[]};
+ state.animals.forEach(a=>{
+   if(a.mobility==null)a.mobility=65;
+   a.rehab=a.rehab||{enrolled:false,track:"mobility",sessions:0,strength:50,balance:50,confidence:50,endurance:50,coordination:50,readiness:20,fatigue:15,goals:[],history:[],last:"REHAB ASSESSMENT READY"};
+ });
+ save();
+}
+function meter(k,v,invert=false){let z=invert?100-v:v;return '<div class="rh-meter"><span>'+k+'</span><div class="rh-bar"><i style="width:'+clamp(z)+'%"></i></div><b>'+clamp(v)+'%</b></div>'}
+function flow(r){let n=r.readiness>=80?4:r.sessions>=5?3:r.sessions>=2?2:r.enrolled?1:0;return '<div class="rh-flow">'+["ASSESS","PLAN","SESSIONS","REASSESS","GRADUATE"].map((x,i)=>'<span class="'+(i<n?"done":i===n?"now":"")+'">'+(i<n?"[X] ":i===n?"[>] ":"[ ] ")+x+'</span>').join("")+'</div>'}
+function renderRehab(){
+ ensureR();page="rehab";nav();let a=A(),r=a.rehab;
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\REHAB\\'+a.name.toUpperCase()+'&gt;</div>'+
+ '<div class="rh"><h4>REHAB.EXE — MOBILITY & RECONDITIONING</h4><div class="rh-grid">'+card("PATIENT",a.icon+" "+a.name,a.species)+card("STATUS",r.enrolled?"ENROLLED":"NOT ENROLLED",r.sessions+" completed sessions")+card("ACTIVE TRACK",trackName(r.track),"persistent rehabilitation plan")+card("READINESS",r.readiness+"%","return-to-habitat readiness")+'</div></div>'+flow(r)+
+ '<div class="rh"><h4>FUNCTION READOUT</h4>'+meter("MOBILITY",a.mobility)+meter("STRENGTH",r.strength)+meter("BALANCE",r.balance)+meter("CONFIDENCE",r.confidence)+meter("ENDURANCE",r.endurance)+meter("COORDINATION",r.coordination)+meter("FATIGUE",r.fatigue,true)+meter("PAIN",a.pain,true)+meter("READINESS",r.readiness)+'</div>'+
+ '<div class="rh"><h4>REHABILITATION TRACK</h4><div class="rh-btns">'+TRACKS.map((t,i)=>'<button class="'+(r.track===t[0]?"on":"")+'" data-track="'+t[0]+'">['+String(i+1).padStart(2,"0")+'] '+t[1]+'<small>'+t[2]+'</small></button>').join("")+'</div></div>'+
+ '<div class="rh"><h4>SESSION COMMANDS</h4><div class="rh-btns"><button data-rh="assess">[S1] FUNCTION ASSESSMENT<small>Builds a fictional baseline from connected patient stats.</small></button><button data-rh="session">[S2] RUN REHAB SESSION<small>One controlled game session; fatigue limits repetition.</small></button><button data-rh="rest">[S3] RECOVERY REST<small>Reduces fatigue and stress.</small></button><button data-rh="reassess">[S4] REASSESS READINESS<small>Updates graduation readiness.</small></button></div></div>'+
+ (r.readiness>=80?'<div class="rh"><h4>GRADUATION</h4><div class="rh-btns"><button data-rh="sanctuary">[G1] RETURN TO SANCTUARY<small>Marks rehabilitation complete and returns resident.</small></button><button data-rh="habitat">[G2] HABITAT PLACEMENT REVIEW</button><button data-rh="continue">[G3] CONTINUE REHABILITATION</button></div></div>':'')+
+ '<div class="rh"><h4>SESSION HISTORY</h4>'+(r.history.length?r.history.slice(0,14).map(x=>'<div class="rh-log"><b>'+x.action+'</b><small>'+x.time+' · '+x.note+'</small></div>').join(""):'<div class="rh-log">NO REHABILITATION EVENTS RECORDED.</div>')+'</div>'+
+ '<div class="rh"><h4>DEPARTMENT ROUTING</h4><div class="rh-btns"><button data-route="recovery">[R1] RECOVERY.EXE</button><button data-route="sanctuary2">[R2] SANCTUARY.EXE</button><button data-route="habitat">[R3] HABITAT.EXE</button><button data-route="nutrition">[R4] NUTRITION.EXE</button></div></div>'+
+ '<div class="out"><h4>REHAB OUTPUT</h4><pre id="out">'+r.last+'</pre></div>';
+ document.querySelectorAll("[data-track]").forEach(b=>b.onclick=()=>{r.track=b.dataset.track;r.last="REHAB TRACK SET · "+trackName(r.track);save();renderRehab()});
+ document.querySelectorAll("[data-rh]").forEach(b=>b.onclick=()=>act(b.dataset.rh));
+ document.querySelectorAll("[data-route]").forEach(b=>b.onclick=()=>program(b.dataset.route));
+}
+function card(k,v,n){return '<div class="rh-card"><small>'+k+'</small><b>'+v+'</b><small>'+n+'</small></div>'}
+function trackName(k){let t=TRACKS.find(x=>x[0]===k);return t?t[1]:"UNASSIGNED"}
+function event(a,action,note){let r=a.rehab;r.history.unshift({time:new Date().toLocaleTimeString(),action,note});state.rehabDept.log.unshift(a.name+" · "+action+" · "+note);a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · REHAB · "+action)}
+function readiness(a){let r=a.rehab;return clamp(a.mobility*.2+r.strength*.13+r.balance*.13+r.confidence*.13+r.endurance*.11+r.coordination*.12+(100-r.fatigue)*.08+(100-a.pain)*.1)}
+function act(c){
+ let a=A(),r=a.rehab;
+ if(c==="assess"){r.enrolled=true;r.confidence=clamp((a.trust+(100-a.stress))/2);r.readiness=readiness(a);r.last="FUNCTION ASSESSMENT\nMobility "+a.mobility+"%\nPain "+a.pain+"%\nConfidence "+r.confidence+"%\nReadiness "+r.readiness+"%";event(a,"ASSESSMENT","Baseline readiness "+r.readiness+"%")}
+ else if(c==="session"){
+   if(!r.enrolled){r.last="SESSION BLOCKED · run FUNCTION ASSESSMENT first.";save();return renderRehab()}
+   if(r.fatigue>=80){r.last="SESSION BLOCKED · fatigue is high. Use RECOVERY REST.";save();return renderRehab()}
+   r.sessions++;r.fatigue=clamp(r.fatigue+12);a.stress=clamp(a.stress+1);
+   let k=r.track;
+   if(k==="mobility"){a.mobility=clamp(a.mobility+5);r.coordination=clamp(r.coordination+2)}
+   if(k==="strength"){r.strength=clamp(r.strength+6);r.endurance=clamp(r.endurance+2)}
+   if(k==="balance"){r.balance=clamp(r.balance+6);r.coordination=clamp(r.coordination+4)}
+   if(k==="confidence"){r.confidence=clamp(r.confidence+7);a.trust=clamp(a.trust+3);a.stress=clamp(a.stress-3)}
+   if(k==="enrichment"){r.confidence=clamp(r.confidence+3);r.coordination=clamp(r.coordination+3);if(a.sanctuary)a.sanctuary.enrichment=clamp(a.sanctuary.enrichment+5)}
+   if(k==="return"){r.endurance=clamp(r.endurance+4);r.confidence=clamp(r.confidence+4);a.mobility=clamp(a.mobility+3)}
+   r.readiness=readiness(a);r.last="SESSION "+r.sessions+" COMPLETE\nTrack: "+trackName(k)+"\nFatigue "+r.fatigue+"%\nReadiness "+r.readiness+"%";event(a,"SESSION "+r.sessions,trackName(k)+" · readiness "+r.readiness+"%");
+ }
+ else if(c==="rest"){r.fatigue=clamp(r.fatigue-20);a.stress=clamp(a.stress-5);a.health=clamp(a.health+2);r.last="RECOVERY REST COMPLETE.\nFatigue "+r.fatigue+"%.";event(a,"REST","Fatigue reduced")}
+ else if(c==="reassess"){r.readiness=readiness(a);r.last="REHAB REASSESSMENT\nReadiness "+r.readiness+"%\nMobility "+a.mobility+"%\nStrength "+r.strength+"%\nBalance "+r.balance+"%\nConfidence "+r.confidence+"%\nFatigue "+r.fatigue+"%\n"+(r.readiness>=80?"GRADUATION ROUTES UNLOCKED.":"CONTINUE REHABILITATION.");event(a,"REASSESSMENT","Readiness "+r.readiness+"%")}
+ else if(c==="sanctuary"){r.enrolled=false;a.stage="SANCTUARY";a.disposition="SANCTUARY";if(a.sanctuary){a.sanctuary.resident=true;if(!state.sanctuary2.residents.includes(a.id))state.sanctuary2.residents.push(a.id)}event(a,"GRADUATED","Returned to Sanctuary");save();return program("sanctuary2")}
+ else if(c==="habitat"){save();return program("habitat")}
+ else if(c==="continue"){r.last="REHABILITATION CONTINUED.";r.readiness=Math.min(r.readiness,79)}
+ save();renderRehab();
+}
+const oldProgram=program;program=function(k){if(k==="rehab")return renderRehab();return oldProgram(k)};
+function addHome(){if(page!=="home"||document.querySelector("#rhHomeLink"))return;let c=document.querySelector(".p10-buttons");if(!c)return;let b=document.createElement("button");b.id="rhHomeLink";b.textContent="[18] REHAB.EXE";b.onclick=renderRehab;c.appendChild(b)}
+const oldHome=home;home=function(){oldHome();addHome()};
+if(window.VetGodsRecovery5){let f=window.VetGodsRecovery5.renderRecovery;window.VetGodsRecovery5.renderRecovery=function(){f();if(document.querySelector("#rhRecLink"))return;let out=document.querySelector(".out");if(!out)return;let b=document.createElement("button");b.id="rhRecLink";b.className="action";b.textContent="[REHAB] MOBILITY & RECONDITIONING";b.onclick=renderRehab;out.insertAdjacentElement("beforebegin",b)}}
+ensureR();addHome();
+window.VetGodsRehab11={renderRehab,readiness};
+})();
+</script>
+
+<style id="institution-p12-css">
+.bh{border:1px solid #666;margin-top:8px}.bh h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.bh-grid{display:grid;grid-template-columns:repeat(2,1fr)}.bh-card,.bh-row{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.bh-card small,.bh-row small{display:block;color:#777}.bh-card b,.bh-row b{color:#fff}
+.bh-btns{display:grid;grid-template-columns:repeat(2,1fr)}.bh-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.bh-btns button:hover,.bh-btns button.on{background:#c9c9c9;color:#000}.bh-btns small{display:block;color:#777;margin-top:3px}
+.bh-meter{display:grid;grid-template-columns:110px 1fr 42px;gap:6px;padding:5px 7px;border-bottom:1px dotted #444;font-size:9px}.bh-meter span{color:#888}.bh-meter b{color:#fff;text-align:right}.bh-bar{height:8px;border:1px solid #555}.bh-bar i{display:block;height:100%;background:#aaa}
+.bh-flow{display:flex;overflow:auto;border:1px solid #666;margin-top:8px}.bh-flow span{flex:1;min-width:88px;text-align:center;padding:5px;border-right:1px dotted #555;font-size:8px;color:#666}.bh-flow .done{color:#aaa}.bh-flow .now{background:#c9c9c9;color:#000;font-weight:900}
+.bh-log{padding:6px;border-bottom:1px dotted #444;font-size:9px;line-height:1.45}.bh-log b{color:#fff}.bh-log small{display:block;color:#777}
+@media(max-width:600px){.bh-grid,.bh-btns{grid-template-columns:1fr}.bh-meter{grid-template-columns:92px 1fr 38px}}
+</style>
+<script id="institution-p12-js">
+(function(){
+"use strict";
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+function A(){return state.animals[state.active]}
+const OBS=[
+ ["quiet","QUIET OBSERVATION","Low-stimulation fictional observation session."],
+ ["handler","HANDLER APPROACH","Observe game response to a familiar handler."],
+ ["novel","NOVEL OBJECT","Observe curiosity/caution around a new object."],
+ ["social","SOCIAL OBSERVATION","Observe fictional social preference."],
+ ["habitat","HABITAT RESPONSE","Observe environmental preference."],
+ ["care","CARE COOPERATION","Observe handling/care tolerance."]
+];
+const PLANS=[
+ ["calm","CALM ROUTINE","Prioritize quiet, predictable interaction."],
+ ["trust","TRUST BUILDING","Prioritize positive low-pressure interactions."],
+ ["enrich","ENRICHMENT PLAN","Increase safe exploration/enrichment."],
+ ["social","SOCIAL PLAN","Build gradual social opportunities."],
+ ["handling","HANDLING PLAN","Build fictional care-cooperation tolerance."],
+ ["habitat","ENVIRONMENT PLAN","Tune habitat around learned preferences."]
+];
+function ensureB(){
+ state.behaviorDept=state.behaviorDept||{log:[],cycles:0};
+ state.animals.forEach(a=>{
+  a.behavior=a.behavior||{observations:[],plan:[],triggers:[],comfortSignals:[],preferences:[],learned:[],curiosity:50,caution:50,social:50,handling:50,resilience:50,engagement:50,stage:0,last:"BEHAVIOR OBSERVATION READY"};
+ });
+ save();
+}
+function meter(k,v){return '<div class="bh-meter"><span>'+k+'</span><div class="bh-bar"><i style="width:'+clamp(v)+'%"></i></div><b>'+clamp(v)+'%</b></div>'}
+function flow(b){let n=b.stage;return '<div class="bh-flow">'+["OBSERVE","PATTERN","PLAN","PRACTICE","REVIEW"].map((x,i)=>'<span class="'+(i<n?"done":i===n?"now":"")+'">'+(i<n?"[X] ":i===n?"[>] ":"[ ] ")+x+'</span>').join("")+'</div>'}
+function renderBehavior(){
+ ensureB();page="behavior";nav();let a=A(),b=a.behavior;
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\BEHAVIOR\\'+a.name.toUpperCase()+'&gt;</div>'+
+ '<div class="bh"><h4>BEHAVIOR.EXE — FICTIONAL OBSERVATION LAB</h4><div class="bh-grid">'+card("RESIDENT",a.icon+" "+a.name,a.species)+card("BRAIN NEED",a.brain?.need||a.dynamic?.currentNeed||"OBSERVE","connected fictional Brain system")+card("CURRENT INTENT",a.brain?.intent||"MONITOR","dynamic game state")+card("OBSERVATIONS",b.observations.length,b.plan.length+" active plan item(s)")+'</div></div>'+flow(b)+
+ '<div class="bh"><h4>BEHAVIOR NETWORK</h4>'+meter("TRUST",a.trust)+meter("CALM",100-a.stress)+meter("CURIOSITY",b.curiosity)+meter("CAUTION",b.caution)+meter("SOCIAL",b.social)+meter("HANDLING",b.handling)+meter("RESILIENCE",b.resilience)+meter("ENGAGEMENT",b.engagement)+'</div>'+
+ '<div class="bh"><h4>OBSERVATION SESSIONS</h4><div class="bh-btns">'+OBS.map((o,i)=>'<button data-obs="'+o[0]+'">['+String(i+1).padStart(2,"0")+'] '+o[1]+'<small>'+o[2]+'</small></button>').join("")+'</div></div>'+
+ '<div class="bh"><h4>LEARNED PATTERN FILE</h4><div class="bh-grid">'+card("TRIGGERS",b.triggers.length?b.triggers.join(" / "):"NONE RECORDED","fictional game triggers")+card("COMFORT SIGNALS",b.comfortSignals.length?b.comfortSignals.join(" / "):"NONE RECORDED","learned calming patterns")+card("PREFERENCES",b.preferences.length?b.preferences.join(" / "):"UNKNOWN","environment/social preferences")+card("LEARNED RESPONSES",b.learned.length?b.learned.slice(-3).join(" / "):"NONE","persistent behavior memory")+'</div></div>'+
+ '<div class="bh"><h4>BEHAVIOR PLAN</h4><div class="bh-btns">'+PLANS.map((p,i)=>'<button class="'+(b.plan.includes(p[0])?"on":"")+'" data-bplan="'+p[0]+'">['+String(i+1).padStart(2,"0")+'] '+p[1]+'<small>'+p[2]+'</small></button>').join("")+'</div></div>'+
+ '<div class="bh"><h4>PRACTICE / REVIEW</h4><div class="bh-btns"><button data-bh="practice">[P1] RUN PLAN SESSION<small>Applies one combined fictional behavior session.</small></button><button data-bh="review">[P2] REVIEW PATTERNS<small>Recalculates connected behavior state.</small></button><button data-bh="brain">[P3] BRAIN.EXE<small>Open connected fictional Brain console.</small></button><button data-bh="feedback">[P4] FEEDBACK.EXE<small>Inspect dynamic stat feedback.</small></button></div></div>'+
+ '<div class="bh"><h4>OBSERVATION HISTORY</h4>'+(b.observations.length?b.observations.slice(0,14).map(x=>'<div class="bh-log"><b>'+x.type+'</b><small>'+x.time+' · '+x.result+'</small></div>').join(""):'<div class="bh-log">NO OBSERVATIONS RECORDED.</div>')+'</div>'+
+ '<div class="bh"><h4>DEPARTMENT ROUTING</h4><div class="bh-btns"><button data-br="sanctuary2">[R1] SANCTUARY.EXE</button><button data-br="habitat">[R2] HABITAT.EXE</button><button data-br="rehab">[R3] REHAB.EXE</button><button data-br="clinic">[R4] CLINIC.EXE</button></div></div>'+
+ '<div class="bh-row">BEHAVIOR.EXE is a fictional simulation. Its traits and observations are gameplay state, not claims about a real animal.</div>'+
+ '<div class="out"><h4>BEHAVIOR OUTPUT</h4><pre id="out">'+b.last+'</pre></div>';
+ document.querySelectorAll("[data-obs]").forEach(x=>x.onclick=()=>observe(x.dataset.obs));
+ document.querySelectorAll("[data-bplan]").forEach(x=>x.onclick=()=>toggle(x.dataset.bplan));
+ document.querySelectorAll("[data-bh]").forEach(x=>x.onclick=()=>act(x.dataset.bh));
+ document.querySelectorAll("[data-br]").forEach(x=>x.onclick=()=>{if(x.dataset.br==="clinic")open("care");else program(x.dataset.br)});
+}
+function card(k,v,n){return '<div class="bh-card"><small>'+k+'</small><b>'+v+'</b><small>'+n+'</small></div>'}
+function uniqPush(arr,v){if(!arr.includes(v))arr.push(v);if(arr.length>6)arr.shift()}
+function observe(k){
+ let a=A(),b=a.behavior,o=OBS.find(x=>x[0]===k),result="";
+ if(k==="quiet"){b.caution=clamp(b.caution-4);b.resilience=clamp(b.resilience+3);a.stress=clamp(a.stress-5);uniqPush(b.comfortSignals,"QUIET SPACE");result="Stress eased; quiet-space comfort pattern recorded."}
+ if(k==="handler"){b.handling=clamp(b.handling+4);a.trust=clamp(a.trust+3);result="Handling tolerance and trust increased in the game model."}
+ if(k==="novel"){let curious=a.stress<60&&a.trust>45;if(curious){b.curiosity=clamp(b.curiosity+7);b.engagement=clamp(b.engagement+4);uniqPush(b.preferences,"NOVEL ENRICHMENT");result="Curiosity response recorded."}else{b.caution=clamp(b.caution+6);uniqPush(b.triggers,"NOVEL OBJECTS");result="Caution response recorded."}}
+ if(k==="social"){let good=a.stress<55;b.social=clamp(b.social+(good?6:-2));uniqPush(good?b.preferences:b.triggers,good?"SOCIAL CONTACT":"BUSY SOCIAL SPACE");result=good?"Positive social preference recorded.":"Crowded-space caution recorded."}
+ if(k==="habitat"){let loc=a.sanctuary?.location||"QUIET ZONE";uniqPush(b.preferences,loc);b.resilience=clamp(b.resilience+3);result="Habitat preference linked to "+loc+"."}
+ if(k==="care"){let easy=(a.dynamic?.handlingEase||50)>55;b.handling=clamp(b.handling+(easy?6:2));uniqPush(easy?b.comfortSignals:b.triggers,easy?"PREDICTABLE CARE":"FAST HANDLING");result=easy?"Cooperative-care pattern recorded.":"Handling caution recorded."}
+ b.observations.unshift({time:new Date().toLocaleTimeString(),type:o[1],result});b.stage=Math.max(b.stage,1);b.last=o[1]+"\n"+result;
+ if(window.VetGodsDynamicStats2)window.VetGodsDynamicStats2.compute(a,"BEHAVIOR OBSERVATION");
+ save();renderBehavior();
+}
+function toggle(k){let b=A().behavior;b.plan=b.plan.includes(k)?b.plan.filter(x=>x!==k):[...b.plan,k];b.stage=b.plan.length?2:1;b.last="BEHAVIOR PLAN UPDATED · "+b.plan.length+" ACTIVE ITEM(S).";save();renderBehavior()}
+function act(c){
+ let a=A(),b=a.behavior;
+ if(c==="practice"){
+   if(!b.plan.length){b.last="NO ACTIVE BEHAVIOR PLAN.";save();return renderBehavior()}
+   b.plan.forEach(k=>{if(k==="calm")a.stress=clamp(a.stress-4);if(k==="trust")a.trust=clamp(a.trust+4);if(k==="enrich"){b.curiosity=clamp(b.curiosity+3);b.engagement=clamp(b.engagement+4)}if(k==="social")b.social=clamp(b.social+4);if(k==="handling")b.handling=clamp(b.handling+4);if(k==="habitat")b.resilience=clamp(b.resilience+4)});
+   uniqPush(b.learned,"PLAN SESSION "+(b.learned.length+1));b.stage=3;b.last="PLAN SESSION COMPLETE.\nConnected trust/stress/behavior values updated.";b.observations.unshift({time:new Date().toLocaleTimeString(),type:"PLAN SESSION",result:b.plan.map(x=>PLANS.find(p=>p[0]===x)[1]).join(", ")});
+   if(window.VetGodsDynamicStats5)window.VetGodsDynamicStats5.lifeEvent(a,"BEHAVIOR","Completed fictional behavior-plan session.");
+ }
+ if(c==="review"){
+   b.confidence=undefined; // deliberately no duplicate stat; confidence remains in rehab.
+   b.resilience=clamp((b.resilience+(100-a.stress)+a.trust)/3);b.engagement=clamp((b.engagement+b.curiosity+b.social)/3);b.stage=4;
+   b.last="PATTERN REVIEW\nTrust "+a.trust+"%\nCalm "+(100-a.stress)+"%\nHandling "+b.handling+"%\nResilience "+b.resilience+"%\nEngagement "+b.engagement+"%\nTriggers "+(b.triggers.join(", ")||"none")+"\nComfort signals "+(b.comfortSignals.join(", ")||"none");
+ }
+ if(c==="brain"&&window.VetGodsDynamicStats2)return window.VetGodsDynamicStats2.renderBrain();
+ if(c==="feedback"&&window.VetGodsDynamicStats4)return window.VetGodsDynamicStats4.renderFeedback();
+ save();renderBehavior();
+}
+const oldProgram=program;program=function(k){if(k==="behavior")return renderBehavior();return oldProgram(k)};
+function addHome(){if(page!=="home"||document.querySelector("#bhHomeLink"))return;let c=document.querySelector(".p10-buttons");if(!c)return;let b=document.createElement("button");b.id="bhHomeLink";b.textContent="[19] BEHAVIOR.EXE";b.onclick=renderBehavior;c.appendChild(b)}
+const oldHome=home;home=function(){oldHome();addHome()};
+if(window.VetGodsSanctuary8){let f=window.VetGodsSanctuary8.renderSanctuary;window.VetGodsSanctuary8.renderSanctuary=function(){f();if(document.querySelector("#bhSyLink"))return;let out=document.querySelector(".out");if(!out)return;let b=document.createElement("button");b.id="bhSyLink";b.className="action";b.textContent="[BEHAVIOR] OBSERVATION LAB";b.onclick=renderBehavior;out.insertAdjacentElement("beforebegin",b)}}
+ensureB();addHome();
+window.VetGodsBehavior12={renderBehavior,observe};
+})();
+</script>
+
+<style id="institution-p13-css">
+.ra{border:1px solid #666;margin-top:8px}.ra h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.ra-grid{display:grid;grid-template-columns:repeat(2,1fr)}.ra-card,.ra-row{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.ra-card small,.ra-row small{display:block;color:#777}.ra-card b,.ra-row b{color:#fff}
+.ra-btns{display:grid;grid-template-columns:repeat(2,1fr)}.ra-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.ra-btns button:hover,.ra-btns button.on{background:#c9c9c9;color:#000}.ra-btns small{display:block;color:#777;margin-top:3px}
+.ra-meter{display:grid;grid-template-columns:110px 1fr 42px;gap:6px;padding:5px 7px;border-bottom:1px dotted #444;font-size:9px}.ra-meter span{color:#888}.ra-meter b{color:#fff;text-align:right}.ra-bar{height:8px;border:1px solid #555}.ra-bar i{display:block;height:100%;background:#aaa}
+.ra-log{padding:6px;border-bottom:1px dotted #444;font-size:9px;line-height:1.45}.ra-log b{color:#fff}.ra-log small{display:block;color:#777}
+.ra-terminal{padding:8px;white-space:pre-wrap;font-size:9px;line-height:1.5;min-height:90px}
+@media(max-width:600px){.ra-grid,.ra-btns{grid-template-columns:1fr}.ra-meter{grid-template-columns:92px 1fr 38px}}
+</style>
+<script id="institution-p13-js">
+(function(){
+"use strict";
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+function A(){return state.animals[state.active]}
+const PROJECTS=[
+ ["care","CARE OUTCOME STUDY","Compare fictional care/recovery records."],
+ ["habitat","HABITAT RESPONSE STUDY","Compare resident response to managed environments."],
+ ["behavior","BEHAVIOR PATTERN STUDY","Analyze fictional observation records."],
+ ["nutrition","NUTRITION RESPONSE STUDY","Analyze feeding and hydration history."],
+ ["rehab","REHAB PROGRESS STUDY","Analyze mobility and reconditioning sessions."],
+ ["anomaly","ANOMALOUS CASE STUDY","Archive fictional paranormal/anomaly case evidence."]
+];
+function ensureRA(){
+ state.researchArchive=state.researchArchive||{projects:[],archive:[],notes:[],log:[],level:1,points:0,activeProject:"care"};
+ state.animals.forEach(a=>a.research=a.research||{samples:[],flags:[],reports:[],archiveScore:0,last:"CASE READY FOR RESEARCH REVIEW"});
+ save();
+}
+function meter(k,v){return '<div class="ra-meter"><span>'+k+'</span><div class="ra-bar"><i style="width:'+clamp(v)+'%"></i></div><b>'+clamp(v)+'%</b></div>'}
+function renderResearch(){
+ ensureRA();page="research";nav();let d=state.researchArchive,a=A(),r=a.research,p=PROJECTS.find(x=>x[0]===d.activeProject);
+ let completeness=caseCompleteness(a);
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\RESEARCH\\ARCHIVE&gt;</div>'+
+ '<div class="ra"><h4>RESEARCH.EXE — INSTITUTIONAL ARCHIVE</h4><div class="ra-grid">'+card("ACTIVE CASE",a.icon+" "+a.name,a.caseId)+card("PROJECT",p[1],"persistent research channel")+card("ARCHIVE RECORDS",d.archive.length,d.points+" research points")+card("LAB LEVEL",d.level,"institutional research progression")+'</div></div>'+
+ '<div class="ra"><h4>CASE DATA COMPLETENESS</h4>'+meter("CORE STATS",completeness.core)+meter("DIAGNOSTICS",completeness.dx)+meter("TREATMENT",completeness.tx)+meter("RECOVERY",completeness.rec)+meter("SANCTUARY",completeness.san)+meter("BEHAVIOR",completeness.beh)+meter("REHAB",completeness.rehab)+meter("NUTRITION",completeness.nut)+'</div>'+
+ '<div class="ra"><h4>RESEARCH PROJECTS</h4><div class="ra-btns">'+PROJECTS.map((x,i)=>'<button class="'+(d.activeProject===x[0]?"on":"")+'" data-project="'+x[0]+'">['+String(i+1).padStart(2,"0")+'] '+x[1]+'<small>'+x[2]+'</small></button>').join("")+'</div></div>'+
+ '<div class="ra"><h4>CASE COLLECTION COMMANDS</h4><div class="ra-btns"><button data-ra="snapshot">[C1] CAPTURE CASE SNAPSHOT<small>Stores a compact copy of current game state.</small></button><button data-ra="sample">[C2] LOG FICTIONAL SAMPLE<small>Adds a research sample identifier to this case.</small></button><button data-ra="analyze">[C3] ANALYZE CURRENT PROJECT<small>Builds a report from systems already used on this animal.</small></button><button data-ra="archive">[C4] ARCHIVE CASE REPORT<small>Preserves the generated report in the institutional archive.</small></button></div></div>'+
+ '<div class="ra"><h4>CASE RESEARCH FILE</h4><div class="ra-grid">'+card("SAMPLES",r.samples.length,r.samples.slice(-2).join(" / ")||"none")+card("FLAGS",r.flags.length,r.flags.join(" / ")||"none")+card("REPORTS",r.reports.length,"persistent case analyses")+card("ARCHIVE SCORE",r.archiveScore+"%","fictional research completeness")+'</div></div>'+
+ '<div class="ra"><h4>ACTIVE REPORT TERMINAL</h4><div class="ra-terminal">'+esc(r.last)+'</div></div>'+
+ '<div class="ra"><h4>ARCHIVE INDEX</h4>'+(d.archive.length?d.archive.slice(0,14).map(x=>'<div class="ra-log"><b>'+x.project+' · '+x.patient+'</b><small>'+x.time+' · '+x.caseId+' · score '+x.score+'%</small></div>').join(""):'<div class="ra-log">ARCHIVE EMPTY.</div>')+'</div>'+
+ '<div class="ra"><h4>DEPARTMENT ROUTING</h4><div class="ra-btns"><button data-rr="behavior">[R1] BEHAVIOR.EXE</button><button data-rr="diagnostics">[R2] DIAGNOSTICS.EXE</button><button data-rr="sanctuary2">[R3] SANCTUARY.EXE</button><button data-rr="habitat">[R4] HABITAT.EXE</button><button data-rr="rehab">[R5] REHAB.EXE</button><button data-rr="nutrition">[R6] NUTRITION.EXE</button></div></div>'+
+ '<div class="ra-row">RESEARCH.EXE stores and analyzes fictional game records only. Anomalous/paranormal entries are narrative simulation data.</div>'+
+ '<div class="out"><h4>RESEARCH LOG</h4><pre id="out">'+(d.log.length?d.log.slice(0,16).join("\n"):"ARCHIVE ONLINE.")+'</pre></div>';
+ document.querySelectorAll("[data-project]").forEach(b=>b.onclick=()=>{d.activeProject=b.dataset.project;save();renderResearch()});
+ document.querySelectorAll("[data-ra]").forEach(b=>b.onclick=()=>act(b.dataset.ra));
+ document.querySelectorAll("[data-rr]").forEach(b=>b.onclick=()=>program(b.dataset.rr));
+}
+function esc(x){return String(x).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
+function card(k,v,n){return '<div class="ra-card"><small>'+k+'</small><b>'+v+'</b><small>'+n+'</small></div>'}
+function caseCompleteness(a){
+ let h=a.history||[];
+ return {core:85,dx:Math.min(100,h.filter(x=>/DIAG|EXAM|LAB|IMAG/i.test(x)).length*20),tx:Math.min(100,h.filter(x=>/TREAT|PAIN|OXYGEN|FLUID/i.test(x)).length*16),rec:Math.min(100,h.filter(x=>/RECOVERY/i.test(x)).length*20),san:a.sanctuary?.resident?85:Math.min(100,(a.sanctuary?.history?.length||0)*15),beh:Math.min(100,(a.behavior?.observations?.length||0)*18),rehab:Math.min(100,(a.rehab?.sessions||0)*15),nut:Math.min(100,(a.nutritionCare?.meals?.length||0)*18)};
+}
+function snapshot(a){
+ let c=caseCompleteness(a);
+ return {time:new Date().toLocaleTimeString(),health:a.health,pain:a.pain,stress:a.stress,trust:a.trust,hydration:a.hydration,nutrition:a.nutrition,mobility:a.mobility,stage:a.stage,completeness:c};
+}
+function score(a){let c=caseCompleteness(a),v=Object.values(c);return clamp(v.reduce((q,x)=>q+x,0)/v.length)}
+function act(c){
+ let d=state.researchArchive,a=A(),r=a.research,p=PROJECTS.find(x=>x[0]===d.activeProject);
+ if(c==="snapshot"){r.snapshot=snapshot(a);r.archiveScore=score(a);r.last="CASE SNAPSHOT CAPTURED\n"+JSON.stringify(r.snapshot,null,2);d.points+=2;d.log.unshift(a.name+" · CASE SNAPSHOT · score "+r.archiveScore+"%")}
+ if(c==="sample"){let id="SMP-"+a.caseId+"-"+String(r.samples.length+1).padStart(3,"0");r.samples.push(id);r.last="FICTIONAL SAMPLE LOGGED\n"+id+"\nNo real biological specimen is represented.";d.points+=1;d.log.unshift(a.name+" · SAMPLE "+id)}
+ if(c==="analyze"){
+   let cpl=caseCompleteness(a),details="";
+   if(d.activeProject==="care")details="Health "+a.health+"% | Pain "+a.pain+"% | Trust "+a.trust+"% | Recovery records "+cpl.rec+"%";
+   if(d.activeProject==="habitat")details="Habitat "+(a.sanctuary?.habitat||"UNASSIGNED")+" | Sanctuary data "+cpl.san+"% | Stress "+a.stress+"%";
+   if(d.activeProject==="behavior")details="Observations "+(a.behavior?.observations?.length||0)+" | Triggers "+(a.behavior?.triggers?.join(", ")||"none")+" | Behavior data "+cpl.beh+"%";
+   if(d.activeProject==="nutrition")details="Nutrition "+(a.nutrition||0)+"% | Hydration "+a.hydration+"% | Feeding data "+cpl.nut+"%";
+   if(d.activeProject==="rehab")details="Mobility "+a.mobility+"% | Sessions "+(a.rehab?.sessions||0)+" | Rehab data "+cpl.rehab+"%";
+   if(d.activeProject==="anomaly"){let para=a.paranormal||a.anomaly||{};details="FICTIONAL ANOMALY CHANNEL | archived narrative flags "+(r.flags.length||0)+" | evidence remains simulation-only";if(!r.flags.includes("ANOMALY REVIEW"))r.flags.push("ANOMALY REVIEW")}
+   let report={time:new Date().toLocaleTimeString(),project:p[1],text:p[1]+"\nCASE "+a.caseId+" · "+a.name+"\n"+details+"\nARCHIVE COMPLETENESS "+score(a)+"%"};
+   r.reports.unshift(report);r.last=report.text;d.points+=5;r.archiveScore=score(a);d.log.unshift(a.name+" · ANALYZED · "+p[1]);
+ }
+ if(c==="archive"){
+   if(!r.reports.length){r.last="ARCHIVE BLOCKED · run ANALYZE CURRENT PROJECT first.";save();return renderResearch()}
+   let q=r.reports[0];d.archive.unshift({time:new Date().toLocaleTimeString(),project:q.project,patient:a.name,caseId:a.caseId,score:r.archiveScore,text:q.text});d.points+=8;d.level=1+Math.floor(d.points/40);r.last="REPORT ARCHIVED\n"+q.project+"\nInstitutional research points: "+d.points+"\nLab level: "+d.level;d.log.unshift(a.name+" · REPORT ARCHIVED · "+q.project);
+ }
+ save();renderResearch();
+}
+const oldProgram=program;program=function(k){if(k==="research")return renderResearch();return oldProgram(k)};
+function addHome(){if(page!=="home"||document.querySelector("#raHomeLink"))return;let c=document.querySelector(".p10-buttons");if(!c)return;let b=document.createElement("button");b.id="raHomeLink";b.textContent="[20] RESEARCH.EXE";b.onclick=renderResearch;c.appendChild(b)}
+const oldHome=home;home=function(){oldHome();addHome()};
+ensureRA();addHome();
+window.VetGodsResearch13={renderResearch,caseCompleteness};
+})();
+</script>
+
+<style id="institution-p14-css">
+.rc{border:1px solid #666;margin-top:8px}.rc h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.rc-grid{display:grid;grid-template-columns:repeat(2,1fr)}.rc-card,.rc-row{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.rc-card small,.rc-row small{display:block;color:#777}.rc-card b,.rc-row b{color:#fff}
+.rc-btns{display:grid;grid-template-columns:repeat(2,1fr)}.rc-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.rc-btns button:hover,.rc-btns button.on{background:#c9c9c9;color:#000}.rc-btns small{display:block;color:#777;margin-top:3px}
+.rc-meter{display:grid;grid-template-columns:115px 1fr 42px;gap:6px;padding:5px 7px;border-bottom:1px dotted #444;font-size:9px}.rc-meter span{color:#888}.rc-meter b{color:#fff;text-align:right}.rc-bar{height:8px;border:1px solid #555}.rc-bar i{display:block;height:100%;background:#aaa}
+.rc-log{padding:6px;border-bottom:1px dotted #444;font-size:9px;line-height:1.45}.rc-log b{color:#fff}.rc-log small{display:block;color:#777}
+.rc-terminal{padding:8px;white-space:pre-wrap;font-size:9px;line-height:1.5;min-height:110px}
+@media(max-width:600px){.rc-grid,.rc-btns{grid-template-columns:1fr}.rc-meter{grid-template-columns:94px 1fr 38px}}
+</style>
+<script id="institution-p14-js">
+(function(){
+"use strict";
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+function A(){return state.animals[state.active]}
+const DEPTS=[
+ ["CLINIC","CLINIC / INTAKE"],["DIAGNOSTICS","DIAGNOSTICS"],["TREATMENT","TREATMENT"],
+ ["SURGERY","SURGERY"],["RECOVERY","RECOVERY"],["PHARMACY","PHARMACY"],["NUTRITION","NUTRITION"],
+ ["SANCTUARY","SANCTUARY"],["HABITAT","HABITAT"],["NURSERY","NURSERY"],["REHAB","REHAB"],
+ ["BEHAVIOR","BEHAVIOR"],["RESEARCH","RESEARCH"]
+];
+function ensureRC(){
+ state.recordsCommand=state.recordsCommand||{audits:[],snapshots:[],alerts:[],log:[],activeTab:"summary",cycles:0};
+ state.animals.forEach(a=>a.records=a.records||{notes:[],flags:[],timeline:[],lastAudit:null,last:"RECORD READY"});
+ save();
+}
+function meter(k,v){return '<div class="rc-meter"><span>'+k+'</span><div class="rc-bar"><i style="width:'+clamp(v)+'%"></i></div><b>'+clamp(v)+'%</b></div>'}
+function renderRecords(){
+ ensureRC();page="records";nav();let d=state.recordsCommand,a=A(),r=a.records,c=coverage(a),alerts=buildAlerts(a);
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\RECORDS\\'+a.caseId+'&gt;</div>'+
+ '<div class="rc"><h4>RECORDS.EXE — INSTITUTION COMMAND FILE</h4><div class="rc-grid">'+card("ACTIVE PATIENT",a.icon+" "+a.name,a.caseId)+card("CURRENT STAGE",a.stage,a.disposition||"ACTIVE")+card("TIMELINE EVENTS",(a.history||[]).length,"cross-department history")+card("OPEN FLAGS",alerts.length,"institutional attention queue")+'</div></div>'+
+ '<div class="rc"><h4>CASE COVERAGE</h4>'+meter("CLINICAL",c.clinical)+meter("CARE",c.care)+meter("RECOVERY",c.recovery)+meter("LIVING SYSTEMS",c.living)+meter("DEVELOPMENT",c.development)+meter("RESEARCH",c.research)+meter("OVERALL FILE",c.overall)+'</div>'+
+ '<div class="rc"><h4>COMMAND TABS</h4><div class="rc-btns"><button class="'+(d.activeTab==="summary"?"on":"")+'" data-tab="summary">[01] CASE SUMMARY</button><button class="'+(d.activeTab==="timeline"?"on":"")+'" data-tab="timeline">[02] MASTER TIMELINE</button><button class="'+(d.activeTab==="alerts"?"on":"")+'" data-tab="alerts">[03] ALERT QUEUE</button><button class="'+(d.activeTab==="departments"?"on":"")+'" data-tab="departments">[04] DEPARTMENT MATRIX</button></div></div>'+
+ tabView(a,d.activeTab,alerts,c)+
+ '<div class="rc"><h4>RECORD COMMANDS</h4><div class="rc-btns"><button data-rc="audit">[C1] RUN CASE AUDIT<small>Checks connected systems and records missing/weak areas.</small></button><button data-rc="snapshot">[C2] FREEZE CASE SNAPSHOT<small>Preserves current institutional state.</small></button><button data-rc="note">[C3] ADD COMMAND NOTE<small>Adds a generated DOS-style status note to this case.</small></button><button data-rc="handoff">[C4] GENERATE HANDOFF<small>Builds a compact cross-department handoff report.</small></button></div></div>'+
+ '<div class="rc"><h4>DEPARTMENT JUMP</h4><div class="rc-btns"><button data-jump="diagnostics">DIAGNOSTICS</button><button data-jump="treatment">TREATMENT</button><button data-jump="recovery">RECOVERY</button><button data-jump="pharmacy">PHARMACY</button><button data-jump="nutrition">NUTRITION</button><button data-jump="sanctuary2">SANCTUARY</button><button data-jump="habitat">HABITAT</button><button data-jump="nursery">NURSERY</button><button data-jump="rehab">REHAB</button><button data-jump="behavior">BEHAVIOR</button><button data-jump="research">RESEARCH</button></div></div>'+
+ '<div class="rc"><h4>COMMAND OUTPUT</h4><div class="rc-terminal">'+esc(r.last)+'</div></div>'+
+ '<div class="out"><h4>RECORDS LOG</h4><pre id="out">'+(d.log.length?d.log.slice(0,16).join("\n"):"MASTER RECORD SYSTEM ONLINE.")+'</pre></div>';
+ document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{d.activeTab=b.dataset.tab;save();renderRecords()});
+ document.querySelectorAll("[data-rc]").forEach(b=>b.onclick=()=>act(b.dataset.rc));
+ document.querySelectorAll("[data-jump]").forEach(b=>b.onclick=()=>program(b.dataset.jump));
+}
+function esc(x){return String(x).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
+function card(k,v,n){return '<div class="rc-card"><small>'+k+'</small><b>'+v+'</b><small>'+n+'</small></div>'}
+function coverage(a){
+ let h=a.history||[], clinical=Math.min(100,20+h.filter(x=>/EXAM|DIAG|LAB|IMAG|CLINIC/i.test(x)).length*12),
+ care=Math.min(100,20+h.filter(x=>/TREAT|PAIN|FLUID|OXYGEN|NUTRITION|PHARM/i.test(x)).length*10),
+ recovery=Math.min(100,(a.rehab?.sessions||0)*8+h.filter(x=>/RECOVERY|REHAB/i.test(x)).length*10),
+ living=Math.min(100,(a.sanctuary?.history?.length||0)*10+(a.sanctuary?.resident?30:0)+(a.sanctuary?.habitat!=="UNASSIGNED"?20:0)),
+ development=Math.min(100,(a.nursery?.care?.length||0)*8+(a.behavior?.observations?.length||0)*8),
+ research=Math.min(100,(a.research?.reports?.length||0)*25+(a.research?.samples?.length||0)*8);
+ return {clinical,care,recovery,living,development,research,overall:clamp((clinical+care+recovery+living+development+research)/6)};
+}
+function buildAlerts(a){
+ let z=[];
+ if(a.health<55)z.push("HEALTH BELOW 55%");
+ if(a.pain>45)z.push("PAIN ABOVE 45%");
+ if(a.hydration<45)z.push("HYDRATION BELOW 45%");
+ if((a.nutrition||60)<45)z.push("NUTRITION BELOW 45%");
+ if(a.stress>65)z.push("STRESS ABOVE 65%");
+ if(a.oxygen!=null&&a.oxygen<85)z.push("OXYGEN BELOW 85%");
+ if(a.sanctuary?.resident&&a.sanctuary.habitat==="UNASSIGNED")z.push("SANCTUARY RESIDENT HAS NO HABITAT");
+ if(a.rehab?.fatigue>75)z.push("REHAB FATIGUE HIGH");
+ return z;
+}
+function tabView(a,t,alerts,c){
+ if(t==="timeline"){let h=(a.history||[]).slice(0,30);return '<div class="rc"><h4>MASTER TIMELINE</h4>'+(h.length?h.map((x,i)=>'<div class="rc-log"><b>#'+String(i+1).padStart(2,"0")+' '+esc(x)+'</b></div>').join(""):'<div class="rc-log">NO TIMELINE EVENTS.</div>')+'</div>'}
+ if(t==="alerts")return '<div class="rc"><h4>ALERT QUEUE</h4>'+(alerts.length?alerts.map(x=>'<div class="rc-log"><b>[!] '+x+'</b><small>Generated from current fictional game state.</small></div>').join(""):'<div class="rc-log"><b>[OK] NO CURRENT RECORD ALERTS</b></div>')+'</div>';
+ if(t==="departments"){
+   let vals={CLINIC:c.clinical,DIAGNOSTICS:c.clinical,TREATMENT:c.care,SURGERY:c.care,RECOVERY:c.recovery,PHARMACY:c.care,NUTRITION:c.care,SANCTUARY:c.living,HABITAT:c.living,NURSERY:c.development,REHAB:c.recovery,BEHAVIOR:c.development,RESEARCH:c.research};
+   return '<div class="rc"><h4>DEPARTMENT MATRIX</h4>'+DEPTS.map(x=>'<div class="rc-row"><b>'+x[1]+' · '+vals[x[0]]+'%</b><small>'+(vals[x[0]]>=60?"CONNECTED RECORD PRESENT":"LIMITED CASE ACTIVITY")+'</small></div>').join("")+'</div>';
+ }
+ return '<div class="rc"><h4>CASE SUMMARY</h4><div class="rc-grid">'+card("HEALTH",a.health+"%","current")+card("PAIN",a.pain+"%","0 = no pain")+card("HYDRATION",a.hydration+"%","current")+card("NUTRITION",(a.nutrition||0)+"%","current")+card("STRESS",a.stress+"%","current")+card("TRUST",a.trust+"%","current")+card("MOBILITY",(a.mobility||0)+"%","current")+card("HABITAT",a.sanctuary?.habitat||"N/A",a.sanctuary?.location||"")+'</div></div>';
+}
+function handoff(a){
+ let al=buildAlerts(a),c=coverage(a);
+ return "INSTITUTION HANDOFF\nCASE: "+a.caseId+" · "+a.name+" · "+a.species+
+ "\nSTAGE: "+a.stage+
+ "\nHEALTH "+a.health+"% | PAIN "+a.pain+"% | HYDRATION "+a.hydration+"% | NUTRITION "+(a.nutrition||0)+"%"+
+ "\nSTRESS "+a.stress+"% | TRUST "+a.trust+"% | MOBILITY "+(a.mobility||0)+"%"+
+ "\nHABITAT: "+(a.sanctuary?.habitat||"N/A")+
+ "\nREHAB: "+(a.rehab?.readiness||0)+"% readiness"+
+ "\nBEHAVIOR OBS: "+(a.behavior?.observations?.length||0)+
+ "\nRESEARCH REPORTS: "+(a.research?.reports?.length||0)+
+ "\nFILE COVERAGE: "+c.overall+"%"+
+ "\nALERTS: "+(al.join(" / ")||"NONE");
+}
+function act(c){
+ let d=state.recordsCommand,a=A(),r=a.records;
+ if(c==="audit"){let al=buildAlerts(a),cov=coverage(a);r.last="CASE AUDIT COMPLETE\nCoverage "+cov.overall+"%\nAlerts "+al.length+"\n"+(al.join("\n")||"NO ACTIVE ALERTS");r.lastAudit={time:new Date().toLocaleTimeString(),coverage:cov.overall,alerts:al};d.audits.unshift({caseId:a.caseId,patient:a.name,...r.lastAudit});d.log.unshift(a.name+" · AUDIT · "+cov.overall+"% · "+al.length+" alert(s)")}
+ if(c==="snapshot"){let snap={time:new Date().toLocaleTimeString(),caseId:a.caseId,patient:a.name,stage:a.stage,health:a.health,pain:a.pain,hydration:a.hydration,nutrition:a.nutrition,stress:a.stress,trust:a.trust,mobility:a.mobility,coverage:coverage(a).overall};d.snapshots.unshift(snap);r.last="CASE SNAPSHOT FROZEN\n"+JSON.stringify(snap,null,2);d.log.unshift(a.name+" · SNAPSHOT STORED")}
+ if(c==="note"){let note=new Date().toLocaleTimeString()+" · COMMAND REVIEW · "+a.stage+" · file coverage "+coverage(a).overall+"%";r.notes.unshift(note);a.history=a.history||[];a.history.unshift(note);r.last="COMMAND NOTE ADDED\n"+note;d.log.unshift(a.name+" · COMMAND NOTE")}
+ if(c==="handoff"){r.last=handoff(a);d.log.unshift(a.name+" · HANDOFF GENERATED")}
+ save();renderRecords();
+}
+const oldProgram=program;program=function(k){if(k==="records")return renderRecords();return oldProgram(k)};
+function addHome(){if(page!=="home"||document.querySelector("#rcHomeLink"))return;let c=document.querySelector(".p10-buttons");if(!c)return;let b=document.createElement("button");b.id="rcHomeLink";b.textContent="[21] RECORDS.EXE";b.onclick=renderRecords;c.appendChild(b)}
+const oldHome=home;home=function(){oldHome();addHome()};
+ensureRC();addHome();
+window.VetGodsRecords14={renderRecords,coverage,handoff};
+})();
+</script>
+
+<style id="institution-p15-css">
+.dp{border:1px solid #666;margin-top:8px}.dp h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.dp-grid{display:grid;grid-template-columns:repeat(2,1fr)}.dp-card,.dp-row{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.dp-card small,.dp-row small{display:block;color:#777}.dp-card b,.dp-row b{color:#fff}
+.dp-btns{display:grid;grid-template-columns:repeat(2,1fr)}.dp-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.dp-btns button:hover,.dp-btns button.on{background:#c9c9c9;color:#000}.dp-btns small{display:block;color:#777;margin-top:3px}
+.dp-meter{display:grid;grid-template-columns:110px 1fr 42px;gap:6px;padding:5px 7px;border-bottom:1px dotted #444;font-size:9px}.dp-meter span{color:#888}.dp-meter b{color:#fff;text-align:right}.dp-bar{height:8px;border:1px solid #555}.dp-bar i{display:block;height:100%;background:#aaa}
+.dp-term{padding:8px;white-space:pre-wrap;font-size:9px;line-height:1.5;min-height:100px}
+@media(max-width:600px){.dp-grid,.dp-btns{grid-template-columns:1fr}.dp-meter{grid-template-columns:92px 1fr 38px}}
+</style>
+<script id="institution-p15-js">
+(function(){
+"use strict";
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+function A(){return state.animals[state.active]}
+const CALLS=[
+ ["rescue","ANIMAL RESCUE CALL","Remote animal requires fictional institutional intake.","CLINIC"],
+ ["transfer","FACILITY TRANSFER","Resident requires movement between departments.","RECOVERY"],
+ ["habitat","HABITAT ALERT","Sanctuary environment requires response.","HABITAT"],
+ ["supply","SUPPLY REQUEST","Department requests institutional supplies.","PHARMACY"],
+ ["research","FIELD RESEARCH CALL","Fictional case evidence requires collection.","RESEARCH"],
+ ["anomaly","ANOMALY RESPONSE","Narrative paranormal research event detected.","RESEARCH"]
+];
+function ensureD(){
+ state.dispatchDept=state.dispatchDept||{calls:[],missions:[],log:[],completed:0,reputation:0,activeCall:null,cycle:0};
+ save();
+}
+function meter(k,v){return '<div class="dp-meter"><span>'+k+'</span><div class="dp-bar"><i style="width:'+clamp(v)+'%"></i></div><b>'+clamp(v)+'%</b></div>'}
+function renderDispatch(){
+ ensureD();page="dispatch";nav();let d=state.dispatchDept,a=A(),call=d.activeCall;
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\DISPATCH&gt;</div>'+
+ '<div class="dp"><h4>DISPATCH.EXE — INSTITUTION OPERATIONS</h4><div class="dp-grid">'+card("ACTIVE PATIENT",a.icon+" "+a.name,a.caseId)+card("OPEN CALLS",d.calls.filter(x=>x.status==="OPEN").length,d.completed+" completed")+card("REPUTATION",d.reputation+"%","fictional institution response score")+card("ACTIVE CALL",call?call.id:"NONE",call?call.title:"dispatch ready")+'</div></div>'+
+ '<div class="dp"><h4>GENERATE OPERATIONS CALL</h4><div class="dp-btns">'+CALLS.map((x,i)=>'<button data-newcall="'+x[0]+'">['+String(i+1).padStart(2,"0")+'] '+x[1]+'<small>'+x[2]+'</small></button>').join("")+'</div></div>'+
+ '<div class="dp"><h4>CALL QUEUE</h4>'+(d.calls.length?d.calls.slice(0,12).map(x=>'<div class="dp-row"><b>'+x.id+' · '+x.title+' · '+x.status+'</b><small>'+x.priority+' PRIORITY · destination '+x.destination+' · '+x.patient+'</small><button data-call="'+x.id+'">OPEN CALL</button></div>').join(""):'<div class="dp-row">NO CALLS IN QUEUE.</div>')+'</div>'+
+ (call?activePanel(call,a):'')+
+ '<div class="dp"><h4>OPERATIONS READOUT</h4>'+meter("RESPONSE",d.reputation)+meter("CASE HEALTH",a.health)+meter("TRUST",a.trust)+meter("CALM",100-a.stress)+meter("MOBILITY",a.mobility||0)+'</div>'+
+ '<div class="dp"><h4>DIRECT ROUTING</h4><div class="dp-btns"><button data-dr="clinic">[R1] CLINIC</button><button data-dr="recovery">[R2] RECOVERY</button><button data-dr="habitat">[R3] HABITAT</button><button data-dr="pharmacy">[R4] PHARMACY</button><button data-dr="research">[R5] RESEARCH</button><button data-dr="records">[R6] RECORDS</button></div></div>'+
+ '<div class="out"><h4>DISPATCH LOG</h4><pre id="out">'+(d.log.length?d.log.slice(0,16).join("\n"):"OPERATIONS CHANNEL ONLINE.")+'</pre></div>';
+ document.querySelectorAll("[data-newcall]").forEach(b=>b.onclick=()=>newCall(b.dataset.newcall));
+ document.querySelectorAll("[data-call]").forEach(b=>b.onclick=()=>{d.activeCall=d.calls.find(x=>x.id===b.dataset.call);save();renderDispatch()});
+ document.querySelectorAll("[data-da]").forEach(b=>b.onclick=()=>act(b.dataset.da));
+ document.querySelectorAll("[data-dr]").forEach(b=>b.onclick=()=>b.dataset.dr==="clinic"?open("care"):program(b.dataset.dr));
+}
+function card(k,v,n){return '<div class="dp-card"><small>'+k+'</small><b>'+v+'</b><small>'+n+'</small></div>'}
+function activePanel(c,a){
+ return '<div class="dp"><h4>ACTIVE CALL — '+c.id+'</h4><div class="dp-grid">'+card("TYPE",c.title,c.text)+card("PRIORITY",c.priority,"fictional response priority")+card("DESTINATION",c.destination,"recommended institution department")+card("SUBJECT",c.patient,a.species)+'</div>'+
+ '<div class="dp-btns"><button data-da="ack">[A1] ACKNOWLEDGE CALL</button><button data-da="deploy">[A2] DEPLOY RESPONSE TEAM</button><button data-da="stabilize">[A3] FIELD STABILIZATION<small>Fictional game action modifying connected stats.</small></button><button data-da="transport">[A4] TRANSPORT TO DESTINATION</button><button data-da="close">[A5] CLOSE CALL</button></div></div>';
+}
+function newCall(k){
+ let d=state.dispatchDept,a=A(),t=CALLS.find(x=>x[0]===k),n=d.calls.length+1;
+ let c={id:"DSP-"+String(n).padStart(3,"0"),kind:k,title:t[1],text:t[2],destination:t[3],patient:a.name,patientId:a.id,priority:k==="anomaly"||k==="rescue"?"HIGH":k==="habitat"?"MEDIUM":"ROUTINE",status:"OPEN",steps:[],created:new Date().toLocaleTimeString()};
+ d.calls.unshift(c);d.activeCall=c;d.log.unshift(c.id+" · CREATED · "+c.title+" · "+a.name);save();renderDispatch();
+}
+function step(c,x){if(!c.steps.includes(x))c.steps.push(x);state.dispatchDept.log.unshift(c.id+" · "+x)}
+function act(k){
+ let d=state.dispatchDept,c=d.activeCall;if(!c)return;let a=state.animals.find(x=>x.id===c.patientId)||A();
+ if(k==="ack"){c.status="ACKNOWLEDGED";step(c,"CALL ACKNOWLEDGED")}
+ if(k==="deploy"){c.status="DEPLOYED";step(c,"RESPONSE TEAM DEPLOYED");d.reputation=clamp(d.reputation+2)}
+ if(k==="stabilize"){a.stress=clamp(a.stress-5);a.trust=clamp(a.trust+3);a.health=clamp(a.health+2);step(c,"FIELD STABILIZATION COMPLETE")}
+ if(k==="transport"){
+   c.status="TRANSPORTED";step(c,"TRANSPORTED TO "+c.destination);
+   if(c.destination==="CLINIC")a.stage="CLINIC";
+   if(c.destination==="RECOVERY")a.stage="RECOVERY";
+   if(c.destination==="HABITAT"&&a.sanctuary)a.stage="SANCTUARY";
+ }
+ if(k==="close"){c.status="CLOSED";d.completed++;d.reputation=clamp(d.reputation+5);step(c,"CALL CLOSED");a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · DISPATCH · "+c.title+" COMPLETE");d.activeCall=null}
+ save();renderDispatch();
+}
+const oldProgram=program;program=function(k){if(k==="dispatch")return renderDispatch();return oldProgram(k)};
+function addHome(){if(page!=="home"||document.querySelector("#dpHomeLink"))return;let c=document.querySelector(".p10-buttons");if(!c)return;let b=document.createElement("button");b.id="dpHomeLink";b.textContent="[22] DISPATCH.EXE";b.onclick=renderDispatch;c.appendChild(b)}
+const oldHome=home;home=function(){oldHome();addHome()};
+ensureD();addHome();
+window.VetGodsDispatch15={renderDispatch,newCall};
+})();
+</script>
+
+<style id="institution-p16-css">
+.fc{border:1px solid #666;margin-top:8px}.fc h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.fc-grid{display:grid;grid-template-columns:repeat(2,1fr)}.fc-card,.fc-row{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.fc-card small,.fc-row small{display:block;color:#777}.fc-card b,.fc-row b{color:#fff}
+.fc-btns{display:grid;grid-template-columns:repeat(2,1fr)}.fc-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.fc-btns button:hover,.fc-btns button.on{background:#c9c9c9;color:#000}.fc-btns small{display:block;color:#777;margin-top:3px}
+.fc-meter{display:grid;grid-template-columns:112px 1fr 42px;gap:6px;padding:5px 7px;border-bottom:1px dotted #444;font-size:9px}.fc-meter span{color:#888}.fc-meter b{color:#fff;text-align:right}.fc-bar{height:8px;border:1px solid #555}.fc-bar i{display:block;height:100%;background:#aaa}
+.fc-map{padding:8px;white-space:pre-wrap;font-size:9px;line-height:1.5}.fc-alert{padding:6px;border-bottom:1px dotted #444;font-size:9px}.fc-alert b{color:#fff}
+@media(max-width:600px){.fc-grid,.fc-btns{grid-template-columns:1fr}.fc-meter{grid-template-columns:94px 1fr 38px}}
+</style>
+<script id="institution-p16-js">
+(function(){
+"use strict";
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+const ZONES=[
+ ["CLINIC","CLINIC WING"],["SURGERY","SURGERY THEATER"],["RECOVERY","RECOVERY WARD"],["NURSERY","NURSERY WING"],
+ ["SANCTUARY","SANCTUARY CORE"],["HABITAT","HABITAT SYSTEMS"],["LAB","RESEARCH LAB"],["SUPPLY","SUPPLY / PHARMACY"]
+];
+function ensureF(){
+ state.facilitiesDept=state.facilitiesDept||{power:88,water:86,air:91,network:84,sterility:87,security:90,waste:80,backup:75,cycle:0,log:[],active:0,
+ zones:ZONES.map((x,i)=>({id:"Z"+(i+1),name:x[1],power:85,condition:85,clean:85,online:true,level:1}))};
+ save();
+}
+function F(){return state.facilitiesDept}
+function meter(k,v){return '<div class="fc-meter"><span>'+k+'</span><div class="fc-bar"><i style="width:'+clamp(v)+'%"></i></div><b>'+clamp(v)+'%</b></div>'}
+function renderFacilities(){
+ ensureF();page="facilities";nav();let d=F(),z=d.zones[d.active],alerts=warnings(d);
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\FACILITIES\\'+z.id+'&gt;</div>'+
+ '<div class="fc"><h4>FACILITIES.EXE — INSTITUTION INFRASTRUCTURE</h4><div class="fc-grid">'+card("ACTIVE ZONE",z.id+" · "+z.name,"level "+z.level)+card("FACILITY CYCLE",d.cycle,"persistent infrastructure cycle")+card("SYSTEM ALERTS",alerts.length,alerts.length?"maintenance required":"nominal")+card("ZONE STATUS",z.online?"ONLINE":"OFFLINE","condition "+z.condition+"%")+'</div></div>'+
+ '<div class="fc"><h4>MASTER UTILITY BUS</h4>'+meter("POWER GRID",d.power)+meter("WATER",d.water)+meter("AIR / HVAC",d.air)+meter("DATA NETWORK",d.network)+meter("STERILITY",d.sterility)+meter("SECURITY",d.security)+meter("WASTE SYSTEM",d.waste)+meter("BACKUP POWER",d.backup)+'</div>'+
+ '<div class="fc"><h4>FACILITY ZONES</h4><div class="fc-btns">'+d.zones.map((x,i)=>'<button class="'+(i===d.active?"on":"")+'" data-zone="'+i+'">['+x.id+'] '+x.name+'<small>'+ (x.online?"ONLINE":"OFFLINE")+' · power '+x.power+'% · condition '+x.condition+'%</small></button>').join("")+'</div></div>'+
+ '<div class="fc"><h4>ZONE CONTROL — '+z.name+'</h4>'+meter("ZONE POWER",z.power)+meter("CONDITION",z.condition)+meter("CLEANLINESS",z.clean)+'<div class="fc-btns"><button data-fc="toggle">[01] '+(z.online?"TAKE ZONE OFFLINE":"BRING ZONE ONLINE")+'</button><button data-fc="service">[02] SERVICE ZONE · 8 CR</button><button data-fc="clean">[03] DEEP CLEAN · 5 CR</button><button data-fc="upgrade">[04] UPGRADE ZONE · '+(25*z.level)+' CR</button></div></div>'+
+ '<div class="fc"><h4>UTILITY COMMAND</h4><div class="fc-btns"><button data-fc="power">[U1] STABILIZE POWER · 5 CR</button><button data-fc="water">[U2] SERVICE WATER · 5 CR</button><button data-fc="air">[U3] SERVICE HVAC · 5 CR</button><button data-fc="network">[U4] RESET NETWORK · 4 CR</button><button data-fc="sterility">[U5] STERILITY CYCLE · 6 CR</button><button data-fc="security">[U6] SECURITY CHECK</button><button data-fc="waste">[U7] WASTE SERVICE · 4 CR</button><button data-fc="backup">[U8] CHARGE BACKUP · 6 CR</button></div></div>'+
+ '<div class="fc"><h4>FACILITY ALERTS</h4>'+(alerts.length?alerts.map(x=>'<div class="fc-alert"><b>[!] '+x+'</b></div>').join(""):'<div class="fc-alert"><b>[OK] ALL MASTER SYSTEMS NOMINAL</b></div>')+'</div>'+
+ '<div class="fc"><h4>OPERATIONS</h4><div class="fc-btns"><button data-fc="cycle">[C1] RUN FACILITY CYCLE<small>Utilities degrade slowly and affect zone condition.</small></button><button data-fr="dispatch">[C2] DISPATCH.EXE</button><button data-fr="records">[C3] RECORDS.EXE</button><button data-fr="habitat">[C4] HABITAT.EXE</button></div></div>'+
+ '<div class="fc"><h4>INSTITUTION MAP</h4><div class="fc-map">[CLINIC]----[SURGERY]----[RECOVERY]----[NURSERY]\n    |            |             |             |\n[SUPPLY]-----[CENTRAL UTILITY / DATA BUS]----[LAB]\n    |                          |              |\n[SANCTUARY]---------------[HABITAT SYSTEMS]--+\n\nPOWER · WATER · AIR · NETWORK · SECURITY · BACKUP</div></div>'+
+ '<div class="out"><h4>FACILITIES LOG</h4><pre id="out">'+(d.log.length?d.log.slice(0,16).join("\n"):"INFRASTRUCTURE CONTROL ONLINE.")+'</pre></div>';
+ document.querySelectorAll("[data-zone]").forEach(b=>b.onclick=()=>{d.active=+b.dataset.zone;save();renderFacilities()});
+ document.querySelectorAll("[data-fc]").forEach(b=>b.onclick=()=>act(b.dataset.fc));
+ document.querySelectorAll("[data-fr]").forEach(b=>b.onclick=()=>program(b.dataset.fr));
+}
+function card(k,v,n){return '<div class="fc-card"><small>'+k+'</small><b>'+v+'</b><small>'+n+'</small></div>'}
+function spend(n){if(typeof state.funds==="number"&&state.funds<n)return false;if(typeof state.funds==="number")state.funds-=n;return true}
+function warnings(d){let a=[];[["POWER",d.power],["WATER",d.water],["AIR",d.air],["NETWORK",d.network],["STERILITY",d.sterility],["SECURITY",d.security],["WASTE",d.waste],["BACKUP",d.backup]].forEach(x=>{if(x[1]<55)a.push(x[0]+" BELOW 55%")});d.zones.forEach(z=>{if(z.condition<50)a.push(z.name+" CONDITION LOW");if(!z.online)a.push(z.name+" OFFLINE")});return a}
+function log(x){F().log.unshift(new Date().toLocaleTimeString()+" · "+x)}
+function service(k,cost,amt){let d=F();if(!spend(cost)){log(k.toUpperCase()+" SERVICE BLOCKED · insufficient funds");return false}d[k]=clamp(d[k]+amt);log(k.toUpperCase()+" SERVICED · -"+cost+" CR");return true}
+function act(c){
+ let d=F(),z=d.zones[d.active];
+ if(c==="toggle"){z.online=!z.online;log(z.name+" "+(z.online?"ONLINE":"OFFLINE"))}
+ if(c==="service"){if(spend(8)){z.condition=clamp(z.condition+18);z.power=clamp(z.power+8);log(z.name+" SERVICED · -8 CR")}else log("ZONE SERVICE BLOCKED")}
+ if(c==="clean"){if(spend(5)){z.clean=clamp(z.clean+22);d.sterility=clamp(d.sterility+3);log(z.name+" DEEP CLEAN · -5 CR")}else log("DEEP CLEAN BLOCKED")}
+ if(c==="upgrade"){let n=25*z.level;if(spend(n)){z.level++;z.condition=clamp(z.condition+15);z.power=clamp(z.power+10);z.clean=clamp(z.clean+10);log(z.name+" UPGRADED LEVEL "+z.level+" · -"+n+" CR")}else log("ZONE UPGRADE BLOCKED")}
+ if(["power","water","air","network","sterility","waste","backup"].includes(c)){let costs={power:5,water:5,air:5,network:4,sterility:6,waste:4,backup:6};service(c,costs[c],15)}
+ if(c==="security"){d.security=clamp(d.security+8);log("SECURITY CHECK COMPLETE")}
+ if(c==="cycle"){
+   d.cycle++;d.power=clamp(d.power-2);d.water=clamp(d.water-1);d.air=clamp(d.air-1);d.network=clamp(d.network-2);d.sterility=clamp(d.sterility-2);d.waste=clamp(d.waste-2);d.backup=clamp(d.backup-1);
+   let utility=(d.power+d.water+d.air+d.network+d.sterility)/5;
+   d.zones.forEach(x=>{if(x.online){x.power=clamp(x.power+(d.power>=60?0:-4)-1);x.condition=clamp(x.condition+(utility>=65?0:-3)-1);x.clean=clamp(x.clean-1)}});
+   // Low infrastructure creates institution-wide consequences without destroying core gameplay.
+   if(d.power<45)state.animals.forEach(a=>a.stress=clamp(a.stress+2));
+   if(d.sterility<45)state.animals.forEach(a=>{if(a.stage==="RECOVERY")a.health=clamp(a.health-1)});
+   log("FACILITY CYCLE "+d.cycle+" · "+warnings(d).length+" active alert(s)");
+ }
+ save();renderFacilities();
+}
+const oldProgram=program;program=function(k){if(k==="facilities")return renderFacilities();return oldProgram(k)};
+function addHome(){if(page!=="home"||document.querySelector("#fcHomeLink"))return;let c=document.querySelector(".p10-buttons");if(!c)return;let b=document.createElement("button");b.id="fcHomeLink";b.textContent="[23] FACILITIES.EXE";b.onclick=renderFacilities;c.appendChild(b)}
+const oldHome=home;home=function(){oldHome();addHome()};
+ensureF();addHome();
+window.VetGodsFacilities16={renderFacilities,warnings};
+})();
+</script>
+
+<style id="institution-p17-css">
+.sc{border:1px solid #666;margin-top:8px}.sc h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.sc-grid{display:grid;grid-template-columns:repeat(2,1fr)}.sc-card,.sc-row{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.sc-card small,.sc-row small{display:block;color:#777}.sc-card b,.sc-row b{color:#fff}
+.sc-btns{display:grid;grid-template-columns:repeat(2,1fr)}.sc-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.sc-btns button:hover,.sc-btns button.on{background:#c9c9c9;color:#000}.sc-btns small{display:block;color:#777;margin-top:3px}
+.sc-meter{display:grid;grid-template-columns:110px 1fr 42px;gap:6px;padding:5px 7px;border-bottom:1px dotted #444;font-size:9px}.sc-meter span{color:#888}.sc-meter b{color:#fff;text-align:right}.sc-bar{height:8px;border:1px solid #555}.sc-bar i{display:block;height:100%;background:#aaa}
+.sc-term{padding:8px;white-space:pre-wrap;font-size:9px;line-height:1.5;min-height:90px}
+@media(max-width:600px){.sc-grid,.sc-btns{grid-template-columns:1fr}.sc-meter{grid-template-columns:92px 1fr 38px}}
+</style>
+<script id="institution-p17-js">
+(function(){
+"use strict";
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+const ROLES=[
+ ["VETERINARY","Veterinary Team","CLINIC"],["SURGERY","Surgery Team","SURGERY"],["NURSING","Nursing Team","RECOVERY"],
+ ["NUTRITION","Nutrition Team","NUTRITION"],["SANCTUARY","Sanctuary Team","SANCTUARY"],["REHAB","Rehab Team","REHAB"],
+ ["BEHAVIOR","Behavior Team","BEHAVIOR"],["RESEARCH","Research Team","RESEARCH"],["FACILITIES","Facilities Team","FACILITIES"],
+ ["DISPATCH","Dispatch Team","DISPATCH"]
+];
+function ensureS(){
+ state.staffCommand=state.staffCommand||{staff:ROLES.map((x,i)=>({id:"STF-"+String(i+1).padStart(2,"0"),role:x[0],name:x[1],dept:x[2],skill:55+i%4*5,energy:82,morale:78,load:20,training:0,status:"AVAILABLE",shifts:0})),active:0,cycle:0,log:[],completed:0};
+ save();
+}
+function D(){return state.staffCommand}
+function meter(k,v,inv=false){let q=inv?100-v:v;return '<div class="sc-meter"><span>'+k+'</span><div class="sc-bar"><i style="width:'+clamp(q)+'%"></i></div><b>'+clamp(v)+'%</b></div>'}
+function renderStaff(){
+ ensureS();page="staff";nav();let d=D(),m=d.staff[d.active],available=d.staff.filter(x=>x.status==="AVAILABLE").length;
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\STAFF\\'+m.id+'&gt;</div>'+
+ '<div class="sc"><h4>STAFF.EXE — PERSONNEL COMMAND</h4><div class="sc-grid">'+card("ACTIVE TEAM",m.id+" · "+m.name,m.dept)+card("AVAILABLE TEAMS",available+"/"+d.staff.length,"institution staffing")+card("SHIFT CYCLE",d.cycle,d.completed+" assignments completed")+card("TEAM STATUS",m.status,"load "+m.load+"%")+'</div></div>'+
+ '<div class="sc"><h4>PERSONNEL DIRECTORY</h4><div class="sc-btns">'+d.staff.map((x,i)=>'<button class="'+(i===d.active?"on":"")+'" data-staff="'+i+'">['+x.id+'] '+x.name+'<small>'+x.dept+' · '+x.status+' · skill '+x.skill+'%</small></button>').join("")+'</div></div>'+
+ '<div class="sc"><h4>TEAM READOUT — '+m.name.toUpperCase()+'</h4>'+meter("SKILL",m.skill)+meter("ENERGY",m.energy)+meter("MORALE",m.morale)+meter("WORKLOAD",m.load,true)+meter("TRAINING",m.training)+'</div>'+
+ '<div class="sc"><h4>PERSONNEL COMMANDS</h4><div class="sc-btns"><button data-sc="assign">[01] ASSIGN TO '+m.dept+'<small>Adds workload and records a departmental assignment.</small></button><button data-sc="rest">[02] REST / ROTATE TEAM<small>Restores energy and reduces workload.</small></button><button data-sc="train">[03] TRAIN TEAM · 6 CR<small>Builds persistent training and skill.</small></button><button data-sc="brief">[04] TEAM BRIEFING<small>Raises coordination/morale in the game model.</small></button><button data-sc="complete">[05] COMPLETE ASSIGNMENT<small>Resolves current assignment and awards institution progress.</small></button></div></div>'+
+ '<div class="sc"><h4>INSTITUTION STAFF MATRIX</h4>'+d.staff.map(x=>'<div class="sc-row"><b>'+x.dept+' · '+x.name+' · '+x.status+'</b><small>skill '+x.skill+'% · energy '+x.energy+'% · morale '+x.morale+'% · load '+x.load+'%</small></div>').join("")+'</div>'+
+ '<div class="sc"><h4>SHIFT CONTROL</h4><div class="sc-btns"><button data-sc="cycle">[C1] RUN SHIFT CYCLE<small>Active teams lose energy; resting teams recover.</small></button><button data-route="facilities">[C2] FACILITIES.EXE</button><button data-route="dispatch">[C3] DISPATCH.EXE</button><button data-route="records">[C4] RECORDS.EXE</button></div></div>'+
+ '<div class="sc"><h4>TEAM OUTPUT</h4><div class="sc-term">'+(m.last||"TEAM READY FOR ASSIGNMENT.")+'</div></div>'+
+ '<div class="out"><h4>STAFF LOG</h4><pre id="out">'+(d.log.length?d.log.slice(0,18).join("\n"):"PERSONNEL COMMAND ONLINE.")+'</pre></div>';
+ document.querySelectorAll("[data-staff]").forEach(b=>b.onclick=()=>{d.active=+b.dataset.staff;save();renderStaff()});
+ document.querySelectorAll("[data-sc]").forEach(b=>b.onclick=()=>act(b.dataset.sc));
+ document.querySelectorAll("[data-route]").forEach(b=>b.onclick=()=>program(b.dataset.route));
+}
+function card(k,v,n){return '<div class="sc-card"><small>'+k+'</small><b>'+v+'</b><small>'+n+'</small></div>'}
+function spend(n){if(typeof state.funds==="number"&&state.funds<n)return false;if(typeof state.funds==="number")state.funds-=n;return true}
+function log(x){D().log.unshift(new Date().toLocaleTimeString()+" · "+x)}
+function act(c){
+ let d=D(),m=d.staff[d.active];
+ if(c==="assign"){
+   if(m.energy<25||m.load>85){m.last="ASSIGNMENT BLOCKED\nTeam requires rotation/rest.";log(m.name+" · ASSIGNMENT BLOCKED")}
+   else{m.status="ASSIGNED";m.load=clamp(m.load+18);m.energy=clamp(m.energy-8);m.shifts++;m.last="ASSIGNED TO "+m.dept+"\nShift "+m.shifts+" active.";log(m.name+" · ASSIGNED · "+m.dept)}
+ }
+ if(c==="rest"){m.status="RESTING";m.energy=clamp(m.energy+22);m.load=clamp(m.load-20);m.morale=clamp(m.morale+5);m.last="TEAM ROTATION COMPLETE\nEnergy "+m.energy+"% · Load "+m.load+"%";log(m.name+" · ROTATED / RESTED")}
+ if(c==="train"){
+   if(!spend(6)){m.last="TRAINING BLOCKED · insufficient funds.";log(m.name+" · TRAINING BLOCKED")}
+   else{m.training=clamp(m.training+10);m.skill=clamp(m.skill+4);m.energy=clamp(m.energy-5);m.last="TRAINING COMPLETE\nSkill "+m.skill+"% · Training "+m.training+"%";log(m.name+" · TRAINING · -6 CR")}
+ }
+ if(c==="brief"){m.morale=clamp(m.morale+7);m.energy=clamp(m.energy+2);m.last="TEAM BRIEFING COMPLETE\nMorale "+m.morale+"%";log(m.name+" · BRIEFING COMPLETE")}
+ if(c==="complete"){
+   if(m.status!=="ASSIGNED"){m.last="NO ACTIVE ASSIGNMENT TO COMPLETE."}
+   else{m.status="AVAILABLE";m.load=clamp(m.load-10);m.morale=clamp(m.morale+3);d.completed++;if(typeof state.funds==="number")state.funds+=4;m.last="ASSIGNMENT COMPLETE\n+4 institutional credits\nTotal assignments "+d.completed;log(m.name+" · ASSIGNMENT COMPLETE")}
+ }
+ if(c==="cycle"){
+   d.cycle++;d.staff.forEach(x=>{if(x.status==="ASSIGNED"){x.energy=clamp(x.energy-8);x.load=clamp(x.load+5);if(x.energy<20){x.status="EXHAUSTED";x.morale=clamp(x.morale-5)}}else if(x.status==="RESTING"){x.energy=clamp(x.energy+10);x.load=clamp(x.load-8);if(x.energy>=75)x.status="AVAILABLE"}else{x.energy=clamp(x.energy-1);x.load=clamp(x.load-2)}});
+   // staff condition lightly affects institution systems
+   let avg=d.staff.reduce((q,x)=>q+x.energy+x.morale,0)/(d.staff.length*2);
+   if(state.facilitiesDept&&avg<45)state.facilitiesDept.condition=clamp((state.facilitiesDept.condition||75)-1);
+   log("SHIFT CYCLE "+d.cycle+" · average workforce condition "+Math.round(avg)+"%");
+ }
+ save();renderStaff();
+}
+const oldProgram=program;program=function(k){if(k==="staff")return renderStaff();return oldProgram(k)};
+function addHome(){if(page!=="home"||document.querySelector("#scHomeLink"))return;let c=document.querySelector(".p10-buttons");if(!c)return;let b=document.createElement("button");b.id="scHomeLink";b.textContent="[24] STAFF.EXE";b.onclick=renderStaff;c.appendChild(b)}
+const oldHome=home;home=function(){oldHome();addHome()};
+ensureS();addHome();
+window.VetGodsStaff17={renderStaff};
+})();
+</script>
 </body></html>
