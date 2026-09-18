@@ -1332,4 +1332,568 @@ ensure5();addLifeLink();
 window.VetGodsDynamicStats5={renderLife,sync,lifeEvent};
 })();
 </script>
+
+<style id="paranormal-p1-css">
+.px{border:1px solid #666;margin-top:8px}.px h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.px-grid{display:grid;grid-template-columns:repeat(2,1fr)}.px-cell{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.px-cell small{display:block;color:#777}.px-cell b{color:#fff}
+.px-btns{display:grid;grid-template-columns:repeat(2,1fr)}.px-btns button,.px-case{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.px-btns button:hover,.px-case:hover{background:#c9c9c9;color:#000}
+.px-report{padding:8px;font-size:9px;line-height:1.55;white-space:pre-wrap}.px-report b{color:#fff}
+.px-evidence{padding:6px;border-bottom:1px dotted #444;font-size:9px}.px-evidence b{color:#fff}.px-evidence small{display:block;color:#777}
+.px-stage{display:flex;overflow:auto;border:1px solid #666;margin-top:8px}.px-stage span{flex:1;min-width:85px;text-align:center;padding:5px;border-right:1px dotted #555;font-size:8px;color:#666}.px-stage .now{background:#c9c9c9;color:#000;font-weight:900}.px-stage .done{color:#aaa}
+.px-warn{border:1px solid #777;margin-top:8px;padding:6px;font-size:9px;color:#999}.px-warn b{color:#fff}
+@media(max-width:600px){.px-grid,.px-btns{grid-template-columns:1fr}}
+</style>
+<script id="paranormal-p1-js">
+(function(){
+"use strict";
+const CASES=[
+ {id:"PR-001",title:"THE EMPTY KENNEL SIGNAL",loc:"DECK 9 / KENNEL 04",report:"Night staff report three short tones from an unpowered kennel intercom. A resident animal repeatedly watches the empty doorway shortly before each tone.",witness:"Technician Mara Vale reports hearing the tones twice. She did not see a source.",question:"What produced the repeating signal pattern?",items:[["INTERCOM LOG","Three signal timestamps remain in local memory."],["POWER BUS RECORD","Kennel intercom listed as offline during two timestamps."],["ANIMAL OBSERVATION","Resident orientation shifted toward doorway before reported tone."]]},
+ {id:"PR-002",title:"COLD CORRIDOR EVENT",loc:"SANCTUARY / EAST ACCESS",report:"A narrow corridor shows a repeating temperature drop during quiet-cycle hours. Two staff reports disagree on whether a shadow crossed the far hatch.",witness:"Handler J. Orr reports a moving silhouette. Engineer Sena Rook reports only lighting instability.",question:"Is the event environmental, equipment-related, observational, or an unresolved fictional anomaly?",items:[["THERMAL SNAPSHOT","Localized game-simulated temperature deviation recorded."],["LIGHTING LOG","Fixture voltage fluctuated during one event."],["WITNESS CONFLICT","Two observers describe the scene differently."]]},
+ {id:"PR-003",title:"ARCHIVE VOICE FRAGMENT",loc:"RESEARCH / ARCHIVE NODE",report:"A corrupted veterinary archive file contains a short voice-like fragment not indexed in its transcript metadata.",witness:"Archivist Niko Fen noticed the fragment while restoring an unrelated case record.",question:"Is the fragment corruption, cross-channel contamination, an old recording, or an unknown fictional source?",items:[["AUDIO FRAGMENT","Nine-second damaged signal stored for analysis."],["FILE HASH LOG","Archive block shows prior corruption."],["CHANNEL MAP","Adjacent comm channel was active during original timestamp."]]},
+ {id:"PR-004",title:"HABITAT MOTION TRACE",loc:"SANCTUARY / HABITAT C",report:"Motion sensors record a repeating path after the habitat enters night mode, although staff inspection finds no obvious moving object.",witness:"Two handlers independently report the sensor alert; neither directly observed a figure.",question:"What accounts for the repeating motion path?",items:[["MOTION PATH","Five sensor activations form a similar route."],["VENT LOG","Airflow cycle overlaps two activations."],["CAMERA GAP","One camera segment is missing from the archive."]]}
+];
+const STAGES=["INTAKE","REPORT","WITNESS","EVIDENCE","READY"];
+function A(){return state.animals[state.active]}
+function ensureP(){
+ state.paranormal=state.paranormal||{active:null,archive:[],researchPoints:0,log:[]};
+ state.animals.forEach(a=>{a.paranormalCases=a.paranormalCases||[]});
+ save();
+}
+function getCase(){let p=state.paranormal.active;return p?CASES.find(c=>c.id===p.template):null}
+function stages(p){return '<div class="px-stage">'+STAGES.map((x,i)=>'<span class="'+(i<p.stage?"done":i===p.stage?"now":"")+'">'+(i<p.stage?"[X] ":i===p.stage?"[>] ":"[ ] ")+x+'</span>').join("")+'</div>'}
+function renderParanormal(){
+ page="paranormal";nav();let p=state.paranormal,a=A(),c=getCase(),h='<div class="path">C:\\VETGODS\\PARANORMAL&gt;</div>';
+ if(!p.active){
+  h+='<div class="px"><h4>PARANORMAL.EXE — FICTIONAL RESEARCH CASE INTAKE</h4><div class="px-report">Select one investigation. Only one case is active at a time.</div>'+
+  CASES.map((x,i)=>'<button class="px-case" style="width:100%" data-pcase="'+i+'">['+String(i+1).padStart(2,"0")+'] '+x.id+' '+x.title+'<small>'+x.loc+'</small></button>').join("")+'</div>';
+ }else{
+  h+='<div class="px"><h4>'+c.id+' :: '+c.title+'</h4><div class="px-grid">'+cell("LOCATION",c.loc,"incident location")+cell("ASSIGNED ANIMAL",a.icon+" "+a.name,a.species)+cell("CASE QUESTION",c.question,"unresolved")+cell("CASE STATE",STAGES[p.active.stage],"research progression")+'</div></div>'+stages(p.active)+
+  '<div class="px"><h4>INCIDENT REPORT</h4><div class="px-report">'+c.report+'</div></div>'+
+  '<div class="px"><h4>WITNESS STATEMENT</h4><div class="px-report">'+(p.active.stage>=2?c.witness:"[LOCKED] Review incident report first.")+'</div></div>'+
+  '<div class="px"><h4>EVIDENCE ROOM</h4>'+(p.active.stage>=3?c.items.map((e,i)=>'<div class="px-evidence"><b>E-'+(i+1)+' '+e[0]+'</b><small>'+e[1]+'</small></div>').join(""):'<div class="px-evidence">[LOCKED] Advance investigation to evidence intake.</div>')+'</div>'+
+  controls(p.active,c);
+ }
+ h+='<div class="px-warn"><b>FICTIONAL RESEARCH MODE:</b> Paranormal events, instruments and findings in this game are fictional case mechanics. Evidence can support ordinary, uncertain, conflicting, or fictional-anomaly hypotheses; it is not presented as proof of real paranormal phenomena.</div>'+
+ '<div class="out"><h4>CASE TERMINAL</h4><pre id="out">'+(p.log.length?p.log.slice(0,12).join("\n"):"PARANORMAL RESEARCH TERMINAL READY.")+'</pre></div>';
+ document.querySelector("#main").innerHTML=h;
+ document.querySelectorAll("[data-pcase]").forEach(b=>b.onclick=()=>start(+b.dataset.pcase));
+ document.querySelectorAll("[data-pcmd]").forEach(b=>b.onclick=()=>advance(b.dataset.pcmd));
+}
+function cell(k,v,n){return '<div class="px-cell"><small>'+k+'</small><b>'+v+'</b><small>'+n+'</small></div>'}
+function controls(p,c){
+ let q='<div class="px"><h4>CASE COMMANDS</h4><div class="px-btns">';
+ if(p.stage===0)q+='<button data-pcmd="report">[01] OPEN INCIDENT REPORT</button>';
+ if(p.stage===1)q+='<button data-pcmd="witness">[02] REVIEW WITNESS STATEMENT</button>';
+ if(p.stage===2)q+='<button data-pcmd="evidence">[03] TRANSFER EVIDENCE TO CASE ROOM</button>';
+ if(p.stage===3)q+='<button data-pcmd="ready">[04] MARK CASE READY FOR INVESTIGATION</button>';
+ if(p.stage>=4)q+='<button data-pcmd="log">[05] RECORD PRELIMINARY NOTE</button><button data-pcmd="close">[06] RETURN CASE TO BOARD</button>';
+ return q+'</div></div>';
+}
+function start(i){
+ let c=CASES[i],a=A();if(!c)return;
+ state.paranormal.active={template:c.id,stage:0,animalId:a.id,opened:Date.now(),notes:[],evidence:c.items.map((x,j)=>({id:"E-"+(j+1),name:x[0],status:"SEALED"}))};
+ a.paranormalCases.push(c.id);state.paranormal.log.unshift("CASE OPENED · "+c.id+" · "+a.name);save();renderParanormal();
+}
+function advance(cmd){
+ let p=state.paranormal.active;if(!p)return;let c=getCase(),a=state.animals.find(x=>x.id===p.animalId)||A();
+ if(cmd==="report"&&p.stage===0){p.stage=1;state.paranormal.log.unshift(c.id+" · INCIDENT REPORT REVIEWED")}
+ else if(cmd==="witness"&&p.stage===1){p.stage=2;state.paranormal.log.unshift(c.id+" · WITNESS STATEMENT REVIEWED")}
+ else if(cmd==="evidence"&&p.stage===2){p.stage=3;p.evidence.forEach(e=>e.status="CATALOGUED");state.paranormal.log.unshift(c.id+" · EVIDENCE CATALOGUED")}
+ else if(cmd==="ready"&&p.stage===3){p.stage=4;state.paranormal.researchPoints+=2;state.research=(state.research||0)+2;state.paranormal.log.unshift(c.id+" · READY FOR PHASE 2 INVESTIGATION")}
+ else if(cmd==="log"&&p.stage>=4){let n="Preliminary review retains multiple possible explanations.";p.notes.push(n);state.paranormal.log.unshift(c.id+" · PRELIMINARY NOTE RECORDED")}
+ else if(cmd==="close"){state.paranormal.archive.push({...p,closed:Date.now(),status:"RETURNED / UNRESOLVED"});state.paranormal.log.unshift(c.id+" · RETURNED TO CASE BOARD");state.paranormal.active=null}
+ save();renderParanormal();
+}
+const oldProgram=program;
+program=function(k){if(k==="paranormal")return renderParanormal();return oldProgram(k)};
+function addHomeLink(){
+ if(page!=="home"||document.querySelector("#pHomeLink"))return;let cmds=document.querySelector(".p10-buttons");if(!cmds)return;
+ let b=document.createElement("button");b.id="pHomeLink";b.textContent="[07] PARANORMAL.EXE";b.onclick=renderParanormal;cmds.appendChild(b);
+}
+const oldHome=home;home=function(){oldHome();addHomeLink()};
+ensureP();addHomeLink();
+window.VetGodsParanormal1={renderParanormal,start,advance};
+})();
+</script>
+
+<style id="paranormal-p2-css">
+.pr2{border:1px solid #666;margin-top:8px}.pr2 h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.pr2-scene{padding:8px;font-size:9px;line-height:1.55;white-space:pre-wrap}
+.pr2-grid{display:grid;grid-template-columns:repeat(2,1fr)}
+.pr2-btn{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}
+.pr2-btn:hover{background:#c9c9c9;color:#000}.pr2-btn small{display:block;color:#777;margin-top:3px}
+.pr2-finding{padding:6px;border-bottom:1px dotted #444;font-size:9px;line-height:1.45}.pr2-finding b{color:#fff}.pr2-finding small{display:block;color:#777}
+.pr2-meter{display:grid;grid-template-columns:120px 1fr 42px;gap:6px;padding:5px 7px;border-bottom:1px dotted #444;font-size:9px}.pr2-meter span{color:#888}.pr2-meter b{color:#fff;text-align:right}
+.pr2-bar{height:8px;border:1px solid #555;margin-top:1px}.pr2-bar i{display:block;height:100%;background:#aaa}
+.pr2-stage{display:flex;overflow:auto;border:1px solid #666;margin-top:8px}.pr2-stage span{flex:1;min-width:82px;text-align:center;padding:5px;border-right:1px dotted #555;font-size:8px;color:#666}.pr2-stage .done{color:#aaa}.pr2-stage .now{background:#c9c9c9;color:#000;font-weight:900}
+.pr2-animal{border:1px solid #777;margin:8px;padding:7px;font-size:9px}.pr2-animal b{color:#fff}
+@media(max-width:600px){.pr2-grid{grid-template-columns:1fr}.pr2-meter{grid-template-columns:95px 1fr 38px}}
+</style>
+<script id="paranormal-p2-js">
+(function(){
+"use strict";
+const FLOW=["ENTER","OBSERVE","SCAN","INTERVIEW","COLLECT","REVIEW"];
+const SCENES={
+ "PR-001":{
+  enter:"Kennel 04 is empty. The intercom faceplate is dark. Ventilation and corridor lighting remain active.",
+  observe:"No visible occupant is present. The assigned animal repeatedly orients toward the doorway and then the intercom wall.",
+  scan:["AUDIO","Three short simulated tones share a similar spacing pattern."],
+  interview:"Mara Vale says the second event sounded identical to the first but cannot identify the source.",
+  collect:["CONNECTOR DUST SAMPLE","Fine maintenance dust is disturbed below the intercom panel."],
+  ordinary:"Loose connector / stored signal / maintenance artifact"
+ },
+ "PR-002":{
+  enter:"East Access is quiet. The temperature event is reported near the far hatch and a flickering ceiling fixture.",
+  observe:"The animal pauses near the colder section but also reacts to the unstable light.",
+  scan:["THERMAL","A narrow simulated temperature gradient overlaps the access hatch."],
+  interview:"J. Orr remembers a silhouette; Sena Rook recalls a voltage flicker at approximately the same time.",
+  collect:["FIXTURE SERVICE TAG","Lighting unit shows overdue maintenance."],
+  ordinary:"Lighting instability / airflow / perception conflict"
+ },
+ "PR-003":{
+  enter:"Archive Node 3 is isolated from the live record network. The damaged file is loaded read-only.",
+  observe:"The animal shows no unusual response to playback beyond ordinary attention to sound.",
+  scan:["SIGNAL","Voice-like fragment overlaps a damaged data block and adjacent channel activity."],
+  interview:"Niko Fen confirms the fragment was discovered during restoration, not during the original recording.",
+  collect:["CORRUPT BLOCK COPY","Read-only duplicate of the damaged archive segment."],
+  ordinary:"File corruption / channel contamination / old recording"
+ },
+ "PR-004":{
+  enter:"Habitat C is empty during inspection. Night-mode sensors remain enabled.",
+  observe:"The animal tracks airflow near the lower vent before returning attention to the habitat center.",
+  scan:["MOTION","The repeating path begins near a vent boundary on several stored activations."],
+  interview:"Handlers confirm they received alerts but neither directly observed a moving figure.",
+  collect:["VENT FILTER FIBER","Loose lightweight fiber recovered near the airflow path."],
+  ordinary:"Airflow-driven motion / sensor artifact / missing camera evidence"
+ }
+};
+function A(){return state.animals[state.active]}
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+function active(){return state.paranormal&&state.paranormal.active}
+function cdef(){let p=active();return p?SCENES[p.template]:null}
+function ensure2(){
+ let p=active();
+ if(p){
+  p.investigation=p.investigation||{step:0,findings:[],fieldEvidence:[],interviews:[],sceneVisits:0,uncertainty:85,ordinarySupport:15,anomalySupport:10,contradictions:0};
+ }
+ save();
+}
+function stage(x){return '<div class="pr2-stage">'+FLOW.map((v,i)=>'<span class="'+(i<x.step?"done":i===x.step?"now":"")+'">'+(i<x.step?"[X] ":i===x.step?"[>] ":"[ ] ")+v+'</span>').join("")+'</div>'}
+function meter(k,v){return '<div class="pr2-meter"><span>'+k+'</span><div class="pr2-bar"><i style="width:'+clamp(v)+'%"></i></div><b>'+clamp(v)+'%</b></div>'}
+function renderInvestigation(){
+ let p=active();if(!p)return window.VetGodsParanormal1.renderParanormal();
+ ensure2();page="paranormal";nav();let x=p.investigation,d=cdef(),a=state.animals.find(q=>q.id===p.animalId)||A();
+ let body='<div class="path">C:\\VETGODS\\PARANORMAL\\FIELD&gt;</div>'+
+ '<div class="pr2"><h4>INVESTIGATE.EXE — '+p.template+'</h4><div class="pr2-scene">'+sceneText(x,d)+'</div></div>'+stage(x)+
+ '<div class="pr2"><h4>CASE UNCERTAINTY</h4>'+meter("UNCERTAINTY",x.uncertainty)+meter("ORDINARY LEADS",x.ordinarySupport)+meter("FICTIONAL ANOMALY",x.anomalySupport)+'</div>'+
+ '<div class="pr2"><h4>FIELD COMMANDS</h4><div class="pr2-grid">'+commands(x)+'</div></div>'+
+ animalBox(a,x)+
+ '<div class="pr2"><h4>FINDINGS</h4>'+(x.findings.length?x.findings.map(f=>'<div class="pr2-finding"><b>'+f.type+'</b><small>'+f.text+'</small></div>').join(""):'<div class="pr2-finding">NO FIELD FINDINGS YET.</div>')+'</div>'+
+ '<div class="pr2"><h4>FIELD EVIDENCE</h4>'+(x.fieldEvidence.length?x.fieldEvidence.map(e=>'<div class="pr2-finding"><b>'+e.name+'</b><small>'+e.note+'</small></div>').join(""):'<div class="pr2-finding">NO NEW FIELD EVIDENCE COLLECTED.</div>')+'</div>'+
+ '<div class="out"><h4>INVESTIGATION LOG</h4><pre id="out">'+state.paranormal.log.slice(0,14).join("\n")+'</pre></div>';
+ document.querySelector("#main").innerHTML=body;
+ document.querySelectorAll("[data-pr2]").forEach(b=>b.onclick=()=>act(b.dataset.pr2));
+}
+function sceneText(x,d){
+ if(x.step===0)return d.enter;
+ if(x.step===1)return d.observe;
+ if(x.step===2)return "Scene observation complete. Run a targeted field scan.";
+ if(x.step===3)return "A scan finding is stored. Compare it with the witness account.";
+ if(x.step===4)return "Witness account logged. Collect one physical/digital field item.";
+ return "Field pass complete. Review the evidence before transferring the case to the research laboratory.";
+}
+function commands(x){
+ if(x.step===0)return btn("enter","[01] ENTER SCENE","Begin controlled scene inspection");
+ if(x.step===1)return btn("observe","[02] OBSERVE SCENE","Record environment + animal response");
+ if(x.step===2)return btn("scan","[03] RUN FIELD SCAN","Generate a case-specific instrument finding");
+ if(x.step===3)return btn("interview","[04] INTERVIEW WITNESS","Compare memory with recorded evidence");
+ if(x.step===4)return btn("collect","[05] COLLECT FIELD EVIDENCE","Catalog one new case-specific item");
+ return btn("review","[06] REVIEW INVESTIGATION","Summarize competing leads")+btn("lab","[07] MARK FOR RESEARCH LAB","Prepare for Phase 3")+btn("case","[08] RETURN TO CASE FILE","Return without losing progress");
+}
+function btn(k,t,n){return '<button class="pr2-btn" data-pr2="'+k+'">'+t+'<small>'+n+'</small></button>'}
+function animalBox(a,x){
+ let b=a.brain||{},d=a.dynamic||{};
+ return '<div class="pr2-animal"><b>ASSIGNED ANIMAL OBSERVER:</b> '+a.icon+' '+a.name+
+ '<br>stress '+a.stress+'% · trust '+a.trust+'% · current need '+(d.currentNeed||"OBSERVE")+
+ '<br>brain intent: '+(b.intent||"MONITOR ENVIRONMENT")+
+ '<br><small>Animal reactions are fictional gameplay signals and are not treated as paranormal proof.</small></div>';
+}
+function note(x,type,text){x.findings.unshift({type,text,time:Date.now()});state.paranormal.log.unshift(active().template+" · "+type+" · "+text)}
+function animalReact(a,kind){
+ if(kind==="enter"){a.stress=clamp(a.stress+2)}
+ if(kind==="observe"){a.stress=clamp(a.stress+1);a.trust=clamp(a.trust+1)}
+ if(kind==="interview"){a.stress=clamp(a.stress-1)}
+ if(window.VetGodsDynamicStats2)window.VetGodsDynamicStats2.compute(a,"PARANORMAL FIELD "+kind.toUpperCase());
+ if(window.VetGodsDynamicStats5)window.VetGodsDynamicStats5.lifeEvent(a,"FIELD RESEARCH","Participated in fictional paranormal case "+active().template+" during "+kind+".");
+}
+function act(cmd){
+ let p=active(),x=p.investigation,d=cdef(),a=state.animals.find(q=>q.id===p.animalId)||A();
+ if(cmd==="case")return window.VetGodsParanormal1.renderParanormal();
+ if(cmd==="enter"&&x.step===0){x.sceneVisits++;x.step=1;note(x,"SCENE","Controlled entry completed.");animalReact(a,"enter")}
+ else if(cmd==="observe"&&x.step===1){x.step=2;note(x,"OBSERVATION",d.observe);animalReact(a,"observe");x.uncertainty-=5}
+ else if(cmd==="scan"&&x.step===2){x.step=3;note(x,d.scan[0]+" SCAN",d.scan[1]);x.ordinarySupport+=10;x.anomalySupport+=4;x.uncertainty-=8}
+ else if(cmd==="interview"&&x.step===3){x.step=4;x.interviews.push(d.interview);note(x,"WITNESS",d.interview);animalReact(a,"interview");x.contradictions++;x.uncertainty-=5}
+ else if(cmd==="collect"&&x.step===4){x.step=5;x.fieldEvidence.push({name:d.collect[0],note:d.collect[1]});note(x,"EVIDENCE",d.collect[0]+" catalogued.");x.ordinarySupport+=12;x.uncertainty-=10}
+ else if(cmd==="review"&&x.step>=5){note(x,"REVIEW","Ordinary lead: "+d.ordinary+". Unknowns remain; evidence is not conclusive.");x.uncertainty=clamp(x.uncertainty-3)}
+ else if(cmd==="lab"&&x.step>=5){p.labReady=true;note(x,"TRANSFER","Evidence package marked READY FOR RESEARCH LAB / PHASE 3.");state.research=(state.research||0)+2}
+ x.uncertainty=clamp(x.uncertainty);x.ordinarySupport=clamp(x.ordinarySupport);x.anomalySupport=clamp(x.anomalySupport);save();renderInvestigation();
+}
+const oldRender=window.VetGodsParanormal1.renderParanormal;
+window.VetGodsParanormal1.renderParanormal=function(){
+ oldRender();
+ let p=active();if(!p)return;
+ ensure2();
+ let out=document.querySelector(".out");if(!out||document.querySelector("#pr2open"))return;
+ let b=document.createElement("button");b.id="pr2open";b.className="action";b.textContent="[INV] ENTER DEEP FIELD INVESTIGATION";b.onclick=renderInvestigation;out.insertAdjacentElement("beforebegin",b);
+};
+const priorProgram=program;
+program=function(k){if(k==="paranormal"){window.VetGodsParanormal1.renderParanormal();return}return priorProgram(k)};
+ensure2();
+window.VetGodsParanormal2={renderInvestigation,act};
+})();
+</script>
+
+<style id="paranormal-p3-css">
+.pr3{border:1px solid #666;margin-top:8px}.pr3 h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.pr3-grid{display:grid;grid-template-columns:repeat(2,1fr)}
+.pr3-btn{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}
+.pr3-btn:hover,.pr3-btn.on{background:#c9c9c9;color:#000}.pr3-btn small{display:block;color:#777;margin-top:3px}
+.pr3-read{display:grid;grid-template-columns:130px 1fr 46px;gap:6px;padding:5px 7px;border-bottom:1px dotted #444;font-size:9px}.pr3-read span{color:#888}.pr3-read b{color:#fff}.pr3-read em{font-style:normal;text-align:right}
+.pr3-screen{padding:8px;white-space:pre-wrap;line-height:1.55;font-size:9px;min-height:95px}
+.pr3-result{padding:6px;border-bottom:1px dotted #444;font-size:9px;line-height:1.45}.pr3-result b{color:#fff}.pr3-result small{display:block;color:#777}
+.pr3-flow{display:flex;overflow:auto;border:1px solid #666;margin-top:8px}.pr3-flow span{flex:1;min-width:90px;text-align:center;padding:5px;border-right:1px dotted #555;font-size:8px;color:#666}.pr3-flow .done{color:#aaa}.pr3-flow .now{background:#c9c9c9;color:#000;font-weight:900}
+.pr3-note{border:1px solid #777;padding:6px;margin-top:8px;font-size:9px;color:#999}.pr3-note b{color:#fff}
+@media(max-width:600px){.pr3-grid{grid-template-columns:1fr}.pr3-read{grid-template-columns:100px 1fr 40px}}
+</style>
+<script id="paranormal-p3-js">
+(function(){
+"use strict";
+const LABS=[
+ ["SPECTRAL.EXE","spectral","Compare simulated frequency bands and signal residue."],
+ ["RESONANCE.EXE","resonance","Test repeating timing / resonance relationships."],
+ ["SIGNAL.EXE","signal","Inspect channel overlap, noise and transmission structure."],
+ ["TEMPORAL.EXE","temporal","Compare event timestamps and sequence consistency."],
+ ["PATTERN.EXE","pattern","Search the collected case evidence for repeating structures."]
+];
+const LABDATA={
+ "PR-001":{
+  spectral:["Weak narrow-band residue appears near the stored tone frequency.",46,28],
+  resonance:["Three tones retain similar spacing, but sample count is small.",52,31],
+  signal:["Intercom memory and maintenance bus share a possible pathway.",68,19],
+  temporal:["Two tones occur during logged maintenance-power transitions.",72,16],
+  pattern:["Door orientation, tones and power events correlate imperfectly.",61,24]
+ },
+ "PR-002":{
+  spectral:["No stable spectral signature survives across the reported events.",38,22],
+  resonance:["Temperature drops repeat loosely rather than at a fixed interval.",55,23],
+  signal:["Lighting voltage instability overlaps one witness event.",71,17],
+  temporal:["Airflow and fixture events overlap part of the cold-zone timeline.",67,20],
+  pattern:["Witness descriptions diverge where lighting instability is strongest.",64,21]
+ },
+ "PR-003":{
+  spectral:["Voice-like frequencies are present but heavily damaged by corruption.",49,30],
+  resonance:["Fragment rhythm resembles speech but does not establish a source.",43,34],
+  signal:["Adjacent communications activity overlaps the damaged archive block.",73,18],
+  temporal:["Original metadata and restoration timestamps are partially inconsistent.",62,24],
+  pattern:["Corruption clusters around the same block containing the fragment.",69,20]
+ },
+ "PR-004":{
+  spectral:["No meaningful acoustic signature accompanies most motion events.",35,21],
+  resonance:["Sensor activations form a recurring route with variable timing.",57,29],
+  signal:["Sensor threshold noise increases during night-mode airflow cycles.",70,19],
+  temporal:["Vent cycles overlap multiple activations but not every activation.",66,24],
+  pattern:["Route geometry repeatedly begins near the lower vent boundary.",74,18]
+ }
+};
+function A(){return state.animals[state.active]}
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+function p(){return state.paranormal&&state.paranormal.active}
+function ensure3(){
+ let q=p();if(q)q.lab=q.lab||{runs:{},queue:[],complete:0,correlation:0,contradiction:0,uncertainty:q.investigation?.uncertainty||80,ordinary:q.investigation?.ordinarySupport||20,anomaly:q.investigation?.anomalySupport||10,notes:[],readyForReasoning:false};
+ save();
+}
+function flow(l){return '<div class="pr3-flow">'+["FIELD PACKAGE","INSTRUMENTS","COMPARE","SYNTHESIZE","REASONING"].map((x,i)=>'<span class="'+(i<l.complete?"done":i===l.complete?"now":"")+'">'+(i<l.complete?"[X] ":i===l.complete?"[>] ":"[ ] ")+x+'</span>').join("")+'</div>'}
+function read(k,v){return '<div class="pr3-read"><span>'+k+'</span><div>'+bar(v)+'</div><b>'+clamp(v)+'%</b></div>'}
+function bar(v){return '<div style="height:8px;border:1px solid #555;margin-top:1px"><i style="display:block;height:100%;width:'+clamp(v)+'%;background:#aaa"></i></div>'}
+function renderLab(){
+ let q=p();if(!q)return window.VetGodsParanormal1.renderParanormal();ensure3();page="paranormal";nav();let l=q.lab,a=state.animals.find(x=>x.id===q.animalId)||A();
+ let results=LABS.filter(x=>l.runs[x[1]]).map(x=>{let r=l.runs[x[1]];return '<div class="pr3-result"><b>'+x[0]+'</b><small>'+r.text+'</small><small>ordinary support '+r.ordinary+'% · fictional anomaly support '+r.anomaly+'% · confidence '+r.confidence+'%</small></div>'}).join("");
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\PARANORMAL\\LAB&gt;</div>'+
+ '<div class="pr3"><h4>RESEARCHLAB.EXE — '+q.template+'</h4><div class="pr3-screen">FIELD PACKAGE: '+(q.labReady?"READY":"NOT MARKED READY")+
+ '\nASSIGNED RESIDENT: '+a.name+'\nCATALOGUED FIELD ITEMS: '+(q.investigation?.fieldEvidence?.length||0)+
+ '\nINSTRUMENT RUNS: '+Object.keys(l.runs).length+' / '+LABS.length+
+ '\n\nSelect instruments independently. Results may correlate, contradict, or remain inconclusive.</div></div>'+flow(l)+
+ '<div class="pr3"><h4>FICTIONAL RESEARCH INSTRUMENTS</h4><div class="pr3-grid">'+LABS.map((x,i)=>'<button class="pr3-btn '+(l.runs[x[1]]?"on":"")+'" data-pr3="'+x[1]+'">['+String(i+1).padStart(2,"0")+'] '+x[0]+'<small>'+x[2]+'</small></button>').join("")+'</div></div>'+
+ '<div class="pr3"><h4>LIVE SYNTHESIS</h4>'+read("UNCERTAINTY",l.uncertainty)+read("ORDINARY SUPPORT",l.ordinary)+read("ANOMALY SUPPORT",l.anomaly)+read("CORRELATION",l.correlation)+read("CONTRADICTION",l.contradiction)+'</div>'+
+ '<div class="pr3"><h4>INSTRUMENT RESULTS</h4>'+(results||'<div class="pr3-result">NO INSTRUMENT RUNS COMPLETE.</div>')+'</div>'+
+ '<div class="pr3"><h4>LAB COMMANDS</h4><div class="pr3-grid"><button class="pr3-btn" data-pr3="compare">[06] CROSS-COMPARE RESULTS<small>Requires two or more completed instruments.</small></button><button class="pr3-btn" data-pr3="synthesize">[07] SYNTHESIZE LAB PACKAGE<small>Requires all five instrument runs.</small></button><button class="pr3-btn" data-pr3="field">[08] RETURN TO FIELD CASE<small>Preserve all lab work.</small></button></div></div>'+
+ '<div class="pr3-note"><b>RESEARCH RULE:</b> Instrument output is fictional game data. A high anomaly-support value is a game hypothesis score, not evidence that paranormal phenomena exist in the real world.</div>'+
+ '<div class="out"><h4>LAB LOG</h4><pre id="out">'+(l.notes.length?l.notes.slice(0,15).join("\n"):"LAB PACKAGE LOADED.\nSELECT AN INSTRUMENT.")+'</pre></div>';
+ document.querySelectorAll("[data-pr3]").forEach(b=>b.onclick=()=>act(b.dataset.pr3));
+}
+function act(cmd){
+ let q=p(),l=q.lab;if(cmd==="field")return window.VetGodsParanormal2.renderInvestigation();
+ let inst=LABS.find(x=>x[1]===cmd);
+ if(inst){
+   if(l.runs[cmd]){l.notes.unshift(new Date().toLocaleTimeString()+" · "+inst[0]+" result reopened.");save();return renderLab()}
+   let d=(LABDATA[q.template]||{})[cmd]||["Result remains inconclusive.",50,25];
+   let completed=Object.keys(l.runs).length;
+   let confidence=clamp(58+completed*6+((q.investigation?.fieldEvidence?.length||0)*3));
+   l.runs[cmd]={text:d[0],ordinary:d[1],anomaly:d[2],confidence,time:Date.now()};
+   l.ordinary=clamp((l.ordinary+d[1])/2+4);l.anomaly=clamp((l.anomaly+d[2])/2+2);l.uncertainty=clamp(l.uncertainty-7);
+   l.complete=Math.min(2,Object.keys(l.runs).length>0?1:0);
+   l.notes.unshift(new Date().toLocaleTimeString()+" · "+inst[0]+" COMPLETE · "+d[0]);
+   state.research=(state.research||0)+1;save();return renderLab();
+ }
+ if(cmd==="compare"){
+   let rs=Object.values(l.runs);if(rs.length<2){l.notes.unshift("COMPARE BLOCKED · run at least two instruments.");save();return renderLab()}
+   let os=rs.map(r=>r.ordinary),as=rs.map(r=>r.anomaly);
+   let spread=Math.max(...os)-Math.min(...os)+Math.max(...as)-Math.min(...as);
+   l.correlation=clamp(72-spread/2+rs.length*4);l.contradiction=clamp(20+spread/2);l.complete=Math.max(l.complete,2);
+   l.notes.unshift(new Date().toLocaleTimeString()+" · CROSS-COMPARE · correlation "+l.correlation+"% / contradiction "+l.contradiction+"%");save();return renderLab();
+ }
+ if(cmd==="synthesize"){
+   if(Object.keys(l.runs).length<5){l.notes.unshift("SYNTHESIS BLOCKED · complete all five instrument runs.");save();return renderLab()}
+   let rs=Object.values(l.runs),avg=k=>rs.reduce((n,r)=>n+r[k],0)/rs.length;
+   l.ordinary=clamp((l.ordinary+avg("ordinary"))/2);l.anomaly=clamp((l.anomaly+avg("anomaly"))/2);
+   l.uncertainty=clamp(l.uncertainty-12);l.complete=4;l.readyForReasoning=true;
+   l.notes.unshift(new Date().toLocaleTimeString()+" · LAB PACKAGE SYNTHESIZED · READY FOR PHASE 4 REASONING");
+   state.paranormal.researchPoints+=5;state.research=(state.research||0)+5;save();return renderLab();
+ }
+}
+const oldField=window.VetGodsParanormal2.renderInvestigation;
+window.VetGodsParanormal2.renderInvestigation=function(){
+ oldField();let q=p();if(!q)return;ensure3();
+ if(!(q.labReady||q.investigation?.step>=5)||document.querySelector("#pr3open"))return;
+ let out=document.querySelector(".out");if(!out)return;let b=document.createElement("button");b.id="pr3open";b.className="action";b.textContent="[LAB] TRANSFER EVIDENCE TO RESEARCH LAB";b.onclick=renderLab;out.insertAdjacentElement("beforebegin",b);
+};
+ensure3();
+window.VetGodsParanormal3={renderLab,act};
+})();
+</script>
+
+<style id="paranormal-p4-css">
+.cb{border:1px solid #666;margin-top:8px}.cb h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.cb-grid{display:grid;grid-template-columns:repeat(2,1fr)}
+.cb-hyp{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.cb-hyp small{display:block;color:#777}.cb-hyp b{color:#fff}
+.cb-hyp.selected{outline:1px solid #bbb;outline-offset:-2px}
+.cb-btns{display:grid;grid-template-columns:repeat(2,1fr)}.cb-btns button,.cb-hyp button{width:100%;border:0;border-top:1px dotted #555;background:#000;color:#c9c9c9;padding:6px;text-align:left;font:700 9px "Courier New",monospace}.cb-btns button:hover,.cb-hyp button:hover{background:#c9c9c9;color:#000}
+.cb-ev{padding:6px;border-bottom:1px dotted #444;font-size:9px;line-height:1.45}.cb-ev b{color:#fff}.cb-ev small{display:block;color:#777}
+.cb-link{display:grid;grid-template-columns:1fr 85px 85px;gap:4px;align-items:center;padding:5px 6px;border-bottom:1px dotted #444;font-size:9px}.cb-link button{background:#000;color:#aaa;border:1px solid #555;font:8px "Courier New",monospace;padding:4px}.cb-link button.on{background:#c9c9c9;color:#000}
+.cb-score{display:grid;grid-template-columns:125px 1fr 42px;gap:6px;padding:5px 7px;border-bottom:1px dotted #444;font-size:9px}.cb-score span{color:#888}.cb-score b{color:#fff;text-align:right}
+.cb-bar{height:8px;border:1px solid #555}.cb-bar i{display:block;height:100%;background:#aaa}
+.cb-note{padding:7px;font-size:9px;line-height:1.55;color:#999}.cb-note b{color:#fff}
+@media(max-width:600px){.cb-grid,.cb-btns{grid-template-columns:1fr}.cb-link{grid-template-columns:1fr 70px 70px}.cb-score{grid-template-columns:95px 1fr 38px}}
+</style>
+<script id="paranormal-p4-js">
+(function(){
+"use strict";
+const HYP={
+ "PR-001":[
+  ["EQUIPMENT","Stored signal, connector fault or maintenance-bus behavior."],
+  ["HUMAN / RECORD","Misremembered timing or undocumented human activity."],
+  ["UNKNOWN SIGNAL","A source is not identified by current evidence."],
+  ["FICTIONAL ANOMALY","Game-only anomalous signal hypothesis."]
+ ],
+ "PR-002":[
+  ["ENVIRONMENT","Airflow and temperature behavior around the access hatch."],
+  ["EQUIPMENT","Lighting/voltage instability affecting observation."],
+  ["OBSERVATION","Conflicting perception under unstable conditions."],
+  ["FICTIONAL ANOMALY","Game-only anomalous corridor-event hypothesis."]
+ ],
+ "PR-003":[
+  ["DATA CORRUPTION","Damaged archive blocks produced voice-like structure."],
+  ["CHANNEL BLEED","Adjacent communications contaminated the recording."],
+  ["OLD RECORDING","Unindexed legacy audio survived in the archive."],
+  ["FICTIONAL ANOMALY","Game-only anomalous archive-source hypothesis."]
+ ],
+ "PR-004":[
+  ["ENVIRONMENT","Airflow moved material through sensor boundaries."],
+  ["SENSOR ARTIFACT","Threshold/noise behavior created a false path."],
+  ["UNRESOLVED MOTION","Current records do not identify the source."],
+  ["FICTIONAL ANOMALY","Game-only anomalous motion hypothesis."]
+ ]
+};
+function p(){return state.paranormal&&state.paranormal.active}
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+function ensure4(){
+ let q=p();if(!q)return;
+ q.board=q.board||{selected:0,links:{},notes:[],tested:false,ready:false};
+ let hs=HYP[q.template]||[];
+ hs.forEach((h,i)=>{q.board.links[i]=q.board.links[i]||{}});
+ save();
+}
+function evidence(q){
+ let e=[];
+ (q.evidence||[]).forEach(x=>e.push({id:x.id,name:x.name,src:"INTAKE"}));
+ (q.investigation?.findings||[]).slice().reverse().forEach((x,i)=>e.push({id:"F-"+(i+1),name:x.type+": "+x.text,src:"FIELD"}));
+ Object.entries(q.lab?.runs||{}).forEach(([k,r])=>e.push({id:"L-"+k.toUpperCase(),name:k.toUpperCase()+": "+r.text,src:"LAB"}));
+ return e.slice(0,18);
+}
+function calc(q,i){
+ let links=q.board.links[i]||{},sup=0,con=0,n=0;
+ Object.values(links).forEach(v=>{if(v==="SUPPORT")sup++;if(v==="CONTRADICT")con++;if(v)n++});
+ let base=25;
+ let h=(HYP[q.template]||[])[i]?.[0]||"";
+ if(h==="FICTIONAL ANOMALY")base=Math.round((q.lab?.anomaly||20)*.45);
+ else base=Math.round((q.lab?.ordinary||50)*.45);
+ return {support:sup,contradict:con,linked:n,score:clamp(base+sup*10-con*12),uncertainty:clamp(100-(n*7+Math.abs(sup-con)*5))};
+}
+function scoreRow(k,v){return '<div class="cb-score"><span>'+k+'</span><div class="cb-bar"><i style="width:'+clamp(v)+'%"></i></div><b>'+clamp(v)+'%</b></div>'}
+function renderBoard(){
+ let q=p();if(!q)return window.VetGodsParanormal1.renderParanormal();ensure4();page="paranormal";nav();
+ let b=q.board,hs=HYP[q.template]||[],ev=evidence(q),sel=b.selected,sc=calc(q,sel);
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\PARANORMAL\\CASEBOARD&gt;</div>'+
+ '<div class="cb"><h4>CASEBOARD.EXE — '+q.template+'</h4><div class="cb-note"><b>REASONING MODE:</b> Select a hypothesis, then mark individual evidence as SUPPORTS, CONTRADICTS, or leave it unlinked. The board does not decide the case for you.</div></div>'+
+ '<div class="cb"><h4>COMPETING HYPOTHESES</h4><div class="cb-grid">'+hs.map((h,i)=>{let x=calc(q,i);return '<div class="cb-hyp '+(i===sel?"selected":"")+'"><small>H-'+(i+1)+'</small><b>'+h[0]+'</b><small>'+h[1]+'</small><small>linked '+x.linked+' · support '+x.support+' · contradict '+x.contradict+'</small><button data-hyp="'+i+'">[SELECT H-'+(i+1)+']</button></div>'}).join("")+'</div></div>'+
+ '<div class="cb"><h4>EVIDENCE LINKS → '+(hs[sel]?.[0]||"HYPOTHESIS")+'</h4>'+ev.map(x=>{let v=b.links[sel][x.id]||"";return '<div class="cb-link"><span><b>'+x.id+'</b> ['+x.src+'] '+x.name+'</span><button class="'+(v==="SUPPORT"?"on":"")+'" data-link="'+x.id+'" data-val="SUPPORT">SUPPORTS</button><button class="'+(v==="CONTRADICT"?"on":"")+'" data-link="'+x.id+'" data-val="CONTRADICT">CONTRADICTS</button></div>'}).join("")+'</div>'+
+ '<div class="cb"><h4>SELECTED HYPOTHESIS ANALYSIS</h4>'+scoreRow("BOARD SUPPORT",sc.score)+scoreRow("REMAINING UNCERTAINTY",sc.uncertainty)+
+ '<div class="cb-note">Direct links: '+sc.support+' supporting / '+sc.contradict+' contradicting / '+sc.linked+' total. Scores are fictional game mechanics, not real-world paranormal measurements.</div></div>'+
+ '<div class="cb"><h4>REASONING COMMANDS</h4><div class="cb-btns"><button data-cb="test">[01] TEST CONTRADICTIONS</button><button data-cb="compare">[02] COMPARE ALL HYPOTHESES</button><button data-cb="ready">[03] LOCK REASONING PACKAGE</button><button data-cb="lab">[04] RETURN TO RESEARCH LAB</button></div></div>'+
+ '<div class="out"><h4>CASEBOARD LOG</h4><pre id="out">'+(b.notes.length?b.notes.slice(0,16).join("\n"):"CASEBOARD READY.\nSELECT A HYPOTHESIS AND LINK EVIDENCE.")+'</pre></div>';
+ document.querySelectorAll("[data-hyp]").forEach(x=>x.onclick=()=>{b.selected=+x.dataset.hyp;save();renderBoard()});
+ document.querySelectorAll("[data-link]").forEach(x=>x.onclick=()=>link(x.dataset.link,x.dataset.val));
+ document.querySelectorAll("[data-cb]").forEach(x=>x.onclick=()=>cmd(x.dataset.cb));
+}
+function link(id,val){
+ let q=p(),b=q.board,i=b.selected,cur=b.links[i][id]||"";
+ b.links[i][id]=cur===val?"":val;
+ b.notes.unshift(new Date().toLocaleTimeString()+" · H-"+(i+1)+" · "+id+" -> "+(b.links[i][id]||"UNLINKED"));
+ save();renderBoard();
+}
+function cmd(c){
+ let q=p(),b=q.board,hs=HYP[q.template]||[];
+ if(c==="lab")return window.VetGodsParanormal3.renderLab();
+ if(c==="test"){
+  let weak=[];hs.forEach((h,i)=>{let x=calc(q,i);if(x.linked===0)weak.push("H-"+(i+1)+" has no linked evidence.");else if(x.contradict===0)weak.push("H-"+(i+1)+" has not been challenged with contradictory evidence.");});
+  b.tested=true;b.notes.unshift(new Date().toLocaleTimeString()+" · CONTRADICTION TEST\n"+(weak.length?weak.join(" "):"Every hypothesis has linked evidence and at least one contradiction."));save();return renderBoard();
+ }
+ if(c==="compare"){
+  let rows=hs.map((h,i)=>{let x=calc(q,i);return "H-"+(i+1)+" "+h[0]+" · board "+x.score+"% · uncertainty "+x.uncertainty+"% · +"+x.support+" / -"+x.contradict});
+  b.notes.unshift(new Date().toLocaleTimeString()+" · HYPOTHESIS COMPARISON\n"+rows.join("\n"));save();return renderBoard();
+ }
+ if(c==="ready"){
+  let linked=hs.reduce((n,h,i)=>n+calc(q,i).linked,0);
+  if(linked<4||!b.tested){b.notes.unshift("LOCK BLOCKED · link at least 4 evidence relationships and run TEST CONTRADICTIONS.");save();return renderBoard()}
+  b.ready=true;q.reasoningReady=true;b.notes.unshift(new Date().toLocaleTimeString()+" · REASONING PACKAGE LOCKED · READY FOR PHASE 5 RESOLUTION / ARCHIVE");state.research=(state.research||0)+4;save();return renderBoard();
+ }
+}
+const oldLab=window.VetGodsParanormal3.renderLab;
+window.VetGodsParanormal3.renderLab=function(){
+ oldLab();let q=p();if(!q)return;ensure4();
+ if(!(q.lab?.readyForReasoning)||document.querySelector("#cbopen"))return;
+ let out=document.querySelector(".out");if(!out)return;let z=document.createElement("button");z.id="cbopen";z.className="action";z.textContent="[CASEBOARD] BUILD EVIDENCE / HYPOTHESIS NETWORK";z.onclick=renderBoard;out.insertAdjacentElement("beforebegin",z);
+};
+ensure4();
+window.VetGodsParanormal4={renderBoard,calc,evidence};
+})();
+</script>
+
+<style id="paranormal-p5-css">
+.pr5{border:1px solid #666;margin-top:8px}.pr5 h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.pr5-grid{display:grid;grid-template-columns:repeat(2,1fr)}
+.pr5-cell{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.pr5-cell small{display:block;color:#777}.pr5-cell b{color:#fff}
+.pr5-btns{display:grid;grid-template-columns:repeat(2,1fr)}
+.pr5-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.pr5-btns button:hover{background:#c9c9c9;color:#000}
+.pr5-report{padding:8px;white-space:pre-wrap;font-size:9px;line-height:1.55}
+.pr5-class{border:1px solid #777;margin:8px;padding:8px;text-align:center}.pr5-class small{display:block;color:#777}.pr5-class b{display:block;color:#fff;font-size:13px;margin-top:3px}
+.pr5-archive{padding:6px;border-bottom:1px dotted #444;font-size:9px;line-height:1.45}.pr5-archive b{color:#fff}.pr5-archive small{display:block;color:#777}
+.pr5-loop{padding:8px;white-space:pre-wrap;font-size:9px;line-height:1.55;color:#aaa}.pr5-loop b{color:#fff}
+@media(max-width:600px){.pr5-grid,.pr5-btns{grid-template-columns:1fr}}
+</style>
+<script id="paranormal-p5-js">
+(function(){
+"use strict";
+function p(){return state.paranormal&&state.paranormal.active}
+function A(){return state.animals[state.active]}
+function ensure5(){
+ state.paranormal=state.paranormal||{};
+ state.paranormal.completed=state.paranormal.completed||[];
+ let q=p();if(q)q.resolution=q.resolution||{classification:"UNASSESSED",summary:"",filed:false,reward:0,completedAt:null};
+ save();
+}
+function hypotheses(q){return (typeof HYP!=="undefined"&&HYP[q.template])?HYP[q.template]:[]}
+function bestBoard(q){
+ let hs=hypotheses(q),rows=hs.map((h,i)=>({i,name:h[0],desc:h[1],x:window.VetGodsParanormal4.calc(q,i)}));
+ rows.sort((a,b)=>b.x.score-a.x.score);return rows;
+}
+function classification(q){
+ let rows=bestBoard(q),top=rows[0],second=rows[1],lab=q.lab||{};
+ if(!top)return "INSUFFICIENT EVIDENCE";
+ if(top.x.uncertainty>55)return "INSUFFICIENT EVIDENCE";
+ if(top.name==="FICTIONAL ANOMALY" && top.x.score>=55 && top.x.score-(second?.x.score||0)>=8)return "UNRESOLVED / FICTIONAL ANOMALY LEAD";
+ if(["EQUIPMENT","ENVIRONMENT","DATA CORRUPTION","CHANNEL BLEED","SENSOR ARTIFACT","OLD RECORDING","OBSERVATION","HUMAN / RECORD"].includes(top.name) && top.x.score>=55)return "CONVENTIONAL LEAD IDENTIFIED";
+ return "MIXED / UNRESOLVED";
+}
+function buildSummary(q,a){
+ let rows=bestBoard(q),r=q.resolution,top=rows[0],second=rows[1],inv=q.investigation||{},lab=q.lab||{};
+ return "FINAL FICTIONAL CASE ASSESSMENT\n"+
+ "CASE: "+q.template+"\nASSIGNED RESIDENT: "+a.name+" / "+a.species+"\n"+
+ "CLASSIFICATION: "+r.classification+"\n\n"+
+ "FIELD WORK\nScene visits: "+(inv.sceneVisits||0)+"\nFindings: "+(inv.findings?.length||0)+"\nField evidence: "+(inv.fieldEvidence?.length||0)+"\nWitness interviews: "+(inv.interviews?.length||0)+"\n\n"+
+ "LABORATORY\nInstrument runs: "+Object.keys(lab.runs||{}).length+"/5\nUncertainty: "+(lab.uncertainty||0)+"%\nCorrelation: "+(lab.correlation||0)+"%\nContradiction: "+(lab.contradiction||0)+"%\n\n"+
+ "CASEBOARD\nPrimary board hypothesis: "+(top?top.name:"NONE")+" / "+(top?top.x.score:0)+"%\n"+
+ "Secondary board hypothesis: "+(second?second.name:"NONE")+" / "+(second?second.x.score:0)+"%\n"+
+ "These percentages are fictional game scores, not real-world probability estimates.\n\n"+
+ "ASSESSMENT\n"+assessmentText(r.classification,top)+"\n\n"+
+ "ANIMAL PARTICIPATION\n"+a.name+" participated as a fictional behavioral observer. Animal reactions were retained as gameplay state and were not treated as proof of paranormal activity.";
+}
+function assessmentText(c,top){
+ if(c==="CONVENTIONAL LEAD IDENTIFIED")return "The current game evidence most strongly supports the case-board's "+top.name+" lead. Conflicting and unresolved evidence remains archived.";
+ if(c==="UNRESOLVED / FICTIONAL ANOMALY LEAD")return "Within this fictional scenario, the anomaly hypothesis retains notable board support after contradiction testing. The source remains unresolved.";
+ if(c==="MIXED / UNRESOLVED")return "Multiple explanations retain meaningful support. The case is closed as unresolved rather than forcing a single explanation.";
+ return "The collected game evidence is insufficient for a stable case classification.";
+}
+function cell(k,v,n){return '<div class="pr5-cell"><small>'+k+'</small><b>'+v+'</b><small>'+n+'</small></div>'}
+function renderResolution(){
+ let q=p();if(!q)return renderArchive();ensure5();page="paranormal";nav();let a=state.animals.find(x=>x.id===q.animalId)||A(),r=q.resolution;
+ if(r.classification==="UNASSESSED"){r.classification=classification(q);r.summary=buildSummary(q,a);save()}
+ let rows=bestBoard(q);
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\PARANORMAL\\RESOLUTION&gt;</div>'+
+ '<div class="pr5"><h4>RESOLUTION.EXE — '+q.template+'</h4><div class="pr5-class"><small>CASE CLASSIFICATION</small><b>'+r.classification+'</b><small>fictional research archive classification</small></div>'+
+ '<div class="pr5-grid">'+cell("PRIMARY LEAD",rows[0]?.name||"NONE",(rows[0]?.x.score||0)+"% board score")+cell("SECONDARY LEAD",rows[1]?.name||"NONE",(rows[1]?.x.score||0)+"% board score")+
+ cell("LAB RUNS",Object.keys(q.lab?.runs||{}).length+"/5","completed instruments")+cell("CASE EVIDENCE",(q.evidence?.length||0)+(q.investigation?.fieldEvidence?.length||0),"catalogued items")+
+ cell("ANIMAL OBSERVER",a.icon+" "+a.name,a.species)+cell("RESEARCH STATUS",q.reasoningReady?"REASONING LOCKED":"INCOMPLETE","case-board state")+'</div></div>'+
+ '<div class="pr5"><h4>FINAL REPORT</h4><div class="pr5-report">'+r.summary+'</div></div>'+
+ '<div class="pr5"><h4>CASE COMMANDS</h4><div class="pr5-btns"><button data-pr5="board">[01] RETURN TO CASEBOARD</button><button data-pr5="file">[02] FILE FINAL CASE</button><button data-pr5="archive">[03] OPEN CASE ARCHIVE</button><button data-pr5="next">[04] FILE + NEXT CASE</button></div></div>'+
+ '<div class="pr5"><h4>COMPLETE PARANORMAL LOOP</h4><div class="pr5-loop"><b>INTAKE</b> -> REPORT -> WITNESS -> EVIDENCE\n   -> <b>FIELD</b> -> OBSERVE -> SCAN -> INTERVIEW -> COLLECT\n   -> <b>LAB</b> -> 5 INSTRUMENTS -> COMPARE -> SYNTHESIZE\n   -> <b>CASEBOARD</b> -> LINK EVIDENCE -> TEST CONTRADICTIONS\n   -> <b>RESOLUTION</b> -> REPORT -> ARCHIVE -> NEXT CASE</div></div>'+
+ '<div class="out"><h4>RESOLUTION LOG</h4><pre id="out">CASE READY FOR FINAL FILING.\nClassification: '+r.classification+'\nNothing is archived until FILE FINAL CASE is selected.</pre></div>';
+ document.querySelectorAll("[data-pr5]").forEach(x=>x.onclick=()=>cmd(x.dataset.pr5));
+}
+function fileCase(next){
+ let q=p();if(!q)return;ensure5();let a=state.animals.find(x=>x.id===q.animalId)||A(),r=q.resolution;
+ if(r.filed){if(next){state.paranormal.active=null;save();return window.VetGodsParanormal1.renderParanormal()}return renderArchive()}
+ r.filed=true;r.completedAt=Date.now();r.reward=12;
+ state.research=(state.research||0)+12;state.paranormal.researchPoints=(state.paranormal.researchPoints||0)+12;
+ if(window.VetGodsDynamicStats5)window.VetGodsDynamicStats5.lifeEvent(a,"PARANORMAL CASE","Completed fictional research case "+q.template+" with classification "+r.classification+".");
+ let record={caseId:q.template,animal:a.name,species:a.species,classification:r.classification,summary:r.summary,reward:r.reward,completedAt:r.completedAt,labRuns:Object.keys(q.lab?.runs||{}).length,fieldFindings:q.investigation?.findings?.length||0};
+ state.paranormal.completed.unshift(record);state.paranormal.archive.push({caseId:q.template,status:"FINAL / ARCHIVED",classification:r.classification,closed:r.completedAt});
+ state.paranormal.log.unshift(q.template+" · FINAL FILED · "+r.classification+" · +12 RESEARCH");
+ state.paranormal.active=null;save();
+ if(next)return window.VetGodsParanormal1.renderParanormal();renderArchive();
+}
+function renderArchive(){
+ ensure5();page="paranormal";nav();let arr=state.paranormal.completed||[];
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\PARANORMAL\\ARCHIVE&gt;</div>'+
+ '<div class="pr5"><h4>PARANORMAL CASE ARCHIVE</h4>'+(arr.length?arr.map((r,i)=>'<div class="pr5-archive"><b>'+r.caseId+' · '+r.classification+'</b><small>Observer: '+r.animal+' / '+r.species+' · lab '+r.labRuns+'/5 · field findings '+r.fieldFindings+' · reward +'+r.reward+' research</small></div>').join(""):'<div class="pr5-archive">NO FINAL CASES ARCHIVED.</div>')+'</div>'+
+ '<div class="pr5"><h4>ARCHIVE COMMANDS</h4><div class="pr5-btns"><button data-ar="cases">[01] OPEN CASE INTAKE</button><button data-ar="home">[02] RETURN HOME</button></div></div>'+
+ '<div class="out"><h4>ARCHIVE STATUS</h4><pre id="out">'+arr.length+' FINAL CASE(S) STORED.\nRESEARCH TOTAL: '+(state.paranormal.researchPoints||0)+'</pre></div>';
+ document.querySelectorAll("[data-ar]").forEach(x=>x.onclick=()=>x.dataset.ar==="home"?home():window.VetGodsParanormal1.renderParanormal());
+}
+function cmd(c){
+ if(c==="board")return window.VetGodsParanormal4.renderBoard();
+ if(c==="file")return fileCase(false);
+ if(c==="archive")return renderArchive();
+ if(c==="next")return fileCase(true);
+}
+const oldBoard=window.VetGodsParanormal4.renderBoard;
+window.VetGodsParanormal4.renderBoard=function(){
+ oldBoard();let q=p();if(!q)return;ensure5();
+ if(!q.reasoningReady||document.querySelector("#pr5open"))return;
+ let out=document.querySelector(".out");if(!out)return;let b=document.createElement("button");b.id="pr5open";b.className="action";b.textContent="[RESOLVE] OPEN FINAL CASE ASSESSMENT";b.onclick=renderResolution;out.insertAdjacentElement("beforebegin",b);
+};
+ensure5();
+window.VetGodsParanormal5={renderResolution,renderArchive,fileCase};
+})();
+</script>
 </body></html>
