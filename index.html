@@ -5922,4 +5922,115 @@ setTimeout(guide,400);
 window.VetGodsFirstAnimalGuide={run:guide};
 })();
 </script>
+
+<style id="player1-yellow-guide-css">
+@keyframes vgP1Yellow {
+  0%,100% { background:inherit; color:inherit; box-shadow:none; outline-color:transparent; }
+  15%,35%,55%,75% { background:#ffe600!important; color:#000!important; outline:3px solid #8c7e00; box-shadow:0 0 18px #ffe600, inset 0 0 0 2px #fff48a; }
+  25%,45%,65% { background:#171400!important; color:#ffe600!important; outline-color:#ffe600; box-shadow:0 0 5px #ffe600; }
+}
+.vgP1YellowGuide{animation:vgP1Yellow 3.15s ease-in-out 1!important;position:relative!important;z-index:10000!important}
+.vgP1YellowGuide:after{content:"  << PLAYER 1 NEXT";font:900 9px "Courier New",monospace}
+#vgP1GuideBar{position:sticky;top:0;z-index:9998;background:#ffe600;color:#000;border:3px double #776b00;padding:7px 9px;font:900 9px "Courier New",monospace;box-shadow:0 3px 10px #000}
+#vgP1GuideBar small{display:block;font-weight:700;margin-top:3px}
+.vgP1Done{border:4px double #ffe600;background:#0c0b00;color:#ffe600;padding:12px;margin:8px 0;text-align:center;font:900 10px "Courier New",monospace}
+@media(prefers-reduced-motion:reduce){.vgP1YellowGuide{animation:none!important;background:#ffe600!important;color:#000!important;outline:3px solid #8c7e00}}
+</style>
+<script id="player1-yellow-guide-js">
+(function(){
+"use strict";
+const GKEY="vetgods_player1_yellow_guide_v1";
+function G(){try{return JSON.parse(localStorage.getItem(GKEY))||{step:0,done:false}}catch(e){return{step:0,done:false}}}
+function SG(g){try{localStorage.setItem(GKEY,JSON.stringify(g))}catch(e){}}
+function vis(el){if(!el)return false;let r=el.getBoundingClientRect(),c=getComputedStyle(el);return c.display!=="none"&&c.visibility!=="hidden"&&r.width>0&&r.height>0}
+function buttons(){return [...document.querySelectorAll("button,a,[role=button],input[type=button],input[type=submit]")].filter(vis)}
+function byText(rx){return buttons().find(x=>rx.test((x.innerText||x.value||x.textContent||"").trim()))}
+function playerNameInput(){
+ return [...document.querySelectorAll("input")].find(x=>vis(x)&&/first.?name|player.?first|first/i.test((x.name||"")+" "+(x.id||"")+" "+(x.placeholder||""))) ||
+        [...document.querySelectorAll("input")].find(x=>vis(x)&&/name/i.test((x.name||"")+" "+(x.id||"")+" "+(x.placeholder||"")));
+}
+function lastNameInput(){
+ return [...document.querySelectorAll("input")].find(x=>vis(x)&&/last.?name|player.?last|surname/i.test((x.name||"")+" "+(x.id||"")+" "+(x.placeholder||"")));
+}
+function certButton(){return byText(/CERTIFICATE|CERTS|AWARD|BADGE/i)}
+function animalOne(){
+ return document.querySelector("[data-maanimal='0']") || byText(/FIRST ANIMAL|ANIMAL 1|PATIENT 1/i);
+}
+function newCase(){return byText(/NEW CASE|INTAKE|ADMIT PATIENT|ADMIT CASE|START CASE/i)}
+function nextCare(){
+ let preferred=[
+  "[data-action*='exam']","[data-action*='diagn']","[data-ma3='monitor']","[data-ma3='water']",
+  "[data-ma3='food']","[data-ma3='comfort']","[data-ma3='oxygen']","[data-ma3='pain']",
+  "[data-ma3='rest']","[data-ma3='mobility']"
+ ];
+ for(let q of preferred){let x=[...document.querySelectorAll(q)].find(vis);if(x)return x}
+ return byText(/PHYSICAL EXAM|DIAGNOST|MONITOR|WATER|FOOD|OXYGEN|PAIN|TREAT|RECOVERY|DISCHARGE|SANCTUARY/i);
+}
+function getTarget(g){
+ let p=String(page||"").toLowerCase();
+ // Explicit player-1 onboarding route.
+ if(g.step<=0){
+   let n=playerNameInput();if(n)return [n,"ENTER PLAYER 1 FIRST NAME","Your name will be carried into badges and certificates."];
+   let l=lastNameInput();if(l)return [l,"ENTER PLAYER 1 LAST NAME","This completes the certificate name."];
+   let start=byText(/START|CONTINUE|SAVE PLAYER|BEGIN/i);if(start)return [start,"SAVE PLAYER 1","Lock in the player identity before intake."];
+   g.step=1;SG(g);
+ }
+ if(g.step===1){
+   let n=newCase();if(n)return [n,"START FIRST ANIMAL INTAKE","Open the first real case."];
+   let a=animalOne();if(a)return [a,"SELECT ANIMAL 1","Open the first animal."];
+   g.step=2;SG(g);
+ }
+ if(g.step===2){
+   let intake=byText(/ACCEPT|INTAKE|ADMIT|BEGIN EXAM|START CARE/i);
+   if(intake)return [intake,"INTAKE ANIMAL 1","Move Player 1's first animal into care."];
+   let c=nextCare();if(c)return [c,"NEXT CARE STEP","Follow the highlighted care action."];
+   g.step=3;SG(g);
+ }
+ if(g.step===3){
+   let c=nextCare();
+   if(c&&!/CERTIFICATE|CERTS/i.test(c.textContent||""))return [c,"CONTINUE ANIMAL 1 CARE","The guide follows the case until completion/recovery."];
+   let done=byText(/DISCHARGE|SEND HOME|RECOVERY|SANCTUARY|COMPLETE CASE|CASE COMPLETE/i);
+   if(done)return [done,"COMPLETE ANIMAL 1 CASE","Finish the first animal so its achievement can be recorded."];
+   g.step=4;SG(g);
+ }
+ if(g.step===4){
+   let cert=certButton();if(cert)return [cert,"OPEN CERTIFICATES","Player 1's saved first and last name should appear here."];
+   let home=byText(/HOME|MENU/i);if(home)return [home,"RETURN TO DOS MENU","Then open Certificates / Awards."];
+ }
+ return null;
+}
+function bar(title,detail){
+ let main=document.querySelector("#main")||document.body,b=document.querySelector("#vgP1GuideBar");
+ if(!b){b=document.createElement("div");b.id="vgP1GuideBar";main.prepend(b)}
+ b.innerHTML="PLAYER 1 GUIDED ROUTE // "+title+"<small>"+detail+"</small>";
+}
+let timer;
+function run(){
+ clearTimeout(timer);
+ document.querySelectorAll(".vgP1YellowGuide").forEach(x=>x.classList.remove("vgP1YellowGuide"));
+ let g=G();if(g.done)return;
+ timer=setTimeout(()=>{
+   let t=getTarget(g);
+   if(!t)return;
+   let el=t[0];bar(t[1],t[2]);
+   el.classList.remove("vgP1YellowGuide");void el.offsetWidth;el.classList.add("vgP1YellowGuide");
+   try{el.scrollIntoView({behavior:"smooth",block:"center"})}catch(e){el.scrollIntoView()}
+   setTimeout(()=>el.classList.remove("vgP1YellowGuide"),3350);
+ },220);
+}
+document.addEventListener("click",function(e){
+ let g=G(),txt=(e.target.closest("button,a,[role=button]")?.innerText||"").toUpperCase();
+ if(/NEW CASE|INTAKE|ADMIT/.test(txt))g.step=Math.max(g.step,2);
+ if(/DISCHARGE|SEND HOME|COMPLETE CASE|CASE COMPLETE/.test(txt))g.step=Math.max(g.step,4);
+ if(/CERTIFICATE|CERTS|AWARD/.test(txt)){g.done=true;SG(g);setTimeout(()=>{
+   let b=document.querySelector("#vgP1GuideBar");if(b)b.outerHTML='<div class="vgP1Done">PLAYER 1 GUIDE COMPLETE // INTAKE → ANIMAL 1 → CARE → CERTIFICATE NAME</div>';
+ },300);return}
+ SG(g);setTimeout(run,180);
+},false);
+document.addEventListener("input",function(){setTimeout(run,350)},false);
+const oh=home;home=function(){let r=oh();setTimeout(run,250);return r};
+setTimeout(run,500);
+window.VetGodsPlayer1Guide={run,reset:function(){localStorage.removeItem(GKEY);run()}};
+})();
+</script>
 </body></html>
