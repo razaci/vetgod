@@ -36849,5 +36849,993 @@ document.addEventListener("click",e=>{
 window.VGMobileWorld=draw;
 })();
 </script>
+
+<style id="vg-mobile-console-pass09-css">
+.vgmc9-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:6px 0}
+.vgmc9-tabs button{min-height:38px;border:1px solid #355969;border-radius:8px;background:#0b1b24;color:#91adba;font-size:6px;font-weight:900}
+.vgmc9-tabs button.on{border-color:#bea34c;background:#29230d;color:#ffe17c}
+.vgmc9-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.vgmc9-item{border:1px solid #355969;border-radius:10px;background:#0b1c26;padding:8px;min-height:84px;color:#eaf8ff}
+.vgmc9-item .ico{font-size:23px;float:left;margin-right:7px}.vgmc9-item strong{display:block;font-size:8px;color:#ffe17c}.vgmc9-item small{display:block;font-size:5.5px;color:#84a4b1;margin-top:2px}.vgmc9-item button{width:100%;margin-top:6px;border:1px solid #456878;border-radius:7px;background:#102631;color:#dff7ff;padding:5px;font-size:6px;font-weight:900}
+.vgmc9-slot{border:1px dashed #496b79;border-radius:9px;padding:7px;margin:4px 0;display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:5px}.vgmc9-slot>span{font-size:19px}.vgmc9-slot b{font-size:7px}.vgmc9-slot small{display:block;font-size:5.5px;color:#819faa}.vgmc9-slot button{border:1px solid #4a6875;border-radius:6px;background:#0e2029;color:#cfe6ef;padding:5px;font-size:5.5px}
+.vgmc9-badge{border:2px solid #bda24b;border-radius:12px;background:#211d0d;padding:10px;text-align:center;margin:6px 0}.vgmc9-badge .seal{font-size:34px}.vgmc9-badge h2{font-size:13px;color:#ffe17c;margin:3px}.vgmc9-badge p{font-size:6px;color:#c6b986}
+</style>
+<script id="vg-mobile-console-pass09-js">
+(function(){
+"use strict";
+const KEY="vetgods_mobile_inventory_pass09";
+let I={tab:"INVENTORY",items:[
+ {name:"Field Scanner",type:"TOOL",ico:"◉",qty:1,desc:"Portable fictional resident scanner"},
+ {name:"Habitat Pack",type:"SUPPLY",ico:"⬡",qty:2,desc:"Mission habitat support pack"},
+ {name:"Research Crystal",type:"ARTIFACT",ico:"◆",qty:1,desc:"Recovered game-world research artifact"}
+],equipped:{TOOL:null,SUPPLY:null,ARTIFACT:null},badges:[{name:"SANCTUARY ACCESS",level:"RESIDENT CARE",seal:"✦"}]};
+try{I=Object.assign(I,JSON.parse(localStorage.getItem(KEY)||"{}"));I.equipped=Object.assign({TOOL:null,SUPPLY:null,ARTIFACT:null},I.equipped||{})}catch(_){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(I))}catch(_){}};
+function syncMission(){
+ try{
+  const w=JSON.parse(localStorage.getItem("vetgods_mobile_world_pass08")||"{}");
+  (w.items||[]).forEach(n=>{if(!I.items.some(x=>x.name===n))I.items.push({name:n,type:"ARTIFACT",ico:"⬡",qty:1,desc:"Recovered during mobile operations"})});
+  save();
+ }catch(_){}
+}
+function equip(idx){const x=I.items[idx];if(!x)return;I.equipped[x.type]=I.equipped[x.type]===idx?null:idx;save();draw()}
+function printBadge(i){
+ const b=I.badges[i];if(!b)return;
+ const w=window.open("","_blank","width=640,height=760");
+ if(!w)return;
+ w.document.write(`<html><head><title>${b.name}</title><style>body{font-family:Arial;background:#fff;padding:35px}.badge{border:8px double #111;border-radius:24px;padding:35px;text-align:center;max-width:420px;margin:auto}.seal{font-size:80px}h1{font-size:28px;letter-spacing:2px}.line{border-top:2px solid #111;margin:28px 0 8px}small{font-size:11px}</style></head><body><div class="badge"><div class="seal">${b.seal}</div><small>VET GODS · GAME SECURITY</small><h1>${b.name}</h1><h2>${b.level}</h2><p>AUTHORIZED GAME CLEARANCE</p><div class="line"></div><small>HOLDER SIGNATURE</small><div class="line"></div><small>COMMAND AUTHORIZATION</small></div><script>setTimeout(()=>print(),250)<\/script></body></html>`);
+ w.document.close();
+}
+function draw(){
+ const view=document.querySelector('#vg-mobile-console [data-view="console"]');if(!view)return;
+ syncMission();
+ view.innerHTML=`<div class="vgmc-hero"><small>PASS 09 / 20 · INVENTORY & CLEARANCE COMMAND</small><h1>Loadout Console</h1><p>Recovered items, working supplies, artifacts and game-security clearances now live in one compact console instead of separate full pages.</p></div>
+ <div class="vgmc9-tabs">${["INVENTORY","LOADOUT","BADGES"].map(x=>`<button data-vgmc9-tab="${x}" class="${I.tab===x?"on":""}">${x}</button>`).join("")}</div>
+ ${I.tab==="INVENTORY"?`<div class="vgmc-card"><h2>ITEM STORAGE · ${I.items.length}</h2><div class="vgmc9-grid">${I.items.map((x,i)=>`<div class="vgmc9-item"><span class="ico">${x.ico}</span><strong>${x.name}</strong><small>${x.type} · QTY ${x.qty}</small><small>${x.desc}</small><button data-vgmc9-equip="${i}">${I.equipped[x.type]===i?"UNEQUIP":"EQUIP"}</button></div>`).join("")}</div></div>`:""}
+ ${I.tab==="LOADOUT"?`<div class="vgmc-card"><h2>ACTIVE LOADOUT</h2>${["TOOL","SUPPLY","ARTIFACT"].map(t=>{const n=I.equipped[t],x=n!=null?I.items[n]:null;return `<div class="vgmc9-slot"><span>${x?x.ico:"○"}</span><div><b>${t}</b><small>${x?x.name:"EMPTY SLOT"}</small></div>${x?`<button data-vgmc9-equip="${n}">REMOVE</button>`:""}</div>`}).join("")}<p>Loadout is game-only equipment state. It does not represent real medical or emergency equipment requirements.</p></div>`:""}
+ ${I.tab==="BADGES"?`<div class="vgmc-card"><h2>GAME SECURITY CLEARANCES</h2>${I.badges.map((b,i)=>`<div class="vgmc9-badge"><div class="seal">${b.seal}</div><small>VET GODS · GAME SECURITY</small><h2>${b.name}</h2><p>${b.level} · AUTHORIZED GAME CLEARANCE</p><button class="vgmc-btn primary" data-vgmc9-print="${i}">🖨 PRINT BADGE</button></div>`).join("")}</div>`:""}
+ <div class="vgmc-card"><button class="vgmc-btn" data-vgmc9-advanced>⚙ ADVANCED INVENTORY / ARTIFACT SYSTEMS<small>Open the original deep systems only when requested.</small></button></div>`;
+}
+function advanced(){
+ document.body.classList.add("vgmc-advanced");document.documentElement.classList.remove("vgmc-lock");
+ const els=[...document.querySelectorAll("button,a,h1,h2,h3,h4")].filter(x=>!x.closest("#vg-mobile-console"));
+ const hit=els.find(x=>/INVENTORY|ARTIFACT|BADGE/i.test((x.textContent||"").trim()));if(hit){try{if(hit.matches("button,a"))hit.click();hit.scrollIntoView({behavior:"smooth",block:"start"})}catch(_){}}
+}
+document.addEventListener("click",e=>{
+ const t=e.target.closest("[data-vgmc9-tab]");if(t){I.tab=t.dataset.vgmc9Tab;save();draw();return}
+ const q=e.target.closest("[data-vgmc9-equip]");if(q){equip(Number(q.dataset.vgmc9Equip));return}
+ const p=e.target.closest("[data-vgmc9-print]");if(p){printBadge(Number(p.dataset.vgmc9Print));return}
+ if(e.target.closest("[data-vgmc9-advanced]"))advanced();
+},true);
+})();
+</script>
+
+<style id="vg-mobile-console-pass10-css">
+.vgmc10-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:6px 0}
+.vgmc10-tabs button{min-height:39px;border:1px solid #355969;border-radius:8px;background:#0b1b24;color:#91adba;font-size:6px;font-weight:900}
+.vgmc10-tabs button.on{border-color:#bea34c;background:#29230d;color:#ffe17c}
+.vgmc10-read{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.vgmc10-read div{border:1px solid #315565;border-radius:8px;padding:7px;text-align:center;background:#0a1921}
+.vgmc10-read small{display:block;font-size:5px;color:#7e9da9}.vgmc10-read b{font-size:11px;color:#e9f8ff}
+.vgmc10-product{border:1px solid #355969;border-radius:10px;background:#0b1c26;padding:8px;margin:5px 0}
+.vgmc10-product header{display:flex;justify-content:space-between;gap:7px}.vgmc10-product strong{font-size:8px;color:#ffe17c}.vgmc10-product small{font-size:5.5px;color:#85a4b1}.vgmc10-product p{font-size:7px;color:#a9c1cb;line-height:1.4}
+.vgmc10-actions{display:grid;grid-template-columns:1fr 1fr;gap:4px}.vgmc10-actions button{min-height:42px;border:1px solid #3a6171;border-radius:8px;background:#10242e;color:#eaf8ff;text-align:left;padding:6px;font-size:6.5px;font-weight:900}
+.vgmc10-plan{border-left:3px solid #bda24b;background:#211d0d;border-radius:0 8px 8px 0;padding:8px;margin:5px 0}.vgmc10-plan b{font-size:8px;color:#ffe17c}.vgmc10-plan small{display:block;font-size:6px;color:#c4b987;margin-top:3px}
+.vgmc10-disclaimer{border:1px solid #675d38;border-radius:8px;background:#18160d;padding:7px;font-size:6px;line-height:1.45;color:#c8bc8e;margin:6px 0}
+</style>
+<script id="vg-mobile-console-pass10-js">
+(function(){
+"use strict";
+const KEY="vetgods_mobile_nutrition_pass10";
+let N={tab:"STATUS",water:64,food:58,energy:67,body:71,plan:[],log:[]};
+try{N=Object.assign(N,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(_){}
+const products=[
+ {n:"Complete Diet Record",k:"FOOD",d:"Game inventory slot for the resident's normal veterinarian-approved or owner-provided diet."},
+ {n:"Multivitamin Record",k:"SUPPLEMENT",d:"Record-only slot for a product already selected by a veterinarian or owner. No dose calculation."},
+ {n:"Herb / Botanical Record",k:"BOTANICAL",d:"Reference/logging slot only. The game does not determine whether an herb is safe for an animal."},
+ {n:"Travel Nutrition Kit",k:"TRAVEL",d:"Fictional mission inventory for food, water containers and travel-care supplies."}
+];
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(N))}catch(_){}};
+function add(i){const x=products[i];N.plan.push({name:x.n,type:x.k,time:new Date().toLocaleString()});N.log.unshift("Added "+x.n+" to resident nutrition record.");save();draw()}
+function original(){
+ document.body.classList.add("vgmc-advanced");document.documentElement.classList.remove("vgmc-lock");
+ const els=[...document.querySelectorAll("button,a,h1,h2,h3,h4")].filter(x=>!x.closest("#vg-mobile-console"));
+ const hit=els.find(x=>/NUTRITION|FOOD|DIET/i.test((x.textContent||"").trim()));if(hit){try{if(hit.matches("button,a"))hit.click();hit.scrollIntoView({behavior:"smooth",block:"start"})}catch(_){}}
+}
+function draw(){
+ const view=document.querySelector('#vg-mobile-console [data-view="console"]');if(!view)return;
+ view.innerHTML=`<div class="vgmc-hero"><small>PASS 10 / 20 · NUTRITION CENTER</small><h1>Resident Nutrition Command</h1><p>A compact nutrition station inside the mobile interface: status, product records and the resident's saved plan without exposing another giant nutrition page.</p></div>
+ <div class="vgmc10-disclaimer"><b>FICTIONAL VET GODS DATA:</b> Nutrition percentages and intervention responses are gameplay systems. Product records do not determine veterinary suitability, supplement doses, herb safety, or feeding instructions.</div>
+ <div class="vgmc10-tabs">${["STATUS","PRODUCTS","PLAN"].map(x=>`<button data-vgmc10-tab="${x}" class="${N.tab===x?"on":""}">${x}</button>`).join("")}</div>
+ ${N.tab==="STATUS"?`<div class="vgmc-card"><h2>QUICK NUTRITION READOUT</h2><div class="vgmc10-read"><div><small>HYDRATION</small><b>${N.water}%</b></div><div><small>NUTRITION</small><b>${N.food}%</b></div><div><small>ENERGY</small><b>${N.energy}%</b></div><div><small>BODY CONDITION</small><b>${N.body}%</b></div><div><small>PLAN ITEMS</small><b>${N.plan.length}</b></div><div><small>STATUS</small><b>LOG</b></div></div><div class="vgmc10-actions" style="margin-top:6px"><button data-vgmc10-route="care">CARE STATION<small>Return to quick resident care</small></button><button data-vgmc10-advanced>ADVANCED NUTRITION<small>Open original nutrition machinery</small></button></div></div>`:""}
+ ${N.tab==="PRODUCTS"?`<div class="vgmc-card"><h2>PRODUCT & SUPPLY RECORDS</h2>${products.map((x,i)=>`<article class="vgmc10-product"><header><strong>${x.n}</strong><small>${x.k}</small></header><p>${x.d}</p><div class="vgmc10-actions"><button data-vgmc10-add="${i}">＋ ADD TO PLAN<small>Save as a resident record</small></button><button data-vgmc10-search="${encodeURIComponent(x.n)}">⌕ AMAZON SEARCH<small>Open external product search</small></button></div></article>`).join("")}</div>`:""}
+ ${N.tab==="PLAN"?`<div class="vgmc-card"><h2>RESIDENT NUTRITION PLAN · ${N.plan.length}</h2>${N.plan.length?N.plan.slice().reverse().map(x=>`<div class="vgmc10-plan"><b>${x.name}</b><small>${x.type} · saved ${x.time}</small></div>`).join(""):`<p>No product/diet records have been added yet.</p>`}</div>`:""}
+ <div class="vgmc-card"><h2>RECENT NUTRITION ACTIVITY</h2>${N.log.length?N.log.slice(0,5).map(x=>`<div class="vgmc-log">${x}</div>`).join(""):`<p>No nutrition-console activity yet.</p>`}</div>`;
+}
+document.addEventListener("click",e=>{
+ const t=e.target.closest("[data-vgmc10-tab]");if(t){N.tab=t.dataset.vgmc10Tab;save();draw();return}
+ const a=e.target.closest("[data-vgmc10-add]");if(a){add(Number(a.dataset.vgmc10Add));return}
+ const q=e.target.closest("[data-vgmc10-search]");if(q){window.open("https://www.amazon.com/s?k="+q.dataset.vgmc10Search,"_blank","noopener");return}
+ if(e.target.closest("[data-vgmc10-advanced]")){original();return}
+ const c=e.target.closest("[data-vgmc10-route='care']");if(c){document.querySelector('#vg-mobile-console [data-go="care"]')?.click();return}
+},true);
+window.VGMobileNutrition=draw;
+})();
+</script>
+
+<style id="vg-mobile-console-pass11-css">
+.vgmc11-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:6px 0}
+.vgmc11-tabs button{min-height:39px;border:1px solid #355969;border-radius:8px;background:#0b1b24;color:#91adba;font-size:6px;font-weight:900}
+.vgmc11-tabs button.on{border-color:#bea34c;background:#29230d;color:#ffe17c}
+.vgmc11-read{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.vgmc11-read>div{border:1px solid #315565;border-radius:8px;padding:7px;text-align:center;background:#0a1921}
+.vgmc11-read small{display:block;font-size:5px;color:#7e9da9}.vgmc11-read b{font-size:11px;color:#e9f8ff}
+.vgmc11-zone{border:1px solid #355969;border-radius:10px;background:#0b1c26;padding:8px;margin:5px 0}
+.vgmc11-zone header{display:flex;justify-content:space-between;gap:6px}.vgmc11-zone strong{font-size:8px;color:#ffe17c}.vgmc11-zone small{font-size:5.5px;color:#84a4b1}
+.vgmc11-zone p{font-size:7px;color:#a9c1cb;line-height:1.4}
+.vgmc11-controls{display:grid;grid-template-columns:1fr 1fr;gap:4px}.vgmc11-controls button{min-height:43px;border:1px solid #3a6171;border-radius:8px;background:#10242e;color:#eaf8ff;text-align:left;padding:7px;font-size:6.5px;font-weight:900}
+.vgmc11-meter{height:6px;border-radius:5px;background:#061118;overflow:hidden;margin-top:4px}.vgmc11-meter i{display:block;height:100%;background:#91b5c4}
+.vgmc11-event{border-left:3px solid #4e7382;background:#0b1b24;padding:7px;margin:4px 0;font-size:6.5px;color:#b9d0da}
+</style>
+<script id="vg-mobile-console-pass11-js">
+(function(){
+"use strict";
+const KEY="vetgods_mobile_habitat_pass11";
+let H={tab:"STATUS",temp:72,air:83,water:69,clean:76,comfort:71,safety:88,zones:[
+{name:"Rest Bay",icon:"☾",status:78,desc:"Quiet resident rest and recovery zone."},
+{name:"Food & Water",icon:"♧",status:72,desc:"Resident feeding and hydration station."},
+{name:"Enrichment",icon:"✦",status:66,desc:"Play, exploration and enrichment zone."},
+{name:"Isolation / Recovery",icon:"◇",status:81,desc:"Fictional protected recovery habitat."}
+],log:[]};
+try{H=Object.assign(H,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(_){}
+const clamp=v=>Math.max(0,Math.min(100,Math.round(v)));
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(H))}catch(_){}};
+function act(k){
+ if(k==="clean"){H.clean=clamp(H.clean+12);H.safety=clamp(H.safety+3)}
+ if(k==="air"){H.air=clamp(H.air+10)}
+ if(k==="water"){H.water=clamp(H.water+12)}
+ if(k==="comfort"){H.comfort=clamp(H.comfort+10)}
+ H.log.unshift(new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})+" · "+({clean:"Habitat cleaning cycle",air:"Air system check",water:"Water station service",comfort:"Comfort zone reset"})[k]+" completed");
+ H.log=H.log.slice(0,20);save();draw();
+}
+function service(i){if(!H.zones[i])return;H.zones[i].status=clamp(H.zones[i].status+12);H.log.unshift(new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})+" · "+H.zones[i].name+" serviced");save();draw()}
+function original(){
+ document.body.classList.add("vgmc-advanced");document.documentElement.classList.remove("vgmc-lock");
+ const els=[...document.querySelectorAll("button,a,h1,h2,h3,h4")].filter(x=>!x.closest("#vg-mobile-console"));
+ const hit=els.find(x=>/HABITAT|SANCTUARY|ENCLOSURE/i.test((x.textContent||"").trim()));if(hit){try{if(hit.matches("button,a"))hit.click();hit.scrollIntoView({behavior:"smooth",block:"start"})}catch(_){}}
+}
+function draw(){
+ const view=document.querySelector('#vg-mobile-console [data-view="console"]');if(!view)return;
+ view.innerHTML=`<div class="vgmc-hero"><small>PASS 11 / 20 · HABITAT COMMAND</small><h1>Resident Environment</h1><p>Habitat systems are condensed into one environmental console. Open Status, Zones, or Service only when you need them.</p></div>
+ <div class="vgmc11-tabs">${["STATUS","ZONES","SERVICE"].map(x=>`<button data-vgmc11-tab="${x}" class="${H.tab===x?"on":""}">${x}</button>`).join("")}</div>
+ ${H.tab==="STATUS"?`<div class="vgmc-card"><h2>ENVIRONMENT READOUT</h2><div class="vgmc11-read">${[["TEMP",H.temp+"°"],["AIR",H.air+"%"],["WATER",H.water+"%"],["CLEAN",H.clean+"%"],["COMFORT",H.comfort+"%"],["SAFETY",H.safety+"%"]].map(x=>`<div><small>${x[0]}</small><b>${x[1]}</b></div>`).join("")}</div></div>`:""}
+ ${H.tab==="ZONES"?`<div class="vgmc-card"><h2>HABITAT ZONES</h2>${H.zones.map((z,i)=>`<article class="vgmc11-zone"><header><strong>${z.icon} ${z.name}</strong><small>${z.status}% READY</small></header><p>${z.desc}</p><div class="vgmc11-meter"><i style="width:${z.status}%"></i></div><div class="vgmc11-controls" style="margin-top:6px"><button data-vgmc11-zone="${i}">SERVICE ZONE<small>Improve fictional habitat readiness</small></button><button data-vgmc11-advanced>ADVANCED<small>Open original habitat machinery</small></button></div></article>`).join("")}</div>`:""}
+ ${H.tab==="SERVICE"?`<div class="vgmc-card"><h2>QUICK SERVICE</h2><div class="vgmc11-controls"><button data-vgmc11="clean">⌁ CLEANING CYCLE<small>Raise cleanliness and safety</small></button><button data-vgmc11="air">≋ AIR SYSTEM<small>Service habitat air readout</small></button><button data-vgmc11="water">💧 WATER STATION<small>Service water availability</small></button><button data-vgmc11="comfort">♡ COMFORT RESET<small>Improve habitat comfort</small></button></div></div>`:""}
+ <div class="vgmc-card"><h2>HABITAT ACTIVITY</h2>${H.log.length?H.log.slice(0,6).map(x=>`<div class="vgmc11-event">${x}</div>`).join(""):`<p>No habitat service events yet.</p>`}</div>
+ <button class="vgmc-btn" data-vgmc11-advanced>⚙ ADVANCED HABITAT SYSTEMS<small>Reveal the original deep habitat program only when requested.</small></button>`;
+}
+document.addEventListener("click",e=>{
+ const t=e.target.closest("[data-vgmc11-tab]");if(t){H.tab=t.dataset.vgmc11Tab;save();draw();return}
+ const a=e.target.closest("[data-vgmc11]");if(a){act(a.dataset.vgmc11);return}
+ const z=e.target.closest("[data-vgmc11-zone]");if(z){service(Number(z.dataset.vgmc11Zone));return}
+ if(e.target.closest("[data-vgmc11-advanced]"))original();
+},true);
+window.VGMobileHabitat=draw;
+})();
+</script>
+
+<style id="vg-mobile-console-pass12-css">
+.vgmc12-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:6px 0}
+.vgmc12-tabs button{min-height:39px;border:1px solid #355969;border-radius:8px;background:#0b1b24;color:#91adba;font-size:6px;font-weight:900}
+.vgmc12-tabs button.on{border-color:#bea34c;background:#29230d;color:#ffe17c}
+.vgmc12-read{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.vgmc12-read>div{border:1px solid #315565;border-radius:8px;padding:7px;text-align:center;background:#0a1921}
+.vgmc12-read small{display:block;font-size:5px;color:#7e9da9}.vgmc12-read b{font-size:11px;color:#e9f8ff}
+.vgmc12-activities{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.vgmc12-act{min-height:58px;border:1px solid #3a6171;border-radius:9px;background:#10242e;color:#eaf8ff;text-align:left;padding:7px}
+.vgmc12-act strong{display:block;font-size:7px;color:#ffe17c}.vgmc12-act small{display:block;font-size:5.5px;color:#86a5b1;margin-top:3px}
+.vgmc12-session{border:2px solid #426a7a;border-radius:11px;background:#0a1922;padding:9px;margin:6px 0}
+.vgmc12-session h2{font-size:12px;color:#ffe17c;margin:2px 0}.vgmc12-session p{font-size:7px;color:#a8c1cc;line-height:1.45}
+.vgmc12-progress{height:7px;background:#061118;border-radius:5px;overflow:hidden;margin:6px 0}.vgmc12-progress i{display:block;height:100%;background:#91b5c4}
+.vgmc12-log{border-left:3px solid #4e7382;background:#0b1b24;padding:7px;margin:4px 0;font-size:6.5px;color:#b9d0da}
+</style>
+<script id="vg-mobile-console-pass12-js">
+(function(){
+"use strict";
+const KEY="vetgods_mobile_behavior_pass12";
+let B={tab:"STATUS",trust:55,stress:38,focus:61,confidence:49,enrichment:57,bond:52,session:null,progress:0,log:[]};
+try{B=Object.assign(B,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(_){}
+const clamp=v=>Math.max(0,Math.min(100,Math.round(v)));
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(B))}catch(_){}};
+const acts=[
+ ["SNIFF & SEARCH","⌕","Exploration game","focus"],
+ ["QUIET BONDING","♡","Calm resident interaction","bond"],
+ ["TOY SESSION","✦","Play and enrichment","play"],
+ ["CONFIDENCE WALK","➜","Fictional mobility/confidence activity","confidence"],
+ ["REST / DECOMPRESS","☾","Quiet recovery period","rest"],
+ ["TRAINING GAME","◇","Short positive game session","training"]
+];
+function start(i){B.session=i;B.progress=0;B.tab="SESSION";save();draw()}
+function step(){
+ if(B.session==null)return;
+ B.progress=clamp(B.progress+25);
+ const k=acts[B.session][3];
+ if(k==="focus"){B.focus=clamp(B.focus+5);B.enrichment=clamp(B.enrichment+3)}
+ if(k==="bond"){B.bond=clamp(B.bond+6);B.trust=clamp(B.trust+4);B.stress=clamp(B.stress-4)}
+ if(k==="play"){B.enrichment=clamp(B.enrichment+7);B.stress=clamp(B.stress-3)}
+ if(k==="confidence"){B.confidence=clamp(B.confidence+6);B.trust=clamp(B.trust+2)}
+ if(k==="rest"){B.stress=clamp(B.stress-7);B.focus=clamp(B.focus+2)}
+ if(k==="training"){B.focus=clamp(B.focus+5);B.confidence=clamp(B.confidence+4)}
+ if(B.progress>=100){
+   B.log.unshift(new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})+" · "+acts[B.session][0]+" completed");
+   B.session=null;B.progress=0;B.tab="STATUS";
+ }
+ B.log=B.log.slice(0,20);save();draw();
+}
+function original(){
+ document.body.classList.add("vgmc-advanced");document.documentElement.classList.remove("vgmc-lock");
+ const els=[...document.querySelectorAll("button,a,h1,h2,h3,h4")].filter(x=>!x.closest("#vg-mobile-console"));
+ const hit=els.find(x=>/BEHAVIOR|ENRICHMENT|TRAINING|PERSONALITY/i.test((x.textContent||"").trim()));
+ if(hit){try{if(hit.matches("button,a"))hit.click();hit.scrollIntoView({behavior:"smooth",block:"start"})}catch(_){}}
+}
+function draw(){
+ const view=document.querySelector('#vg-mobile-console [data-view="console"]');if(!view)return;
+ const a=B.session!=null?acts[B.session]:null;
+ view.innerHTML=`<div class="vgmc-hero"><small>PASS 12 / 20 · BEHAVIOR & ENRICHMENT</small><h1>Resident Interaction Console</h1><p>Behavior, trust, play and enrichment are now one compact station. Choose an activity instead of opening multiple resident-program pages.</p></div>
+ <div class="vgmc12-tabs">${["STATUS","ACTIVITIES","SESSION"].map(x=>`<button data-vgmc12-tab="${x}" class="${B.tab===x?"on":""}">${x}</button>`).join("")}</div>
+ ${B.tab==="STATUS"?`<div class="vgmc-card"><h2>RESIDENT INTERACTION READOUT</h2><div class="vgmc12-read">${[["TRUST",B.trust],["STRESS",B.stress],["FOCUS",B.focus],["CONFIDENCE",B.confidence],["ENRICHMENT",B.enrichment],["BOND",B.bond]].map(x=>`<div><small>${x[0]}</small><b>${x[1]}%</b></div>`).join("")}</div></div>`:""}
+ ${B.tab==="ACTIVITIES"?`<div class="vgmc-card"><h2>CHOOSE ONE ACTIVITY</h2><div class="vgmc12-activities">${acts.map((x,i)=>`<button class="vgmc12-act" data-vgmc12-start="${i}"><strong>${x[1]} ${x[0]}</strong><small>${x[2]}</small></button>`).join("")}</div></div>`:""}
+ ${B.tab==="SESSION"?a?`<div class="vgmc12-session"><small>ACTIVE RESIDENT SESSION</small><h2>${a[1]} ${a[0]}</h2><p>${a[2]}. Run the session in four short steps; the rest of the behavior system stays hidden.</p><div class="vgmc12-progress"><i style="width:${B.progress}%"></i></div><button class="vgmc-btn primary" data-vgmc12-step>▶ CONTINUE SESSION<small>${B.progress}% complete · one interaction step</small></button></div>`:`<div class="vgmc-card"><p>No behavior session is active. Choose Activities to start one.</p></div>`:""}
+ <div class="vgmc-card"><h2>RECENT INTERACTIONS</h2>${B.log.length?B.log.slice(0,6).map(x=>`<div class="vgmc12-log">${x}</div>`).join(""):`<p>No completed interaction sessions yet.</p>`}</div>
+ <button class="vgmc-btn" data-vgmc12-advanced>⚙ ADVANCED BEHAVIOR SYSTEMS<small>Open the original deep behavior/personality machinery only when requested.</small></button>`;
+}
+document.addEventListener("click",e=>{
+ const t=e.target.closest("[data-vgmc12-tab]");if(t){B.tab=t.dataset.vgmc12Tab;save();draw();return}
+ const st=e.target.closest("[data-vgmc12-start]");if(st){start(Number(st.dataset.vgmc12Start));return}
+ if(e.target.closest("[data-vgmc12-step]")){step();return}
+ if(e.target.closest("[data-vgmc12-advanced]"))original();
+},true);
+window.VGMobileBehavior=draw;
+})();
+</script>
+
+<style id="vg-mobile-console-pass13-css">
+.vgmc13-petbar{display:grid;grid-template-columns:54px 1fr auto;gap:8px;align-items:center;border:2px solid #416879;border-radius:12px;background:#0b1c26;padding:8px;margin:6px 0}
+.vgmc13-face{width:54px;height:54px;border-radius:12px;background:#102a36;display:grid;place-items:center;font-size:34px;border:1px solid #527787}
+.vgmc13-petbar h2{margin:0;font-size:13px;color:#ffe17c}.vgmc13-petbar small{display:block;font-size:6px;color:#89a8b5;margin-top:2px}.vgmc13-state{font-size:6px;border:1px solid #486b79;border-radius:12px;padding:5px 7px;color:#c9e2eb}
+.vgmc13-needs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:6px 0}.vgmc13-need{border:1px solid #315565;border-radius:8px;padding:6px;background:#091820}.vgmc13-need div{display:flex;justify-content:space-between;font-size:5.5px}.vgmc13-need i{display:block;height:5px;background:#061117;border-radius:4px;overflow:hidden;margin-top:4px}.vgmc13-need em{display:block;height:100%;background:#91b5c4}
+.vgmc13-primary{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}.vgmc13-primary button{min-height:54px;border:1px solid #3b6172;border-radius:9px;background:#10242e;color:#eaf9ff;text-align:left;padding:8px;font-size:8px;font-weight:900}.vgmc13-primary small{display:block;font-size:5.5px;color:#88a7b4;margin-top:3px}
+.vgmc13-primary button.recommend{border:2px solid #bda24b;background:#29230d;color:#ffe17c}
+.vgmc13-more{border:1px solid #355969;border-radius:10px;margin-top:6px;overflow:hidden}.vgmc13-morehead{width:100%;min-height:42px;border:0;background:#0e222d;color:#dff7ff;text-align:left;padding:8px;font-size:7px;font-weight:900}.vgmc13-morebody{display:none;padding:6px}.vgmc13-more.open .vgmc13-morebody{display:block}
+.vgmc13-feedback{border-left:3px solid #bda24b;background:#211d0d;padding:7px;margin:6px 0;font-size:7px;color:#e0d49f}
+</style>
+<script id="vg-mobile-console-pass13-js">
+(function(){
+"use strict";
+const KEY="vetgods_mobile_mypet_pass13";
+let P={selected:0,last:"Resident ready.",events:[]};
+try{P=Object.assign(P,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(_){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(P))}catch(_){}};
+const clamp=v=>Math.max(0,Math.min(100,Math.round(v)));
+function sanctuary(){
+ try{return JSON.parse(localStorage.getItem("vetgods_mobile_sanctuary_pass05")||"{}")}catch(_){return{}}
+}
+function saveSan(m){try{localStorage.setItem("vetgods_mobile_sanctuary_pass05",JSON.stringify(m))}catch(_){}}
+function icon(s){s=String(s||"").toLowerCase();if(s.includes("owl"))return"🦉";if(s.includes("wolf"))return"🐺";if(s.includes("cat"))return"🐈";if(s.includes("fox"))return"🦊";if(s.includes("snake"))return"🐍";return"🐕"}
+function pet(){
+ let m=sanctuary();let pets=Array.isArray(m.pets)?m.pets:[];
+ if(!pets.length)return null;
+ P.selected=Math.max(0,Math.min(P.selected,pets.length-1));
+ return {m,p:pets[P.selected]};
+}
+function recommended(p){
+ const vals=[["water",100-Number(p.thirst??30)],["food",100-Number(p.hunger??35)],["comfort",Number(p.comfort??60)],["rest",Number(p.energy??65)],["play",Number(p.trust??50)]];
+ vals.sort((a,b)=>a[1]-b[1]);return vals[0][0];
+}
+function action(k){
+ const x=pet();if(!x)return;const p=x.p;
+ if(k==="water"){p.thirst=clamp(Number(p.thirst??30)-18);P.last=p.name+" drank water."}
+ if(k==="food"){p.hunger=clamp(Number(p.hunger??35)-16);p.energy=clamp(Number(p.energy??65)+5);P.last=p.name+" finished a meal."}
+ if(k==="comfort"){p.comfort=clamp(Number(p.comfort??60)+12);p.trust=clamp(Number(p.trust??50)+4);P.last=p.name+" settled into the comfort area."}
+ if(k==="play"){p.trust=clamp(Number(p.trust??50)+7);p.comfort=clamp(Number(p.comfort??60)+4);p.energy=clamp(Number(p.energy??65)-6);P.last=p.name+" completed an enrichment activity."}
+ if(k==="rest"){p.energy=clamp(Number(p.energy??65)+15);p.comfort=clamp(Number(p.comfort??60)+4);P.last=p.name+" rested quietly."}
+ P.events.unshift(new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})+" · "+P.last);P.events=P.events.slice(0,12);
+ x.m.selected=P.selected;saveSan(x.m);save();draw();
+}
+function advanced(term){
+ document.body.classList.add("vgmc-advanced");document.documentElement.classList.remove("vgmc-lock");
+ const rx=new RegExp(term,"i"),els=[...document.querySelectorAll("button,a,h1,h2,h3,h4")].filter(x=>!x.closest("#vg-mobile-console"));
+ const hit=els.find(x=>rx.test((x.textContent||"").trim()));if(hit){try{if(hit.matches("button,a"))hit.click();hit.scrollIntoView({behavior:"smooth",block:"start"})}catch(_){}}
+}
+function draw(){
+ const view=document.querySelector('#vg-mobile-console [data-view="console"]');if(!view)return;
+ const x=pet();
+ if(!x){view.innerHTML=`<div class="vgmc-hero"><small>PASS 13 / 20 · MY PET PLAY CLEANUP</small><h1>My Pet</h1><p>No resident is currently available in the mobile sanctuary.</p></div>`;return}
+ const p=x.p, rec=recommended(p);
+ const stats=[["HEALTH",p.health??72],["FOOD",100-(p.hunger??35)],["WATER",100-(p.thirst??30)],["COMFORT",p.comfort??60],["TRUST",p.trust??50],["ENERGY",p.energy??65]];
+ view.innerHTML=`<div class="vgmc-hero"><small>PASS 13 / 20 · MY PET PLAY CLEANUP</small><h1>My Pet</h1><p>After opening a resident, the game now stays focused on that one animal: needs, one recommended action, normal interactions, then optional deeper systems.</p></div>
+ <div class="vgmc13-petbar"><div class="vgmc13-face">${icon(p.species)}</div><div><h2>${p.name}</h2><small>${p.species||"Animal"}${p.form?" · "+p.form:""}</small><small>ACTIVE SANCTUARY RESIDENT</small></div><span class="vgmc13-state">LIVE</span></div>
+ <div class="vgmc13-needs">${stats.map(z=>`<div class="vgmc13-need"><div><b>${z[0]}</b><span>${clamp(z[1])}%</span></div><i><em style="width:${clamp(z[1])}%"></em></i></div>`).join("")}</div>
+ <div class="vgmc13-feedback">${P.last}</div>
+ <div class="vgmc-card"><h2>CARE & PLAY</h2><div class="vgmc13-primary">
+ ${[["food","🍲 FEED","Food interaction"],["water","💧 WATER","Hydration interaction"],["comfort","♡ COMFORT","Quiet bonding"],["play","✦ PLAY","Enrichment activity"],["rest","☾ REST","Recover energy"]].map(a=>`<button data-vgmc13="${a[0]}" class="${rec===a[0]?"recommend":""}">${a[1]}<small>${a[2]}${rec===a[0]?" · RECOMMENDED BY GAME NEEDS":""}</small></button>`).join("")}
+ </div></div>
+ <div class="vgmc13-more"><button class="vgmc13-morehead">▸ MORE SYSTEMS · OPEN ONLY WHEN NEEDED</button><div class="vgmc13-morebody"><div class="vgmc13-primary"><button data-vgmc13-advanced="NUTRITION">NUTRITION<small>Open nutrition systems</small></button><button data-vgmc13-advanced="HABITAT">HABITAT<small>Environment systems</small></button><button data-vgmc13-advanced="BEHAVIOR|ENRICHMENT">BEHAVIOR<small>Interaction systems</small></button><button data-vgmc13-advanced="MORPH">MORPH / RESEARCH<small>Advanced resident development</small></button><button data-vgmc13-advanced="RECORD|ARCHIVE">RECORDS<small>Resident history</small></button><button data-vgmc13-advanced="MY PET|SANCTUARY">FULL MY PET<small>Original resident machinery</small></button></div></div></div>
+ <div class="vgmc-card"><h2>RECENT ACTIVITY</h2>${P.events.length?P.events.slice(0,5).map(z=>`<div class="vgmc-log">${z}</div>`).join(""):`<p>No interactions yet.</p>`}</div>`;
+}
+document.addEventListener("click",e=>{
+ const a=e.target.closest("[data-vgmc13]");if(a){e.preventDefault();action(a.dataset.vgmc13);return}
+ const m=e.target.closest(".vgmc13-morehead");if(m){const box=m.closest(".vgmc13-more"),on=box.classList.toggle("open");m.textContent=(on?"▾":"▸")+" MORE SYSTEMS · "+(on?"CLOSE":"OPEN ONLY WHEN NEEDED");return}
+ const d=e.target.closest("[data-vgmc13-advanced]");if(d){advanced(d.dataset.vgmc13Advanced);return}
+},true);
+window.VGMobileMyPet=draw;
+})();
+</script>
+
+<style id="vg-mobile-console-pass14-css">
+.vgmc14-shell{border:2px solid #416979;border-radius:13px;background:#081820;padding:8px;margin:6px 0}
+.vgmc14-top{display:grid;grid-template-columns:58px 1fr;gap:8px;align-items:center}
+.vgmc14-avatar{width:58px;height:58px;border:1px solid #547989;border-radius:12px;background:#102b37;display:grid;place-items:center;font-size:36px}
+.vgmc14-top h2{margin:0;color:#ffe17c;font-size:14px}.vgmc14-top small{display:block;color:#88a7b4;font-size:6px;margin-top:2px}
+.vgmc14-nav{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin:8px 0 5px}.vgmc14-nav button{min-height:38px;border:1px solid #315565;border-radius:7px;background:#0c202a;color:#89a8b4;font-size:5.8px;font-weight:900}.vgmc14-nav button.on{border-color:#bea34c;background:#29230d;color:#ffe17c}
+.vgmc14-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:4px}.vgmc14-stat{border:1px solid #315565;border-radius:8px;padding:6px}.vgmc14-stat header{display:flex;justify-content:space-between;font-size:5.8px}.vgmc14-stat i{display:block;height:6px;background:#061117;border-radius:5px;overflow:hidden;margin-top:4px}.vgmc14-stat em{display:block;height:100%;background:#91b5c4}
+.vgmc14-action{width:100%;min-height:52px;border:2px solid #bda24b;border-radius:9px;background:#29230d;color:#ffe17c;text-align:left;padding:8px;font-size:8px;font-weight:900;margin:6px 0}.vgmc14-action small{display:block;font-size:5.5px;color:#c0b17d;margin-top:3px}
+.vgmc14-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}.vgmc14-grid button{min-height:49px;border:1px solid #3b6172;border-radius:8px;background:#10242e;color:#eaf9ff;text-align:left;padding:7px;font-size:7px;font-weight:900}.vgmc14-grid small{display:block;font-size:5.5px;color:#88a7b4;margin-top:3px}
+.vgmc14-card{border:1px solid #355969;border-radius:9px;background:#0b1b24;padding:8px;margin:5px 0}.vgmc14-card h3{font-size:8px;color:#ffe17c;margin:0 0 4px}.vgmc14-card p{font-size:7px;color:#b3cbd4;line-height:1.45;margin:0}
+.vgmc14-switch{display:flex;gap:4px;overflow:auto;margin:5px 0}.vgmc14-switch button{flex:0 0 auto;border:1px solid #355969;border-radius:15px;background:#0a1921;color:#b4cbd4;padding:5px 8px;font-size:6px}
+</style>
+<script id="vg-mobile-console-pass14-js">
+(function(){
+"use strict";
+const KEY="vetgods_mobile_mypet_pass14";
+let U={page:"HOME",selected:0,last:"Resident console ready.",history:[]};
+try{U=Object.assign(U,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(_){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(U))}catch(_){}};
+const clamp=v=>Math.max(0,Math.min(100,Math.round(v)));
+function model(){try{return JSON.parse(localStorage.getItem("vetgods_mobile_sanctuary_pass05")||"{}")}catch(_){return{pets:[]}}}
+function put(m){try{localStorage.setItem("vetgods_mobile_sanctuary_pass05",JSON.stringify(m))}catch(_){}}
+function ico(s){s=String(s||"").toLowerCase();if(s.includes("owl"))return"🦉";if(s.includes("wolf"))return"🐺";if(s.includes("cat"))return"🐈";if(s.includes("fox"))return"🦊";if(s.includes("snake"))return"🐍";return"🐕"}
+function current(){const m=model(),ps=Array.isArray(m.pets)?m.pets:[];if(!ps.length)return null;U.selected=Math.max(0,Math.min(U.selected,ps.length-1));return {m,p:ps[U.selected],ps}}
+function vals(p){return {health:+(p.health??72),food:100-+(p.hunger??35),water:100-+(p.thirst??30),comfort:+(p.comfort??60),trust:+(p.trust??50),energy:+(p.energy??65)}}
+function need(p){return Object.entries(vals(p)).sort((a,b)=>a[1]-b[1])[0]}
+function act(k){
+ const x=current();if(!x)return;const p=x.p;
+ if(k==="feed"){p.hunger=clamp((p.hunger??35)-16);p.energy=clamp((p.energy??65)+4)}
+ if(k==="water"){p.thirst=clamp((p.thirst??30)-18);p.health=clamp((p.health??72)+2)}
+ if(k==="comfort"){p.comfort=clamp((p.comfort??60)+12);p.trust=clamp((p.trust??50)+4)}
+ if(k==="play"){p.trust=clamp((p.trust??50)+7);p.energy=clamp((p.energy??65)-5);p.comfort=clamp((p.comfort??60)+4)}
+ if(k==="rest"){p.energy=clamp((p.energy??65)+15);p.comfort=clamp((p.comfort??60)+3)}
+ U.last=p.name+" · "+({feed:"meal completed",water:"water completed",comfort:"comfort interaction completed",play:"enrichment play completed",rest:"rest cycle completed"})[k]+".";
+ U.history.unshift(new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})+" · "+U.last);U.history=U.history.slice(0,15);
+ x.m.selected=U.selected;put(x.m);save();draw();
+}
+function deep(term){
+ document.body.classList.add("vgmc-advanced");document.documentElement.classList.remove("vgmc-lock");
+ const rx=new RegExp(term,"i"),els=[...document.querySelectorAll("button,a,h1,h2,h3,h4")].filter(e=>!e.closest("#vg-mobile-console"));
+ const hit=els.find(e=>rx.test((e.textContent||"").trim()));if(hit){try{if(hit.matches("button,a"))hit.click();hit.scrollIntoView({behavior:"smooth",block:"start"})}catch(_){}}
+}
+function draw(){
+ const view=document.querySelector('#vg-mobile-console [data-view="console"]');if(!view)return;
+ const x=current();
+ if(!x){view.innerHTML='<div class="vgmc-hero"><small>PASS 14 / 20</small><h1>My Pet</h1><p>No resident is available.</p></div>';return}
+ const p=x.p,v=vals(p),n=need(p);
+ const nav=["HOME","CARE","LIFE","SYSTEMS"];
+ let body="";
+ if(U.page==="HOME")body=`<div class="vgmc14-card"><h3>RIGHT NOW</h3><p>${U.last}</p></div><button class="vgmc14-action" data-vgmc14-page="CARE">▶ CARE FOR ${p.name.toUpperCase()}<small>Lowest current game need: ${n[0].toUpperCase()} · ${clamp(n[1])}%</small></button><div class="vgmc14-card"><h3>RESIDENT SUMMARY</h3><p>${p.name} is the only active animal on this screen. Other resident programs remain hidden until you deliberately open them.</p></div>`;
+ if(U.page==="CARE")body=`<div class="vgmc14-grid"><button data-vgmc14-act="feed">🍲 FEED<small>Food need ${clamp(v.food)}%</small></button><button data-vgmc14-act="water">💧 WATER<small>Hydration ${clamp(v.water)}%</small></button><button data-vgmc14-act="comfort">♡ COMFORT<small>Comfort ${clamp(v.comfort)}%</small></button><button data-vgmc14-act="play">✦ PLAY<small>Trust ${clamp(v.trust)}%</small></button><button data-vgmc14-act="rest">☾ REST<small>Energy ${clamp(v.energy)}%</small></button></div><div class="vgmc14-card"><h3>LAST RESULT</h3><p>${U.last}</p></div>`;
+ if(U.page==="LIFE")body=`<div class="vgmc14-card"><h3>RECENT LIFE LOG</h3>${U.history.length?U.history.slice(0,8).map(z=>`<div class="vgmc-log">${z}</div>`).join(""):"<p>No interactions recorded yet.</p>"}</div><div class="vgmc14-grid"><button data-vgmc14-deep="HABITAT">HABITAT<small>Resident environment</small></button><button data-vgmc14-deep="BEHAVIOR|ENRICHMENT">BEHAVIOR<small>Trust and enrichment</small></button></div>`;
+ if(U.page==="SYSTEMS")body=`<div class="vgmc14-grid"><button data-vgmc14-deep="NUTRITION">NUTRITION<small>Diet records</small></button><button data-vgmc14-deep="MORPH">MORPH LAB<small>Resident development</small></button><button data-vgmc14-deep="RECORD|ARCHIVE">RECORDS<small>Resident history</small></button><button data-vgmc14-deep="RESEARCH">RESEARCH<small>Research systems</small></button><button data-vgmc14-deep="MY PET|SANCTUARY">FULL ORIGINAL<small>Deep My Pet program</small></button></div>`;
+ view.innerHTML=`<div class="vgmc-hero"><small>PASS 14 / 20 · SINGLE RESIDENT PLAY</small><h1>My Pet</h1><p>Opening My Pet now behaves like one small resident app instead of dropping you into the underlying game interface.</p></div>
+ <div class="vgmc14-switch">${x.ps.map((q,i)=>`<button data-vgmc14-select="${i}">${i===U.selected?"●":"○"} ${q.name}</button>`).join("")}</div>
+ <div class="vgmc14-shell"><div class="vgmc14-top"><div class="vgmc14-avatar">${ico(p.species)}</div><div><h2>${p.name}</h2><small>${p.species||"Animal"}${p.form?" · "+p.form:""}</small><small>ACTIVE RESIDENT · ${U.page}</small></div></div>
+ <div class="vgmc14-stats">${Object.entries(v).map(z=>`<div class="vgmc14-stat"><header><b>${z[0].toUpperCase()}</b><span>${clamp(z[1])}%</span></header><i><em style="width:${clamp(z[1])}%"></em></i></div>`).join("")}</div>
+ <div class="vgmc14-nav">${nav.map(z=>`<button data-vgmc14-page="${z}" class="${U.page===z?"on":""}">${z}</button>`).join("")}</div>${body}</div>`;
+}
+document.addEventListener("click",e=>{
+ const p=e.target.closest("[data-vgmc14-page]");if(p){U.page=p.dataset.vgmc14Page;save();draw();return}
+ const a=e.target.closest("[data-vgmc14-act]");if(a){act(a.dataset.vgmc14Act);return}
+ const d=e.target.closest("[data-vgmc14-deep]");if(d){deep(d.dataset.vgmc14Deep);return}
+ const q=e.target.closest("[data-vgmc14-select]");if(q){U.selected=Number(q.dataset.vgmc14Select);U.page="HOME";save();draw();return}
+},true);
+window.VGMobileMyPetClean=draw;
+})();
+</script>
+
+<style id="vg-mobile-console-pass15-css">
+/* PASS 15: calmer single-resident view */
+.vgmc15-wrap{max-width:560px;margin:0 auto;padding-bottom:76px}
+.vgmc15-head{display:grid;grid-template-columns:68px 1fr auto;gap:9px;align-items:center;padding:10px;border-bottom:1px solid #294b59}
+.vgmc15-avatar{width:68px;height:68px;border-radius:15px;background:#102b37;border:1px solid #527787;display:grid;place-items:center;font-size:42px}
+.vgmc15-head h1{font-size:17px;color:#ffe17c;margin:0}.vgmc15-head small{display:block;font-size:6px;color:#88a7b4;margin-top:3px}
+.vgmc15-change{border:1px solid #456978;border-radius:15px;background:#0b1d26;color:#cce5ee;padding:6px 8px;font-size:6px}
+.vgmc15-vitals{display:flex;gap:4px;overflow-x:auto;padding:8px 0}.vgmc15-vital{flex:0 0 74px;border:1px solid #315565;border-radius:9px;background:#091820;padding:7px;text-align:center}.vgmc15-vital small{display:block;font-size:5px;color:#7898a5}.vgmc15-vital b{display:block;font-size:13px;margin-top:2px}
+.vgmc15-focus{border:2px solid #bca34e;border-radius:12px;background:#211d0d;padding:10px;margin:7px 0}.vgmc15-focus small{font-size:5.5px;color:#b9aa78}.vgmc15-focus h2{font-size:12px;color:#ffe17c;margin:3px 0}.vgmc15-focus p{font-size:7px;color:#d4c795;line-height:1.4;margin:3px 0}
+.vgmc15-focus button{width:100%;min-height:48px;border:1px solid #c5aa50;border-radius:8px;background:#30290d;color:#ffeb91;text-align:left;padding:8px;font-size:8px;font-weight:900;margin-top:6px}.vgmc15-focus button small{display:block;margin-top:3px}
+.vgmc15-actions{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin:6px 0}.vgmc15-actions button{min-height:52px;border:1px solid #355969;border-radius:8px;background:#0d2029;color:#eaf8ff;padding:5px 2px;font-size:15px}.vgmc15-actions small{display:block;font-size:5px;color:#91adba;margin-top:3px}
+.vgmc15-drawer{border:1px solid #315565;border-radius:9px;overflow:hidden;margin:6px 0}.vgmc15-drawer>button{width:100%;min-height:40px;border:0;background:#0d2029;color:#cfe7ef;text-align:left;padding:8px;font-size:6.5px;font-weight:900}.vgmc15-drawer section{display:none;padding:7px;background:#08171f}.vgmc15-drawer.open section{display:block}
+.vgmc15-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}.vgmc15-grid button{min-height:43px;border:1px solid #385d6d;border-radius:7px;background:#10242e;color:#e5f6fc;text-align:left;padding:7px;font-size:6.5px;font-weight:900}.vgmc15-grid small{display:block;font-size:5.2px;color:#86a4b0;margin-top:2px}
+.vgmc15-log{font-size:6.2px;color:#a9c2cc;padding:5px 2px;border-bottom:1px solid #ffffff10}
+.vgmc15-bottom{position:sticky;bottom:4px;z-index:30;display:grid;grid-template-columns:repeat(4,1fr);gap:3px;background:#07151d;border:1px solid #315565;border-radius:12px;padding:4px;box-shadow:0 -8px 25px #0009}
+.vgmc15-bottom button{border:0;border-radius:8px;background:transparent;color:#89a8b4;min-height:38px;font-size:5.5px;font-weight:900}.vgmc15-bottom button.on{background:#1d2418;color:#ffe17c}
+</style>
+<script id="vg-mobile-console-pass15-js">
+(function(){
+"use strict";
+const KEY="vetgods_mobile_mypet_pass15";
+let S={selected:0,tab:"PET",last:"Ready for interaction.",log:[]};
+try{S=Object.assign(S,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(_){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(_){}};
+const clamp=v=>Math.max(0,Math.min(100,Math.round(v)));
+function model(){try{return JSON.parse(localStorage.getItem("vetgods_mobile_sanctuary_pass05")||"{}")}catch(_){return{pets:[]}}}
+function put(m){try{localStorage.setItem("vetgods_mobile_sanctuary_pass05",JSON.stringify(m))}catch(_){}}
+function ico(s){s=String(s||"").toLowerCase();if(s.includes("owl"))return"🦉";if(s.includes("wolf"))return"🐺";if(s.includes("cat"))return"🐈";if(s.includes("fox"))return"🦊";if(s.includes("snake"))return"🐍";if(s.includes("bird"))return"🦅";return"🐕"}
+function current(){const m=model(),ps=Array.isArray(m.pets)?m.pets:[];if(!ps.length)return null;S.selected=Math.max(0,Math.min(S.selected,ps.length-1));return{m,ps,p:ps[S.selected]}}
+function stats(p){return{HEALTH:+(p.health??72),FOOD:100-+(p.hunger??35),WATER:100-+(p.thirst??30),COMFORT:+(p.comfort??60),TRUST:+(p.trust??50),ENERGY:+(p.energy??65)}}
+function lowest(p){return Object.entries(stats(p)).sort((a,b)=>a[1]-b[1])[0]}
+function doAct(k){
+ const x=current();if(!x)return;const p=x.p;
+ if(k==="food"){p.hunger=clamp((p.hunger??35)-16);p.energy=clamp((p.energy??65)+4)}
+ if(k==="water"){p.thirst=clamp((p.thirst??30)-18);p.health=clamp((p.health??72)+2)}
+ if(k==="comfort"){p.comfort=clamp((p.comfort??60)+12);p.trust=clamp((p.trust??50)+4)}
+ if(k==="play"){p.trust=clamp((p.trust??50)+7);p.comfort=clamp((p.comfort??60)+4);p.energy=clamp((p.energy??65)-5)}
+ if(k==="rest"){p.energy=clamp((p.energy??65)+15);p.comfort=clamp((p.comfort??60)+3)}
+ S.last=p.name+" · "+({food:"ate a meal",water:"drank water",comfort:"settled and bonded",play:"played and explored",rest:"completed a quiet rest"})[k]+".";
+ S.log.unshift(new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})+" · "+S.last);S.log=S.log.slice(0,12);
+ x.m.selected=S.selected;put(x.m);save();draw();
+}
+function deep(term){
+ document.body.classList.add("vgmc-advanced");document.documentElement.classList.remove("vgmc-lock");
+ const rx=new RegExp(term,"i"),els=[...document.querySelectorAll("button,a,h1,h2,h3,h4")].filter(e=>!e.closest("#vg-mobile-console"));
+ const hit=els.find(e=>rx.test((e.textContent||"").trim()));if(hit){try{if(hit.matches("button,a"))hit.click();hit.scrollIntoView({behavior:"smooth",block:"start"})}catch(_){}}
+}
+function draw(){
+ const view=document.querySelector('#vg-mobile-console [data-view="console"]');if(!view)return;
+ const x=current();if(!x){view.innerHTML='<div class="vgmc-hero"><h1>My Pet</h1><p>No resident available.</p></div>';return}
+ const p=x.p,st=stats(p),low=lowest(p),map={FOOD:"food",WATER:"water",COMFORT:"comfort",TRUST:"play",ENERGY:"rest",HEALTH:"rest"};
+ let content="";
+ if(S.tab==="PET")content=`<div class="vgmc15-focus"><small>NEXT USEFUL GAME ACTION</small><h2>${low[0]} · ${clamp(low[1])}%</h2><p>${S.last}</p><button data-vgmc15-act="${map[low[0]]}">▶ TAKE CARE OF ${low[0]}<small>One tap, immediate resident feedback.</small></button></div><div class="vgmc15-actions">${[["food","🍲","FEED"],["water","💧","WATER"],["comfort","♡","COMFORT"],["play","✦","PLAY"],["rest","☾","REST"]].map(a=>`<button data-vgmc15-act="${a[0]}">${a[1]}<small>${a[2]}</small></button>`).join("")}</div>`;
+ if(S.tab==="LIFE")content=`<div class="vgmc15-drawer open"><button>▾ RECENT LIFE</button><section>${S.log.length?S.log.slice(0,8).map(z=>`<div class="vgmc15-log">${z}</div>`).join(""):"<p>No activity yet.</p>"}</section></div><div class="vgmc15-grid"><button data-vgmc15-deep="HABITAT">HABITAT<small>Environment</small></button><button data-vgmc15-deep="BEHAVIOR|ENRICHMENT">BEHAVIOR<small>Enrichment</small></button></div>`;
+ if(S.tab==="CARE")content=`<div class="vgmc15-grid"><button data-vgmc15-deep="NUTRITION">NUTRITION<small>Food and diet records</small></button><button data-vgmc15-deep="CARE|CLINIC">CLINIC CARE<small>Resident care systems</small></button><button data-vgmc15-deep="DOSE|MEDICATION">DOSE LOG<small>Prescribed-care record</small></button><button data-vgmc15-deep="RECOVERY">RECOVERY<small>Recovery systems</small></button></div>`;
+ if(S.tab==="MORE")content=`<div class="vgmc15-grid"><button data-vgmc15-deep="MORPH">MORPH LAB<small>Development systems</small></button><button data-vgmc15-deep="RESEARCH">RESEARCH<small>Research systems</small></button><button data-vgmc15-deep="RECORD|ARCHIVE">RECORDS<small>Resident history</small></button><button data-vgmc15-deep="MY PET|SANCTUARY">ADVANCED MY PET<small>Original deep interface</small></button></div>`;
+ view.innerHTML=`<div class="vgmc15-wrap"><div class="vgmc15-head"><div class="vgmc15-avatar">${ico(p.species)}</div><div><h1>${p.name}</h1><small>${p.species||"Animal"}${p.form?" · "+p.form:""}</small><small>PASS 15 / 20 · CLEAN RESIDENT VIEW</small></div><button class="vgmc15-change" data-vgmc15-change>CHANGE</button></div>
+ <div class="vgmc15-vitals">${Object.entries(st).map(z=>`<div class="vgmc15-vital"><small>${z[0]}</small><b>${clamp(z[1])}%</b></div>`).join("")}</div>
+ ${content}
+ ${x.ps.length>1?`<div class="vgmc15-drawer" id="vgmc15-picker"><button class="vgmc15-drawerhead">▸ RESIDENTS · ${x.ps.length}</button><section><div class="vgmc15-grid">${x.ps.map((q,i)=>`<button data-vgmc15-select="${i}">${ico(q.species)} ${q.name}<small>${i===S.selected?"CURRENT":"OPEN RESIDENT"}</small></button>`).join("")}</div></section></div>`:""}
+ <div class="vgmc15-bottom">${[["PET","🐾","PET"],["LIFE","♡","LIFE"],["CARE","✚","CARE"],["MORE","☰","MORE"]].map(n=>`<button data-vgmc15-tab="${n[0]}" class="${S.tab===n[0]?"on":""}">${n[1]}<br>${n[2]}</button>`).join("")}</div></div>`;
+}
+document.addEventListener("click",e=>{
+ const t=e.target.closest("[data-vgmc15-tab]");if(t){S.tab=t.dataset.vgmc15Tab;save();draw();return}
+ const a=e.target.closest("[data-vgmc15-act]");if(a){doAct(a.dataset.vgmc15Act);return}
+ const d=e.target.closest("[data-vgmc15-deep]");if(d){deep(d.dataset.vgmc15Deep);return}
+ const q=e.target.closest("[data-vgmc15-select]");if(q){S.selected=Number(q.dataset.vgmc15Select);S.tab="PET";save();draw();return}
+ const c=e.target.closest("[data-vgmc15-change]");if(c){const box=document.getElementById("vgmc15-picker");if(box){box.classList.add("open");box.scrollIntoView({behavior:"smooth",block:"center"})}return}
+ const h=e.target.closest(".vgmc15-drawerhead");if(h){const b=h.closest(".vgmc15-drawer"),on=b.classList.toggle("open");h.textContent=(on?"▾":"▸")+" RESIDENTS · "+current().ps.length;return}
+},true);
+window.VGMobileMyPetMinimal=draw;
+})();
+</script>
+
+<style id="vg-mobile-console-pass16-css">
+/* PASS 16 — Focus Mode: less chrome, less scrolling, one resident action at a time */
+.vgmc16-wrap{max-width:560px;margin:auto;padding:7px 7px 70px}
+.vgmc16-id{display:grid;grid-template-columns:62px 1fr auto;gap:8px;align-items:center;padding:5px 2px 8px}
+.vgmc16-face{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;font-size:38px;background:#102b37;border:2px solid #527787}
+.vgmc16-id h1{font-size:17px;margin:0;color:#ffe17c}.vgmc16-id small{display:block;font-size:6px;color:#8ba9b5;margin-top:2px}
+.vgmc16-switch{border:1px solid #3c6170;border-radius:15px;background:#0b1d26;color:#cde5ed;padding:6px 8px;font-size:6px}
+.vgmc16-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;margin:2px 0 7px}
+.vgmc16-stat{background:#091820;border:1px solid #294d5c;border-radius:7px;padding:5px 1px;text-align:center}.vgmc16-stat small{display:block;font-size:4.7px;color:#7696a2}.vgmc16-stat b{font-size:9px}
+.vgmc16-stage{border:2px solid #bba14b;border-radius:13px;background:#1d1a0c;padding:10px;margin:6px 0}
+.vgmc16-stage .label{font-size:5px;letter-spacing:1px;color:#b9aa78}.vgmc16-stage h2{font-size:14px;color:#ffe17c;margin:4px 0}.vgmc16-stage p{font-size:7px;line-height:1.45;color:#d0c493;margin:4px 0}
+.vgmc16-go{width:100%;min-height:52px;margin-top:7px;border:1px solid #c4aa50;border-radius:9px;background:#31290c;color:#ffeb91;font-size:8px;font-weight:900;text-align:left;padding:8px}.vgmc16-go small{display:block;font-size:5.5px;color:#c0b17d;margin-top:3px}
+.vgmc16-quick{display:grid;grid-template-columns:repeat(5,1fr);gap:3px}.vgmc16-quick button{min-height:46px;border:1px solid #315565;border-radius:8px;background:#0d2029;color:#e8f8fd;font-size:14px;padding:4px 1px}.vgmc16-quick small{display:block;font-size:4.8px;color:#8ca9b5;margin-top:2px}
+.vgmc16-panel{display:none}.vgmc16-panel.on{display:block}
+.vgmc16-list{display:grid;grid-template-columns:1fr 1fr;gap:4px}.vgmc16-list button{min-height:44px;border:1px solid #355b6b;border-radius:8px;background:#10242e;color:#e4f5fb;text-align:left;padding:7px;font-size:6.5px;font-weight:900}.vgmc16-list small{display:block;font-size:5.2px;color:#86a4b0;margin-top:2px}
+.vgmc16-note{font-size:6.5px;color:#abc3cc;padding:6px;border-left:3px solid #4b7180;background:#0a1a22;margin:4px 0}
+.vgmc16-picker{display:none;border:1px solid #355969;border-radius:10px;background:#07171f;padding:6px;margin:6px 0}.vgmc16-picker.on{display:block}
+.vgmc16-dock{position:sticky;bottom:3px;z-index:50;display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:#06141b;border:1px solid #315565;border-radius:12px;padding:4px;box-shadow:0 -8px 25px #000a;margin-top:8px}
+.vgmc16-dock button{min-height:38px;border:0;border-radius:8px;background:transparent;color:#7f9fac;font-size:5.5px;font-weight:900}.vgmc16-dock button.on{background:#25220f;color:#ffe17c}
+</style>
+<script id="vg-mobile-console-pass16-js">
+(function(){
+"use strict";
+const KEY="vetgods_mobile_mypet_pass16";
+let V={tab:"NOW",selected:0,last:"Resident ready.",log:[]};
+try{V=Object.assign(V,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(_){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(V))}catch(_){}};
+const clamp=v=>Math.max(0,Math.min(100,Math.round(v)));
+function model(){try{return JSON.parse(localStorage.getItem("vetgods_mobile_sanctuary_pass05")||"{}")}catch(_){return{pets:[]}}}
+function put(m){try{localStorage.setItem("vetgods_mobile_sanctuary_pass05",JSON.stringify(m))}catch(_){}}
+function icon(s){s=String(s||"").toLowerCase();if(s.includes("owl"))return"🦉";if(s.includes("wolf"))return"🐺";if(s.includes("cat"))return"🐈";if(s.includes("fox"))return"🦊";if(s.includes("snake"))return"🐍";if(s.includes("bird"))return"🦅";return"🐕"}
+function cur(){let m=model(),ps=Array.isArray(m.pets)?m.pets:[];if(!ps.length)return null;V.selected=Math.max(0,Math.min(V.selected,ps.length-1));return{m,ps,p:ps[V.selected]}}
+function stats(p){return{HEALTH:+(p.health??72),FOOD:100-+(p.hunger??35),WATER:100-+(p.thirst??30),COMFORT:+(p.comfort??60),TRUST:+(p.trust??50),ENERGY:+(p.energy??65)}}
+function low(p){return Object.entries(stats(p)).sort((a,b)=>a[1]-b[1])[0]}
+function act(k){
+ const x=cur();if(!x)return;let p=x.p;
+ if(k==="food"){p.hunger=clamp((p.hunger??35)-16);p.energy=clamp((p.energy??65)+4)}
+ if(k==="water"){p.thirst=clamp((p.thirst??30)-18);p.health=clamp((p.health??72)+2)}
+ if(k==="comfort"){p.comfort=clamp((p.comfort??60)+12);p.trust=clamp((p.trust??50)+4)}
+ if(k==="play"){p.trust=clamp((p.trust??50)+7);p.comfort=clamp((p.comfort??60)+4);p.energy=clamp((p.energy??65)-5)}
+ if(k==="rest"){p.energy=clamp((p.energy??65)+15);p.comfort=clamp((p.comfort??60)+3)}
+ V.last=p.name+" · "+({food:"meal finished",water:"hydration finished",comfort:"comfort session finished",play:"enrichment finished",rest:"rest cycle finished"})[k]+".";
+ V.log.unshift(new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})+" · "+V.last);V.log=V.log.slice(0,12);
+ x.m.selected=V.selected;put(x.m);save();draw();
+}
+function deep(term){
+ document.body.classList.add("vgmc-advanced");document.documentElement.classList.remove("vgmc-lock");
+ let rx=new RegExp(term,"i"),els=[...document.querySelectorAll("button,a,h1,h2,h3,h4")].filter(e=>!e.closest("#vg-mobile-console"));
+ let hit=els.find(e=>rx.test((e.textContent||"").trim()));if(hit){try{if(hit.matches("button,a"))hit.click();hit.scrollIntoView({behavior:"smooth",block:"start"})}catch(_){}}
+}
+function draw(){
+ const view=document.querySelector('#vg-mobile-console [data-view="console"]');if(!view)return;
+ const x=cur();if(!x){view.innerHTML='<div class="vgmc-hero"><h1>My Pet</h1><p>No resident available.</p></div>';return}
+ const p=x.p,st=stats(p),lo=low(p),map={FOOD:"food",WATER:"water",COMFORT:"comfort",TRUST:"play",ENERGY:"rest",HEALTH:"rest"};
+ let body="";
+ if(V.tab==="NOW")body=`<div class="vgmc16-stage"><div class="label">RIGHT NOW · LOWEST GAME NEED</div><h2>${lo[0]} ${clamp(lo[1])}%</h2><p>${V.last}</p><button class="vgmc16-go" data-vgmc16-act="${map[lo[0]]}">▶ TAKE CARE OF ${lo[0]}<small>Perform the suggested resident interaction.</small></button></div><div class="vgmc16-quick">${[["food","🍲","FEED"],["water","💧","WATER"],["comfort","♡","COMFORT"],["play","✦","PLAY"],["rest","☾","REST"]].map(a=>`<button data-vgmc16-act="${a[0]}">${a[1]}<small>${a[2]}</small></button>`).join("")}</div>`;
+ if(V.tab==="CARE")body=`<div class="vgmc16-list"><button data-vgmc16-deep="CARE|CLINIC">CLINIC<small>Care and treatment</small></button><button data-vgmc16-deep="NUTRITION">NUTRITION<small>Food records</small></button><button data-vgmc16-deep="DOSE|MEDICATION">DOSE LOG<small>Prescribed-care record</small></button><button data-vgmc16-deep="RECOVERY">RECOVERY<small>Recovery systems</small></button><button data-vgmc16-deep="HABITAT">HABITAT<small>Environment</small></button><button data-vgmc16-deep="BEHAVIOR|ENRICHMENT">BEHAVIOR<small>Enrichment</small></button></div>`;
+ if(V.tab==="HISTORY")body=`<div class="vgmc16-note">${V.last}</div>${V.log.length?V.log.slice(0,8).map(z=>`<div class="vgmc16-note">${z}</div>`).join(""):'<div class="vgmc16-note">No resident activity yet.</div>'}`;
+ if(V.tab==="MORE")body=`<div class="vgmc16-list"><button data-vgmc16-deep="MORPH">MORPH LAB<small>Resident development</small></button><button data-vgmc16-deep="RESEARCH">RESEARCH<small>Research stations</small></button><button data-vgmc16-deep="RECORD|ARCHIVE">RECORDS<small>Resident archive</small></button><button data-vgmc16-deep="MISSION|EXPEDITION">MISSIONS<small>World operations</small></button><button data-vgmc16-deep="MY PET|SANCTUARY">ADVANCED MY PET<small>Original deep interface</small></button></div>`;
+ view.innerHTML=`<div class="vgmc16-wrap"><div class="vgmc16-id"><div class="vgmc16-face">${icon(p.species)}</div><div><h1>${p.name}</h1><small>${p.species||"Animal"}${p.form?" · "+p.form:""}</small><small>PASS 16 / 20 · FOCUS VIEW</small></div><button class="vgmc16-switch" data-vgmc16-picker>CHANGE</button></div>
+ <div class="vgmc16-strip">${Object.entries(st).map(z=>`<div class="vgmc16-stat"><small>${z[0]}</small><b>${clamp(z[1])}</b></div>`).join("")}</div>
+ <div class="vgmc16-picker" id="vgmc16-picker">${x.ps.map((q,i)=>`<button class="vgmc-btn" data-vgmc16-select="${i}">${icon(q.species)} ${q.name}<small>${i===V.selected?"CURRENT RESIDENT":"OPEN"}</small></button>`).join("")}</div>
+ ${body}
+ <div class="vgmc16-dock">${[["NOW","🐾","NOW"],["CARE","✚","CARE"],["HISTORY","▤","HISTORY"],["MORE","☰","MORE"]].map(n=>`<button data-vgmc16-tab="${n[0]}" class="${V.tab===n[0]?"on":""}">${n[1]}<br>${n[2]}</button>`).join("")}</div></div>`;
+}
+document.addEventListener("click",e=>{
+ let t=e.target.closest("[data-vgmc16-tab]");if(t){V.tab=t.dataset.vgmc16Tab;save();draw();return}
+ let a=e.target.closest("[data-vgmc16-act]");if(a){act(a.dataset.vgmc16Act);return}
+ let d=e.target.closest("[data-vgmc16-deep]");if(d){deep(d.dataset.vgmc16Deep);return}
+ let q=e.target.closest("[data-vgmc16-select]");if(q){V.selected=Number(q.dataset.vgmc16Select);V.tab="NOW";save();draw();return}
+ if(e.target.closest("[data-vgmc16-picker]"))document.getElementById("vgmc16-picker")?.classList.toggle("on");
+},true);
+window.VGMobileFocus=draw;
+})();
+</script>
+
+<style id="vg-mobile-console-pass17-css">
+/* PASS 17 — one-screen resident snapshot */
+.vgmc17-wrap{max-width:560px;margin:auto;padding:6px 6px 68px}
+.vgmc17-top{display:grid;grid-template-columns:58px 1fr auto;gap:8px;align-items:center}
+.vgmc17-face{width:58px;height:58px;border-radius:14px;background:#102b37;border:1px solid #527787;display:grid;place-items:center;font-size:36px}
+.vgmc17-top h1{margin:0;font-size:16px;color:#ffe17c}.vgmc17-top small{display:block;font-size:5.8px;color:#89a8b4;margin-top:2px}
+.vgmc17-change{border:1px solid #3a6171;border-radius:14px;background:#0b1c25;color:#d7edf4;padding:6px 8px;font-size:5.8px}
+.vgmc17-status{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin:7px 0}
+.vgmc17-status div{border:1px solid #2e5261;border-radius:8px;background:#091820;padding:6px;text-align:center}
+.vgmc17-status small{display:block;font-size:4.8px;color:#7797a3}.vgmc17-status b{font-size:10px}
+.vgmc17-next{border:2px solid #bda24b;border-radius:12px;background:#211d0d;padding:9px;margin:6px 0}
+.vgmc17-next small{font-size:5px;color:#b8aa78}.vgmc17-next h2{font-size:12px;color:#ffe17c;margin:3px 0}
+.vgmc17-next button{width:100%;min-height:45px;border:1px solid #c2a84e;border-radius:8px;background:#30280c;color:#ffeb91;text-align:left;padding:7px;font-size:7.5px;font-weight:900}
+.vgmc17-actions{display:grid;grid-template-columns:repeat(5,1fr);gap:3px}.vgmc17-actions button{min-height:44px;border:1px solid #315565;border-radius:8px;background:#0d2029;color:#e8f8fd;font-size:14px;padding:4px 1px}.vgmc17-actions small{display:block;font-size:4.6px;color:#8ca9b5}
+.vgmc17-section{border:1px solid #315565;border-radius:9px;margin:6px 0;overflow:hidden}.vgmc17-section>button{width:100%;min-height:38px;border:0;background:#0d2029;color:#d4eaf2;text-align:left;padding:7px;font-size:6.2px;font-weight:900}.vgmc17-section .inside{display:none;background:#07171f;padding:6px}.vgmc17-section.open .inside{display:block}
+.vgmc17-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}.vgmc17-grid button{min-height:41px;border:1px solid #355b6b;border-radius:7px;background:#10242e;color:#e5f6fc;text-align:left;padding:6px;font-size:6.2px;font-weight:900}.vgmc17-grid small{display:block;font-size:5px;color:#86a4b0;margin-top:2px}
+.vgmc17-event{font-size:6px;color:#abc3cc;padding:5px 2px;border-bottom:1px solid #ffffff10}
+.vgmc17-picker{display:none;border:1px solid #355969;border-radius:9px;padding:5px;margin:5px 0}.vgmc17-picker.open{display:block}
+</style>
+<script id="vg-mobile-console-pass17-js">
+(function(){
+"use strict";
+const KEY="vetgods_mobile_mypet_pass17";
+let R={selected:0,last:"Resident ready.",events:[]};
+try{R=Object.assign(R,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(_){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(R))}catch(_){}};
+const clamp=v=>Math.max(0,Math.min(100,Math.round(v)));
+function data(){try{return JSON.parse(localStorage.getItem("vetgods_mobile_sanctuary_pass05")||"{}")}catch(_){return{pets:[]}}}
+function put(x){try{localStorage.setItem("vetgods_mobile_sanctuary_pass05",JSON.stringify(x))}catch(_){}}
+function face(s){s=String(s||"").toLowerCase();if(s.includes("owl"))return"🦉";if(s.includes("wolf"))return"🐺";if(s.includes("cat"))return"🐈";if(s.includes("fox"))return"🦊";if(s.includes("snake"))return"🐍";if(s.includes("bird"))return"🦅";return"🐕"}
+function current(){let m=data(),ps=Array.isArray(m.pets)?m.pets:[];if(!ps.length)return null;R.selected=Math.max(0,Math.min(R.selected,ps.length-1));return{m,ps,p:ps[R.selected]}}
+function st(p){return{HEALTH:+(p.health??72),FOOD:100-+(p.hunger??35),WATER:100-+(p.thirst??30),COMFORT:+(p.comfort??60),TRUST:+(p.trust??50),ENERGY:+(p.energy??65)}}
+function need(p){return Object.entries(st(p)).sort((a,b)=>a[1]-b[1])[0]}
+function act(k){
+ let x=current();if(!x)return;let p=x.p;
+ if(k==="food"){p.hunger=clamp((p.hunger??35)-16);p.energy=clamp((p.energy??65)+4)}
+ if(k==="water"){p.thirst=clamp((p.thirst??30)-18);p.health=clamp((p.health??72)+2)}
+ if(k==="comfort"){p.comfort=clamp((p.comfort??60)+12);p.trust=clamp((p.trust??50)+4)}
+ if(k==="play"){p.trust=clamp((p.trust??50)+7);p.comfort=clamp((p.comfort??60)+4);p.energy=clamp((p.energy??65)-5)}
+ if(k==="rest"){p.energy=clamp((p.energy??65)+15);p.comfort=clamp((p.comfort??60)+3)}
+ R.last=p.name+" · "+({food:"meal complete",water:"water complete",comfort:"comfort complete",play:"play complete",rest:"rest complete"})[k]+".";
+ R.events.unshift(new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})+" · "+R.last);R.events=R.events.slice(0,10);
+ x.m.selected=R.selected;put(x.m);save();draw();
+}
+function deep(term){
+ document.body.classList.add("vgmc-advanced");document.documentElement.classList.remove("vgmc-lock");
+ let rx=new RegExp(term,"i"),els=[...document.querySelectorAll("button,a,h1,h2,h3,h4")].filter(e=>!e.closest("#vg-mobile-console"));
+ let hit=els.find(e=>rx.test((e.textContent||"").trim()));
+ if(hit){try{if(hit.matches("button,a"))hit.click();hit.scrollIntoView({behavior:"smooth",block:"start"})}catch(_){}}
+}
+function draw(){
+ let view=document.querySelector('#vg-mobile-console [data-view="console"]');if(!view)return;
+ let x=current();if(!x){view.innerHTML='<div class="vgmc-hero"><h1>My Pet</h1><p>No resident available.</p></div>';return}
+ let p=x.p,stats=st(p),lo=need(p),map={FOOD:"food",WATER:"water",COMFORT:"comfort",TRUST:"play",ENERGY:"rest",HEALTH:"rest"};
+ view.innerHTML=`<div class="vgmc17-wrap">
+ <div class="vgmc17-top"><div class="vgmc17-face">${face(p.species)}</div><div><h1>${p.name}</h1><small>${p.species||"Animal"}${p.form?" · "+p.form:""}</small><small>PASS 17 / 20 · RESIDENT SNAPSHOT</small></div><button class="vgmc17-change" data-vgmc17-picker>CHANGE</button></div>
+ <div class="vgmc17-picker" id="vgmc17-picker"><div class="vgmc17-grid">${x.ps.map((q,i)=>`<button data-vgmc17-select="${i}">${face(q.species)} ${q.name}<small>${i===R.selected?"CURRENT":"OPEN"}</small></button>`).join("")}</div></div>
+ <div class="vgmc17-status">${Object.entries(stats).map(z=>`<div><small>${z[0]}</small><b>${clamp(z[1])}%</b></div>`).join("")}</div>
+ <div class="vgmc17-next"><small>NEXT ACTION</small><h2>${lo[0]} · ${clamp(lo[1])}%</h2><button data-vgmc17-act="${map[lo[0]]}">▶ HELP ${lo[0]}<small>${R.last}</small></button></div>
+ <div class="vgmc17-actions">${[["food","🍲","FEED"],["water","💧","WATER"],["comfort","♡","COMFORT"],["play","✦","PLAY"],["rest","☾","REST"]].map(a=>`<button data-vgmc17-act="${a[0]}">${a[1]}<small>${a[2]}</small></button>`).join("")}</div>
+ <div class="vgmc17-section"><button class="vgmc17-toggle">▸ CARE SYSTEMS</button><div class="inside"><div class="vgmc17-grid"><button data-vgmc17-deep="CARE|CLINIC">CLINIC<small>Clinical game systems</small></button><button data-vgmc17-deep="NUTRITION">NUTRITION<small>Diet records</small></button><button data-vgmc17-deep="RECOVERY">RECOVERY<small>Recovery systems</small></button><button data-vgmc17-deep="DOSE|MEDICATION">DOSE LOG<small>Prescribed-care log</small></button></div></div></div>
+ <div class="vgmc17-section"><button class="vgmc17-toggle">▸ LIFE & DEVELOPMENT</button><div class="inside"><div class="vgmc17-grid"><button data-vgmc17-deep="HABITAT">HABITAT<small>Environment</small></button><button data-vgmc17-deep="BEHAVIOR|ENRICHMENT">BEHAVIOR<small>Enrichment</small></button><button data-vgmc17-deep="MORPH">MORPH LAB<small>Development</small></button><button data-vgmc17-deep="RESEARCH">RESEARCH<small>Research systems</small></button></div></div></div>
+ <div class="vgmc17-section"><button class="vgmc17-toggle">▸ RECORDS & ADVANCED</button><div class="inside"><div class="vgmc17-grid"><button data-vgmc17-deep="RECORD|ARCHIVE">RECORDS<small>Resident history</small></button><button data-vgmc17-deep="MISSION|EXPEDITION">MISSIONS<small>World operations</small></button><button data-vgmc17-deep="MY PET|SANCTUARY">FULL MY PET<small>Original deep interface</small></button></div>${R.events.length?R.events.slice(0,5).map(z=>`<div class="vgmc17-event">${z}</div>`).join(""):""}</div></div>
+ </div>`;
+}
+document.addEventListener("click",e=>{
+ let a=e.target.closest("[data-vgmc17-act]");if(a){act(a.dataset.vgmc17Act);return}
+ let q=e.target.closest("[data-vgmc17-select]");if(q){R.selected=Number(q.dataset.vgmc17Select);save();draw();return}
+ let d=e.target.closest("[data-vgmc17-deep]");if(d){deep(d.dataset.vgmc17Deep);return}
+ if(e.target.closest("[data-vgmc17-picker]")){document.getElementById("vgmc17-picker")?.classList.toggle("open");return}
+ let t=e.target.closest(".vgmc17-toggle");if(t){let box=t.closest(".vgmc17-section"),on=box.classList.toggle("open");t.textContent=(on?"▾ ":"▸ ")+t.textContent.replace(/^[▸▾]\s*/,"");}
+},true);
+window.VGMobileSnapshot=draw;
+})();
+</script>
+
+<style id="vg-mobile-console-pass18-css">
+/* PASS 18 — single resident stage: resident in center, two useful side objects, card-play underneath */
+.vgmc18-wrap{max-width:560px;margin:auto;padding:6px 6px 70px}
+.vgmc18-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.vgmc18-title small{font-size:5.5px;color:#83a4b1}.vgmc18-change{border:1px solid #3b6170;border-radius:14px;background:#0b1d26;color:#d7edf4;padding:6px 8px;font-size:5.8px}
+.vgmc18-stage{display:grid;grid-template-columns:74px 1fr 74px;gap:5px;align-items:stretch;min-height:175px}
+.vgmc18-object{border:1px solid #365d6d;border-radius:11px;background:#0a1b24;padding:7px 4px;text-align:center;display:flex;flex-direction:column;justify-content:center;align-items:center}
+.vgmc18-object .ico{font-size:29px}.vgmc18-object strong{font-size:6.2px;color:#ffe17c;margin-top:5px}.vgmc18-object small{font-size:4.8px;color:#82a1ad;margin-top:3px;line-height:1.3}
+.vgmc18-object button{margin-top:6px;border:1px solid #476b79;border-radius:7px;background:#102832;color:#e8f8fd;padding:5px 3px;width:100%;font-size:5px;font-weight:900}
+.vgmc18-resident{border:2px solid #4a7180;border-radius:14px;background:#0d222c;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;text-align:center;position:relative;overflow:hidden}
+.vgmc18-resident:before{content:"";position:absolute;width:130px;height:130px;border:1px solid #6a9aad33;border-radius:50%}
+.vgmc18-face{font-size:65px;line-height:1;position:relative;z-index:1}.vgmc18-resident h1{font-size:15px;color:#ffe17c;margin:5px 0 1px;position:relative;z-index:1}.vgmc18-resident small{font-size:5.5px;color:#8ca9b5;position:relative;z-index:1}
+.vgmc18-stats{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;margin:5px 0}.vgmc18-stat{border:1px solid #2e5261;border-radius:6px;background:#08171f;padding:4px 1px;text-align:center}.vgmc18-stat small{display:block;font-size:4px;color:#7897a3}.vgmc18-stat b{font-size:8px}
+.vgmc18-guide{border-left:3px solid #bda24b;background:#211d0d;border-radius:0 8px 8px 0;padding:7px;margin:5px 0;font-size:6.5px;color:#d9cc98}.vgmc18-guide b{color:#ffe17c}
+.vgmc18-cards{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:5px 0}
+.vgmc18-card{min-height:100px;border:1px solid #3b6171;border-radius:10px;background:linear-gradient(#102a35,#0a1921);color:#eaf8ff;padding:6px 3px;text-align:center;position:relative}
+.vgmc18-card.recommended{border:2px solid #c0a64c;background:linear-gradient(#30280d,#17150b)}
+.vgmc18-card .ico{display:block;font-size:24px;margin:4px 0}.vgmc18-card strong{display:block;font-size:5.8px;color:#ffe17c}.vgmc18-card small{display:block;font-size:4.4px;color:#87a6b2;margin-top:4px;line-height:1.25}.vgmc18-card em{position:absolute;top:3px;right:3px;font-style:normal;font-size:4px;color:#ffe17c}
+.vgmc18-result{font-size:6.5px;color:#b7ced7;border:1px solid #315565;border-radius:8px;background:#091a22;padding:6px;margin:5px 0}
+.vgmc18-drawer{border:1px solid #315565;border-radius:9px;overflow:hidden;margin:5px 0}.vgmc18-drawer>button{width:100%;min-height:37px;border:0;background:#0d2029;color:#d5ebf2;text-align:left;padding:7px;font-size:6px;font-weight:900}.vgmc18-drawer .inside{display:none;padding:6px;background:#07171f}.vgmc18-drawer.open .inside{display:block}
+.vgmc18-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}.vgmc18-grid button{min-height:39px;border:1px solid #355b6b;border-radius:7px;background:#10242e;color:#e5f6fc;text-align:left;padding:6px;font-size:6px;font-weight:900}.vgmc18-grid small{display:block;font-size:4.8px;color:#86a4b0;margin-top:2px}
+.vgmc18-picker{display:none;border:1px solid #355969;border-radius:9px;padding:5px;margin:5px 0}.vgmc18-picker.open{display:block}
+</style>
+<script id="vg-mobile-console-pass18-js">
+(function(){
+"use strict";
+const KEY="vetgods_mobile_mypet_pass18";
+let G={selected:0,last:"Choose a care card or use one of the side objects.",events:[]};
+try{G=Object.assign(G,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(_){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(G))}catch(_){}};
+const clamp=v=>Math.max(0,Math.min(100,Math.round(v)));
+function model(){try{return JSON.parse(localStorage.getItem("vetgods_mobile_sanctuary_pass05")||"{}")}catch(_){return{pets:[]}}}
+function put(m){try{localStorage.setItem("vetgods_mobile_sanctuary_pass05",JSON.stringify(m))}catch(_){}}
+function face(s){s=String(s||"").toLowerCase();if(s.includes("owl"))return"🦉";if(s.includes("wolf"))return"🐺";if(s.includes("cat"))return"🐈";if(s.includes("fox"))return"🦊";if(s.includes("snake"))return"🐍";if(s.includes("bird"))return"🦅";return"🐕"}
+function current(){let m=model(),ps=Array.isArray(m.pets)?m.pets:[];if(!ps.length)return null;G.selected=Math.max(0,Math.min(G.selected,ps.length-1));return{m,ps,p:ps[G.selected]}}
+function stats(p){return{HEALTH:+(p.health??72),FOOD:100-+(p.hunger??35),WATER:100-+(p.thirst??30),COMFORT:+(p.comfort??60),TRUST:+(p.trust??50),ENERGY:+(p.energy??65)}}
+function need(p){return Object.entries(stats(p)).sort((a,b)=>a[1]-b[1])[0]}
+const needToAction={FOOD:"food",WATER:"water",COMFORT:"comfort",TRUST:"play",ENERGY:"rest",HEALTH:"rest"};
+function act(k,source){
+ let x=current();if(!x)return;let p=x.p;
+ if(k==="food"){p.hunger=clamp((p.hunger??35)-16);p.energy=clamp((p.energy??65)+4)}
+ if(k==="water"){p.thirst=clamp((p.thirst??30)-18);p.health=clamp((p.health??72)+2)}
+ if(k==="comfort"){p.comfort=clamp((p.comfort??60)+12);p.trust=clamp((p.trust??50)+4)}
+ if(k==="play"){p.trust=clamp((p.trust??50)+7);p.comfort=clamp((p.comfort??60)+4);p.energy=clamp((p.energy??65)-5)}
+ if(k==="rest"){p.energy=clamp((p.energy??65)+15);p.comfort=clamp((p.comfort??60)+3)}
+ let names={food:"meal",water:"water",comfort:"comfort",play:"play",rest:"rest"};
+ G.last=p.name+" used "+(source||"care card")+" · "+names[k]+" interaction complete.";
+ G.events.unshift(new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})+" · "+G.last);G.events=G.events.slice(0,10);
+ x.m.selected=G.selected;put(x.m);save();draw();
+}
+function deep(term){
+ document.body.classList.add("vgmc-advanced");document.documentElement.classList.remove("vgmc-lock");
+ let rx=new RegExp(term,"i"),els=[...document.querySelectorAll("button,a,h1,h2,h3,h4")].filter(e=>!e.closest("#vg-mobile-console"));
+ let hit=els.find(e=>rx.test((e.textContent||"").trim()));if(hit){try{if(hit.matches("button,a"))hit.click();hit.scrollIntoView({behavior:"smooth",block:"start"})}catch(_){}}
+}
+function draw(){
+ let view=document.querySelector('#vg-mobile-console [data-view="console"]');if(!view)return;
+ let x=current();if(!x){view.innerHTML='<div class="vgmc-hero"><h1>My Pet</h1><p>No resident available.</p></div>';return}
+ let p=x.p,st=stats(p),lo=need(p),rec=needToAction[lo[0]];
+ let cards=[["food","🍲","FEED","Food"],["water","💧","WATER","Hydration"],["comfort","♡","COMFORT","Bond"],["play","✦","PLAY","Enrichment"],["rest","☾","REST","Energy"]];
+ view.innerHTML=`<div class="vgmc18-wrap">
+ <div class="vgmc18-title"><small>PASS 18 / 20 · SINGLE STAGE + CARD PLAY</small><button class="vgmc18-change" data-vgmc18-picker>CHANGE ANIMAL</button></div>
+ <div class="vgmc18-picker" id="vgmc18-picker"><div class="vgmc18-grid">${x.ps.map((q,i)=>`<button data-vgmc18-select="${i}">${face(q.species)} ${q.name}<small>${i===G.selected?"CURRENT":"OPEN"}</small></button>`).join("")}</div></div>
+ <div class="vgmc18-stage">
+   <aside class="vgmc18-object"><span class="ico">💧</span><strong>WATER</strong><small>Resident hydration object</small><button data-vgmc18-act="water" data-source="water station">USE</button></aside>
+   <main class="vgmc18-resident"><div class="vgmc18-face">${face(p.species)}</div><h1>${p.name}</h1><small>${p.species||"Animal"}${p.form?" · "+p.form:""}</small></main>
+   <aside class="vgmc18-object"><span class="ico">🛏️</span><strong>REST BED</strong><small>Resident comfort object</small><button data-vgmc18-act="rest" data-source="rest bed">USE</button></aside>
+ </div>
+ <div class="vgmc18-stats">${Object.entries(st).map(z=>`<div class="vgmc18-stat"><small>${z[0]}</small><b>${clamp(z[1])}</b></div>`).join("")}</div>
+ <div class="vgmc18-guide"><b>GAME GUIDE:</b> ${lo[0]} is currently the lowest resident reading at ${clamp(lo[1])}%. The matching card is highlighted below.</div>
+ <div class="vgmc18-cards">${cards.map(c=>`<button class="vgmc18-card ${rec===c[0]?"recommended":""}" data-vgmc18-act="${c[0]}" data-source="${c[2].toLowerCase()} card">${rec===c[0]?'<em>NEXT</em>':""}<span class="ico">${c[1]}</span><strong>${c[2]}</strong><small>${c[3]} interaction</small></button>`).join("")}</div>
+ <div class="vgmc18-result">${G.last}</div>
+ <div class="vgmc18-drawer"><button class="vgmc18-toggle">▸ CARE & MEDICAL SYSTEMS</button><div class="inside"><div class="vgmc18-grid"><button data-vgmc18-deep="CARE|CLINIC">CLINIC<small>Clinical game systems</small></button><button data-vgmc18-deep="NUTRITION">NUTRITION<small>Diet records</small></button><button data-vgmc18-deep="RECOVERY">RECOVERY<small>Recovery systems</small></button><button data-vgmc18-deep="DOSE|MEDICATION">DOSE LOG<small>Prescribed-care log</small></button></div></div></div>
+ <div class="vgmc18-drawer"><button class="vgmc18-toggle">▸ DEVELOPMENT & WORLD</button><div class="inside"><div class="vgmc18-grid"><button data-vgmc18-deep="HABITAT">HABITAT<small>Environment</small></button><button data-vgmc18-deep="BEHAVIOR|ENRICHMENT">BEHAVIOR<small>Enrichment</small></button><button data-vgmc18-deep="MORPH">MORPH LAB<small>Development</small></button><button data-vgmc18-deep="RESEARCH">RESEARCH<small>Research</small></button><button data-vgmc18-deep="MISSION|EXPEDITION">MISSIONS<small>World operations</small></button><button data-vgmc18-deep="RECORD|ARCHIVE">RECORDS<small>History</small></button></div></div></div>
+ </div>`;
+}
+document.addEventListener("click",e=>{
+ let a=e.target.closest("[data-vgmc18-act]");if(a){act(a.dataset.vgmc18Act,a.dataset.source);return}
+ let q=e.target.closest("[data-vgmc18-select]");if(q){G.selected=Number(q.dataset.vgmc18Select);save();draw();return}
+ let d=e.target.closest("[data-vgmc18-deep]");if(d){deep(d.dataset.vgmc18Deep);return}
+ if(e.target.closest("[data-vgmc18-picker]")){document.getElementById("vgmc18-picker")?.classList.toggle("open");return}
+ let t=e.target.closest(".vgmc18-toggle");if(t){let box=t.closest(".vgmc18-drawer"),on=box.classList.toggle("open");t.textContent=(on?"▾ ":"▸ ")+t.textContent.replace(/^[▸▾]\s*/,"");}
+},true);
+window.VGMobileCardStage=draw;
+})();
+</script>
+
+<style id="vg-mobile-console-pass19-css">
+/* PASS 19 — clearer room: two context objects + resident + card hand */
+.vgmc19{max-width:560px;margin:auto;padding:6px 6px 72px}
+.vgmc19-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.vgmc19-head small{font-size:5.4px;color:#83a4b1}.vgmc19-head button{border:1px solid #3b6170;border-radius:14px;background:#0b1d26;color:#d7edf4;padding:6px 8px;font-size:5.7px}
+.vgmc19-room{display:grid;grid-template-columns:78px 1fr 78px;gap:5px;min-height:190px}
+.vgmc19-object{border:1px solid #365d6d;border-radius:12px;background:#091b24;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px 4px}
+.vgmc19-object.hot{border-color:#bda24b;background:#211d0d}.vgmc19-object .ico{font-size:31px}.vgmc19-object b{font-size:6px;color:#ffe17c;margin-top:5px}.vgmc19-object small{font-size:4.7px;color:#85a4b1;line-height:1.3;margin-top:3px}
+.vgmc19-object button{width:100%;margin-top:7px;border:1px solid #476b79;border-radius:7px;background:#102832;color:#e8f8fd;padding:6px 2px;font-size:5px;font-weight:900}
+.vgmc19-pet{border:2px solid #4a7180;border-radius:15px;background:#0d222c;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden}
+.vgmc19-pet:before,.vgmc19-pet:after{content:"";position:absolute;border:1px solid #78aabd25;border-radius:50%}.vgmc19-pet:before{width:150px;height:150px}.vgmc19-pet:after{width:115px;height:115px}
+.vgmc19-face{font-size:70px;z-index:1}.vgmc19-pet h1{font-size:15px;color:#ffe17c;margin:4px 0 1px;z-index:1}.vgmc19-pet small{font-size:5.3px;color:#8ba9b5;z-index:1}
+.vgmc19-need{margin-top:5px;border:1px solid #bda24b;border-radius:12px;padding:4px 7px;color:#ffe17c;font-size:5px;z-index:1}
+.vgmc19-vitals{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;margin:5px 0}.vgmc19-vitals div{border:1px solid #2d5060;border-radius:6px;background:#08171f;padding:4px 1px;text-align:center}.vgmc19-vitals small{display:block;font-size:4px;color:#7897a3}.vgmc19-vitals b{font-size:8px}
+.vgmc19-help{font-size:6.2px;line-height:1.4;color:#c8bc8d;background:#1b180c;border-left:3px solid #bda24b;padding:6px;margin:5px 0}
+.vgmc19-handlabel{display:flex;justify-content:space-between;align-items:center;margin:7px 1px 4px}.vgmc19-handlabel b{font-size:6.5px;color:#dff6ff}.vgmc19-handlabel small{font-size:4.8px;color:#7897a3}
+.vgmc19-hand{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.vgmc19-card{min-height:112px;border:1px solid #3b6171;border-radius:11px;background:#102630;color:#eaf8ff;padding:7px 5px;text-align:left;position:relative}
+.vgmc19-card.best{border:2px solid #c0a64c;background:#29230d}.vgmc19-card .ico{display:block;font-size:26px;text-align:center;margin:2px}.vgmc19-card strong{display:block;font-size:6.5px;color:#ffe17c;text-align:center}.vgmc19-card p{font-size:5px;line-height:1.35;color:#8eabb7;margin:5px 0}.vgmc19-card em{font-style:normal;position:absolute;top:4px;right:4px;font-size:4px;color:#ffe17c}
+.vgmc19-card.wide{grid-column:auto}.vgmc19-result{border:1px solid #315565;border-radius:8px;background:#091a22;padding:7px;margin:6px 0;font-size:6.4px;color:#b7ced7}
+.vgmc19-drawer{border:1px solid #315565;border-radius:9px;overflow:hidden;margin:5px 0}.vgmc19-drawer>button{width:100%;min-height:36px;border:0;background:#0d2029;color:#d5ebf2;text-align:left;padding:7px;font-size:5.9px;font-weight:900}.vgmc19-drawer .inside{display:none;padding:6px;background:#07171f}.vgmc19-drawer.open .inside{display:block}
+.vgmc19-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}.vgmc19-grid button{min-height:39px;border:1px solid #355b6b;border-radius:7px;background:#10242e;color:#e5f6fc;text-align:left;padding:6px;font-size:5.9px;font-weight:900}.vgmc19-grid small{display:block;font-size:4.8px;color:#86a4b0;margin-top:2px}
+.vgmc19-picker{display:none;border:1px solid #355969;border-radius:9px;padding:5px;margin:5px 0}.vgmc19-picker.open{display:block}
+@media(max-width:390px){.vgmc19-room{grid-template-columns:67px 1fr 67px}.vgmc19-hand{gap:3px}.vgmc19-card{padding:6px 4px}}
+</style>
+<script id="vg-mobile-console-pass19-js">
+(function(){
+"use strict";
+const KEY="vetgods_mobile_mypet_pass19";
+let A={selected:0,last:"The room is ready. Pick an object or play a card.",events:[],turn:1};
+try{A=Object.assign(A,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(_){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(A))}catch(_){}};
+const clamp=v=>Math.max(0,Math.min(100,Math.round(v)));
+function model(){try{return JSON.parse(localStorage.getItem("vetgods_mobile_sanctuary_pass05")||"{}")}catch(_){return{pets:[]}}}
+function put(m){try{localStorage.setItem("vetgods_mobile_sanctuary_pass05",JSON.stringify(m))}catch(_){}}
+function face(s){s=String(s||"").toLowerCase();if(s.includes("owl"))return"🦉";if(s.includes("wolf"))return"🐺";if(s.includes("cat"))return"🐈";if(s.includes("fox"))return"🦊";if(s.includes("snake"))return"🐍";if(s.includes("bird"))return"🦅";return"🐕"}
+function cur(){let m=model(),ps=Array.isArray(m.pets)?m.pets:[];if(!ps.length)return null;A.selected=Math.max(0,Math.min(A.selected,ps.length-1));return{m,ps,p:ps[A.selected]}}
+function stats(p){return{HEALTH:+(p.health??72),FOOD:100-+(p.hunger??35),WATER:100-+(p.thirst??30),COMFORT:+(p.comfort??60),TRUST:+(p.trust??50),ENERGY:+(p.energy??65)}}
+function low(p){return Object.entries(stats(p)).sort((a,b)=>a[1]-b[1])[0]}
+const map={FOOD:"food",WATER:"water",COMFORT:"comfort",TRUST:"play",ENERGY:"rest",HEALTH:"rest"};
+function act(k,source){
+ let x=cur(); if(!x)return; let p=x.p;
+ if(k==="food"){p.hunger=clamp((p.hunger??35)-16);p.energy=clamp((p.energy??65)+4)}
+ if(k==="water"){p.thirst=clamp((p.thirst??30)-18);p.health=clamp((p.health??72)+2)}
+ if(k==="comfort"){p.comfort=clamp((p.comfort??60)+12);p.trust=clamp((p.trust??50)+4)}
+ if(k==="play"){p.trust=clamp((p.trust??50)+7);p.comfort=clamp((p.comfort??60)+4);p.energy=clamp((p.energy??65)-5)}
+ if(k==="rest"){p.energy=clamp((p.energy??65)+15);p.comfort=clamp((p.comfort??60)+3)}
+ A.last="Turn "+A.turn+" · "+p.name+" used "+source+".";
+ A.events.unshift(new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})+" · "+A.last);A.events=A.events.slice(0,10);A.turn++;
+ x.m.selected=A.selected;put(x.m);save();draw();
+}
+function deep(term){
+ document.body.classList.add("vgmc-advanced");document.documentElement.classList.remove("vgmc-lock");
+ let rx=new RegExp(term,"i"),els=[...document.querySelectorAll("button,a,h1,h2,h3,h4")].filter(e=>!e.closest("#vg-mobile-console"));
+ let hit=els.find(e=>rx.test((e.textContent||"").trim()));if(hit){try{if(hit.matches("button,a"))hit.click();hit.scrollIntoView({behavior:"smooth",block:"start"})}catch(_){}}
+}
+function draw(){
+ let view=document.querySelector('#vg-mobile-console [data-view="console"]');if(!view)return;
+ let x=cur();if(!x){view.innerHTML='<div class="vgmc-hero"><h1>My Pet</h1><p>No resident available.</p></div>';return}
+ let p=x.p,st=stats(p),lo=low(p),rec=map[lo[0]];
+ let cards=[
+ ["food","🍲","MEAL","Raises the resident's food and gives a little energy."],
+ ["comfort","♡","BOND","Improves comfort and trust through a quiet interaction."],
+ ["play","✦","ENRICH","Raises trust and comfort while using some energy."]
+ ];
+ view.innerHTML=`<div class="vgmc19">
+ <div class="vgmc19-head"><small>PASS 19 / 20 · INTERACTIVE RESIDENT ROOM</small><button data-vgmc19-picker>CHANGE ANIMAL</button></div>
+ <div class="vgmc19-picker" id="vgmc19-picker"><div class="vgmc19-grid">${x.ps.map((q,i)=>`<button data-vgmc19-select="${i}">${face(q.species)} ${q.name}<small>${i===A.selected?"CURRENT":"OPEN"}</small></button>`).join("")}</div></div>
+ <div class="vgmc19-room">
+  <aside class="vgmc19-object ${rec==="water"?"hot":""}"><span class="ico">💧</span><b>WATER</b><small>Room object</small><button data-vgmc19-act="water" data-source="the water station">USE</button></aside>
+  <main class="vgmc19-pet"><div class="vgmc19-face">${face(p.species)}</div><h1>${p.name}</h1><small>${p.species||"Animal"}${p.form?" · "+p.form:""}</small><span class="vgmc19-need">${lo[0]} ${clamp(lo[1])}%</span></main>
+  <aside class="vgmc19-object ${rec==="rest"?"hot":""}"><span class="ico">🛏️</span><b>REST BED</b><small>Room object</small><button data-vgmc19-act="rest" data-source="the rest bed">USE</button></aside>
+ </div>
+ <div class="vgmc19-vitals">${Object.entries(st).map(z=>`<div><small>${z[0]}</small><b>${clamp(z[1])}</b></div>`).join("")}</div>
+ <div class="vgmc19-help"><b>WHAT DO I DO?</b> ${lo[0]} is currently lowest. ${rec==="water"||rec==="rest"?"The matching side object is highlighted.":"The matching care card is highlighted below."}</div>
+ <div class="vgmc19-handlabel"><b>CARE CARDS</b><small>PLAY ONE CARD · TURN ${A.turn}</small></div>
+ <div class="vgmc19-hand">${cards.map(c=>`<button class="vgmc19-card ${rec===c[0]?"best":""}" data-vgmc19-act="${c[0]}" data-source="${c[2].toLowerCase()} card">${rec===c[0]?'<em>BEST NOW</em>':""}<span class="ico">${c[1]}</span><strong>${c[2]}</strong><p>${c[3]}</p></button>`).join("")}</div>
+ <div class="vgmc19-result">${A.last}</div>
+ <div class="vgmc19-drawer"><button class="vgmc19-toggle">▸ OPEN CARE SYSTEMS</button><div class="inside"><div class="vgmc19-grid"><button data-vgmc19-deep="CARE|CLINIC">CLINIC<small>Clinical game systems</small></button><button data-vgmc19-deep="NUTRITION">NUTRITION<small>Diet records</small></button><button data-vgmc19-deep="RECOVERY">RECOVERY<small>Recovery systems</small></button><button data-vgmc19-deep="DOSE|MEDICATION">DOSE LOG<small>Prescribed-care log</small></button></div></div></div>
+ <div class="vgmc19-drawer"><button class="vgmc19-toggle">▸ OPEN OTHER PROGRAMS</button><div class="inside"><div class="vgmc19-grid"><button data-vgmc19-deep="HABITAT">HABITAT<small>Environment</small></button><button data-vgmc19-deep="BEHAVIOR|ENRICHMENT">BEHAVIOR<small>Enrichment</small></button><button data-vgmc19-deep="MORPH">MORPH LAB<small>Development</small></button><button data-vgmc19-deep="RESEARCH">RESEARCH<small>Research</small></button><button data-vgmc19-deep="MISSION|EXPEDITION">MISSIONS<small>World operations</small></button><button data-vgmc19-deep="RECORD|ARCHIVE">RECORDS<small>History</small></button></div></div></div>
+ </div>`;
+}
+document.addEventListener("click",e=>{
+ let a=e.target.closest("[data-vgmc19-act]");if(a){act(a.dataset.vgmc19Act,a.dataset.source);return}
+ let q=e.target.closest("[data-vgmc19-select]");if(q){A.selected=Number(q.dataset.vgmc19Select);save();draw();return}
+ let d=e.target.closest("[data-vgmc19-deep]");if(d){deep(d.dataset.vgmc19Deep);return}
+ if(e.target.closest("[data-vgmc19-picker]")){document.getElementById("vgmc19-picker")?.classList.toggle("open");return}
+ let t=e.target.closest(".vgmc19-toggle");if(t){let box=t.closest(".vgmc19-drawer"),on=box.classList.toggle("open");t.textContent=(on?"▾ ":"▸ ")+t.textContent.replace(/^[▸▾]\s*/,"");}
+},true);
+window.VGMobileInteractiveRoom=draw;
+})();
+</script>
+
+<style id="vg-mobile-console-pass20-css">
+/* PASS 20 — final resident room polish. Additive only; underlying VET GODS remains intact. */
+.vgmc20{max-width:560px;margin:auto;padding:6px 6px 72px}
+.vgmc20-head{display:flex;justify-content:space-between;align-items:center;margin:0 1px 5px}
+.vgmc20-head small{font-size:5.2px;color:#7f9fac}.vgmc20-head button{border:1px solid #3a6170;border-radius:14px;background:#0b1d26;color:#d9eef5;padding:6px 8px;font-size:5.6px}
+.vgmc20-room{display:grid;grid-template-columns:80px 1fr 80px;gap:5px;min-height:200px}
+.vgmc20-object{border:1px solid #365d6d;border-radius:12px;background:#091a23;padding:6px 4px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.vgmc20-object.best{border:2px solid #c0a64c;background:#241f0c}.vgmc20-object .ico{font-size:32px}.vgmc20-object b{font-size:6px;color:#ffe17c;margin-top:5px}.vgmc20-object small{font-size:4.6px;line-height:1.3;color:#84a3af;margin-top:3px}
+.vgmc20-object button{width:100%;margin-top:7px;border:1px solid #476b79;border-radius:7px;background:#102832;color:#e9f8fd;padding:6px 2px;font-size:5px;font-weight:900}
+.vgmc20-pet{border:2px solid #4a7180;border-radius:16px;background:radial-gradient(circle at 50% 38%,#163947,#0a1d26 67%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden}
+.vgmc20-pet:before{content:"";position:absolute;width:145px;height:145px;border:1px solid #8bc2d633;border-radius:50%;box-shadow:0 0 28px #74abc41c}
+.vgmc20-face{font-size:72px;line-height:1;z-index:1}.vgmc20-pet h1{font-size:16px;color:#ffe17c;margin:5px 0 1px;z-index:1}.vgmc20-pet small{font-size:5.2px;color:#8ba9b5;z-index:1}
+.vgmc20-mood{z-index:1;margin-top:5px;border:1px solid #537584;border-radius:12px;padding:4px 7px;font-size:5px;color:#cce4ed;background:#081820aa}
+.vgmc20-vitals{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;margin:5px 0}.vgmc20-vitals div{border:1px solid #2d5060;border-radius:6px;background:#08171f;padding:4px 1px;text-align:center}.vgmc20-vitals small{display:block;font-size:3.9px;color:#7897a3}.vgmc20-vitals b{font-size:8px}
+.vgmc20-guide{border-left:3px solid #bda24b;background:#1c190c;border-radius:0 8px 8px 0;padding:7px;margin:5px 0;font-size:6.2px;line-height:1.4;color:#d2c593}.vgmc20-guide b{color:#ffe17c}
+.vgmc20-handtitle{display:flex;justify-content:space-between;margin:7px 1px 4px}.vgmc20-handtitle b{font-size:6.5px;color:#dff7ff}.vgmc20-handtitle small{font-size:4.8px;color:#7796a2}
+.vgmc20-hand{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.vgmc20-card{min-height:116px;border:1px solid #3a6070;border-radius:11px;background:linear-gradient(#102934,#091820);color:#eaf8ff;padding:7px 5px;text-align:center;position:relative}
+.vgmc20-card.best{border:2px solid #c0a64c;background:linear-gradient(#30280d,#17140a)}.vgmc20-card .ico{display:block;font-size:27px;margin:3px}.vgmc20-card strong{display:block;font-size:6.3px;color:#ffe17c}.vgmc20-card p{font-size:4.9px;line-height:1.35;color:#8ca9b5;margin:5px 0}.vgmc20-card em{font-style:normal;position:absolute;top:4px;right:4px;font-size:4px;color:#ffe17c}
+.vgmc20-feedback{border:1px solid #315565;border-radius:8px;background:#091a22;padding:7px;margin:6px 0;font-size:6.2px;color:#b8cfd8}
+.vgmc20-drawer{border:1px solid #315565;border-radius:9px;overflow:hidden;margin:5px 0}.vgmc20-drawer>button{width:100%;min-height:36px;border:0;background:#0d2029;color:#d5ebf2;text-align:left;padding:7px;font-size:5.8px;font-weight:900}.vgmc20-drawer .inside{display:none;padding:6px;background:#07171f}.vgmc20-drawer.open .inside{display:block}
+.vgmc20-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}.vgmc20-grid button{min-height:39px;border:1px solid #355b6b;border-radius:7px;background:#10242e;color:#e5f6fc;text-align:left;padding:6px;font-size:5.8px;font-weight:900}.vgmc20-grid small{display:block;font-size:4.7px;color:#86a4b0;margin-top:2px}
+.vgmc20-picker{display:none;border:1px solid #355969;border-radius:9px;padding:5px;margin:5px 0}.vgmc20-picker.open{display:block}
+@media(max-width:390px){.vgmc20-room{grid-template-columns:68px 1fr 68px}.vgmc20-hand{gap:3px}.vgmc20-card{padding:6px 4px}}
+</style>
+<script id="vg-mobile-console-pass20-js">
+(function(){
+"use strict";
+const KEY="vetgods_mobile_mypet_pass20";
+let Z={selected:0,last:"Resident room ready.",turn:1,events:[]};
+try{Z=Object.assign(Z,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(_){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(Z))}catch(_){}};
+const clamp=v=>Math.max(0,Math.min(100,Math.round(v)));
+function model(){try{return JSON.parse(localStorage.getItem("vetgods_mobile_sanctuary_pass05")||"{}")}catch(_){return{pets:[]}}}
+function put(m){try{localStorage.setItem("vetgods_mobile_sanctuary_pass05",JSON.stringify(m))}catch(_){}}
+function face(s){s=String(s||"").toLowerCase();if(s.includes("owl"))return"🦉";if(s.includes("wolf"))return"🐺";if(s.includes("cat"))return"🐈";if(s.includes("fox"))return"🦊";if(s.includes("snake"))return"🐍";if(s.includes("bird"))return"🦅";return"🐕"}
+function cur(){let m=model(),ps=Array.isArray(m.pets)?m.pets:[];if(!ps.length)return null;Z.selected=Math.max(0,Math.min(Z.selected,ps.length-1));return{m,ps,p:ps[Z.selected]}}
+function stats(p){return{HEALTH:+(p.health??72),FOOD:100-+(p.hunger??35),WATER:100-+(p.thirst??30),COMFORT:+(p.comfort??60),TRUST:+(p.trust??50),ENERGY:+(p.energy??65)}}
+function lowest(p){return Object.entries(stats(p)).sort((a,b)=>a[1]-b[1])[0]}
+const needAction={FOOD:"food",WATER:"water",COMFORT:"comfort",TRUST:"bond",ENERGY:"rest",HEALTH:"rest"};
+function mood(p){
+ let a=stats(p),avg=Object.values(a).reduce((x,y)=>x+y,0)/6;
+ if(avg>=82)return"CONTENT";
+ if(avg>=68)return"SETTLED";
+ if(avg>=52)return"NEEDS ATTENTION";
+ return"RECOVERY FOCUS";
+}
+function act(k,source){
+ let x=cur();if(!x)return;let p=x.p;
+ if(k==="food"){p.hunger=clamp((p.hunger??35)-16);p.energy=clamp((p.energy??65)+4)}
+ if(k==="water"){p.thirst=clamp((p.thirst??30)-18);p.health=clamp((p.health??72)+2)}
+ if(k==="bond"){p.comfort=clamp((p.comfort??60)+10);p.trust=clamp((p.trust??50)+7)}
+ if(k==="enrich"){p.trust=clamp((p.trust??50)+5);p.comfort=clamp((p.comfort??60)+5);p.energy=clamp((p.energy??65)-5)}
+ if(k==="rest"){p.energy=clamp((p.energy??65)+15);p.comfort=clamp((p.comfort??60)+3)}
+ Z.last="Turn "+Z.turn+" · "+p.name+" used "+source+".";
+ Z.events.unshift(new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})+" · "+Z.last);Z.events=Z.events.slice(0,10);Z.turn++;
+ x.m.selected=Z.selected;put(x.m);save();draw();
+}
+function deep(term){
+ document.body.classList.add("vgmc-advanced");document.documentElement.classList.remove("vgmc-lock");
+ let rx=new RegExp(term,"i"),els=[...document.querySelectorAll("button,a,h1,h2,h3,h4")].filter(e=>!e.closest("#vg-mobile-console"));
+ let hit=els.find(e=>rx.test((e.textContent||"").trim()));
+ if(hit){try{if(hit.matches("button,a"))hit.click();hit.scrollIntoView({behavior:"smooth",block:"start"})}catch(_){}}
+}
+function draw(){
+ let view=document.querySelector('#vg-mobile-console [data-view="console"]');if(!view)return;
+ let x=cur();if(!x){view.innerHTML='<div class="vgmc-hero"><h1>My Pet</h1><p>No resident available.</p></div>';return}
+ let p=x.p,st=stats(p),lo=lowest(p),rec=needAction[lo[0]];
+ let cards=[
+  ["food","🍲","MEAL","Food interaction. Improves the resident's game food reading."],
+  ["bond","♡","BOND","Quiet interaction. Improves comfort and trust."],
+  ["enrich","✦","ENRICH","Play activity. Improves enrichment-style resident readings."]
+ ];
+ view.innerHTML=`<div class="vgmc20">
+ <div class="vgmc20-head"><small>PASS 20 / 20 · FINAL RESIDENT ROOM</small><button data-vgmc20-picker>CHANGE ANIMAL</button></div>
+ <div class="vgmc20-picker" id="vgmc20-picker"><div class="vgmc20-grid">${x.ps.map((q,i)=>`<button data-vgmc20-select="${i}">${face(q.species)} ${q.name}<small>${i===Z.selected?"CURRENT":"OPEN RESIDENT"}</small></button>`).join("")}</div></div>
+ <div class="vgmc20-room">
+  <aside class="vgmc20-object ${rec==="water"?"best":""}"><span class="ico">💧</span><b>WATER STATION</b><small>Physical room object</small><button data-vgmc20-act="water" data-source="water station">USE</button></aside>
+  <main class="vgmc20-pet"><div class="vgmc20-face">${face(p.species)}</div><h1>${p.name}</h1><small>${p.species||"Animal"}${p.form?" · "+p.form:""}</small><span class="vgmc20-mood">${mood(p)} · ${lo[0]} ${clamp(lo[1])}%</span></main>
+  <aside class="vgmc20-object ${rec==="rest"?"best":""}"><span class="ico">🛏️</span><b>REST BED</b><small>Physical room object</small><button data-vgmc20-act="rest" data-source="rest bed">USE</button></aside>
+ </div>
+ <div class="vgmc20-vitals">${Object.entries(st).map(z=>`<div><small>${z[0]}</small><b>${clamp(z[1])}</b></div>`).join("")}</div>
+ <div class="vgmc20-guide"><b>ROOM GUIDE:</b> ${lo[0]} is the lowest current game reading at ${clamp(lo[1])}%. ${rec==="water"||rec==="rest"?"Use the highlighted object beside the resident.":"Play the highlighted card below."}</div>
+ <div class="vgmc20-handtitle"><b>YOUR CARE HAND</b><small>TURN ${Z.turn} · CHOOSE ONE</small></div>
+ <div class="vgmc20-hand">${cards.map(c=>`<button class="vgmc20-card ${rec===c[0]?"best":""}" data-vgmc20-act="${c[0]}" data-source="${c[2].toLowerCase()} card">${rec===c[0]?'<em>PLAY THIS</em>':""}<span class="ico">${c[1]}</span><strong>${c[2]}</strong><p>${c[3]}</p></button>`).join("")}</div>
+ <div class="vgmc20-feedback">${Z.last}</div>
+ <div class="vgmc20-drawer"><button class="vgmc20-toggle">▸ CARE CONSOLE</button><div class="inside"><div class="vgmc20-grid"><button data-vgmc20-deep="CARE|CLINIC">CLINIC<small>Clinical game systems</small></button><button data-vgmc20-deep="NUTRITION">NUTRITION<small>Diet records</small></button><button data-vgmc20-deep="RECOVERY">RECOVERY<small>Recovery systems</small></button><button data-vgmc20-deep="DOSE|MEDICATION">DOSE LOG<small>Prescribed-care record</small></button></div></div></div>
+ <div class="vgmc20-drawer"><button class="vgmc20-toggle">▸ RESIDENT PROGRAMS</button><div class="inside"><div class="vgmc20-grid"><button data-vgmc20-deep="HABITAT">HABITAT<small>Environment</small></button><button data-vgmc20-deep="BEHAVIOR|ENRICHMENT">BEHAVIOR<small>Enrichment</small></button><button data-vgmc20-deep="MORPH">MORPH LAB<small>Development</small></button><button data-vgmc20-deep="RESEARCH">RESEARCH<small>Research</small></button><button data-vgmc20-deep="MISSION|EXPEDITION">MISSIONS<small>World operations</small></button><button data-vgmc20-deep="RECORD|ARCHIVE">RECORDS<small>Resident history</small></button></div></div></div>
+ <div class="vgmc20-drawer"><button class="vgmc20-toggle">▸ ACTIVITY LOG</button><div class="inside">${Z.events.length?Z.events.slice(0,8).map(v=>`<div class="vgmc-log">${v}</div>`).join(""):"<div class='vgmc-log'>No room activity yet.</div>"}</div></div>
+ </div>`;
+}
+document.addEventListener("click",e=>{
+ let a=e.target.closest("[data-vgmc20-act]");if(a){act(a.dataset.vgmc20Act,a.dataset.source);return}
+ let q=e.target.closest("[data-vgmc20-select]");if(q){Z.selected=Number(q.dataset.vgmc20Select);save();draw();return}
+ let d=e.target.closest("[data-vgmc20-deep]");if(d){deep(d.dataset.vgmc20Deep);return}
+ if(e.target.closest("[data-vgmc20-picker]")){document.getElementById("vgmc20-picker")?.classList.toggle("open");return}
+ let t=e.target.closest(".vgmc20-toggle");if(t){let box=t.closest(".vgmc20-drawer"),on=box.classList.toggle("open");t.textContent=(on?"▾ ":"▸ ")+t.textContent.replace(/^[▸▾]\s*/,"");}
+},true);
+window.VGMobileFinalResidentRoom=draw;
+})();
+</script>
+
+<style id="vg-new-look-pass21-css">
+/* PASS 21 — completely new visual skin: clean field-journal game, slim consoles */
+:root{--vg21-bg:#f3efe5;--vg21-paper:#fffdf7;--vg21-ink:#24302d;--vg21-muted:#718079;--vg21-line:#d7d7ca;--vg21-accent:#355f52;--vg21-soft:#e8eee8;--vg21-warm:#efe4c8}
+#vg-mobile-console{background:var(--vg21-bg)!important;color:var(--vg21-ink)!important;font-family:system-ui,-apple-system,"Segoe UI",sans-serif!important}
+#vg-mobile-console *{box-shadow:none!important;text-shadow:none!important}
+#vg-mobile-console [data-view="console"]{background:var(--vg21-bg)!important}
+.vgmc21{max-width:620px;margin:auto;padding:10px 10px 78px}
+.vgmc21-header{display:flex;align-items:center;justify-content:space-between;padding:4px 1px 10px;border-bottom:1px solid var(--vg21-line)}
+.vgmc21-brand b{display:block;font-size:14px;letter-spacing:.04em}.vgmc21-brand small{font-size:6px;color:var(--vg21-muted)}
+.vgmc21-header button,.vgmc21-chip{border:1px solid var(--vg21-line);background:var(--vg21-paper);color:var(--vg21-ink);border-radius:18px;padding:7px 10px;font-size:6px;font-weight:800}
+.vgmc21-pet{display:grid;grid-template-columns:76px 1fr;gap:12px;align-items:center;padding:14px 2px 10px}
+.vgmc21-avatar{width:76px;height:76px;border-radius:22px;background:var(--vg21-soft);display:grid;place-items:center;font-size:48px;border:1px solid var(--vg21-line)}
+.vgmc21-pet h1{margin:0;font-size:21px}.vgmc21-pet p{margin:4px 0 0;font-size:7px;color:var(--vg21-muted);line-height:1.45}
+.vgmc21-status{display:flex;gap:5px;overflow:auto;padding:3px 0 10px}.vgmc21-status div{min-width:74px;background:var(--vg21-paper);border:1px solid var(--vg21-line);border-radius:10px;padding:7px}.vgmc21-status small{display:block;font-size:4.8px;color:var(--vg21-muted)}.vgmc21-status b{font-size:10px}
+.vgmc21-next{background:var(--vg21-paper);border:1px solid var(--vg21-line);border-radius:14px;padding:11px;margin:2px 0 9px}.vgmc21-next small{font-size:5px;color:var(--vg21-muted)}.vgmc21-next h2{font-size:14px;margin:4px 0}.vgmc21-next p{font-size:7px;color:var(--vg21-muted);line-height:1.4;margin:4px 0 8px}
+.vgmc21-next button{width:100%;min-height:43px;border:0;border-radius:10px;background:var(--vg21-accent);color:white;text-align:left;padding:8px;font-size:7px;font-weight:900}
+.vgmc21-handtitle{display:flex;justify-content:space-between;margin:9px 2px 5px}.vgmc21-handtitle b{font-size:7px}.vgmc21-handtitle small{font-size:5px;color:var(--vg21-muted)}
+.vgmc21-hand{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.vgmc21-card{min-height:94px;border:1px solid var(--vg21-line);border-radius:13px;background:var(--vg21-paper);color:var(--vg21-ink);padding:9px 6px;text-align:center;position:relative}.vgmc21-card.best{border:2px solid var(--vg21-accent);background:var(--vg21-soft)}.vgmc21-card .ico{font-size:25px;display:block}.vgmc21-card strong{display:block;font-size:6.5px;margin-top:4px}.vgmc21-card small{display:block;font-size:4.8px;color:var(--vg21-muted);line-height:1.3;margin-top:4px}.vgmc21-card em{position:absolute;top:4px;right:5px;font-style:normal;font-size:4px;color:var(--vg21-accent);font-weight:900}
+.vgmc21-objects{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}.vgmc21-object{display:grid;grid-template-columns:35px 1fr auto;gap:7px;align-items:center;background:var(--vg21-paper);border:1px solid var(--vg21-line);border-radius:11px;padding:7px}.vgmc21-object.best{background:var(--vg21-warm);border-color:#b7a776}.vgmc21-object .ico{font-size:22px}.vgmc21-object b{display:block;font-size:6px}.vgmc21-object small{display:block;font-size:4.7px;color:var(--vg21-muted)}.vgmc21-object button{border:1px solid var(--vg21-line);background:white;border-radius:8px;padding:6px;font-size:5px;font-weight:900;color:var(--vg21-ink)}
+.vgmc21-result{font-size:6.5px;color:var(--vg21-muted);padding:8px 2px}
+.vgmc21-console{border-top:1px solid var(--vg21-line);margin-top:6px}.vgmc21-console>button{width:100%;border:0;background:transparent;color:var(--vg21-ink);min-height:39px;text-align:left;padding:8px 2px;font-size:6.5px;font-weight:900}.vgmc21-console .inside{display:none;padding:3px 0 7px}.vgmc21-console.open .inside{display:block}
+.vgmc21-tools{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}.vgmc21-tools button{min-height:39px;border:1px solid var(--vg21-line);border-radius:9px;background:var(--vg21-paper);color:var(--vg21-ink);text-align:left;padding:7px;font-size:6px;font-weight:850}.vgmc21-tools small{display:block;font-size:4.8px;color:var(--vg21-muted);margin-top:2px}
+.vgmc21-picker{display:none;background:var(--vg21-paper);border:1px solid var(--vg21-line);border-radius:12px;padding:6px;margin:6px 0}.vgmc21-picker.open{display:block}
+.vgmc21-nav{position:sticky;bottom:4px;display:grid;grid-template-columns:repeat(4,1fr);gap:3px;background:#ffffffee;border:1px solid var(--vg21-line);border-radius:14px;padding:4px;margin-top:9px;z-index:60}.vgmc21-nav button{min-height:38px;border:0;border-radius:9px;background:transparent;color:var(--vg21-muted);font-size:5.5px;font-weight:900}.vgmc21-nav button.on{background:var(--vg21-soft);color:var(--vg21-accent)}
+@media(max-width:390px){.vgmc21{padding-left:7px;padding-right:7px}.vgmc21-pet{grid-template-columns:66px 1fr}.vgmc21-avatar{width:66px;height:66px;font-size:42px}.vgmc21-hand{gap:4px}.vgmc21-card{padding:7px 4px}}
+</style>
+<script id="vg-new-look-pass21-js">
+(function(){
+"use strict";
+const KEY="vetgods_newlook_pass21";
+let N={selected:0,tab:"HOME",last:"Resident ready.",turn:1};
+try{N=Object.assign(N,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(_){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(N))}catch(_){}};
+const clamp=v=>Math.max(0,Math.min(100,Math.round(v)));
+function model(){try{return JSON.parse(localStorage.getItem("vetgods_mobile_sanctuary_pass05")||"{}")}catch(_){return{pets:[]}}}
+function put(m){try{localStorage.setItem("vetgods_mobile_sanctuary_pass05",JSON.stringify(m))}catch(_){}}
+function face(s){s=String(s||"").toLowerCase();if(s.includes("owl"))return"🦉";if(s.includes("wolf"))return"🐺";if(s.includes("cat"))return"🐈";if(s.includes("fox"))return"🦊";if(s.includes("snake"))return"🐍";if(s.includes("bird"))return"🦅";return"🐕"}
+function cur(){let m=model(),ps=Array.isArray(m.pets)?m.pets:[];if(!ps.length)return null;N.selected=Math.max(0,Math.min(N.selected,ps.length-1));return{m,ps,p:ps[N.selected]}}
+function stats(p){return{HEALTH:+(p.health??72),FOOD:100-+(p.hunger??35),WATER:100-+(p.thirst??30),COMFORT:+(p.comfort??60),TRUST:+(p.trust??50),ENERGY:+(p.energy??65)}}
+function low(p){return Object.entries(stats(p)).sort((a,b)=>a[1]-b[1])[0]}
+const amap={FOOD:"food",WATER:"water",COMFORT:"bond",TRUST:"bond",ENERGY:"rest",HEALTH:"rest"};
+function act(k,label){
+ let x=cur();if(!x)return;let p=x.p;
+ if(k==="food"){p.hunger=clamp((p.hunger??35)-16);p.energy=clamp((p.energy??65)+4)}
+ if(k==="water"){p.thirst=clamp((p.thirst??30)-18);p.health=clamp((p.health??72)+2)}
+ if(k==="bond"){p.comfort=clamp((p.comfort??60)+10);p.trust=clamp((p.trust??50)+7)}
+ if(k==="enrich"){p.trust=clamp((p.trust??50)+5);p.comfort=clamp((p.comfort??60)+5);p.energy=clamp((p.energy??65)-5)}
+ if(k==="rest"){p.energy=clamp((p.energy??65)+15);p.comfort=clamp((p.comfort??60)+3)}
+ N.last=p.name+" · "+label+" complete.";N.turn++;x.m.selected=N.selected;put(x.m);save();draw();
+}
+function deep(term){
+ document.body.classList.add("vgmc-advanced");document.documentElement.classList.remove("vgmc-lock");
+ let rx=new RegExp(term,"i"),els=[...document.querySelectorAll("button,a,h1,h2,h3,h4")].filter(e=>!e.closest("#vg-mobile-console"));
+ let hit=els.find(e=>rx.test((e.textContent||"").trim()));if(hit){try{if(hit.matches("button,a"))hit.click();hit.scrollIntoView({behavior:"smooth",block:"start"})}catch(_){}}
+}
+function tools(kind){
+ if(kind==="CARE")return [["CARE|CLINIC","Clinic","Treatment systems"],["NUTRITION","Nutrition","Food records"],["RECOVERY","Recovery","Recovery systems"],["DOSE|MEDICATION","Dose Log","Prescribed-care record"]];
+ if(kind==="WORLD")return [["HABITAT","Habitat","Resident environment"],["BEHAVIOR|ENRICHMENT","Behavior","Enrichment"],["MORPH","Morph Lab","Development"],["RESEARCH","Research","Research systems"],["MISSION|EXPEDITION","Missions","World operations"],["RECORD|ARCHIVE","Records","History"]];
+ return [];
+}
+function draw(){
+ let view=document.querySelector('#vg-mobile-console [data-view="console"]');if(!view)return;
+ let x=cur();if(!x){view.innerHTML='<div class="vgmc21"><div class="vgmc21-brand"><b>VET GODS</b><small>No resident available.</small></div></div>';return}
+ let p=x.p,st=stats(p),lo=low(p),rec=amap[lo[0]];
+ let cards=[["food","🍲","MEAL","Food interaction"],["bond","♡","BOND","Comfort + trust"],["enrich","✦","ENRICH","Play + activity"]];
+ let main="";
+ if(N.tab==="HOME")main=`<div class="vgmc21-next"><small>NEXT STEP</small><h2>${lo[0]} · ${clamp(lo[1])}%</h2><p>${lo[0]} is the lowest current game reading. You can use the suggested action, or choose something else below.</p><button data-vgmc21-act="${rec}" data-label="suggested ${rec} interaction">DO SUGGESTED ACTION →</button></div>
+ <div class="vgmc21-objects"><div class="vgmc21-object ${rec==="water"?"best":""}"><span class="ico">💧</span><div><b>Water</b><small>Room object</small></div><button data-vgmc21-act="water" data-label="water station">USE</button></div><div class="vgmc21-object ${rec==="rest"?"best":""}"><span class="ico">🛏️</span><div><b>Rest</b><small>Room object</small></div><button data-vgmc21-act="rest" data-label="rest bed">USE</button></div></div>
+ <div class="vgmc21-handtitle"><b>CARE CARDS</b><small>TURN ${N.turn}</small></div><div class="vgmc21-hand">${cards.map(c=>`<button class="vgmc21-card ${rec===c[0]?"best":""}" data-vgmc21-act="${c[0]}" data-label="${c[2].toLowerCase()} card">${rec===c[0]?'<em>TRY THIS</em>':""}<span class="ico">${c[1]}</span><strong>${c[2]}</strong><small>${c[3]}</small></button>`).join("")}</div><div class="vgmc21-result">${N.last}</div>`;
+ if(N.tab==="CARE")main=`<div class="vgmc21-next"><small>SLIM CONSOLE</small><h2>Care</h2><p>The heavy graphical care consoles are no longer exposed here. Pick the tool you actually need.</p></div><div class="vgmc21-tools">${tools("CARE").map(t=>`<button data-vgmc21-deep="${t[0]}">${t[1]}<small>${t[2]}</small></button>`).join("")}</div>`;
+ if(N.tab==="WORLD")main=`<div class="vgmc21-next"><small>SLIM CONSOLE</small><h2>Programs</h2><p>Resident and world programs are presented as simple launch buttons instead of dashboard machinery.</p></div><div class="vgmc21-tools">${tools("WORLD").map(t=>`<button data-vgmc21-deep="${t[0]}">${t[1]}<small>${t[2]}</small></button>`).join("")}</div>`;
+ if(N.tab==="MORE")main=`<div class="vgmc21-next"><small>GAME ACCESS</small><h2>More</h2><p>Your original VET GODS systems are still inside the file. This new skin is only simplifying how you reach them.</p></div><div class="vgmc21-tools"><button data-vgmc21-deep="MY PET|SANCTUARY">Advanced My Pet<small>Open original resident machinery</small></button><button data-vgmc21-deep="COMMAND|BRIDGE">Command Bridge<small>Open ship command systems</small></button><button data-vgmc21-deep="STORY">Story<small>Story systems</small></button><button data-vgmc21-deep="ARCHIVE|RECORD">Archive<small>Records and history</small></button></div>`;
+ view.innerHTML=`<div class="vgmc21"><div class="vgmc21-header"><div class="vgmc21-brand"><b>VET GODS</b><small>NEW LOOK · CLEAN FIELD INTERFACE</small></div><button data-vgmc21-picker>CHANGE ANIMAL</button></div>
+ <div class="vgmc21-picker" id="vgmc21-picker"><div class="vgmc21-tools">${x.ps.map((q,i)=>`<button data-vgmc21-select="${i}">${face(q.species)} ${q.name}<small>${i===N.selected?"Current resident":"Open resident"}</small></button>`).join("")}</div></div>
+ <div class="vgmc21-pet"><div class="vgmc21-avatar">${face(p.species)}</div><div><h1>${p.name}</h1><p>${p.species||"Animal"}${p.form?" · "+p.form:""}<br>One resident. One clear view. Deeper systems stay out of the way until requested.</p></div></div>
+ <div class="vgmc21-status">${Object.entries(st).map(z=>`<div><small>${z[0]}</small><b>${clamp(z[1])}%</b></div>`).join("")}</div>${main}
+ <div class="vgmc21-nav">${[["HOME","🐾","PLAY"],["CARE","✚","CARE"],["WORLD","⌁","PROGRAMS"],["MORE","☰","MORE"]].map(n=>`<button data-vgmc21-tab="${n[0]}" class="${N.tab===n[0]?"on":""}">${n[1]}<br>${n[2]}</button>`).join("")}</div></div>`;
+}
+document.addEventListener("click",e=>{
+ let a=e.target.closest("[data-vgmc21-act]");if(a){act(a.dataset.vgmc21Act,a.dataset.label);return}
+ let t=e.target.closest("[data-vgmc21-tab]");if(t){N.tab=t.dataset.vgmc21Tab;save();draw();return}
+ let q=e.target.closest("[data-vgmc21-select]");if(q){N.selected=Number(q.dataset.vgmc21Select);N.tab="HOME";save();draw();return}
+ let d=e.target.closest("[data-vgmc21-deep]");if(d){deep(d.dataset.vgmc21Deep);return}
+ if(e.target.closest("[data-vgmc21-picker]"))document.getElementById("vgmc21-picker")?.classList.toggle("open");
+},true);
+window.VGNewLook21=draw;
+})();
+</script>
 </body>
 </html>
