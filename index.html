@@ -881,4 +881,455 @@ dashboard();
 window.VetGodsPhase10={dashboard,syscmd};
 })();
 </script>
+
+<style id="dynamic-stats-p1-css">
+.ds1{border:1px solid #666;margin-top:8px}.ds1 h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.ds1-grid{display:grid;grid-template-columns:repeat(2,1fr)}.ds1-cell{padding:6px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}
+.ds1-cell small{display:block;color:#777}.ds1-cell b{color:#fff}.ds1-chain{padding:6px;border-bottom:1px dotted #444;font-size:9px;line-height:1.5}.ds1-chain b{color:#fff}
+.ds1-live{border:1px solid #777;padding:6px;margin-top:8px;font-size:9px}.ds1-live strong{color:#fff}
+.ds1-btns{display:grid;grid-template-columns:repeat(2,1fr)}.ds1-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.ds1-btns button:hover{background:#c9c9c9;color:#000}
+@media(max-width:600px){.ds1-grid,.ds1-btns{grid-template-columns:1fr}}
+</style>
+<script id="dynamic-stats-p1-js">
+(function(){
+"use strict";
+function A(){return state.animals[state.active]}
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+function ensureDS1(){
+ state.animals.forEach(a=>{
+  a.dynamic=a.dynamic||{thirst:clamp(100-a.hydration),painSignal:a.pain||0,fatigue:clamp(100-(a.petStats?.energy||70)),safety:clamp(100-a.stress),recoveryDrive:50,handlingEase:50,currentNeed:"OBSERVE",lastCause:"SYSTEM INITIALIZED",chains:[]};
+ });
+ save();
+}
+function recalc(a,cause){
+ let d=a.dynamic;
+ d.thirst=clamp(100-a.hydration);
+ d.painSignal=clamp(a.pain);
+ d.fatigue=clamp(100-(a.petStats?.energy||a.nutrition||70));
+ d.safety=clamp((a.trust*0.45)+(a.comfort*0.35)+((100-a.stress)*0.20));
+ d.handlingEase=clamp((a.trust*.5)+(d.safety*.3)+((100-a.pain)*.2));
+ d.recoveryDrive=clamp((a.health*.25)+(a.oxygen*.2)+(a.hydration*.15)+(a.nutrition*.15)+(a.comfort*.15)+((100-a.pain)*.1));
+ let needs=[["OXYGEN",100-a.oxygen],["PAIN RELIEF",a.pain],["WATER",d.thirst],["SAFETY",100-d.safety],["FOOD",100-a.nutrition],["REST",d.fatigue]];
+ needs.sort((x,y)=>y[1]-x[1]);d.currentNeed=needs[0][0];
+ d.lastCause=cause||d.lastCause;
+ let line=(cause||"RECALC")+" -> NEED "+d.currentNeed+" -> HANDLING "+d.handlingEase+"% -> RECOVERY "+d.recoveryDrive+"%";
+ d.chains.unshift(new Date().toLocaleTimeString()+" · "+line);d.chains=d.chains.slice(0,20);
+}
+function effects(a){
+ let d=a.dynamic,arr=[];
+ if(a.pain>50)arr.push("PAIN > guarded mobility / stress pressure");
+ if(a.hydration<60)arr.push("LOW HYDRATION > thirst / recovery penalty");
+ if(a.oxygen<92)arr.push("LOW OXYGEN > health/recovery pressure");
+ if(a.trust<45)arr.push("LOW TRUST > handling difficulty");
+ if(a.stress>65)arr.push("HIGH STRESS > safety signal reduced");
+ if(a.comfort>75)arr.push("HIGH COMFORT > safety/trust support");
+ if(a.nutrition<55)arr.push("LOW NUTRITION > fatigue pressure");
+ return arr.length?arr:["NO STRONG NEGATIVE PRESSURES"];
+}
+function panel(a){
+ recalc(a,"LIVE STAT RECALC");
+ let d=a.dynamic;
+ return '<div class="ds1" id="ds1panel"><h4>BRAIN BUS / DYNAMIC STAT ENGINE — PHASE 1</h4><div class="ds1-grid">'+
+ cell("CURRENT NEED",d.currentNeed,"highest active drive")+cell("HANDLING EASE",d.handlingEase+"%","trust + safety + pain")+
+ cell("THIRST SIGNAL",d.thirst+"%","inverse hydration")+cell("PAIN SIGNAL",d.painSignal+"%","pain input")+
+ cell("SAFETY SIGNAL",d.safety+"%","trust + comfort + stress")+cell("FATIGUE",d.fatigue+"%","energy/nutrition pressure")+
+ cell("RECOVERY DRIVE",d.recoveryDrive+"%","whole-body composite")+cell("LAST CAUSE",d.lastCause,"latest engine event")+
+ '</div><div class="ds1-live"><strong>ACTIVE EFFECTS</strong><br>'+effects(a).join("<br>")+'</div>'+
+ '<div class="ds1-btns"><button id="ds1recalc">[B1] RECALCULATE BRAIN BUS</button><button id="ds1trace">[B2] TRACE CAUSAL CHAIN</button></div>'+
+ '<div class="ds1-chain"><b>LIVE CHAIN:</b><br>'+(d.chains[0]||"NO CHAIN RECORDED")+'</div></div>';
+}
+function cell(k,v,n){return '<div class="ds1-cell"><small>'+k+'</small><b>'+v+'</b><small>'+n+'</small></div>'}
+function inject(){
+ if(page!=="care")return;let a=A(),out=document.querySelector(".out");if(!out||document.querySelector("#ds1panel"))return;
+ let box=document.createElement("div");box.innerHTML=panel(a);out.insertAdjacentElement("beforebegin",box.firstElementChild);
+ let r=document.querySelector("#ds1recalc");if(r)r.onclick=()=>{recalc(a,"MANUAL RECALC");save();program("care")};
+ let t=document.querySelector("#ds1trace");if(t)t.onclick=()=>{let o=document.querySelector("#out");o.textContent="BRAIN BUS TRACE\n"+a.dynamic.chains.slice(0,10).join("\n")};
+ save();
+}
+const dsOldExec=execute;
+execute=function(k,i){
+ let a=A(),before={pain:a.pain,hydration:a.hydration,oxygen:a.oxygen,trust:a.trust,stress:a.stress,comfort:a.comfort,nutrition:a.nutrition,health:a.health};
+ let label=(ACTIONS[k]||[])[i]||"COMMAND";
+ dsOldExec(k,i);
+ if(k==="care"){
+  // Coupled fictional stat consequences: actions now propagate rather than stopping at one number.
+  if(label==="OFFER WATER"){a.stress=clamp(a.stress-2);a.comfort=clamp(a.comfort+2)}
+  if(label==="PAIN CONTROL"){a.mobility=clamp((a.mobility||70)+5);a.stress=clamp(a.stress-4);a.trust=clamp(a.trust+2)}
+  if(label==="OXYGEN SUPPORT"){a.health=clamp(a.health+2);a.stress=clamp(a.stress-2)}
+  if(label==="OFFER FOOD"){a.nutrition=clamp(a.nutrition+8);if(a.petStats)a.petStats.energy=clamp(a.petStats.energy+4)}
+  if(label==="PRIMARY TREATMENT"){a.comfort=clamp(a.comfort+3);a.trust=clamp(a.trust+2)}
+  recalc(a,label);save();program("care");
+ }
+};
+const dsOldProgram=program;
+program=function(k){dsOldProgram(k);if(k==="care")inject()};
+ensureDS1();
+if(page==="care")program("care");
+window.VetGodsDynamicStats1={recalc,inject};
+})();
+</script>
+
+<style id="dynamic-stats-p2-css">
+.ds2{border:1px solid #666;margin-top:8px}.ds2 h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.ds2-pipe{padding:7px;white-space:pre-wrap;font-size:9px;line-height:1.5;color:#aaa}.ds2-pipe b{color:#fff}
+.ds2-grid{display:grid;grid-template-columns:repeat(2,1fr)}.ds2-node{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}
+.ds2-node small{display:block;color:#777}.ds2-node b{color:#fff}
+.ds2-actions{display:grid;grid-template-columns:repeat(2,1fr)}.ds2-actions button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.ds2-actions button:hover{background:#c9c9c9;color:#000}
+.ds2-memory{max-height:170px;overflow:auto}.ds2-memory div{padding:5px 7px;border-bottom:1px dotted #444;font-size:9px}.ds2-memory b{color:#fff}
+.ds2-intent{border:1px solid #888;margin:8px;padding:8px;text-align:center}.ds2-intent small{display:block;color:#777}.ds2-intent b{display:block;color:#fff;font-size:13px;margin-top:3px}
+@media(max-width:600px){.ds2-grid,.ds2-actions{grid-template-columns:1fr}}
+</style>
+<script id="dynamic-stats-p2-js">
+(function(){
+"use strict";
+function A(){return state.animals[state.active]}
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+function ensure2(){
+ state.animals.forEach(a=>{
+  a.brain=a.brain||{
+   sensory:{threat:30,thirst:30,pain:a.pain||0,fatigue:30,novelty:45},
+   memory:[],traitBias:{caution:50,curiosity:50,social:50},
+   need:"OBSERVE",decision:"WAIT / OBSERVE",intent:"MONITOR ENVIRONMENT",confidence:50,lastTick:Date.now()
+  };
+ });
+ save();
+}
+function compute(a,cause){
+ if(window.VetGodsDynamicStats1)window.VetGodsDynamicStats1.recalc(a,cause||"BRAIN.EXE");
+ let d=a.dynamic,b=a.brain;
+ b.sensory.thirst=d.thirst;b.sensory.pain=d.painSignal;b.sensory.fatigue=d.fatigue;
+ b.sensory.threat=clamp((100-d.safety)*.7+a.stress*.3);
+ b.sensory.novelty=clamp((a.neuro?.novelty||50));
+ b.traitBias.caution=clamp((a.stress*.45)+(100-a.trust)*.35+(a.pain*.2));
+ b.traitBias.curiosity=clamp(a.neuro?.novelty||55);
+ b.traitBias.social=clamp((a.trust*.6)+(a.neuro?.social||50)*.4);
+ b.need=d.currentNeed;
+ let map={
+  "WATER":["SEEK WATER","APPROACH WATER STATION"],
+  "PAIN RELIEF":["PROTECT BODY","SEEK LOW-MOTION SAFE AREA"],
+  "OXYGEN":["REDUCE EXERTION","SEEK RESPIRATORY SUPPORT"],
+  "FOOD":["SEEK FOOD","APPROACH FEEDING STATION"],
+  "SAFETY":["AVOID / OBSERVE","SEEK QUIET SAFE AREA"],
+  "REST":["REDUCE ACTIVITY","SEEK REST STATION"]
+ };
+ let q=map[b.need]||["OBSERVE","MONITOR ENVIRONMENT"];
+ if(b.traitBias.caution>70&&b.need!=="OXYGEN"){q=["HESITATE / ASSESS","WAIT FOR SAFE APPROACH"]}
+ if(b.traitBias.social>75&&a.trust>65&&b.need==="SAFETY"){q=["APPROACH HANDLER","SEEK FAMILIAR SUPPORT"]}
+ b.decision=q[0];b.intent=q[1];
+ let pressure=Math.max(b.sensory.thirst,b.sensory.pain,b.sensory.threat,b.sensory.fatigue);
+ b.confidence=clamp(45+pressure*.35+(100-b.traitBias.caution)*.2);
+ b.lastTick=Date.now();
+}
+function remember(a,type,text,weight){
+ a.brain.memory.unshift({time:new Date().toLocaleTimeString(),type,text,weight:clamp(weight)});
+ a.brain.memory=a.brain.memory.slice(0,20);
+}
+function node(k,v,n){return '<div class="ds2-node"><small>'+k+'</small><b>'+v+'</b><small>'+n+'</small></div>'}
+function renderBrain(){
+ page="neuro";nav();let a=A();compute(a,"BRAIN.EXE INSPECTION");save();let b=a.brain;
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\BRAIN\\'+a.name.toUpperCase()+'&gt;</div>'+
+ '<div class="ds2"><h4>BRAIN.EXE — FICTIONAL DECISION NETWORK</h4><div class="ds2-pipe"><b>INPUT</b> -> SENSORY -> MEMORY -> TRAIT BIAS -> NEED -> DECISION -> ACTION INTENT</div>'+
+ '<div class="ds2-grid">'+
+ node("THIRST INPUT",b.sensory.thirst+"%","hydration-derived")+node("PAIN INPUT",b.sensory.pain+"%","care-derived")+
+ node("THREAT INPUT",b.sensory.threat+"%","stress/safety-derived")+node("FATIGUE INPUT",b.sensory.fatigue+"%","energy-derived")+
+ node("CAUTION BIAS",b.traitBias.caution+"%","experience + state")+node("CURIOSITY BIAS",b.traitBias.curiosity+"%","fictional neuro trait")+
+ node("SOCIAL BIAS",b.traitBias.social+"%","trust + social response")+node("DECISION CONF.",b.confidence+"%","current signal strength")+
+ '</div><div class="ds2-intent"><small>STRONGEST NEED</small><b>'+b.need+'</b><small>DECISION</small><b>'+b.decision+'</b><small>CURRENT INTENT</small><b>&gt; '+b.intent+'</b></div></div>'+
+ '<div class="ds2"><h4>MEMORY BUS</h4><div class="ds2-memory">'+(b.memory.length?b.memory.map(m=>'<div><b>'+m.type+'</b> ['+m.weight+'%] '+m.text+' <small>'+m.time+'</small></div>').join(""):'<div>NO EXPERIENCE MEMORY RECORDED YET.</div>')+'</div></div>'+
+ '<div class="ds2"><h4>BRAIN COMMANDS</h4><div class="ds2-actions"><button data-ds2="observe">[01] OBSERVE ENVIRONMENT</button><button data-ds2="handler">[02] FAMILIAR HANDLER CONTACT</button><button data-ds2="quiet">[03] QUIET ENVIRONMENT</button><button data-ds2="novel">[04] NOVEL OBJECT TEST</button><button data-ds2="care">[05] RETURN TO CLINIC</button><button data-ds2="neuro">[06] OPEN NEURO TESTS</button></div></div>'+
+ '<div class="out"><h4>DECISION TRACE</h4><pre id="out">INPUT: thirst '+b.sensory.thirst+' / pain '+b.sensory.pain+' / threat '+b.sensory.threat+'\nMEMORY: '+b.memory.length+' stored experiences\nTRAIT: caution '+b.traitBias.caution+' / curiosity '+b.traitBias.curiosity+' / social '+b.traitBias.social+'\nNEED: '+b.need+'\nDECISION: '+b.decision+'\nACTION INTENT: '+b.intent+'</pre></div>';
+ document.querySelectorAll("[data-ds2]").forEach(x=>x.onclick=()=>brainAction(x.dataset.ds2));
+}
+function brainAction(x){
+ let a=A();
+ if(x==="care")return open("care");
+ if(x==="neuro"){return oldNeuroRenderer()}
+ if(x==="observe"){a.stress=clamp(a.stress-2);remember(a,"OBSERVATION","Environment observed without intervention.",35)}
+ if(x==="handler"){a.trust=clamp(a.trust+5);a.comfort=clamp(a.comfort+4);a.stress=clamp(a.stress-3);remember(a,"SOCIAL","Familiar handler contact associated with comfort.",70)}
+ if(x==="quiet"){a.stress=clamp(a.stress-8);a.comfort=clamp(a.comfort+6);remember(a,"SAFETY","Quiet environment associated with lower stress.",75)}
+ if(x==="novel"){a.stress=clamp(a.stress+3);remember(a,"NOVELTY","Novel object encountered and recorded.",55)}
+ compute(a,x.toUpperCase());save();renderBrain();
+}
+let oldNeuroRenderer=window.VetGodsPhase6&&window.VetGodsPhase6.renderNeuro ? window.VetGodsPhase6.renderNeuro : function(){};
+const priorProgram=program;
+program=function(k){if(k==="neuro")return renderBrain();return priorProgram(k)};
+const priorExec=execute;
+execute=function(k,i){
+ let a=A(),label=(ACTIONS[k]||[])[i]||"COMMAND";
+ priorExec(k,i);
+ if(k==="care"){
+   let positive=["OFFER WATER","PAIN CONTROL","OXYGEN SUPPORT","OFFER FOOD","PRIMARY TREATMENT"].includes(label);
+   remember(a,positive?"CARE":"CLINIC",label+" became part of the resident experience.",positive?70:40);
+   compute(a,label);save();
+ }
+};
+ensure2();
+window.VetGodsDynamicStats2={renderBrain,compute,remember};
+})();
+</script>
+
+<style id="dynamic-stats-p3-css">
+.ds3{border:1px solid #666;margin-top:8px}.ds3 h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.ds3-state{display:grid;grid-template-columns:repeat(2,1fr)}.ds3-state div{padding:6px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.ds3-state small{display:block;color:#777}.ds3-state b{color:#fff}
+.ds3-timeline{max-height:190px;overflow:auto}.ds3-event{padding:5px 7px;border-bottom:1px dotted #444;font-size:9px;line-height:1.45}.ds3-event b{color:#fff}
+.ds3-controls{display:grid;grid-template-columns:repeat(2,1fr)}.ds3-controls button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.ds3-controls button:hover{background:#c9c9c9;color:#000}
+.ds3-action{border:1px solid #888;margin:8px;padding:8px;text-align:center}.ds3-action small{display:block;color:#777}.ds3-action b{display:block;color:#fff;font-size:13px;margin-top:3px}
+@media(max-width:600px){.ds3-state,.ds3-controls{grid-template-columns:1fr}}
+</style>
+<script id="dynamic-stats-p3-js">
+(function(){
+"use strict";
+function A(){return state.animals[state.active]}
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+function ensure3(){
+ state.animals.forEach(a=>{
+  a.behavior=a.behavior||{mode:"OBSERVING",location:"CENTER",activity:"MONITOR ENVIRONMENT",linger:0,enabled:true,lastTick:Date.now(),timeline:[]};
+ });
+ save();
+}
+function choose(a){
+ if(window.VetGodsDynamicStats2)window.VetGodsDynamicStats2.compute(a,"BEHAVIOR TICK");
+ let b=a.brain,need=b.need,beh=a.behavior;
+ let map={
+  "WATER":["WATER STATION","DRINKING"],
+  "FOOD":["FEEDING STATION","EATING"],
+  "PAIN RELIEF":["QUIET BED","GUARDED REST"],
+  "SAFETY":["QUIET ZONE","WATCHING / HIDING"],
+  "REST":["REST STATION","SLEEPING"],
+  "OXYGEN":["CLINIC SUPPORT","LOW-EXERTION REST"]
+ };
+ let q=map[need]||["CENTER","OBSERVING"];
+ if(b.traitBias?.social>75 && a.trust>65 && need==="SAFETY")q=["HANDLER ZONE","SEEKING FAMILIAR CONTACT"];
+ beh.location=q[0];beh.activity=q[1];beh.mode=need;beh.linger=2+((a.id+beh.timeline.length)%4);
+ let line=new Date().toLocaleTimeString()+" · "+need+" -> "+beh.location+" -> "+beh.activity+" · linger "+beh.linger;
+ beh.timeline.unshift(line);beh.timeline=beh.timeline.slice(0,30);beh.lastTick=Date.now();
+}
+function applyBehavior(a){
+ let x=a.behavior.activity;
+ if(x==="DRINKING"){a.hydration=clamp(a.hydration+5);a.stress=clamp(a.stress-1)}
+ if(x==="EATING"){a.nutrition=clamp(a.nutrition+5);if(a.petStats)a.petStats.energy=clamp(a.petStats.energy+2)}
+ if(x==="GUARDED REST"){a.stress=clamp(a.stress-3);a.comfort=clamp(a.comfort+2)}
+ if(x==="WATCHING / HIDING"){a.stress=clamp(a.stress-2)}
+ if(x==="SLEEPING"){a.stress=clamp(a.stress-3);a.comfort=clamp(a.comfort+3);if(a.petStats)a.petStats.energy=clamp(a.petStats.energy+5)}
+ if(x==="LOW-EXERTION REST"){a.stress=clamp(a.stress-2)}
+ if(x==="SEEKING FAMILIAR CONTACT"){a.trust=clamp(a.trust+2);a.comfort=clamp(a.comfort+3)}
+ if(window.VetGodsDynamicStats2)window.VetGodsDynamicStats2.compute(a,"BEHAVIOR: "+x);
+}
+function tick(a,force){
+ let beh=a.behavior;if(!beh.enabled&&!force)return;
+ if(beh.linger>0&&!force){beh.linger--;beh.timeline.unshift(new Date().toLocaleTimeString()+" · LINGER · "+beh.activity+" @ "+beh.location+" · "+beh.linger+" cycles remaining");}
+ else choose(a);
+ applyBehavior(a);save();
+}
+function renderBehavior(){
+ page="neuro";nav();let a=A();tick(a,false);let x=a.behavior,b=a.brain;
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\BEHAVIOR\\'+a.name.toUpperCase()+'&gt;</div>'+
+ '<div class="ds3"><h4>BEHAVIOR.EXE — ACTIVE FICTIONAL RESIDENT LOOP</h4><div class="ds3-action"><small>CURRENT ACTIVITY</small><b>'+x.activity+'</b><small>'+x.location+' · driven by '+x.mode+'</small></div>'+
+ '<div class="ds3-state"><div><small>STRONGEST NEED</small><b>'+b.need+'</b></div><div><small>DECISION</small><b>'+b.decision+'</b></div><div><small>LOCATION</small><b>'+x.location+'</b></div><div><small>LINGER</small><b>'+x.linger+' cycles</b></div><div><small>AUTONOMY</small><b>'+(x.enabled?"ACTIVE":"PAUSED")+'</b></div><div><small>INTENT</small><b>'+b.intent+'</b></div></div></div>'+
+ '<div class="ds3"><h4>BEHAVIOR CONTROLS</h4><div class="ds3-controls"><button data-ds3="tick">[01] ADVANCE ONE BEHAVIOR CYCLE</button><button data-ds3="decide">[02] FORCE NEW DECISION</button><button data-ds3="brain">[03] OPEN BRAIN.EXE</button><button data-ds3="clinic">[04] OPEN CLINIC</button><button data-ds3="toggle">[05] '+(x.enabled?"PAUSE":"ENABLE")+' AUTONOMY</button><button data-ds3="clear">[06] CLEAR BEHAVIOR LOG</button></div></div>'+
+ '<div class="ds3"><h4>BEHAVIOR TIMELINE</h4><div class="ds3-timeline">'+(x.timeline.length?x.timeline.map(v=>'<div class="ds3-event"><b>&gt;</b> '+v+'</div>').join(""):'<div class="ds3-event">NO BEHAVIOR EVENTS.</div>')+'</div></div>'+
+ '<div class="out"><h4>CAUSE TRACE</h4><pre id="out">NEED: '+b.need+'\nDECISION: '+b.decision+'\nINTENT: '+b.intent+'\nACTION: '+x.activity+'\nLOCATION: '+x.location+'\n\nThe behavior action feeds back into hydration, nutrition, stress, comfort, trust or energy where applicable.</pre></div>';
+ document.querySelectorAll("[data-ds3]").forEach(q=>q.onclick=()=>cmd(q.dataset.ds3));
+}
+function cmd(c){
+ let a=A(),x=a.behavior;
+ if(c==="clinic")return open("care");
+ if(c==="brain")return window.VetGodsDynamicStats2.renderBrain();
+ if(c==="tick"){tick(a,true)}
+ if(c==="decide"){x.linger=0;choose(a);applyBehavior(a);save()}
+ if(c==="toggle"){x.enabled=!x.enabled;x.timeline.unshift(new Date().toLocaleTimeString()+" · AUTONOMY "+(x.enabled?"ENABLED":"PAUSED"));save()}
+ if(c==="clear"){x.timeline=[];save()}
+ renderBehavior();
+}
+const priorBrainRender=window.VetGodsDynamicStats2.renderBrain;
+function addBehaviorLink(){
+ let main=document.querySelector("#main");if(page!=="neuro"||!main||document.querySelector("#ds3link"))return;
+ let out=document.querySelector(".out");if(!out)return;let b=document.createElement("button");b.id="ds3link";b.className="action";b.textContent="[B7] OPEN ACTIVE BEHAVIOR LOOP";b.onclick=renderBehavior;out.insertAdjacentElement("beforebegin",b);
+}
+window.VetGodsDynamicStats2.renderBrain=function(){priorBrainRender();addBehaviorLink()};
+const priorProgram=program;
+program=function(k){priorProgram(k);if(k==="neuro")addBehaviorLink()};
+ensure3();
+window.VetGodsDynamicStats3={renderBehavior,tick,choose};
+})();
+</script>
+
+<style id="dynamic-stats-p4-css">
+.ds4{border:1px solid #666;margin-top:8px}.ds4 h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.ds4-chain{padding:7px;border-bottom:1px dotted #444;font-size:9px;line-height:1.55}.ds4-chain b{color:#fff}
+.ds4-grid{display:grid;grid-template-columns:repeat(2,1fr)}
+.ds4-card{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.ds4-card small{display:block;color:#777}.ds4-card b{color:#fff}
+.ds4-btns{display:grid;grid-template-columns:repeat(2,1fr)}
+.ds4-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.ds4-btns button:hover{background:#c9c9c9;color:#000}
+.ds4-trace{max-height:210px;overflow:auto}.ds4-event{padding:6px;border-bottom:1px dotted #444;font-size:9px;white-space:pre-wrap;line-height:1.45}.ds4-event b{color:#fff}
+@media(max-width:600px){.ds4-grid,.ds4-btns{grid-template-columns:1fr}}
+</style>
+<script id="dynamic-stats-p4-js">
+(function(){
+"use strict";
+function A(){return state.animals[state.active]}
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+const TRACK=["health","oxygen","hydration","pain","stress","trust","comfort","nutrition","mobility"];
+function ensure4(){
+ state.animals.forEach(a=>{a.feedback=a.feedback||{events:[],last:"NO INTERVENTION TRACE",score:50}});
+ save();
+}
+function snap(a){let o={};TRACK.forEach(k=>o[k]=Number(a[k]||0));o.energy=Number(a.petStats?.energy||0);return o}
+function deltas(before,a){
+ let after=snap(a),arr=[];
+ Object.keys(after).forEach(k=>{let d=after[k]-(before[k]||0);if(d)arr.push({k,d,v:after[k]})});
+ return arr;
+}
+function causal(label,changes,a){
+ let chain=[label];
+ changes.forEach(x=>chain.push(x.k.toUpperCase()+" "+(x.d>0?"+":"")+x.d+" -> "+x.v+"%"));
+ if(a.dynamic){chain.push("NEED -> "+a.dynamic.currentNeed);chain.push("HANDLING -> "+a.dynamic.handlingEase+"%");chain.push("RECOVERY -> "+a.dynamic.recoveryDrive+"%")}
+ if(a.brain){chain.push("DECISION -> "+a.brain.decision);chain.push("INTENT -> "+a.brain.intent)}
+ return chain.join("  =>  ");
+}
+function score(a){
+ let d=a.dynamic||{};return clamp((a.health*.2)+(a.oxygen*.15)+(a.hydration*.12)+((100-a.pain)*.12)+((100-a.stress)*.1)+(a.trust*.1)+(a.comfort*.08)+(a.nutrition*.07)+((d.recoveryDrive||50)*.06));
+}
+function record(a,label,before){
+ if(window.VetGodsDynamicStats1)window.VetGodsDynamicStats1.recalc(a,label);
+ if(window.VetGodsDynamicStats2)window.VetGodsDynamicStats2.compute(a,label);
+ let ch=deltas(before,a),line=causal(label,ch,a);a.feedback.last=line;a.feedback.score=score(a);
+ a.feedback.events.unshift({time:new Date().toLocaleTimeString(),label,chain:line,changes:ch});a.feedback.events=a.feedback.events.slice(0,30);save();
+}
+function renderFeedback(){
+ page="care";nav();let a=A(),f=a.feedback,d=a.dynamic,b=a.brain;
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\FEEDBACK\\'+a.name.toUpperCase()+'&gt;</div>'+
+ '<div class="ds4"><h4>FEEDBACK.EXE — INTERVENTION / CONSEQUENCE NETWORK</h4><div class="ds4-grid">'+
+ card("WHOLE-CASE SCORE",f.score+"%","fictional stability composite")+card("CURRENT NEED",d.currentNeed,"brain bus")+
+ card("RECOVERY DRIVE",d.recoveryDrive+"%","connected body state")+card("HANDLING EASE",d.handlingEase+"%","trust/safety/pain")+
+ card("DECISION",b.decision,"brain output")+card("INTENT",b.intent,"behavior target")+
+ '</div><div class="ds4-chain"><b>LATEST CAUSAL CHAIN</b><br>'+f.last+'</div></div>'+
+ '<div class="ds4"><h4>INTERVENTION SHORTCUTS</h4><div class="ds4-btns">'+
+ '<button data-ds4="water">[01] WATER INTERVENTION</button><button data-ds4="pain">[02] PAIN INTERVENTION</button>'+
+ '<button data-ds4="oxygen">[03] OXYGEN INTERVENTION</button><button data-ds4="food">[04] NUTRITION INTERVENTION</button>'+
+ '<button data-ds4="comfort">[05] COMFORT INTERVENTION</button><button data-ds4="rest">[06] REST INTERVENTION</button>'+
+ '<button data-ds4="brain">[07] OPEN BRAIN.EXE</button><button data-ds4="clinic">[08] RETURN TO CLINIC</button></div></div>'+
+ '<div class="ds4"><h4>CAUSAL TRACE HISTORY</h4><div class="ds4-trace">'+(f.events.length?f.events.map(e=>'<div class="ds4-event"><b>'+e.time+' · '+e.label+'</b>\n'+e.chain+'</div>').join(""):'<div class="ds4-event">NO INTERVENTIONS RECORDED.</div>')+'</div></div>';
+ document.querySelectorAll("[data-ds4]").forEach(x=>x.onclick=()=>cmd(x.dataset.ds4));
+}
+function card(k,v,n){return '<div class="ds4-card"><small>'+k+'</small><b>'+v+'</b><small>'+n+'</small></div>'}
+function cmd(c){
+ let a=A();if(c==="clinic")return open("care");if(c==="brain")return window.VetGodsDynamicStats2.renderBrain();
+ let before=snap(a),label="";
+ if(c==="water"){label="WATER INTERVENTION";a.hydration=clamp(a.hydration+10);a.stress=clamp(a.stress-2);a.comfort=clamp(a.comfort+2)}
+ if(c==="pain"){label="PAIN INTERVENTION";a.pain=clamp(a.pain-12);a.mobility=clamp(a.mobility+6);a.stress=clamp(a.stress-4);a.trust=clamp(a.trust+2)}
+ if(c==="oxygen"){label="OXYGEN INTERVENTION";a.oxygen=clamp(a.oxygen+7);a.health=clamp(a.health+2);a.stress=clamp(a.stress-2)}
+ if(c==="food"){label="NUTRITION INTERVENTION";a.nutrition=clamp(a.nutrition+10);if(a.petStats)a.petStats.energy=clamp(a.petStats.energy+5)}
+ if(c==="comfort"){label="COMFORT INTERVENTION";a.comfort=clamp(a.comfort+10);a.stress=clamp(a.stress-6);a.trust=clamp(a.trust+4)}
+ if(c==="rest"){label="REST INTERVENTION";a.stress=clamp(a.stress-5);a.comfort=clamp(a.comfort+5);if(a.petStats)a.petStats.energy=clamp(a.petStats.energy+10)}
+ record(a,label,before);renderFeedback();
+}
+const priorExec=execute;
+execute=function(k,i){
+ let a=A(),before=snap(a),label=(ACTIONS[k]||[])[i]||"COMMAND";
+ priorExec(k,i);
+ if(k==="care")record(a,label,before);
+};
+function addLink(){
+ if(page!=="care"||document.querySelector("#ds4link"))return;let out=document.querySelector(".out");if(!out)return;
+ let b=document.createElement("button");b.id="ds4link";b.className="action";b.textContent="[F9] OPEN FEEDBACK / CAUSAL NETWORK";b.onclick=renderFeedback;out.insertAdjacentElement("beforebegin",b);
+}
+const priorProgram=program;
+program=function(k){priorProgram(k);if(k==="care")addLink()};
+ensure4();if(page==="care")addLink();
+window.VetGodsDynamicStats4={renderFeedback,record};
+})();
+</script>
+
+<style id="dynamic-stats-p5-css">
+.ds5{border:1px solid #666;margin-top:8px}.ds5 h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.ds5-grid{display:grid;grid-template-columns:repeat(2,1fr)}.ds5-cell{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.ds5-cell small{display:block;color:#777}.ds5-cell b{color:#fff}
+.ds5-route{padding:7px;border-bottom:1px dotted #444;font-size:9px;line-height:1.55}.ds5-route b{color:#fff}
+.ds5-actions{display:grid;grid-template-columns:repeat(2,1fr)}.ds5-actions button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.ds5-actions button:hover{background:#c9c9c9;color:#000}
+.ds5-history{max-height:220px;overflow:auto}.ds5-event{padding:6px;border-bottom:1px dotted #444;font-size:9px;line-height:1.45}.ds5-event b{color:#fff}
+.ds5-loop{white-space:pre-wrap;padding:8px;color:#aaa;font-size:9px;line-height:1.5}.ds5-loop b{color:#fff}
+@media(max-width:600px){.ds5-grid,.ds5-actions{grid-template-columns:1fr}}
+</style>
+<script id="dynamic-stats-p5-js">
+(function(){
+"use strict";
+function A(){return state.animals[state.active]}
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+function ensure5(){
+ state.animals.forEach(a=>{
+  a.life=a.life||{experience:0,resilience:50,clinicFamiliarity:0,fieldExperience:0,sanctuaryBond:0,morphInfluence:0,neuroInfluence:0,story:[],lastContext:"INITIALIZED"};
+ });
+ save();
+}
+function sync(a,context){
+ if(window.VetGodsDynamicStats1)window.VetGodsDynamicStats1.recalc(a,context||"LIFE LOOP");
+ if(window.VetGodsDynamicStats2)window.VetGodsDynamicStats2.compute(a,context||"LIFE LOOP");
+ let l=a.life;
+ l.clinicFamiliarity=clamp(Math.min(100,(a.history||[]).length*3));
+ l.fieldExperience=clamp((a.fieldRank||0)*12+(a.missionLog||[]).length*2);
+ l.sanctuaryBond=clamp((a.petStats?.bond||a.trust||50));
+ l.morphInfluence=clamp(a.morphLocked?75:(a.morphHistory||[]).length*5);
+ l.neuroInfluence=clamp(Object.keys(a.neuroTests||{}).length*9);
+ l.experience=clamp((l.clinicFamiliarity*.25)+(l.fieldExperience*.2)+(l.sanctuaryBond*.2)+(l.morphInfluence*.15)+(l.neuroInfluence*.2));
+ l.resilience=clamp(((a.dynamic?.recoveryDrive||50)*.45)+(a.trust*.2)+((100-a.stress)*.15)+(l.experience*.2));
+ l.lastContext=context||l.lastContext;
+}
+function memory(a,type,text){
+ a.life.story.unshift({time:new Date().toLocaleTimeString(),type,text});
+ a.life.story=a.life.story.slice(0,40);
+}
+function cell(k,v,n){return '<div class="ds5-cell"><small>'+k+'</small><b>'+v+'</b><small>'+n+'</small></div>'}
+function renderLife(){
+ let a=A();sync(a,"LIFE.EXE INSPECTION");save();let l=a.life,d=a.dynamic,b=a.brain,x=a.behavior;
+ page="neuro";nav();
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\LIFE\\'+a.name.toUpperCase()+'&gt;</div>'+
+ '<div class="ds5"><h4>LIFE.EXE — LIVING CHARACTER NETWORK</h4><div class="ds5-grid">'+
+ cell("EXPERIENCE",l.experience+"%","combined history")+cell("RESILIENCE",l.resilience+"%","recovery + trust + experience")+
+ cell("CLINIC FAMILIARITY",l.clinicFamiliarity+"%","care history")+cell("SANCTUARY BOND",l.sanctuaryBond+"%","bond / trust")+
+ cell("FIELD EXPERIENCE",l.fieldExperience+"%","mission history")+cell("MORPH INFLUENCE",l.morphInfluence+"%","form history")+
+ cell("NEURO INFLUENCE",l.neuroInfluence+"%","completed fictional tests")+cell("CURRENT NEED",d.currentNeed,"dynamic engine")+
+ '</div><div class="ds5-route"><b>CURRENT INTERNAL ROUTE</b><br>BODY: '+d.currentNeed+' -> BRAIN: '+b.decision+' -> INTENT: '+b.intent+' -> BEHAVIOR: '+x.activity+' @ '+x.location+'</div></div>'+
+ '<div class="ds5"><h4>CROSS-PROGRAM ROUTER</h4><div class="ds5-actions">'+
+ '<button data-ds5="care">[01] CLINIC.EXE</button><button data-ds5="animals">[02] SANCTUARY.EXE</button>'+
+ '<button data-ds5="morph">[03] MORPH.EXE</button><button data-ds5="brain">[04] BRAIN.EXE</button>'+
+ '<button data-ds5="behavior">[05] BEHAVIOR.EXE</button><button data-ds5="feedback">[06] FEEDBACK.EXE</button>'+
+ '<button data-ds5="missions">[07] MISSIONS.EXE</button><button data-ds5="records">[08] RECORDS.EXE</button>'+
+ '<button data-ds5="cycle">[09] RUN LIVING CYCLE</button><button data-ds5="trace">[10] TRACE WHOLE NETWORK</button></div></div>'+
+ '<div class="ds5"><h4>WHOLE GAME LOOP</h4><div class="ds5-loop"><b>CARE</b> -> body stats -> <b>BRAIN</b> -> need/decision -> <b>BEHAVIOR</b> -> feedback\n'+
+ '<b>SANCTUARY</b> -> bond/needs -> brain memory\n<b>MORPH</b> -> persistent form influence\n<b>NEURO</b> -> fictional trait influence\n<b>MISSIONS</b> -> field experience / stress / trust\n<b>RECOVERY</b> -> resilience\n<b>RECORDS</b> -> permanent history\n\nAll paths return to the same resident state.</div></div>'+
+ '<div class="ds5"><h4>LIFE HISTORY</h4><div class="ds5-history">'+(l.story.length?l.story.map(e=>'<div class="ds5-event"><b>'+e.time+' · '+e.type+'</b><br>'+e.text+'</div>').join(""):'<div class="ds5-event">NO CROSS-PROGRAM LIFE EVENTS YET.</div>')+'</div></div>'+
+ '<div class="out"><h4>NETWORK OUTPUT</h4><pre id="out">LIFE NETWORK ONLINE.\nResident: '+a.name+'\nExperience: '+l.experience+'%\nResilience: '+l.resilience+'%\nCurrent need: '+d.currentNeed+'\nCurrent behavior: '+x.activity+'</pre></div>';
+ document.querySelectorAll("[data-ds5]").forEach(q=>q.onclick=()=>cmd(q.dataset.ds5));
+}
+function cmd(c){
+ let a=A();
+ if(["care","animals","morph","missions","records"].includes(c))return open(c);
+ if(c==="brain")return window.VetGodsDynamicStats2.renderBrain();
+ if(c==="behavior")return window.VetGodsDynamicStats3.renderBehavior();
+ if(c==="feedback")return window.VetGodsDynamicStats4.renderFeedback();
+ if(c==="cycle"){
+   window.VetGodsDynamicStats3.tick(a,true);sync(a,"MANUAL LIVING CYCLE");
+   memory(a,"LIVING CYCLE","Body, brain, behavior and recovery network advanced as one cycle.");save();return renderLife();
+ }
+ if(c==="trace"){
+   sync(a,"WHOLE NETWORK TRACE");save();
+   let o=document.querySelector("#out"),d=a.dynamic,b=a.brain,x=a.behavior,l=a.life;
+   o.textContent="WHOLE NETWORK TRACE\n\nBODY\n  need: "+d.currentNeed+"\n  recovery: "+d.recoveryDrive+"%\n  handling: "+d.handlingEase+"%\n\nBRAIN\n  decision: "+b.decision+"\n  intent: "+b.intent+"\n\nBEHAVIOR\n  activity: "+x.activity+"\n  location: "+x.location+"\n\nLIFE\n  experience: "+l.experience+"%\n  resilience: "+l.resilience+"%\n  clinic familiarity: "+l.clinicFamiliarity+"%\n  sanctuary bond: "+l.sanctuaryBond+"%\n  field experience: "+l.fieldExperience+"%";
+ }
+}
+function lifeEvent(a,type,text){sync(a,type);memory(a,type,text);save()}
+const oldExec=execute;
+execute=function(k,i){let a=A(),label=(ACTIONS[k]||[])[i]||"COMMAND";oldExec(k,i);if(k==="care")lifeEvent(a,"CARE",label+" changed the resident's continuing life state.")};
+const oldPet=typeof petAction==="function"?petAction:null;
+if(oldPet)petAction=function(a,x){let r=oldPet(a,x);lifeEvent(a,"SANCTUARY",x.toUpperCase()+" became part of sanctuary experience.");return r};
+function addLifeLink(){
+ if(!["care","neuro"].includes(page)||document.querySelector("#ds5link"))return;let out=document.querySelector(".out");if(!out)return;
+ let q=document.createElement("button");q.id="ds5link";q.className="action";q.textContent="[LIFE] OPEN LIVING CHARACTER NETWORK";q.onclick=renderLife;out.insertAdjacentElement("beforebegin",q);
+}
+const oldProgram=program;
+program=function(k){oldProgram(k);addLifeLink()};
+ensure5();addLifeLink();
+window.VetGodsDynamicStats5={renderLife,sync,lifeEvent};
+})();
+</script>
 </body></html>
