@@ -60,7 +60,10 @@ function load(){try{let x=JSON.parse(localStorage.getItem("vetGodsDosFresh1")||"
 function save(){localStorage.setItem("vetGodsDosFresh1",JSON.stringify(state))}
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],esc=s=>String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
 function active(){return state.animals[state.active]||state.animals[0]}
-function nav(){const navEl=$("#nav");navEl.innerHTML="";PROGRAMS.forEach(p=>{let b=document.createElement("button");b.textContent=p[0];b.className=p[1]===page?"on":"";b.onclick=()=>open(p[1]);navEl.appendChild(b)})}
+function nav(){
+ const navEl=$("#nav");navEl.innerHTML="";
+ PROGRAMS.forEach(p=>{let b=document.createElement("button");b.textContent=p[0];b.className=p[1]===page?"on":"";b.onclick=()=>open(p[1]);navEl.appendChild(b)})
+}
 function home(){page="home";nav();$("#main").innerHTML=`<div class="path">C:\\VETGODS&gt; DIR</div><div class="banner">╔══════════════════════════════════════════════════════╗
 ║      V E T   G O D S   D O S / O S   1 . 0         ║
 ╚══════════════════════════════════════════════════════╝</div>
@@ -859,7 +862,7 @@ function flow(n,a,b){return '<div class="p10-flowline"><b>['+n+'] '+a+'</b> :: '
 function syscmd(c){
  let o=document.querySelector("#out");
  if(c==="save"){save();o.textContent="SAVE COMPLETE\nLOCAL STORAGE UPDATED.\nRETURN CODE: 0 / OK";return}
- if(c==="newcase"){let start=(state.active+1)%state.animals.length;state.active=start;let a=A();a.stage="INTAKE";a.disposition="ACTIVE CASE";a.tests={};a.evidence=[];save();return open("care")}
+ if(c==="newcase"){state.active=(Number(state.active||0)+1)%state.animals.length;let a=A();if(!a)return open("care");a.stage="INTAKE";a.disposition="ACTIVE CASE";a.tests={};a.evidence=[];a.recoveryTicks=0;a.history=Array.isArray(a.history)?a.history:[];a.history.unshift(new Date().toLocaleTimeString()+" · NEW CASE STARTED");open("care");try{save()}catch(err){console.warn("NEW CASE save deferred:",err)}return}
  if(c==="resetcase"){let a=A();a.stage="INTAKE";a.disposition="ACTIVE CASE";a.health=82;a.pain=38;a.hydration=62;a.oxygen=92;a.trust=48;a.stress=48;a.comfort=52;a.tests={};a.evidence=[];a.recoveryTicks=0;a.history.unshift(new Date().toLocaleTimeString()+" · CASE RESET");save();dashboard();return}
  if(c==="help"){o.textContent="COMMANDS:\nHOME / CARE / CLINIC / ANIMALS / SANCTUARY\nMORPH / NEURO / MISSIONS / RECORDS / CERTS / SHIP\n\nNUMBER KEYS may select visible DOS options.\nESC returns HOME.\nF1-F6 open primary programs.";return}
  if(c==="diagnostic"){let checks=[["ANIMALS",state.animals.length>0],["ACTIVE RECORD",!!A()],["SUPPLIES",!!state.supplies],["SHIP",!!state.ship],["MISSIONS",Array.isArray(state.missionHistory)],["CERTIFICATES",Array.isArray(state.certificates)],["LOCAL SAVE",true]];o.textContent="SYSTEM DIAGNOSTIC\n"+checks.map(x=>(x[1]?"[OK] ":"[FAIL] ")+x[0]).join("\n")+"\n\n"+(checks.every(x=>x[1])?"ALL PRIMARY SYSTEMS NOMINAL.":"SYSTEM ATTENTION REQUIRED.");return}
@@ -1469,10 +1472,10 @@ const SCENES={
 };
 function A(){return state.animals[state.active]}
 const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
-function active(){return state.paranormal&&state.paranormal.active}
-function cdef(){let p=active();return p?SCENES[p.template]:null}
+function activeParanormalCase(){return state.paranormal&&state.paranormal.active}
+function cdef(){let p=activeParanormalCase();return p?SCENES[p.template]:null}
 function ensure2(){
- let p=active();
+ let p=activeParanormalCase();
  if(p){
   p.investigation=p.investigation||{step:0,findings:[],fieldEvidence:[],interviews:[],sceneVisits:0,uncertainty:85,ordinarySupport:15,anomalySupport:10,contradictions:0};
  }
@@ -1481,7 +1484,7 @@ function ensure2(){
 function stage(x){return '<div class="pr2-stage">'+FLOW.map((v,i)=>'<span class="'+(i<x.step?"done":i===x.step?"now":"")+'">'+(i<x.step?"[X] ":i===x.step?"[>] ":"[ ] ")+v+'</span>').join("")+'</div>'}
 function meter(k,v){return '<div class="pr2-meter"><span>'+k+'</span><div class="pr2-bar"><i style="width:'+clamp(v)+'%"></i></div><b>'+clamp(v)+'%</b></div>'}
 function renderInvestigation(){
- let p=active();if(!p)return window.VetGodsParanormal1.renderParanormal();
+ let p=activeParanormalCase();if(!p)return window.VetGodsParanormal1.renderParanormal();
  ensure2();page="paranormal";nav();let x=p.investigation,d=cdef(),a=state.animals.find(q=>q.id===p.animalId)||A();
  let body='<div class="path">C:\\VETGODS\\PARANORMAL\\FIELD&gt;</div>'+
  '<div class="pr2"><h4>INVESTIGATE.EXE — '+p.template+'</h4><div class="pr2-scene">'+sceneText(x,d)+'</div></div>'+stage(x)+
@@ -1518,16 +1521,16 @@ function animalBox(a,x){
  '<br>brain intent: '+(b.intent||"MONITOR ENVIRONMENT")+
  '<br><small>Animal reactions are fictional gameplay signals and are not treated as paranormal proof.</small></div>';
 }
-function note(x,type,text){x.findings.unshift({type,text,time:Date.now()});state.paranormal.log.unshift(active().template+" · "+type+" · "+text)}
+function note(x,type,text){x.findings.unshift({type,text,time:Date.now()});state.paranormal.log.unshift(activeParanormalCase().template+" · "+type+" · "+text)}
 function animalReact(a,kind){
  if(kind==="enter"){a.stress=clamp(a.stress+2)}
  if(kind==="observe"){a.stress=clamp(a.stress+1);a.trust=clamp(a.trust+1)}
  if(kind==="interview"){a.stress=clamp(a.stress-1)}
  if(window.VetGodsDynamicStats2)window.VetGodsDynamicStats2.compute(a,"PARANORMAL FIELD "+kind.toUpperCase());
- if(window.VetGodsDynamicStats5)window.VetGodsDynamicStats5.lifeEvent(a,"FIELD RESEARCH","Participated in fictional paranormal case "+active().template+" during "+kind+".");
+ if(window.VetGodsDynamicStats5)window.VetGodsDynamicStats5.lifeEvent(a,"FIELD RESEARCH","Participated in fictional paranormal case "+activeParanormalCase().template+" during "+kind+".");
 }
 function act(cmd){
- let p=active(),x=p.investigation,d=cdef(),a=state.animals.find(q=>q.id===p.animalId)||A();
+ let p=activeParanormalCase(),x=p.investigation,d=cdef(),a=state.animals.find(q=>q.id===p.animalId)||A();
  if(cmd==="case")return window.VetGodsParanormal1.renderParanormal();
  if(cmd==="enter"&&x.step===0){x.sceneVisits++;x.step=1;note(x,"SCENE","Controlled entry completed.");animalReact(a,"enter")}
  else if(cmd==="observe"&&x.step===1){x.step=2;note(x,"OBSERVATION",d.observe);animalReact(a,"observe");x.uncertainty-=5}
@@ -1541,7 +1544,7 @@ function act(cmd){
 const oldRender=window.VetGodsParanormal1.renderParanormal;
 window.VetGodsParanormal1.renderParanormal=function(){
  oldRender();
- let p=active();if(!p)return;
+ let p=activeParanormalCase();if(!p)return;
  ensure2();
  let out=document.querySelector(".out");if(!out||document.querySelector("#pr2open"))return;
  let b=document.createElement("button");b.id="pr2open";b.className="action";b.textContent="[INV] ENTER DEEP FIELD INVESTIGATION";b.onclick=renderInvestigation;out.insertAdjacentElement("beforebegin",b);
@@ -3772,6 +3775,30 @@ function addHome(){
 const oldHome=home;home=function(){oldHome();addHome()};
 ensureN();addHome();
 window.VetGodsFinal20={renderNexus,stats,report};
+})();
+</script>
+
+
+<script id="newcase-saveblock-fallback">
+(function(){
+function goNewCase(){
+ if(!window.state && typeof state==="undefined")return;
+ let list=state.animals||[]; if(!list.length){ if(typeof open==="function")open("care"); return; }
+ state.active=(Number(state.active||0)+1)%list.length;
+ let a=list[state.active];
+ a.stage="INTAKE";a.disposition="ACTIVE CASE";a.tests={};a.evidence=[];a.recoveryTicks=0;
+ a.history=Array.isArray(a.history)?a.history:[];
+ a.history.unshift(new Date().toLocaleTimeString()+" · NEW CASE STARTED");
+ // NAVIGATE FIRST. Persistence must never be allowed to block the button.
+ open("care");
+ try{save()}catch(e){console.warn("Persistence error after NEW CASE navigation",e)}
+}
+document.addEventListener("click",function(e){
+ let b=e.target.closest&&e.target.closest("[data-p10='newcase']");
+ if(!b)return;
+ e.preventDefault();e.stopImmediatePropagation();
+ goNewCase();
+},true);
 })();
 </script>
 </body></html>
