@@ -266,4 +266,619 @@ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",
 else setTimeout(check,50);
 })();
 </script>
+
+<style id="phase3-css">
+.p3-shop{border:1px solid #666;margin-top:8px}.p3-shop h4,.p3-owner h4,.p3-disposition h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.p3-shopgrid{display:grid;grid-template-columns:repeat(2,1fr)}.p3-buy{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.p3-buy:hover{background:#c9c9c9;color:#000}.p3-buy small{display:block;color:#777}
+.p3-owner,.p3-disposition{border:1px solid #666;margin-top:8px}.p3-owner .row,.p3-disposition .row{padding-left:6px;padding-right:6px}
+.p3-buttons{display:grid;grid-template-columns:repeat(2,1fr)}.p3-buttons button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.p3-buttons button:hover{background:#c9c9c9;color:#000}
+.p3-ready{border:1px solid #888;padding:6px;margin-top:8px;font-size:9px}.p3-ready b{color:#fff}
+@media(max-width:600px){.p3-shopgrid,.p3-buttons{grid-template-columns:1fr}}
+</style>
+<script id="phase3-js">
+(function(){
+"use strict";
+const shopItems=[
+ ["OXYGEN CANISTER","oxygen",4,18],["FLUID PACK","fluids",4,12],["ANALGESIA PACK","analgesia",3,16],
+ ["NUTRITION PACK","food",6,10],["DIAGNOSTIC KIT","diagnostic",4,14],["COMFORT KIT","comfort",3,9]
+];
+function A(){return state.animals[state.active]}
+function ensure3(){
+ state.supplies=state.supplies||{};
+ if(!Number.isFinite(state.supplies.comfort))state.supplies.comfort=4;
+ state.animals.forEach((a,i)=>{
+   a.owner=a.owner||(["Mara Vale","No listed guardian","Jon Bell","Community rescue"][i%4]);
+   a.ownerFunds=Number.isFinite(a.ownerFunds)?a.ownerFunds:[120,0,55,20][i%4];
+   a.coverage=a.coverage||(["PRIVATE","MERCY REVIEW","LIMITED","RESCUE FUND"][i%4]);
+   a.backstory=a.backstory||([
+    "Found exhausted after a long transport and brought to the orbital clinic.",
+    "Recovered without an identified guardian; sanctuary placement may be required.",
+    "Guardian requested emergency stabilization after sudden decline.",
+    "Transferred by a community rescue signal for evaluation and recovery."
+   ][i%4]);
+   a.adoptable=!!a.adoptable;a.homeStatus=a.homeStatus||"NOT ASSIGNED";
+ });
+ save();
+}
+function supplies(){
+ let x=state.supplies;
+ return '<div class="p3-ready"><b>SUPPLY BAY:</b> O2 '+(x.oxygen||0)+' | FLUID '+(x.fluids||0)+' | ANALGESIA '+(x.analgesia||0)+' | FOOD '+(x.food||0)+' | DIAG '+(x.diagnostic||0)+' | COMFORT '+(x.comfort||0)+'</div>';
+}
+function shop(){
+ return '<div class="p3-shop"><h4>SUPPLY.EXE — FICTIONAL CLINIC INVENTORY</h4><div class="p3-shopgrid">'+shopItems.map((x,i)=>'<button class="p3-buy" data-buy="'+i+'">['+String(i+1).padStart(2,"0")+'] '+x[0]+' — $'+x[3]+'<small>adds '+x[2]+' units</small></button>').join("")+'</div></div>';
+}
+function owner(a){
+ return '<div class="p3-owner"><h4>OWNER / RESCUE INTAKE</h4><div class="row"><span>REPORTED BY</span><b>'+a.owner+'</b></div><div class="row"><span>AVAILABLE FUNDS</span><b>$'+a.ownerFunds+'</b></div><div class="row"><span>COVERAGE</span><b>'+a.coverage+'</b></div><div class="row"><span>BACKGROUND</span><b>'+a.backstory+'</b></div></div>';
+}
+function disposition(a){
+ return '<div class="p3-disposition"><h4>CASE DISPOSITION</h4><div class="row"><span>STATUS</span><b>'+a.disposition+'</b></div><div class="row"><span>HOME STATUS</span><b>'+a.homeStatus+'</b></div><div class="p3-buttons"><button id="p3home">[H1] SEND HOME</button><button id="p3keep">[H2] SANCTUARY / MY ANIMALS</button></div></div>';
+}
+function inject(){
+ if(page!=="care")return;let a=A(),c=document.querySelector(".content");if(!c)return;
+ let top=document.querySelector("#p1top");if(top&&!document.querySelector("#p3owner")){let d=document.createElement("div");d.id="p3owner";d.innerHTML=owner(a)+supplies();top.insertAdjacentElement("afterend",d)}
+ let out=document.querySelector(".out");if(out&&!document.querySelector("#p3shop")){let d=document.createElement("div");d.id="p3shop";d.innerHTML=shop();out.insertAdjacentElement("afterend",d);document.querySelectorAll("[data-buy]").forEach(b=>b.onclick=()=>buy(+b.dataset.buy))}
+ if(a.stage==="DISCHARGE"&&out&&!document.querySelector("#p3disp")){let d=document.createElement("div");d.id="p3disp";d.innerHTML=disposition(a);out.insertAdjacentElement("beforebegin",d);document.querySelector("#p3home").onclick=sendHome;document.querySelector("#p3keep").onclick=keep}
+}
+function buy(i){
+ let x=shopItems[i];if(!x)return;
+ if(state.credits<x[3]){let o=document.querySelector("#out");if(o)o.textContent="PURCHASE DENIED\nINSUFFICIENT FICTIONAL CLINIC FUNDS.";return}
+ state.credits-=x[3];state.supplies[x[1]]=(state.supplies[x[1]]||0)+x[2];
+ state.logs.unshift("SUPPLY PURCHASE · "+x[0]+" · -$"+x[3]);save();program("care")
+}
+function sendHome(){
+ let a=A();a.homeStatus="RETURNED TO GUARDIAN";a.disposition="CLOSED / HOME";a.adoptable=false;a.history.unshift(new Date().toLocaleTimeString()+" · RETURNED HOME");save();program("care")
+}
+function keep(){
+ let a=A();a.homeStatus="SANCTUARY RESIDENT";a.disposition="CLOSED / SANCTUARY";a.adoptable=true;a.history.unshift(new Date().toLocaleTimeString()+" · ENTERED SANCTUARY");save();program("care")
+}
+const p3Program=program;
+program=function(k){p3Program(k);if(k==="care")inject()};
+ensure3();
+if(page==="care")program("care");
+window.VetGodsPhase3={buy,sendHome,keep};
+})();
+</script>
+
+<style id="phase4-css">
+.p4-san{border:1px solid #666;margin-top:8px}.p4-san h4,.p4-detail h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.p4-res{display:grid;grid-template-columns:repeat(2,1fr)}
+.p4-res button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:8px;text-align:left;font:700 9px "Courier New",monospace}
+.p4-res button:hover{background:#c9c9c9;color:#000}.p4-res small{display:block;color:#777;margin-top:3px}
+.p4-detail{border:1px solid #666;margin-top:8px}.p4-actions{display:grid;grid-template-columns:repeat(2,1fr)}
+.p4-actions button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}
+.p4-actions button:hover{background:#c9c9c9;color:#000}
+.p4-clock{border:1px solid #666;padding:6px;margin-top:8px;font-size:9px;color:#999}.p4-clock b{color:#fff}
+.p4-empty{padding:12px;border:1px solid #666;color:#888;font-size:10px}
+@media(max-width:600px){.p4-res,.p4-actions{grid-template-columns:1fr}}
+</style>
+<script id="phase4-js">
+(function(){
+"use strict";
+let sanctuarySelected=null;
+function ensure4(){
+ state.animals.forEach(a=>{
+  a.petStats=a.petStats||{food:78,water:82,comfort:72,training:25,bond:55,energy:70};
+  a.lastPetTick=Number.isFinite(a.lastPetTick)?a.lastPetTick:Date.now();
+  a.petLog=a.petLog||[];
+ });
+ save();
+}
+function residents(){
+ return state.animals.filter(a=>a.homeStatus==="SANCTUARY RESIDENT"||a.adoptable);
+}
+function decay(a){
+ let now=Date.now(),hours=Math.floor((now-a.lastPetTick)/3600000);
+ if(hours<=0)return;
+ a.petStats.food=Math.max(0,a.petStats.food-hours*2);
+ a.petStats.water=Math.max(0,a.petStats.water-hours*2);
+ a.petStats.comfort=Math.max(0,a.petStats.comfort-hours);
+ a.petStats.energy=Math.max(0,a.petStats.energy-hours);
+ a.lastPetTick+=hours*3600000;
+}
+function meter(k,v){return '<div class="meter"><span>'+k+'</span><div class="bar"><i style="width:'+v+'%"></i></div><b>'+v+'%</b></div>'}
+function renderSanctuary(){
+ page="animals";nav();let list=residents();list.forEach(decay);save();
+ let h='<div class="path">C:\\VETGODS\\SANCTUARY&gt; DIR /MY_ANIMALS</div><div class="head">MY ANIMALS / SANCTUARY — '+list.length+' RESIDENTS</div>';
+ if(!list.length)h+='<div class="p4-empty">NO SANCTUARY RESIDENTS YET.<br><br>Complete a clinic case and choose SANCTUARY / MY ANIMALS at disposition.</div>';
+ else h+='<div class="p4-res">'+list.map((a,i)=>'<button data-p4res="'+a.id+'">['+String(i+1).padStart(2,"0")+'] '+a.icon+' '+a.name+'<small>'+a.species+' · '+a.homeStatus+'</small></button>').join("")+'</div>';
+ document.querySelector("#main").innerHTML=h;
+ document.querySelectorAll("[data-p4res]").forEach(b=>b.onclick=()=>{sanctuarySelected=+b.dataset.p4res;renderResident()});
+}
+function renderResident(){
+ let a=state.animals.find(x=>x.id===sanctuarySelected);if(!a)return renderSanctuary();decay(a);save();
+ let p=a.petStats;
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\SANCTUARY\\'+a.name.toUpperCase()+'&gt;</div>'+
+ '<button class="action" id="p4back">[ESC] RETURN TO RESIDENT DIRECTORY</button>'+
+ '<div class="p4-detail"><h4>'+a.icon+' '+a.name+' — INDIVIDUAL RESIDENT CONSOLE</h4>'+
+ '<div class="row"><span>SPECIES</span><b>'+a.species+'</b></div><div class="row"><span>CASE ID</span><b>'+a.caseId+'</b></div><div class="row"><span>TEMPERAMENT</span><b>'+a.temperament+'</b></div><div class="row"><span>BACKGROUND</span><b>'+a.backstory+'</b></div>'+
+ meter("FOOD",p.food)+meter("WATER",p.water)+meter("COMFORT",p.comfort)+meter("ENERGY",p.energy)+meter("BOND",p.bond)+meter("TRAINING",p.training)+
+ '<div class="p4-actions"><button data-p4act="food">[01] FEED</button><button data-p4act="water">[02] WATER</button><button data-p4act="comfort">[03] COMFORT</button><button data-p4act="play">[04] PLAY</button><button data-p4act="train">[05] TRAIN</button><button data-p4act="rest">[06] QUIET REST</button><button data-p4act="clinic">[07] SEND TO CLINIC</button><button data-p4act="remove">[08] RELEASE / REMOVE</button></div></div>'+
+ '<div class="p4-clock"><b>OFFLINE SIM:</b> food, water, comfort and energy decay by elapsed real-world hours — not seconds.</div>'+
+ '<div class="p1-log">'+(a.petLog.length?a.petLog.slice(0,10).map(x=>'<div><b>&gt;</b> '+x+'</div>').join(""):'<div>NO SANCTUARY ACTIVITY YET.</div>')+'</div>';
+ document.querySelector("#p4back").onclick=renderSanctuary;
+ document.querySelectorAll("[data-p4act]").forEach(b=>b.onclick=()=>petAction(a,b.dataset.p4act));
+}
+function petAction(a,x){
+ let p=a.petStats,label=x.toUpperCase();
+ if(x==="food"){p.food=Math.min(100,p.food+18);p.bond=Math.min(100,p.bond+2)}
+ if(x==="water"){p.water=Math.min(100,p.water+20)}
+ if(x==="comfort"){p.comfort=Math.min(100,p.comfort+15);p.bond=Math.min(100,p.bond+4)}
+ if(x==="play"){p.energy=Math.max(0,p.energy-8);p.comfort=Math.min(100,p.comfort+8);p.bond=Math.min(100,p.bond+5)}
+ if(x==="train"){p.training=Math.min(100,p.training+6);p.energy=Math.max(0,p.energy-6);p.bond=Math.min(100,p.bond+3)}
+ if(x==="rest"){p.energy=Math.min(100,p.energy+18);p.comfort=Math.min(100,p.comfort+6)}
+ if(x==="clinic"){state.active=a.id;a.stage="INTAKE";a.disposition="ACTIVE CASE";a.petLog.unshift(new Date().toLocaleTimeString()+" · TRANSFERRED TO CLINIC");save();return open("care")}
+ if(x==="remove"){a.homeStatus="RELEASED";a.adoptable=false;a.petLog.unshift(new Date().toLocaleTimeString()+" · RELEASED FROM SANCTUARY");save();return renderSanctuary()}
+ a.petLog.unshift(new Date().toLocaleTimeString()+" · "+label);save();renderResident();
+}
+const oldAnimals=animals;
+animals=function(){renderSanctuary()};
+ensure4();
+window.VetGodsPhase4={renderSanctuary,renderResident};
+})();
+</script>
+
+<style id="phase5-css">
+.p5-morphhead{border:1px solid #666;padding:6px;margin:7px 0;font-size:9px}
+.p5-morphhead b{color:#fff}.p5-slots{display:grid;grid-template-columns:repeat(2,1fr);border:1px solid #666;margin-top:7px}
+.p5-slot{padding:6px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.p5-slot small{display:block;color:#777}.p5-slot b{color:#fff}
+.p5-parts{display:grid;grid-template-columns:repeat(2,1fr);border:1px solid #666;margin-top:7px}
+.p5-part{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;text-align:left;padding:7px;font:700 9px "Courier New",monospace}
+.p5-part:hover,.p5-part.on{background:#c9c9c9;color:#000}.p5-part small{display:block;color:#777}.p5-part:hover small,.p5-part.on small{color:#222}
+.p5-preview{border:1px solid #777;margin-top:8px;padding:8px;text-align:center}
+.p5-creature{font-size:42px;line-height:1.1}.p5-form{color:#fff;font-weight:900;margin-top:5px}.p5-preview small{display:block;color:#777;margin-top:4px}
+.p5-lock{border:1px solid #777;padding:6px;margin-top:8px;font-size:9px}.p5-lock b{color:#fff}
+@media(max-width:600px){.p5-slots,.p5-parts{grid-template-columns:1fr}.p5-creature{font-size:34px}}
+</style>
+<script id="phase5-js">
+(function(){
+"use strict";
+const PARTS={
+ body:[["WOLF FRAME","Wolf"],["FELINE FRAME","Feline"],["RAPTOR FRAME","Raptor"],["REPTILE FRAME","Reptile"],["AQUATIC FRAME","Aquatic"],["INSECT FRAME","Insect"]],
+ head:[["WOLF HEAD","Wolf"],["OWL HEAD","Owl"],["DRAGON HEAD","Dragon"],["FOX HEAD","Fox"],["SERPENT HEAD","Serpent"],["MANTIS HEAD","Mantis"]],
+ mobility:[["OWL WINGS","Wings"],["MANTA FINS","Fins"],["RUNNER LEGS","Runner"],["CLIMBER LIMBS","Climber"],["GLIDER MEMBRANE","Glider"],["NONE","Standard"]],
+ tail:[["WOLF TAIL","Wolf"],["FELINE TAIL","Feline"],["SERPENT TAIL","Serpent"],["AQUATIC TAIL","Aquatic"],["SCORPION TAIL","Scorpion"],["NONE","None"]],
+ trait:[["CALM","Calm"],["GUARDIAN","Guardian"],["CURIOUS","Curious"],["NIGHT SENSE","Night"],["AQUATIC SENSE","Aquatic"],["TRACKER","Tracker"]]
+};
+function A(){return state.animals[state.active]}
+function ensure5(){
+ state.animals.forEach(a=>{
+  a.morphBuild=a.morphBuild||{body:"BASE",head:"BASE",mobility:"STANDARD",tail:"BASE",trait:"UNSET"};
+  a.morphLocked=!!a.morphLocked;a.morphHistory=a.morphHistory||[];
+ });
+ save();
+}
+function formName(a){let m=a.morphBuild;return [m.body,m.head,m.mobility,m.tail,m.trait].filter(x=>!["BASE","STANDARD","UNSET","None"].includes(x)).join(" / ")||"ORIGINAL FORM"}
+function slots(a){return '<div class="p5-slots">'+Object.entries(a.morphBuild).map(([k,v])=>'<div class="p5-slot"><small>'+k.toUpperCase()+' SOCKET</small><b>'+v+'</b></div>').join("")+'</div>'}
+function preview(a){return '<div class="p5-preview"><div class="p5-creature">'+a.icon+'</div><div class="p5-form">'+a.name+' :: '+formName(a)+'</div><small>TEXT-MODE MORPH PREVIEW / AUTHORIZED FICTIONAL RESEARCH</small></div>'}
+function renderMorph(){
+ page="morph";nav();let a=A(),m=a.morphBuild;
+ let h='<div class="path">C:\\VETGODS\\MORPH&gt;</div><div class="p5-morphhead"><b>SUBJECT:</b> '+a.icon+' '+a.name+' / '+a.species+' &nbsp; <b>STATE:</b> '+(a.morphLocked?"FORM CEMENTED":"EDITABLE")+'</div>'+preview(a)+slots(a);
+ if(a.morphLocked){
+   h+='<div class="p5-lock"><b>FORM LOCKED.</b> This resident has a cemented morph configuration. The saved form remains visible but is not accidentally editable.</div><button class="action" id="p5new">[N1] AUTHORIZE NEW RESEARCH REVISION</button>';
+ }else{
+   Object.entries(PARTS).forEach(([cat,arr])=>{
+    h+='<div class="head" style="margin-top:8px">'+cat.toUpperCase()+'.LIB</div><div class="p5-parts">'+arr.map((x,i)=>'<button class="p5-part '+(m[cat]===x[1]?"on":"")+'" data-cat="'+cat+'" data-val="'+x[1]+'">['+String(i+1).padStart(2,"0")+'] '+x[0]+'<small>INSTALL '+cat.toUpperCase()+' LAYER</small></button>').join("")+'</div>';
+   });
+   h+='<button class="action" id="p5final" style="margin-top:8px">[F1] CEMENT / FINALIZE CURRENT FORM</button>';
+ }
+ h+='<div class="out"><h4>MORPH RESEARCH LOG</h4><pre id="out">'+(a.morphHistory.length?a.morphHistory.slice(0,10).join("\n"):"NO MORPH OPERATIONS RECORDED.")+'</pre></div>';
+ document.querySelector("#main").innerHTML=h;
+ document.querySelectorAll("[data-cat]").forEach(b=>b.onclick=()=>install(b.dataset.cat,b.dataset.val));
+ let f=document.querySelector("#p5final");if(f)f.onclick=finalize;
+ let n=document.querySelector("#p5new");if(n)n.onclick=()=>{a.morphLocked=false;a.morphHistory.unshift(new Date().toLocaleTimeString()+" · NEW AUTHORIZED REVISION OPENED");save();renderMorph()};
+}
+function install(cat,val){
+ let a=A();if(a.morphLocked)return;
+ a.morphBuild[cat]=val;a.morph="MORPH IN PROGRESS";a.morphHistory.unshift(new Date().toLocaleTimeString()+" · "+cat.toUpperCase()+" -> "+val);
+ state.research=Math.max(0,(state.research||0)-1);save();renderMorph();
+}
+function finalize(){
+ let a=A();a.morphLocked=true;a.morph="CEMENTED: "+formName(a);a.stage=a.stage==="DISCHARGE"?a.stage:"MORPH COMPLETE";
+ a.morphHistory.unshift(new Date().toLocaleTimeString()+" · FORM CEMENTED · "+formName(a));state.research=(state.research||0)+5;save();renderMorph();
+}
+const p5Program=program;
+program=function(k){if(k==="morph")return renderMorph();return p5Program(k)};
+ensure5();
+window.VetGodsPhase5={renderMorph,install,finalize};
+})();
+</script>
+
+<style id="phase6-css">
+.p6-neuro{border:1px solid #666;margin-top:8px}.p6-neuro h4,.p6-test h4,.p6-map h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.p6-map{border:1px solid #666;margin-top:8px}.p6-brain{white-space:pre;overflow:auto;text-align:center;color:#fff;padding:8px;font-size:9px;line-height:1.15}
+.p6-test{border:1px solid #666;margin-top:8px}.p6-tests{display:grid;grid-template-columns:repeat(2,1fr)}
+.p6-tests button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;text-align:left;padding:7px;font:700 9px "Courier New",monospace}
+.p6-tests button:hover{background:#c9c9c9;color:#000}.p6-tests small{display:block;color:#777}
+.p6-result{padding:6px;border-bottom:1px dotted #444;font-size:9px}.p6-result b{color:#fff}
+.p6-note{border:1px solid #777;margin-top:8px;padding:6px;color:#999;font-size:9px}.p6-note b{color:#fff}
+@media(max-width:600px){.p6-tests{grid-template-columns:1fr}.p6-brain{font-size:7px}}
+</style>
+<script id="phase6-js">
+(function(){
+"use strict";
+const TESTS=[
+ ["ORIENTATION SCAN","orientation"],["MOTOR PATHWAY","motor"],["MEMORY TRACE","memory"],
+ ["SENSORY RESPONSE","sensory"],["TRUST RESPONSE","trust"],["NOVELTY RESPONSE","novelty"],
+ ["STRESS RECOVERY","recovery"],["SOCIAL SIGNAL","social"],["MOBILITY LINK","mobility"],["TRAIT SYNTHESIS","traits"]
+];
+function A(){return state.animals[state.active]}
+function ensure6(){
+ state.animals.forEach((a,i)=>{
+  a.neuro=a.neuro||{
+   orientation:55+(i*7)%36,motor:50+(i*9)%42,memory:48+(i*11)%44,sensory:58+(i*5)%38,
+   trust:a.trust||50,novelty:45+(i*13)%48,recovery:52+(i*3)%40,social:47+(i*17)%46,
+   mobility:a.mobility||70,traits:50+(i*19)%45
+  };
+  a.neuroTests=a.neuroTests||{};
+  a.neuroLog=a.neuroLog||[];
+ });
+ save();
+}
+function meter(k,v){return '<div class="meter"><span>'+k+'</span><div class="bar"><i style="width:'+v+'%"></i></div><b>'+v+'%</b></div>'}
+function brain(){
+ return `<div class="p6-map"><h4>NEURAL ATLAS / FICTIONAL SIMULATION</h4><div class="p6-brain">
+              .-----------------------.
+          .--'   SENSORY / ORIENT.     '--.
+        .'     MEMORY       TRAITS         '.
+       /    [ M ]-----------[ T ]            \\
+      |       \\             /                 |
+      |        \\  CORE BUS /                  |
+      |     [MOTOR]-------[SOCIAL]             |
+       \\         \\       /                  /
+        '.       STRESS / RECOVERY          .'
+          '--._________________________.--'
+                   ||       ||
+                MOBILITY  RESPONSE
+</div></div>`;
+}
+function renderNeuro(){
+ page="neuro";nav();let a=A(),n=a.neuro;
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\NEURO&gt;</div>'+
+ '<div class="p6-neuro"><h4>NEURO.EXE — '+a.icon+' '+a.name+'</h4><div class="row"><span>SPECIES</span><b>'+a.species+'</b></div><div class="row"><span>CASE ID</span><b>'+a.caseId+'</b></div><div class="row"><span>MODE</span><b>FICTIONAL TRAIT / RESPONSE SIMULATION</b></div></div>'+
+ brain()+
+ '<div class="head" style="margin-top:8px">LIVE SIMULATED READOUTS</div>'+
+ meter("ORIENTATION",n.orientation)+meter("MOTOR",n.motor)+meter("MEMORY",n.memory)+meter("SENSORY",n.sensory)+meter("TRUST",n.trust)+meter("NOVELTY",n.novelty)+meter("RECOVERY",n.recovery)+meter("SOCIAL",n.social)+meter("MOBILITY",n.mobility)+meter("TRAIT INDEX",n.traits)+
+ '<div class="p6-test"><h4>TEST COMMANDS</h4><div class="p6-tests">'+TESTS.map((x,i)=>'<button data-p6="'+i+'">['+String(i+1).padStart(2,"0")+'] '+x[0]+'<small>'+((a.neuroTests[x[1]]||{}).status||"NOT RUN")+'</small></button>').join("")+'</div></div>'+
+ '<div class="p6-test"><h4>TEST RESULTS</h4>'+results(a)+'</div>'+
+ '<div class="p6-note"><b>SIMULATION NOTICE:</b> These gauges are fictional game variables for the resident character. They are not real veterinary neurological or personality diagnoses.</div>'+
+ '<div class="out"><h4>NEURO LOG</h4><pre id="out">'+(a.neuroLog.length?a.neuroLog.slice(0,12).join("\n"):"NEURO SYSTEM READY.\nSELECT A TEST COMMAND.")+'</pre></div>';
+ document.querySelectorAll("[data-p6]").forEach(b=>b.onclick=()=>runTest(+b.dataset.p6));
+}
+function results(a){
+ let rows=TESTS.filter(x=>a.neuroTests[x[1]]).map(x=>{let r=a.neuroTests[x[1]];return '<div class="p6-result"><b>'+x[0]+':</b> '+r.value+'% · '+r.band+' · '+r.note+'</div>'});
+ return rows.length?rows.join(""):'<div class="p6-result">NO TEST RESULTS RECORDED.</div>';
+}
+function runTest(i){
+ let a=A(),t=TESTS[i];if(!t)return;let key=t[1],base=a.neuro[key],shift=((a.id+i*3)%7)-3;
+ let value=Math.max(0,Math.min(100,base+shift));a.neuro[key]=value;
+ let band=value>=80?"HIGH":value>=60?"ELEVATED":value>=40?"MID-RANGE":"LOW";
+ let notes={
+ orientation:"simulated environmental orientation response",
+ motor:"simulated movement-pathway response",memory:"simulated recall-trace response",
+ sensory:"simulated sensory response",trust:"simulated trust-response gauge",novelty:"simulated novelty response",
+ recovery:"simulated stress-recovery response",social:"simulated social-signal response",
+ mobility:"simulated mobility-link response",traits:"combined fictional trait synthesis"
+ };
+ a.neuroTests[key]={status:"COMPLETE",value:value,band:band,note:notes[key]};
+ a.neuroLog.unshift(new Date().toLocaleTimeString()+" · "+t[0]+" · "+value+"% "+band);
+ if(key==="trust")a.trust=value;if(key==="mobility")a.mobility=value;
+ state.research=(state.research||0)+1;save();renderNeuro();
+}
+const p6Program=program;
+program=function(k){if(k==="neuro")return renderNeuro();return p6Program(k)};
+ensure6();
+window.VetGodsPhase6={renderNeuro,runTest};
+})();
+</script>
+
+<style id="phase7-css">
+.p7-board,.p7-mission,.p7-inv{border:1px solid #666;margin-top:8px}
+.p7-board h4,.p7-mission h4,.p7-inv h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.p7-list{display:grid;grid-template-columns:repeat(2,1fr)}
+.p7-list button,.p7-choice{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;text-align:left;padding:7px;font:700 9px "Courier New",monospace}
+.p7-list button:hover,.p7-choice:hover{background:#c9c9c9;color:#000}
+.p7-list small,.p7-choice small{display:block;color:#777;margin-top:3px}
+.p7-objective{padding:6px;border-bottom:1px dotted #444;font-size:9px}.p7-objective b{color:#fff}
+.p7-progress{display:flex;border:1px solid #666;margin-top:8px;overflow:auto}
+.p7-progress span{flex:1;min-width:85px;text-align:center;padding:5px;border-right:1px dotted #555;font-size:8px;color:#666}
+.p7-progress span.done{color:#aaa}.p7-progress span.now{background:#c9c9c9;color:#000;font-weight:900}
+.p7-invgrid{display:grid;grid-template-columns:repeat(2,1fr)}.p7-item{padding:6px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.p7-item b{color:#fff}.p7-item small{display:block;color:#777}
+@media(max-width:600px){.p7-list,.p7-invgrid{grid-template-columns:1fr}}
+</style>
+<script id="phase7-js">
+(function(){
+"use strict";
+const MISSIONS=[
+ {id:"M01",name:"GLASS MOON SIGNAL",zone:"LUNAR RELAY",brief:"Trace a weak rescue beacon through fractured relay debris.",item:"Resonance Shard",reward:24},
+ {id:"M02",name:"ORCHID VAULT",zone:"BIO DOME 7",brief:"Enter an abandoned habitat and recover a sealed genetic archive.",item:"Orchid Genome Key",reward:28},
+ {id:"M03",name:"TIDAL ECHO",zone:"OCEAN PLATFORM",brief:"Follow a submerged signal and recover a damaged sanctuary transponder.",item:"Tidal Beacon",reward:26},
+ {id:"M04",name:"ASHLINE RESCUE",zone:"VOLCANIC RIDGE",brief:"Locate a stranded creature signal beyond the ashline sensor grid.",item:"Heatglass Token",reward:30},
+ {id:"M05",name:"NIGHT CANOPY",zone:"FOREST ORBITAL",brief:"Map nocturnal movement traces and retrieve the lost field recorder.",item:"Canopy Recorder",reward:22},
+ {id:"M06",name:"RED DUST ARCHIVE",zone:"MARS OUTPOST",brief:"Restore an old veterinary archive terminal and extract its case capsule.",item:"Archive Capsule",reward:34}
+];
+const STEPS=["DISPATCH","SCAN","CHOICE","RECOVER","RETURN"];
+function A(){return state.animals[state.active]}
+function ensure7(){
+ state.inventory=state.inventory||[];
+ state.missionHistory=state.missionHistory||[];
+ state.currentMission=state.currentMission||null;
+ state.animals.forEach(a=>{a.missionLog=a.missionLog||[];a.fieldRank=Number.isFinite(a.fieldRank)?a.fieldRank:0});
+ save();
+}
+function prog(m){return '<div class="p7-progress">'+STEPS.map((x,i)=>'<span class="'+(i<m.step?"done":i===m.step?"now":"")+'">'+(i<m.step?"[X] ":i===m.step?"[>] ":"[ ] ")+x+'</span>').join("")+'</div>'}
+function renderMissions(){
+ page="missions";nav();let a=A(),m=state.currentMission;
+ let h='<div class="path">C:\\VETGODS\\MISSIONS&gt;</div><div class="row"><span>FIELD COMPANION</span><b>'+a.icon+' '+a.name+'</b></div><div class="row"><span>FIELD RANK</span><b>'+a.fieldRank+'</b></div>';
+ if(!m){
+  h+='<div class="p7-board"><h4>MISSION DISPATCH BOARD</h4><div class="p7-list">'+MISSIONS.map((x,i)=>'<button data-mission="'+i+'">['+String(i+1).padStart(2,"0")+'] '+x.id+' '+x.name+'<small>'+x.zone+' · reward $'+x.reward+' game credits</small></button>').join("")+'</div></div>';
+ } else {
+  let d=MISSIONS.find(x=>x.id===m.id);
+  h+='<div class="p7-mission"><h4>'+d.id+' :: '+d.name+'</h4><div class="p7-objective"><b>ZONE:</b> '+d.zone+'</div><div class="p7-objective"><b>OBJECTIVE:</b> '+d.brief+'</div><div class="p7-objective"><b>COMPANION:</b> '+a.name+'</div></div>'+prog(m)+missionControls(d,m);
+ }
+ h+=inventory();
+ h+='<div class="out"><h4>FIELD LOG</h4><pre id="out">'+(state.missionHistory.length?state.missionHistory.slice(0,12).join("\n"):"DISPATCH SYSTEM READY.")+'</pre></div>';
+ document.querySelector("#main").innerHTML=h;
+ document.querySelectorAll("[data-mission]").forEach(b=>b.onclick=()=>startMission(+b.dataset.mission));
+ document.querySelectorAll("[data-p7cmd]").forEach(b=>b.onclick=()=>advance(b.dataset.p7cmd));
+}
+function missionControls(d,m){
+ if(m.step===0)return '<button class="action" data-p7cmd="deploy">[01] DEPLOY TO '+d.zone+'</button>';
+ if(m.step===1)return '<button class="action" data-p7cmd="scan">[02] RUN FIELD SCAN</button>';
+ if(m.step===2)return '<div class="p7-list"><button class="p7-choice" data-p7cmd="careful">[03A] CAREFUL ROUTE<small>slower, calmer companion response</small></button><button class="p7-choice" data-p7cmd="direct">[03B] DIRECT ROUTE<small>faster, higher stress response</small></button></div>';
+ if(m.step===3)return '<button class="action" data-p7cmd="recover">[04] RECOVER '+d.item.toUpperCase()+'</button>';
+ return '<button class="action" data-p7cmd="return">[05] RETURN TO INSTITUTE</button>';
+}
+function inventory(){
+ let inv=state.inventory;
+ return '<div class="p7-inv"><h4>FIELD INVENTORY / RETURNED ITEMS</h4><div class="p7-invgrid">'+(inv.length?inv.slice(-12).reverse().map(x=>'<div class="p7-item"><b>'+x.name+'</b><small>'+x.mission+' · '+x.carrier+'</small></div>').join(""):'<div class="p7-item">NO RECOVERED ITEMS.</div>')+'</div></div>';
+}
+function startMission(i){
+ let d=MISSIONS[i];if(!d)return;state.currentMission={id:d.id,step:0,animalId:state.active,route:""};state.missionHistory.unshift("ACCEPTED · "+d.id+" "+d.name);save();renderMissions();
+}
+function advance(cmd){
+ let m=state.currentMission;if(!m)return;let d=MISSIONS.find(x=>x.id===m.id),a=state.animals.find(x=>x.id===m.animalId)||A();
+ if(cmd==="deploy"&&m.step===0){m.step=1;a.energy=Math.max(0,(a.energy||a.petStats?.energy||70)-3);log(a,"DEPLOYED · "+d.zone)}
+ else if(cmd==="scan"&&m.step===1){m.step=2;state.research=(state.research||0)+2;log(a,"FIELD SCAN COMPLETE")}
+ else if((cmd==="careful"||cmd==="direct")&&m.step===2){m.route=cmd;m.step=3;if(cmd==="careful"){a.trust=Math.min(100,a.trust+4);a.stress=Math.max(0,a.stress-3)}else{a.stress=Math.min(100,a.stress+7)}log(a,"ROUTE SELECTED · "+cmd.toUpperCase())}
+ else if(cmd==="recover"&&m.step===3){m.step=4;state.inventory.push({name:d.item,mission:d.id,carrier:a.name,time:Date.now()});log(a,"ITEM RECOVERED · "+d.item)}
+ else if(cmd==="return"&&m.step===4){state.credits+=d.reward;a.fieldRank++;log(a,"MISSION COMPLETE · +$"+d.reward+" GAME CREDITS");state.missionHistory.unshift("COMPLETE · "+d.id+" · "+a.name+" · "+d.item);state.currentMission=null}
+ save();renderMissions();
+}
+function log(a,t){let x=new Date().toLocaleTimeString()+" · "+t;a.missionLog.unshift(x);state.missionHistory.unshift(a.name+" · "+t)}
+const p7Program=program;
+program=function(k){if(k==="missions")return renderMissions();return p7Program(k)};
+ensure7();
+window.VetGodsPhase7={renderMissions,startMission,advance};
+})();
+</script>
+
+<style id="phase8-css">
+.p8-rec,.p8-cert,.p8-archive{border:1px solid #666;margin-top:8px}
+.p8-rec h4,.p8-cert h4,.p8-archive h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.p8-tabs{display:flex;overflow:auto;border-bottom:1px solid #666}.p8-tabs button,.p8-btn{border:0;border-right:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;font:700 9px "Courier New",monospace}.p8-tabs button:hover,.p8-tabs button.on,.p8-btn:hover{background:#c9c9c9;color:#000}
+.p8-list button{display:block;width:100%;border:0;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;text-align:left;padding:7px;font:700 9px "Courier New",monospace}.p8-list button:hover{background:#c9c9c9;color:#000}.p8-list small{display:block;color:#777}
+.p8-sheet{border:1px solid #777;margin-top:8px;padding:8px}.p8-sheet h2{margin:0 0 6px;color:#fff;font-size:14px;text-align:center}.p8-sheet .seal{text-align:center;font-size:9px;color:#888;margin-bottom:8px}
+.p8-sign{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}.p8-sign div{border-top:1px solid #aaa;padding-top:4px;font-size:9px;text-align:center}
+.p8-input{display:grid;grid-template-columns:150px 1fr;border-bottom:1px dotted #555}.p8-input label{padding:6px;color:#888;font-size:9px}.p8-input input{border:0;background:#000;color:#fff;padding:6px;outline:0;font:700 9px "Courier New",monospace}
+.p8-stamp{border:2px solid #aaa;padding:5px;text-align:center;margin:10px auto;width:max-content;font-weight:900;color:#fff}
+@media(max-width:600px){.p8-sign{grid-template-columns:1fr}.p8-input{grid-template-columns:100px 1fr}}
+</style>
+<script id="phase8-js">
+(function(){
+"use strict";
+let recTab="SUMMARY", recAnimal=null;
+function A(){return state.animals[state.active]}
+function ensure8(){
+ state.certificates=state.certificates||[];
+ state.archive=state.archive||[];
+ state.operator=state.operator||{first:"",last:""};
+ state.animals.forEach(a=>{a.certificates=a.certificates||[];a.archiveFlags=a.archiveFlags||[]});
+ save();
+}
+function renderRecords(){
+ page="records";nav();let a=recAnimal===null?A():state.animals.find(x=>x.id===recAnimal)||A();
+ let tabs=["SUMMARY","CARE","MORPH","NEURO","MISSIONS","CERTIFICATES"];
+ let body="";
+ if(recTab==="SUMMARY")body='<div class="row"><span>CASE ID</span><b>'+a.caseId+'</b></div><div class="row"><span>RESIDENT</span><b>'+a.icon+' '+a.name+'</b></div><div class="row"><span>SPECIES</span><b>'+a.species+'</b></div><div class="row"><span>CASE STATE</span><b>'+a.stage+' / '+a.disposition+'</b></div><div class="row"><span>HOME STATUS</span><b>'+a.homeStatus+'</b></div><div class="row"><span>MORPH</span><b>'+a.morph+'</b></div>';
+ if(recTab==="CARE")body=pre(a.history,"NO CARE HISTORY.");
+ if(recTab==="MORPH")body=pre(a.morphHistory,"NO MORPH HISTORY.");
+ if(recTab==="NEURO")body=pre(a.neuroLog,"NO NEURO HISTORY.");
+ if(recTab==="MISSIONS")body=pre(a.missionLog,"NO MISSION HISTORY.");
+ if(recTab==="CERTIFICATES")body=pre(a.certificates.map(id=>"CERTIFICATE "+id),"NO CERTIFICATES.");
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\RECORDS&gt;</div><div class="p8-rec"><h4>RECORDS.EXE — MASTER ANIMAL ARCHIVE</h4><div class="p8-tabs">'+tabs.map(x=>'<button data-rt="'+x+'" class="'+(x===recTab?"on":"")+'">'+x+'</button>').join("")+'</div>'+body+'</div><div class="p8-archive"><h4>SELECT RECORD</h4><div class="p8-list">'+state.animals.map(x=>'<button data-ra="'+x.id+'">'+x.caseId+' · '+x.name+'<small>'+x.species+' · '+x.disposition+'</small></button>').join("")+'</div></div>';
+ document.querySelectorAll("[data-rt]").forEach(b=>b.onclick=()=>{recTab=b.dataset.rt;renderRecords()});
+ document.querySelectorAll("[data-ra]").forEach(b=>b.onclick=()=>{recAnimal=+b.dataset.ra;renderRecords()});
+}
+function pre(arr,empty){return '<div class="out" style="margin:0;border:0"><pre>'+(arr&&arr.length?arr.slice(0,30).join("\n"):empty)+'</pre></div>'}
+function renderCerts(){
+ page="certs";nav();let a=A(),op=state.operator;
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\CERTIFY&gt;</div><div class="p8-cert"><h4>CERTIFY.EXE — COMPLETION RECORD</h4>'+
+ '<div class="p8-input"><label>FIRST NAME</label><input id="p8first" value="'+safe(op.first)+'"></div><div class="p8-input"><label>LAST NAME</label><input id="p8last" value="'+safe(op.last)+'"></div>'+
+ '<div class="row"><span>ANIMAL</span><b>'+a.icon+' '+a.name+'</b></div><div class="row"><span>CASE</span><b>'+a.caseId+'</b></div><div class="row"><span>STATUS</span><b>'+a.disposition+'</b></div>'+
+ '<button class="p8-btn" id="p8gen">[01] GENERATE CASE CERTIFICATE</button></div>'+
+ '<div id="p8preview">'+certificatePreview(a)+'</div>';
+ document.querySelector("#p8gen").onclick=generateCert;
+}
+function safe(x){return String(x||"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function certificatePreview(a){
+ let last=state.certificates.filter(c=>c.animalId===a.id).slice(-1)[0];if(!last)return '<div class="p8-sheet"><div class="seal">NO CERTIFICATE GENERATED FOR CURRENT RESIDENT.</div></div>';
+ return '<div class="p8-sheet"><div class="seal">VET GODS DOS/OS · INSTITUTE RECORD</div><h2>CERTIFICATE OF CASE COMPLETION</h2><div class="row"><span>AWARDED TO</span><b>'+safe(last.operator)+'</b></div><div class="row"><span>ANIMAL</span><b>'+a.name+' / '+a.species+'</b></div><div class="row"><span>CASE RECORD</span><b>'+a.caseId+'</b></div><div class="row"><span>DISPOSITION</span><b>'+a.disposition+'</b></div><div class="row"><span>CERTIFICATE</span><b>'+last.id+'</b></div><div class="p8-stamp">VERIFIED GAME RECORD</div><div class="p8-sign"><div>DR. K. NIX<br>Institute Director</div><div>COMMAND ARCHIVE<br>Records Officer</div></div></div>';
+}
+function generateCert(){
+ let a=A(),first=document.querySelector("#p8first").value.trim(),last=document.querySelector("#p8last").value.trim();
+ if(!first||!last){document.querySelector("#p8preview").innerHTML='<div class="p8-sheet">ENTER FIRST AND LAST NAME BEFORE GENERATING.</div>';return}
+ state.operator={first,last};let id="VG-CERT-"+Date.now().toString(36).toUpperCase(),cert={id,animalId:a.id,operator:first+" "+last,caseId:a.caseId,time:new Date().toLocaleString(),disposition:a.disposition};
+ state.certificates.push(cert);a.certificates.push(id);state.archive.push({type:"CERTIFICATE",id,animal:a.name,operator:cert.operator,time:cert.time});save();renderCerts();
+}
+const p8Program=program;
+program=function(k){if(k==="records")return renderRecords();if(k==="certs")return renderCerts();return p8Program(k)};
+ensure8();
+window.VetGodsPhase8={renderRecords,renderCerts,generateCert};
+})();
+</script>
+
+<style id="phase9-css">
+.p9-ship,.p9-station,.p9-log{border:1px solid #666;margin-top:8px}
+.p9-ship h4,.p9-station h4,.p9-log h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.p9-grid{display:grid;grid-template-columns:repeat(2,1fr)}
+.p9-stationbtn{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:8px;text-align:left;font:700 9px "Courier New",monospace}
+.p9-stationbtn:hover{background:#c9c9c9;color:#000}.p9-stationbtn small{display:block;color:#777;margin-top:3px}
+.p9-read{display:grid;grid-template-columns:145px 1fr 48px;gap:7px;padding:5px 6px;border-bottom:1px dotted #444;font-size:9px}.p9-read span{color:#888}.p9-read b{color:#fff}.p9-read em{font-style:normal;text-align:right}
+.p9-controls{display:grid;grid-template-columns:repeat(2,1fr)}.p9-controls button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.p9-controls button:hover{background:#c9c9c9;color:#000}
+.p9-map{white-space:pre;overflow:auto;color:#fff;padding:8px;text-align:center;font-size:9px;line-height:1.15}
+.p9-alert{padding:6px;border:1px solid #777;margin-top:8px;font-size:9px}.p9-alert b{color:#fff}
+@media(max-width:600px){.p9-grid,.p9-controls{grid-template-columns:1fr}.p9-read{grid-template-columns:95px 1fr 42px}.p9-map{font-size:7px}}
+</style>
+<script id="phase9-js">
+(function(){
+"use strict";
+const STATIONS=[
+ ["BRIDGE","NAVIGATION.EXE"],["HOSPITAL","HOSPITAL.EXE"],["SANCTUARY","HABITAT.EXE"],
+ ["RESEARCH","RESEARCH.EXE"],["POWER","REACTOR.EXE"],["COMMS","SIGNAL.EXE"],
+ ["CARGO","CARGO.EXE"],["LIFE SUPPORT","LIFESUP.EXE"]
+];
+let station="BRIDGE";
+function ensure9(){
+ state.ship=state.ship||{
+  hull:94,power:88,lifeSupport:96,nav:81,comms:76,hospital:92,sanctuary:89,research:84,cargo:61,
+  location:"ORBITAL HOSPITAL DECK NINE",heading:"VECTOR 071",speed:"STATION KEEPING",alerts:[],
+  log:["SHIP SYSTEM INITIALIZED."]
+ };
+ save();
+}
+function read(label,val,unit="%"){return '<div class="p9-read"><span>'+label+'</span><b>'+val+unit+'</b><em>'+(Number(val)>=85?"NOM":Number(val)>=65?"WATCH":"LOW")+'</em></div>'}
+function shipMap(){
+ return `<div class="p9-station"><h4>DECK MAP / TEXT DISPLAY</h4><div class="p9-map">
+        [ BRIDGE ]
+            ||
+ [COMMS]--[CORE]--[RESEARCH]
+            ||
+ [HOSPITAL]--[SANCTUARY]
+            ||
+        [ CARGO ]
+            ||
+        [ REACTOR ]
+</div></div>`;
+}
+function renderShip(){
+ page="ship";nav();let x=state.ship;
+ let h='<div class="path">C:\\VETGODS\\SHIP&gt;</div><div class="p9-ship"><h4>SHIP.EXE — COMMAND SYSTEM</h4>'+
+ '<div class="row"><span>LOCATION</span><b>'+x.location+'</b></div><div class="row"><span>HEADING</span><b>'+x.heading+'</b></div><div class="row"><span>VELOCITY</span><b>'+x.speed+'</b></div></div>'+
+ '<div class="p9-grid">'+STATIONS.map((q,i)=>'<button class="p9-stationbtn" data-st="'+q[0]+'">['+String(i+1).padStart(2,"0")+'] '+q[1]+'<small>'+q[0]+' STATION</small></button>').join("")+'</div>'+
+ shipMap()+stationView(x)+
+ '<div class="p9-log"><h4>SHIP EVENT LOG</h4><div class="p1-log">'+x.log.slice(0,12).map(v=>'<div><b>&gt;</b> '+v+'</div>').join("")+'</div></div>';
+ document.querySelector("#main").innerHTML=h;
+ document.querySelectorAll("[data-st]").forEach(b=>b.onclick=()=>{station=b.dataset.st;renderShip()});
+ document.querySelectorAll("[data-p9]").forEach(b=>b.onclick=()=>command(b.dataset.p9));
+}
+function stationView(x){
+ let rows="",buttons="";
+ if(station==="BRIDGE"){rows=read("NAV LOCK",x.nav)+read("COMMS",x.comms);buttons='<button data-p9="plot">[01] PLOT VECTOR</button><button data-p9="hold">[02] STATION KEEP</button><button data-p9="scan">[03] LONG RANGE SCAN</button><button data-p9="missions">[04] OPEN MISSIONS</button>'}
+ if(station==="HOSPITAL"){rows=read("MEDICAL GRID",x.hospital)+read("LIFE SUPPORT",x.lifeSupport);buttons='<button data-p9="clinic">[01] OPEN CLINIC</button><button data-p9="medical">[02] MEDICAL SELF TEST</button><button data-p9="sterile">[03] CYCLE THEATER</button>'}
+ if(station==="SANCTUARY"){rows=read("HABITAT",x.sanctuary)+read("LIFE SUPPORT",x.lifeSupport);buttons='<button data-p9="animals">[01] OPEN MY ANIMALS</button><button data-p9="habitat">[02] HABITAT CHECK</button>'}
+ if(station==="RESEARCH"){rows=read("LAB GRID",x.research)+read("POWER",x.power);buttons='<button data-p9="morph">[01] OPEN MORPH LAB</button><button data-p9="neuro">[02] OPEN NEURO LAB</button><button data-p9="calibrate">[03] CALIBRATE LAB</button>'}
+ if(station==="POWER"){rows=read("REACTOR",x.power)+read("HULL",x.hull);buttons='<button data-p9="balance">[01] BALANCE LOAD</button><button data-p9="reactor">[02] REACTOR DIAGNOSTIC</button>'}
+ if(station==="COMMS"){rows=read("SIGNAL",x.comms)+read("NAV RELAY",x.nav);buttons='<button data-p9="signal">[01] SIGNAL SWEEP</button><button data-p9="missions">[02] DISPATCH CHANNEL</button>'}
+ if(station==="CARGO"){rows=read("CARGO LOAD",x.cargo)+read("POWER",x.power);buttons='<button data-p9="inventory">[01] INVENTORY REPORT</button><button data-p9="supplies">[02] MEDICAL SUPPLY LINK</button>'}
+ if(station==="LIFE SUPPORT"){rows=read("LIFE SUPPORT",x.lifeSupport)+read("SANCTUARY",x.sanctuary);buttons='<button data-p9="air">[01] ATMOSPHERE CYCLE</button><button data-p9="habitat">[02] HABITAT BALANCE</button>'}
+ return '<div class="p9-station"><h4>'+station+' STATION / LIVE READOUT</h4>'+rows+'<div class="p9-controls">'+buttons+'</div></div>'+alerts(x);
+}
+function alerts(x){
+ let a=[];if(x.power<70)a.push("POWER RESERVE LOW");if(x.lifeSupport<80)a.push("LIFE SUPPORT WATCH");if(x.hospital<75)a.push("HOSPITAL GRID DEGRADED");if(x.sanctuary<75)a.push("HABITAT WATCH");
+ return '<div class="p9-alert"><b>SHIP ALERTS:</b> '+(a.length?a.join(" / "):"ALL PRIMARY SYSTEMS NOMINAL")+'</div>';
+}
+function command(c){
+ let x=state.ship,t=new Date().toLocaleTimeString(),msg="";
+ if(c==="clinic")return open("care");if(c==="animals")return open("animals");if(c==="morph")return open("morph");if(c==="neuro")return open("neuro");if(c==="missions")return open("missions");
+ if(c==="plot"){x.nav=Math.min(100,x.nav+3);x.heading="VECTOR "+String((parseInt(x.heading.replace(/\D/g,""))+17)%360).padStart(3,"0");msg="NEW NAV VECTOR LOCKED"}
+ if(c==="hold"){x.speed="STATION KEEPING";msg="STATION KEEP CONFIRMED"}
+ if(c==="scan"){x.comms=Math.min(100,x.comms+2);state.research=(state.research||0)+1;msg="LONG RANGE SCAN COMPLETE"}
+ if(c==="medical"){x.hospital=Math.min(100,x.hospital+3);msg="HOSPITAL SELF TEST COMPLETE"}
+ if(c==="sterile"){x.hospital=Math.min(100,x.hospital+2);msg="OPERATING THEATER CYCLE COMPLETE"}
+ if(c==="habitat"){x.sanctuary=Math.min(100,x.sanctuary+3);x.lifeSupport=Math.min(100,x.lifeSupport+1);msg="HABITAT CHECK COMPLETE"}
+ if(c==="calibrate"){x.research=Math.min(100,x.research+3);msg="RESEARCH GRID CALIBRATED"}
+ if(c==="balance"){x.power=Math.min(100,x.power+4);msg="POWER LOAD BALANCED"}
+ if(c==="reactor"){x.power=Math.min(100,x.power+2);msg="REACTOR DIAGNOSTIC COMPLETE"}
+ if(c==="signal"){x.comms=Math.min(100,x.comms+4);msg="SIGNAL SWEEP COMPLETE"}
+ if(c==="inventory"){msg="CARGO REPORT: "+(state.inventory||[]).length+" RECOVERED FIELD ITEMS"}
+ if(c==="supplies"){msg="MEDICAL SUPPLY LINK: O2 "+state.supplies.oxygen+" / FLUID "+state.supplies.fluids+" / ANALGESIA "+state.supplies.analgesia}
+ if(c==="air"){x.lifeSupport=Math.min(100,x.lifeSupport+3);msg="ATMOSPHERE CYCLE COMPLETE"}
+ x.log.unshift(t+" · "+(msg||c.toUpperCase()));save();renderShip();
+}
+const p9Program=program;
+program=function(k){if(k==="ship")return renderShip();return p9Program(k)};
+ensure9();
+window.VetGodsPhase9={renderShip,command};
+})();
+</script>
+
+<style id="phase10-css">
+.p10-dash,.p10-save,.p10-flow,.p10-help{border:1px solid #666;margin-top:8px}
+.p10-dash h4,.p10-save h4,.p10-flow h4,.p10-help h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.p10-grid{display:grid;grid-template-columns:repeat(2,1fr)}
+.p10-card{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}
+.p10-card small{display:block;color:#777}.p10-card b{color:#fff}
+.p10-buttons{display:grid;grid-template-columns:repeat(2,1fr)}
+.p10-buttons button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}
+.p10-buttons button:hover{background:#c9c9c9;color:#000}
+.p10-flowline{padding:6px;border-bottom:1px dotted #444;font-size:9px}.p10-flowline b{color:#fff}
+.p10-boot{white-space:pre;overflow:auto;color:#fff;font-size:9px;line-height:1.25;padding:8px}
+.p10-ok{border:1px solid #888;padding:6px;margin-top:8px;font-size:9px}.p10-ok b{color:#fff}
+@media(max-width:600px){.p10-grid,.p10-buttons{grid-template-columns:1fr}}
+</style>
+<script id="phase10-js">
+(function(){
+"use strict";
+function A(){return state.animals[state.active]}
+function ensure10(){
+ state.system=state.system||{version:"1.0",bootCount:0,lastBoot:"",autosave:true};
+ state.system.bootCount++;state.system.lastBoot=new Date().toLocaleString();
+ state.logs=state.logs||[];state.logs.unshift("SYSTEM BOOT · DOS REBUILD 10/10 · "+state.system.lastBoot);
+ save();
+}
+function dashboard(){
+ page="home";nav();let a=A(),san=state.animals.filter(x=>x.homeStatus==="SANCTUARY RESIDENT").length;
+ let activeMission=state.currentMission?state.currentMission.id:"NONE";
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS&gt; STATUS</div>'+
+ '<div class="p10-dash"><h4>VET GODS DOS/OS — COMMAND DASHBOARD</h4><div class="p10-grid">'+
+ card("ACTIVE RESIDENT",a.icon+" "+a.name,a.species)+card("CASE",a.caseId,a.stage+" / "+a.disposition)+
+ card("SANCTUARY",san+" RESIDENTS","MY ANIMALS")+card("CLINIC FUNDS","$"+state.credits,"FICTIONAL CREDITS")+
+ card("RESEARCH",state.research+" POINTS","LAB RESOURCE")+card("MISSION",activeMission,(state.inventory||[]).length+" RECOVERED ITEMS")+
+ card("CERTIFICATES",(state.certificates||[]).length+" ISSUED","ARCHIVE")+card("SHIP",state.ship?"ONLINE":"OFFLINE",state.ship?state.ship.location:"NO LINK")+
+ '</div></div>'+
+ '<div class="p10-flow"><h4>PRIMARY GAME LOOP</h4>'+
+ flow("01","SELECT / ADMIT ANIMAL","SANCTUARY.EXE or CLINIC.EXE")+flow("02","DIAGNOSE","PHYSICAL / SCAN / LAB")+flow("03","STABILIZE","OXYGEN / WATER / PAIN / FOOD")+flow("04","TREAT","PRIMARY TREATMENT")+flow("05","RECOVER","RECOVERY CHECKS")+flow("06","DISPOSITION","HOME or SANCTUARY")+flow("07","DEVELOP","MORPH / NEURO")+flow("08","EXPLORE","MISSIONS / RECOVER ITEMS")+flow("09","DOCUMENT","RECORDS / CERTIFICATE")+
+ '</div>'+
+ '<div class="p10-save"><h4>SYSTEM COMMANDS</h4><div class="p10-buttons"><button data-p10="newcase">[01] NEXT / NEW CASE</button><button data-p10="save">[02] SAVE NOW</button><button data-p10="backup">[03] EXPORT SAVE</button><button data-p10="resetcase">[04] RESET ACTIVE CASE</button><button data-p10="help">[05] COMMAND HELP</button><button data-p10="diagnostic">[06] SYSTEM DIAGNOSTIC</button></div></div>'+
+ '<div class="p10-ok"><b>AUTOSAVE:</b> '+(state.system.autosave?"ON":"OFF")+' · <b>BOOT:</b> '+state.system.bootCount+' · <b>BUILD:</b> DOS SYSTEM REBUILD 10/10</div>'+
+ '<div class="out"><h4>COMMAND OUTPUT</h4><pre id="out">VET GODS DOS/OS READY.\nALL PRIMARY PROGRAMS LINKED.\nTYPE HELP OR SELECT A PROGRAM.</pre></div>';
+ document.querySelectorAll("[data-p10]").forEach(b=>b.onclick=()=>syscmd(b.dataset.p10));
+}
+function card(a,b,c){return '<div class="p10-card"><small>'+a+'</small><b>'+b+'</b><small>'+c+'</small></div>'}
+function flow(n,a,b){return '<div class="p10-flowline"><b>['+n+'] '+a+'</b> :: '+b+'</div>'}
+function syscmd(c){
+ let o=document.querySelector("#out");
+ if(c==="save"){save();o.textContent="SAVE COMPLETE\nLOCAL STORAGE UPDATED.\nRETURN CODE: 0 / OK";return}
+ if(c==="newcase"){let start=(state.active+1)%state.animals.length;state.active=start;let a=A();a.stage="INTAKE";a.disposition="ACTIVE CASE";a.tests={};a.evidence=[];save();return open("care")}
+ if(c==="resetcase"){let a=A();a.stage="INTAKE";a.disposition="ACTIVE CASE";a.health=82;a.pain=38;a.hydration=62;a.oxygen=92;a.trust=48;a.stress=48;a.comfort=52;a.tests={};a.evidence=[];a.recoveryTicks=0;a.history.unshift(new Date().toLocaleTimeString()+" · CASE RESET");save();dashboard();return}
+ if(c==="help"){o.textContent="COMMANDS:\nHOME / CARE / CLINIC / ANIMALS / SANCTUARY\nMORPH / NEURO / MISSIONS / RECORDS / CERTS / SHIP\n\nNUMBER KEYS may select visible DOS options.\nESC returns HOME.\nF1-F6 open primary programs.";return}
+ if(c==="diagnostic"){let checks=[["ANIMALS",state.animals.length>0],["ACTIVE RECORD",!!A()],["SUPPLIES",!!state.supplies],["SHIP",!!state.ship],["MISSIONS",Array.isArray(state.missionHistory)],["CERTIFICATES",Array.isArray(state.certificates)],["LOCAL SAVE",true]];o.textContent="SYSTEM DIAGNOSTIC\n"+checks.map(x=>(x[1]?"[OK] ":"[FAIL] ")+x[0]).join("\n")+"\n\n"+(checks.every(x=>x[1])?"ALL PRIMARY SYSTEMS NOMINAL.":"SYSTEM ATTENTION REQUIRED.");return}
+ if(c==="backup"){
+   let blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="vet-gods-dos-save.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),500);o.textContent="SAVE EXPORT CREATED.\nJSON BACKUP REQUESTED.";return
+ }
+}
+const oldHome=home;
+home=function(){dashboard()};
+const oldRun=run;
+run=function(){
+ let i=document.querySelector("#input"),v=i.value.trim().toLowerCase();
+ if(v==="help"){i.value="";dashboard();setTimeout(()=>syscmd("help"),0);return}
+ if(v==="status"){i.value="";dashboard();return}
+ oldRun();
+};
+ensure10();
+dashboard();
+window.VetGodsPhase10={dashboard,syscmd};
+})();
+</script>
 </body></html>
