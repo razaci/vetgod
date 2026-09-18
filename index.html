@@ -3801,4 +3801,2125 @@ document.addEventListener("click",function(e){
 },true);
 })();
 </script>
+
+<style id="occult-archive-css">
+.oa{border:1px solid #666;margin-top:8px}.oa h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.oa-grid{display:grid;grid-template-columns:repeat(2,1fr)}
+.oa-card,.oa-row{padding:8px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}
+.oa-card small,.oa-row small{display:block;color:#777;margin-top:3px}.oa-card b,.oa-row b{color:#fff}
+.oa-btns{display:grid;grid-template-columns:repeat(2,1fr)}
+.oa-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:8px;text-align:left;font:700 9px "Courier New",monospace}
+.oa-btns button:hover,.oa-btns button.on{background:#c9c9c9;color:#000}
+.oa-term{padding:10px;white-space:pre-wrap;font-size:9px;line-height:1.55;min-height:120px}
+.oa-tag{display:inline-block;border:1px solid #555;padding:2px 5px;margin:2px;font-size:8px}
+@media(max-width:600px){.oa-grid,.oa-btns{grid-template-columns:1fr}}
+</style>
+<script id="occult-archive-js">
+(function(){
+"use strict";
+const CASES=[
+ {id:"ARC-001",title:"THE WHISTLING ROOM",type:"HAUNTING / OCCULT FICTION",source:"William Hope Hodgson — Carnacki, the Ghost Finder (public domain)",setting:"Abandoned estate room",summary:"A room is reported to produce an impossible whistling phenomenon. The source material deliberately mixes occult investigation with the possibility of deception.",status:"FICTION SOURCE",tags:["HAUNTING","ACOUSTIC","INVESTIGATION"]},
+ {id:"ARC-002",title:"THE HORSE OF THE INVISIBLE",type:"APPARITION / OCCULT FICTION",source:"William Hope Hodgson — Carnacki, the Ghost Finder (public domain)",setting:"Isolated family estate",summary:"An occult detective investigates a threatening manifestation associated with an old family legend. Added here as fictional archive material, not as evidence of a real supernatural event.",status:"FICTION SOURCE",tags:["APPARITION","LEGEND","FIELD CASE"]},
+ {id:"ARC-003",title:"THE HOTTEL MEMO",type:"UFO REPORT / HISTORICAL RECORD",source:"FBI Vault — Guy Hottel memo, March 22, 1950",setting:"Washington Field Office / reported New Mexico event",summary:"A historical FBI memo relayed a second- or third-hand flying-saucer story. The FBI later emphasized that the report was unconfirmed and was not investigated as proof of extraterrestrial activity.",status:"UNCONFIRMED HISTORICAL REPORT",tags:["UFO","MEMO","UNVERIFIED"]},
+ {id:"ARC-004",title:"ROSWELL FLYING DISC TELETYPE",type:"UFO REPORT / HISTORICAL RECORD",source:"FBI Vault — Roswell UFO file",setting:"New Mexico, 1947",summary:"A historical FBI teletype concerned a reported flying disc; the FBI Vault describes the recovered object as resembling a high-altitude weather balloon. The game treats this only as archive inspiration.",status:"HISTORICAL RECORD",tags:["UFO","ROSWELL","ARCHIVE"]},
+ {id:"ARC-005",title:"GHOSTLY PHENOMENA ARCHIVE",type:"GHOST ACCOUNT COLLECTION",source:"Elliott O'Donnell — Ghostly Phenomena (public domain)",setting:"Historical supernatural casebook",summary:"A period collection of reported ghostly experiences. This terminal converts the general casebook style into fictional research flavor without asserting that the reported phenomena occurred as described.",status:"HISTORICAL LORE",tags:["GHOST","CASEBOOK","LORE"]},
+ {id:"ARC-006",title:"GLIMPSES OF THE SUPERNATURAL",type:"APPARITIONS / OMENS / FOLKLORE",source:"Frederick George Lee, ed. — The Other World (public domain)",setting:"19th-century supernatural anthology",summary:"Historical traditions and accounts involving apparitions, dreams, omens, warnings and related supernatural themes. Used only as fictional research inspiration.",status:"HISTORICAL LORE",tags:["OMEN","APPARITION","DREAM"]},
+ {id:"ARC-007",title:"TRUE TALES OF THE WEIRD",type:"PERSONAL SUPERNATURAL ACCOUNTS",source:"Sidney Dickinson — True Tales of the Weird (public domain)",setting:"Historical personal-experience collection",summary:"A collection presented as personal experiences of unusual or supernatural events. In Vet Gods these become unverified archive entries for investigation gameplay.",status:"UNVERIFIED LORE",tags:["WEIRD","WITNESS","ARCHIVE"]},
+ {id:"ARC-008",title:"ANIMAL MUTILATION CORRESPONDENCE",type:"UNEXPLAINED REPORTS / HISTORICAL RECORD",source:"FBI Vault — Animal/Cattle Mutilation files",setting:"Western and Midwestern U.S., 1970s",summary:"FBI files preserve correspondence and press material concerning reported animal mutilations. The archive notes jurisdictional limits; this game does not assign a supernatural explanation.",status:"HISTORICAL RECORD",tags:["ANIMAL","UNEXPLAINED","DOCUMENTS"]}
+];
+function ensureOA(){
+ state.occultArchive=state.occultArchive||{active:0,opened:[],notes:[],log:[]};
+ save();
+}
+function D(){return state.occultArchive}
+function esc(x){return String(x).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
+function renderOccult(){
+ ensureOA();page="occultarchive";nav();let d=D(),c=CASES[d.active]||CASES[0];
+ if(!d.opened.includes(c.id))d.opened.push(c.id);
+ document.querySelector("#main").innerHTML=
+ '<div class="path">C:\\VETGODS\\EMPLOYEES\\SPECIAL_ARCHIVES&gt;</div>'+
+ '<div class="oa"><h4>EMPLOYEE SPECIAL ARCHIVES // FICTIONAL PARANORMAL RESEARCH</h4>'+
+ '<div class="oa-grid"><div class="oa-card"><small>ARCHIVE RECORDS</small><b>'+CASES.length+'</b><small>Historical lore + public records adapted as game flavor</small></div>'+
+ '<div class="oa-card"><small>NOTICE</small><b>UNVERIFIED / FICTIONALIZED</b><small>Archive inclusion does not establish supernatural causes.</small></div></div></div>'+
+ '<div class="oa"><h4>CASE DIRECTORY</h4><div class="oa-btns">'+CASES.map((x,i)=>'<button class="'+(i===d.active?'on':'')+'" data-oa="'+i+'">['+x.id+'] '+x.title+'<small>'+x.type+' · '+x.status+'</small></button>').join("")+'</div></div>'+
+ '<div class="oa"><h4>'+c.id+' // '+c.title+'</h4><div class="oa-grid">'+
+ '<div class="oa-card"><small>CLASSIFICATION</small><b>'+esc(c.type)+'</b></div>'+
+ '<div class="oa-card"><small>SETTING</small><b>'+esc(c.setting)+'</b></div>'+
+ '<div class="oa-card"><small>ARCHIVE STATUS</small><b>'+esc(c.status)+'</b></div>'+
+ '<div class="oa-card"><small>SOURCE INSPIRATION</small><b>'+esc(c.source)+'</b></div></div>'+
+ '<div class="oa-term">'+esc(c.summary)+'\n\n'+c.tags.map(t=>'['+t+']').join(' ')+'</div>'+
+ '<div class="oa-btns"><button data-oact="assign">[A] ASSIGN EMPLOYEE REVIEW<small>Creates a fictional staff research task.</small></button>'+
+ '<button data-oact="note">[N] ADD INVESTIGATION NOTE<small>Adds an in-game analyst note.</small></button>'+
+ '<button data-oact="research">[R] SEND TO RESEARCH.EXE</button><button data-oact="staff">[S] OPEN STAFF.EXE</button></div></div>'+
+ '<div class="oa"><h4>EMPLOYEE ARCHIVE LOG</h4><div class="oa-term">'+(d.log.length?esc(d.log.slice(0,14).join("\\n")):"NO EMPLOYEE REVIEWS YET.")+'</div></div>';
+ document.querySelectorAll("[data-oa]").forEach(b=>b.onclick=()=>{d.active=+b.dataset.oa;save();renderOccult()});
+ document.querySelectorAll("[data-oact]").forEach(b=>b.onclick=()=>act(b.dataset.oact));
+ save();
+}
+function act(k){
+ let d=D(),c=CASES[d.active];
+ if(k==="assign"){
+   d.log.unshift(new Date().toLocaleTimeString()+" · "+c.id+" assigned to Special Archives employee review.");
+   if(state.staffCommand&&state.staffCommand.staff){
+     let r=state.staffCommand.staff.find(x=>x.role==="RESEARCH");
+     if(r){r.status="ASSIGNED";r.load=Math.min(100,(r.load||0)+5)}
+   }
+ }
+ if(k==="note"){let n="ANALYST NOTE "+(d.notes.length+1)+" · "+c.id+" · classification remains "+c.status+".";d.notes.unshift(n);d.log.unshift(n)}
+ if(k==="research")return program("research");
+ if(k==="staff")return program("staff");
+ save();renderOccult();
+}
+const oldProgram=program;program=function(k){if(k==="occultarchive")return renderOccult();return oldProgram(k)};
+function addEmployeeArchive(){
+ if(page!=="home"||document.querySelector("#oaHomeLink"))return;
+ let c=document.querySelector(".p10-buttons");if(!c)return;
+ let b=document.createElement("button");b.id="oaHomeLink";b.textContent="[28] EMPLOYEE SPECIAL ARCHIVES";b.onclick=renderOccult;c.appendChild(b);
+}
+const oldHome=home;home=function(){oldHome();addEmployeeArchive()};
+ensureOA();addEmployeeArchive();
+window.VetGodsOccultArchive={render:renderOccult};
+})();
+</script>
+
+<style id="supply50-css">
+.sf{border:1px solid #666;margin-top:8px}.sf h4{margin:0;background:#c9c9c9;color:#000;padding:5px 7px;font-size:10px}
+.sf-grid{display:grid;grid-template-columns:repeat(2,1fr)}
+.sf-btns{display:grid;grid-template-columns:repeat(2,1fr)}
+.sf-btns button,.sf-back{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:8px;text-align:left;font:700 9px "Courier New",monospace}
+.sf-btns button:hover,.sf-btns button.on,.sf-back:hover{background:#c9c9c9;color:#000}
+.sf-card,.sf-result{padding:8px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}
+.sf-card small,.sf-result small{display:block;color:#777;margin-top:3px}.sf-card b,.sf-result b{color:#fff}
+.sf-path{padding:8px;border-bottom:1px dotted #555;font-size:9px;overflow-wrap:anywhere}
+.sf-result a{display:block;color:#fff;text-decoration:none;padding:5px 0;font-weight:900}.sf-result a:hover{text-decoration:underline}
+.sf-warn{padding:8px;font-size:9px;line-height:1.5;border-bottom:1px dotted #555}
+@media(max-width:600px){.sf-grid,.sf-btns{grid-template-columns:1fr}}
+</style>
+<script id="supply50-js">
+(function(){
+"use strict";
+const SPECIES=[{"name":"Dog","q":"dog","group":"COMPANION"},{"name":"Cat","q":"cat","group":"COMPANION"},{"name":"Rabbit","q":"rabbit","group":"SMALL_MAMMAL"},{"name":"Ferret","q":"ferret","group":"SMALL_MAMMAL"},{"name":"Guinea Pig","q":"guinea pig","group":"SMALL_MAMMAL"},{"name":"Hamster","q":"hamster","group":"SMALL_MAMMAL"},{"name":"Rat","q":"pet rat","group":"SMALL_MAMMAL"},{"name":"Mouse","q":"pet mouse","group":"SMALL_MAMMAL"},{"name":"Chinchilla","q":"chinchilla","group":"SMALL_MAMMAL"},{"name":"Hedgehog","q":"pet hedgehog","group":"SMALL_MAMMAL"},{"name":"Parrot","q":"parrot","group":"BIRD"},{"name":"Cockatiel","q":"cockatiel","group":"BIRD"},{"name":"Parakeet","q":"parakeet budgie","group":"BIRD"},{"name":"Canary","q":"canary bird","group":"BIRD"},{"name":"Finch","q":"finch bird","group":"BIRD"},{"name":"Chicken","q":"chicken","group":"BIRD"},{"name":"Duck","q":"pet duck","group":"BIRD"},{"name":"Goose","q":"pet goose","group":"BIRD"},{"name":"Pigeon","q":"pigeon","group":"BIRD"},{"name":"Dove","q":"dove bird","group":"BIRD"},{"name":"Turtle","q":"pet turtle","group":"REPTILE"},{"name":"Tortoise","q":"tortoise","group":"REPTILE"},{"name":"Snake","q":"pet snake","group":"REPTILE"},{"name":"Leopard Gecko","q":"leopard gecko","group":"REPTILE"},{"name":"Iguana","q":"iguana","group":"REPTILE"},{"name":"Bearded Dragon","q":"bearded dragon","group":"REPTILE"},{"name":"Frog","q":"pet frog","group":"AMPHIBIAN"},{"name":"Salamander","q":"pet salamander","group":"AMPHIBIAN"},{"name":"Aquarium Fish","q":"aquarium fish","group":"AQUATIC"},{"name":"Koi","q":"koi fish","group":"AQUATIC"},{"name":"Horse","q":"horse","group":"HOOFED"},{"name":"Donkey","q":"donkey","group":"HOOFED"},{"name":"Goat","q":"goat","group":"HOOFED"},{"name":"Sheep","q":"sheep","group":"HOOFED"},{"name":"Pig","q":"pet pig","group":"HOOFED"},{"name":"Cow","q":"cattle","group":"HOOFED"},{"name":"Alpaca","q":"alpaca","group":"HOOFED"},{"name":"Llama","q":"llama","group":"HOOFED"},{"name":"Turkey","q":"turkey","group":"BIRD"},{"name":"Quail","q":"quail","group":"BIRD"},{"name":"Sugar Glider","q":"sugar glider","group":"SMALL_MAMMAL"},{"name":"Hermit Crab","q":"hermit crab","group":"SMALL_MAMMAL"},{"name":"Axolotl","q":"axolotl","group":"AQUATIC"},{"name":"Betta","q":"betta fish","group":"AQUATIC"},{"name":"Goldfish","q":"goldfish","group":"AQUATIC"},{"name":"Macaw","q":"macaw","group":"BIRD"},{"name":"African Grey","q":"african grey parrot","group":"BIRD"},{"name":"Lovebird","q":"lovebird","group":"BIRD"},{"name":"Conure","q":"conure","group":"BIRD"},{"name":"Miniature Horse","q":"miniature horse","group":"HOOFED"}];
+const AREAS={
+ BIRD:["HEAD / BEAK","EYES","FEATHERS / BODY","WINGS","LEGS / FEET","HABITAT","FEEDING","TRAVEL"],
+ REPTILE:["HEAD / MOUTH","EYES","SKIN / SCALES","BODY","LEGS / FEET","HABITAT","FEEDING","TRAVEL"],
+ AQUATIC:["HEAD / MOUTH","BODY / SCALES","FINS","WATER SYSTEM","HABITAT","FEEDING","TRANSPORT"],
+ AMPHIBIAN:["HEAD","SKIN","BODY","LEGS / FEET","HABITAT","FEEDING","TRANSPORT"],
+ HOOFED:["HEAD / DENTAL","EYES / EARS","COAT / SKIN","BODY","LEGS / HOOVES","HOUSING","FEEDING","TRAVEL"],
+ SMALL_MAMMAL:["HEAD / DENTAL","EYES / EARS","COAT / SKIN","BODY","LEGS / FEET","HABITAT","FEEDING","TRAVEL"],
+ COMPANION:["HEAD / DENTAL","EYES / EARS","COAT / SKIN","BODY","LEGS / PAWS","HOME / BEDDING","FEEDING","TRAVEL"]
+};
+const NEEDS={
+ "HEAD / BEAK":["beak care supplies","grooming supplies","feeding accessories"],
+ "HEAD / MOUTH":["mouth care supplies","feeding accessories","grooming supplies"],
+ "HEAD / DENTAL":["dental care supplies","tooth care","chew enrichment"],
+ "HEAD":["head care supplies","feeding accessories"],
+ "EYES":["eye care supplies","grooming wipes"],
+ "EYES / EARS":["ear care supplies","eye care supplies","grooming wipes"],
+ "FEATHERS / BODY":["feather care","bird bath","grooming supplies"],
+ "SKIN / SCALES":["reptile shedding supplies","skin care","humidity accessories"],
+ "BODY / SCALES":["aquarium water conditioner","fish care supplies","aquarium maintenance"],
+ "SKIN":["amphibian habitat humidity supplies","terrarium care"],
+ "COAT / SKIN":["grooming brush","coat care","skin care supplies"],
+ "BODY":["grooming supplies","comfort supplies","monitoring supplies"],
+ "WINGS":["bird perch","wing-safe enrichment","flight cage accessories"],
+ "FINS":["aquarium plants","fish enrichment","water quality test kit"],
+ "LEGS / FEET":["foot care supplies","nail care","safe flooring"],
+ "LEGS / HOOVES":["hoof care supplies","grooming tools","leg wraps"],
+ "LEGS / PAWS":["paw care","nail care","mobility supplies"],
+ "HABITAT":["habitat enclosure","bedding substrate","temperature humidity monitor","enrichment toys"],
+ "WATER SYSTEM":["aquarium filter","water test kit","aquarium heater","air pump"],
+ "HOUSING":["stall supplies","bedding","feed bucket","water bucket"],
+ "HOME / BEDDING":["pet bed","bedding","crate supplies","enrichment toys"],
+ "FEEDING":["species food","feeding bowl","vitamins minerals","herbs supplements"],
+ "TRAVEL":["travel carrier","travel crate","travel bowl","carrier liner","travel accessories"],
+ "TRANSPORT":["animal transport container","travel container","temperature monitor"]
+};
+function ensureSF(){state.supplyFinder=state.supplyFinder||{species:null,area:null,need:null,log:[]};try{save()}catch(e){}}
+function D(){return state.supplyFinder}
+function esc(x){return String(x).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
+function amazon(q){return "https://www.amazon.com/s?k="+encodeURIComponent(q)}
+function renderSupply(){
+ ensureSF();page="supplyfinder";nav();let d=D(),sp=d.species!=null?SPECIES[d.species]:null;
+ let area=d.area,need=d.need;
+ let path="C:\\VETGODS\\SUPPLY_FINDER"+(sp?"\\"+sp.name.toUpperCase().replace(/ /g,"_"):"")+(area?"\\"+area.replace(/ /g,"_"):"")+(need?"\\"+need.toUpperCase().replace(/ /g,"_"):"")+">";
+ let body='';
+ if(!sp){
+   body='<div class="sf"><h4>SELECT ANIMAL // 50 SPECIES</h4><div class="sf-btns">'+SPECIES.map((x,i)=>'<button data-sp="'+i+'">['+String(i+1).padStart(2,"0")+'] '+x.name+'<small>'+x.group+'</small></button>').join("")+'</div></div>';
+ } else if(!area){
+   body='<div class="sf"><h4>'+sp.name.toUpperCase()+' // SELECT BODY AREA OR NEED</h4><div class="sf-btns">'+AREAS[sp.group].map(x=>'<button data-area="'+esc(x)+'">[>] '+esc(x)+'</button>').join("")+'</div></div>';
+ } else if(!need){
+   let list=NEEDS[area]||["care supplies","monitoring supplies","comfort supplies"];
+   body='<div class="sf"><h4>'+esc(area)+' // SELECT PRODUCT TYPE</h4><div class="sf-btns">'+list.map(x=>'<button data-need="'+esc(x)+'">[>] '+esc(x).toUpperCase()+'</button>').join("")+'</div></div>';
+ } else {
+   let queries=productQueries(sp,area,need);
+   body='<div class="sf"><h4>AMAZON PRODUCT SEARCH // '+sp.name.toUpperCase()+'</h4>'+
+   '<div class="sf-warn">These are Amazon <b>search links</b>, not veterinary prescriptions or endorsements. For herbs, vitamins, minerals, supplements, medications, or species-specific health concerns, verify suitability and dosing with a qualified veterinarian before use.</div>'+
+   queries.map((q,i)=>'<div class="sf-result"><small>SEARCH '+String(i+1).padStart(2,"0")+'</small><b>'+esc(q.label)+'</b><a target="_blank" rel="noopener noreferrer" href="'+amazon(q.q)+'">[OPEN AMAZON SEARCH]</a><small>'+esc(q.q)+'</small></div>').join("")+'</div>';
+ }
+ document.querySelector("#main").innerHTML='<div class="path">'+esc(path)+'</div>'+
+ '<div class="sf"><h4>SUPPLY_FINDER.EXE // DOS PRODUCT DIRECTORY</h4><div class="sf-grid">'+
+ '<div class="sf-card"><small>ANIMAL</small><b>'+(sp?esc(sp.name):"SELECT")+'</b></div>'+
+ '<div class="sf-card"><small>BODY / SYSTEM</small><b>'+(area?esc(area):"SELECT")+'</b></div>'+
+ '<div class="sf-card"><small>PRODUCT TYPE</small><b>'+(need?esc(need):"SELECT")+'</b></div>'+
+ '<div class="sf-card"><small>DATABASE</small><b>50 ANIMALS</b><small>Amazon searches open in a new tab</small></div></div>'+
+ '<div class="sf-btns"><button data-sf="animals">[HOME] ANIMAL LIST</button>'+(sp?'<button data-sf="areas">[BACK] BODY AREAS</button>':'')+(area?'<button data-sf="needs">[BACK] PRODUCT TYPES</button>':'')+'</div></div>'+body;
+ bind();
+}
+function productQueries(sp,area,need){
+ let base=sp.q+" "+need;
+ let q=[
+   {label:sp.name+" — "+need,q:base},
+   {label:sp.name+" — "+area+" "+need,q:sp.q+" "+area+" "+need}
+ ];
+ if(area==="FEEDING"){
+   q.push({label:sp.name+" food & feeding supplies",q:sp.q+" food feeding supplies"});
+   q.push({label:sp.name+" vitamins & minerals",q:sp.q+" vitamins minerals supplement"});
+   q.push({label:sp.name+" herbs & supplements",q:sp.q+" herbs supplements"});
+ }
+ if(area==="TRAVEL"||area==="TRANSPORT"){
+   q.push({label:sp.name+" travel carrier",q:sp.q+" travel carrier"});
+   q.push({label:sp.name+" travel accessories",q:sp.q+" travel accessories"});
+ }
+ if(area==="HABITAT"||area==="HOME / BEDDING"||area==="HOUSING"||area==="WATER SYSTEM"){
+   q.push({label:sp.name+" habitat essentials",q:sp.q+" habitat essentials"});
+ }
+ return q;
+}
+function bind(){
+ let d=D();
+ document.querySelectorAll("[data-sp]").forEach(b=>b.onclick=()=>{d.species=+b.dataset.sp;d.area=null;d.need=null;try{save()}catch(e){}renderSupply()});
+ document.querySelectorAll("[data-area]").forEach(b=>b.onclick=()=>{d.area=b.dataset.area;d.need=null;try{save()}catch(e){}renderSupply()});
+ document.querySelectorAll("[data-need]").forEach(b=>b.onclick=()=>{d.need=b.dataset.need;try{save()}catch(e){}renderSupply()});
+ document.querySelectorAll("[data-sf]").forEach(b=>b.onclick=()=>{if(b.dataset.sf==="animals"){d.species=null;d.area=null;d.need=null}if(b.dataset.sf==="areas"){d.area=null;d.need=null}if(b.dataset.sf==="needs"){d.need=null}renderSupply()});
+}
+const oldProgram=program;program=function(k){if(k==="supplyfinder")return renderSupply();return oldProgram(k)};
+function addSupply(){
+ if(page!=="home"||document.querySelector("#sfHomeLink"))return;
+ let c=document.querySelector(".p10-buttons");if(!c)return;
+ let b=document.createElement("button");b.id="sfHomeLink";b.textContent="[29] SUPPLY_FINDER.EXE";b.onclick=renderSupply;c.appendChild(b);
+}
+const oldHome=home;home=function(){oldHome();addSupply()};
+ensureSF();addSupply();
+window.VetGodsSupplyFinder50={render:renderSupply};
+})();
+</script>
+
+<style id="curiosity50-css">
+.cu{border:1px solid #666;margin-top:8px}.cu h4{margin:0;background:#c9c9c9;color:#000;padding:5px 7px;font-size:10px}
+.cu-grid,.cu-btns{display:grid;grid-template-columns:repeat(2,1fr)}
+.cu-card,.cu-result{padding:8px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}
+.cu-card small,.cu-result small{display:block;color:#777;margin-top:3px}.cu-card b,.cu-result b{color:#fff}
+.cu-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:8px;text-align:left;font:700 9px "Courier New",monospace}
+.cu-btns button:hover,.cu-btns button.on{background:#c9c9c9;color:#000}
+.cu-result a{display:block;color:#fff;text-decoration:none;padding:7px 0;font-weight:900}.cu-result a:hover{text-decoration:underline}
+.cu-q{padding:10px;white-space:pre-wrap;font-size:9px;line-height:1.55;border-bottom:1px dotted #555}
+@media(max-width:600px){.cu-grid,.cu-btns{grid-template-columns:1fr}}
+</style>
+<script id="curiosity50-js">
+(function(){
+"use strict";
+const SPECIES=[{"name":"Dog","q":"dog"},{"name":"Cat","q":"cat"},{"name":"Rabbit","q":"rabbit"},{"name":"Ferret","q":"ferret"},{"name":"Guinea Pig","q":"guinea pig"},{"name":"Hamster","q":"hamster"},{"name":"Rat","q":"pet rat"},{"name":"Mouse","q":"pet mouse"},{"name":"Chinchilla","q":"chinchilla"},{"name":"Hedgehog","q":"hedgehog"},{"name":"Parrot","q":"parrot"},{"name":"Cockatiel","q":"cockatiel"},{"name":"Parakeet","q":"budgie parakeet"},{"name":"Canary","q":"canary bird"},{"name":"Finch","q":"finch bird"},{"name":"Chicken","q":"chicken"},{"name":"Duck","q":"duck"},{"name":"Goose","q":"goose"},{"name":"Pigeon","q":"pigeon"},{"name":"Dove","q":"dove bird"},{"name":"Turtle","q":"turtle"},{"name":"Tortoise","q":"tortoise"},{"name":"Snake","q":"snake"},{"name":"Leopard Gecko","q":"leopard gecko"},{"name":"Iguana","q":"iguana"},{"name":"Bearded Dragon","q":"bearded dragon"},{"name":"Frog","q":"frog"},{"name":"Salamander","q":"salamander"},{"name":"Aquarium Fish","q":"aquarium fish"},{"name":"Koi","q":"koi fish"},{"name":"Horse","q":"horse"},{"name":"Donkey","q":"donkey"},{"name":"Goat","q":"goat"},{"name":"Sheep","q":"sheep"},{"name":"Pig","q":"pig"},{"name":"Cow","q":"cow cattle"},{"name":"Alpaca","q":"alpaca"},{"name":"Llama","q":"llama"},{"name":"Turkey","q":"turkey bird"},{"name":"Quail","q":"quail bird"},{"name":"Sugar Glider","q":"sugar glider"},{"name":"Hermit Crab","q":"hermit crab"},{"name":"Axolotl","q":"axolotl"},{"name":"Betta","q":"betta fish"},{"name":"Goldfish","q":"goldfish"},{"name":"Macaw","q":"macaw"},{"name":"African Grey","q":"African grey parrot"},{"name":"Lovebird","q":"lovebird"},{"name":"Conure","q":"conure parrot"},{"name":"Miniature Horse","q":"miniature horse"}];
+const TOPICS={
+ "SENSES":["vision","hearing","smell and chemical senses","touch and vibration","how senses locate food or danger"],
+ "BEHAVIOR":["daily behavior","play and enrichment","social behavior","territorial behavior","problem solving"],
+ "INTELLIGENCE / LEARNING":["learning and memory","training and conditioning","problem solving","recognition abilities","animal cognition research"],
+ "ANATOMY":["skeleton and bones","muscles and movement","digestive system","heart and circulation","respiratory system"],
+ "COMMUNICATION":["sounds and calls","body language","social signals","courtship communication","warning signals"],
+ "MOVEMENT":["walking and running","flight or swimming","climbing and balance","slow motion movement","special locomotion adaptations"],
+ "FOOD / FORAGING":["natural diet","how it finds food","feeding behavior","foraging enrichment","digestive adaptations"],
+ "HABITAT":["natural habitat","nest or shelter building","temperature adaptations","seasonal behavior","environmental enrichment"],
+ "BABIES / DEVELOPMENT":["birth or hatching","baby development","parental care","juvenile behavior","growth stages"],
+ "SLEEP":["sleep behavior","sleep positions","dream and REM research","day versus night activity","resting behavior"],
+ "SPECIAL ADAPTATIONS":["defense adaptations","camouflage","survival adaptations","unusual anatomy","extreme abilities"],
+ "VETERINARY EDUCATION":["physical examination education","anatomy education","preventive care education","handling and restraint education","species veterinary lecture"],
+ "CONSERVATION":["wild populations","habitat conservation","rehabilitation","field research","conservation documentary"],
+ "MYTHS VS FACTS":["common myths explained","facts versus myths","misunderstood behavior","popular misconceptions","science explained"]
+};
+function ensureCU(){state.animalCuriosity=state.animalCuriosity||{species:null,topic:null,question:null,history:[]};try{save()}catch(e){}}
+function D(){return state.animalCuriosity}
+function esc(x){return String(x).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
+function yt(q){return "https://www.youtube.com/results?search_query="+encodeURIComponent(q)}
+function renderCuriosity(){
+ ensureCU();page="curiosity";nav();let d=D(),sp=d.species!=null?SPECIES[d.species]:null;
+ let path="C:\\VETGODS\\ANIMAL_CURIOSITY"+(sp?"\\"+sp.name.toUpperCase().replace(/ /g,"_"):"")+(d.topic?"\\"+d.topic.replace(/ /g,"_"):"")+">";
+ let body="";
+ if(!sp){
+   body='<div class="cu"><h4>SELECT ANIMAL // 50 SPECIES</h4><div class="cu-btns">'+SPECIES.map((x,i)=>'<button data-cusp="'+i+'">['+String(i+1).padStart(2,"0")+'] '+x.name+'<small>OPEN CURIOSITY FILE</small></button>').join("")+'</div></div>';
+ }else if(!d.topic){
+   body='<div class="cu"><h4>'+sp.name.toUpperCase()+' // SELECT CURIOSITY</h4><div class="cu-btns">'+Object.keys(TOPICS).map(x=>'<button data-cutopic="'+esc(x)+'">[>] '+esc(x)+'</button>').join("")+'</div></div>';
+ }else if(!d.question){
+   body='<div class="cu"><h4>'+esc(d.topic)+' // SELECT QUESTION / SUBTOPIC</h4><div class="cu-btns">'+TOPICS[d.topic].map(x=>'<button data-cuquestion="'+esc(x)+'">[?] '+esc(x).toUpperCase()+'</button>').join("")+'</div></div>';
+ }else{
+   let qs=queries(sp,d.topic,d.question);
+   body='<div class="cu"><h4>YOUTUBE RESEARCH TERMINAL</h4><div class="cu-q">ANIMAL ....... '+esc(sp.name)+'\nCURIOSITY .... '+esc(d.topic)+'\nQUESTION ..... '+esc(d.question)+'\n\nSelect a search route below. Results open in a new tab; VET GODS remains open.</div>'+
+   qs.map((x,i)=>'<div class="cu-result"><small>SEARCH ROUTE '+String(i+1).padStart(2,"0")+'</small><b>'+esc(x.label)+'</b><a target="_blank" rel="noopener noreferrer" href="'+yt(x.q)+'">[OPEN YOUTUBE SEARCH]</a><small>'+esc(x.q)+'</small></div>').join("")+'</div>';
+ }
+ document.querySelector("#main").innerHTML='<div class="path">'+esc(path)+'</div>'+
+ '<div class="cu"><h4>ANIMAL_CURIOSITY.EXE // EDUCATION & DISCOVERY</h4><div class="cu-grid">'+
+ '<div class="cu-card"><small>ANIMAL</small><b>'+(sp?esc(sp.name):"SELECT")+'</b></div>'+
+ '<div class="cu-card"><small>TOPIC</small><b>'+(d.topic?esc(d.topic):"SELECT")+'</b></div>'+
+ '<div class="cu-card"><small>QUESTION</small><b>'+(d.question?esc(d.question):"SELECT")+'</b></div>'+
+ '<div class="cu-card"><small>DATABASE</small><b>50 ANIMALS × 14 TOPICS</b><small>YouTube searches, not fixed videos</small></div></div>'+
+ '<div class="cu-btns"><button data-cunav="animals">[HOME] ANIMAL LIST</button>'+(sp?'<button data-cunav="topics">[BACK] CURIOSITIES</button>':'')+(d.topic?'<button data-cunav="questions">[BACK] QUESTIONS</button>':'')+'</div></div>'+body;
+ bind();
+}
+function queries(sp,t,q){
+ let base=sp.q+" "+q;
+ return [
+  {label:"GENERAL EXPLANATION",q:base+" explained"},
+  {label:"DOCUMENTARY / FIELD FOOTAGE",q:base+" documentary wildlife"},
+  {label:"SCIENCE / EDUCATION",q:base+" science education"},
+  {label:"VETERINARY / ANATOMY",q:sp.q+" "+q+" veterinary anatomy"},
+  {label:"SLOW MOTION / CLOSE OBSERVATION",q:sp.q+" "+q+" slow motion close up"}
+ ];
+}
+function bind(){
+ let d=D();
+ document.querySelectorAll("[data-cusp]").forEach(b=>b.onclick=()=>{d.species=+b.dataset.cusp;d.topic=null;d.question=null;renderCuriosity()});
+ document.querySelectorAll("[data-cutopic]").forEach(b=>b.onclick=()=>{d.topic=b.dataset.cutopic;d.question=null;renderCuriosity()});
+ document.querySelectorAll("[data-cuquestion]").forEach(b=>b.onclick=()=>{d.question=b.dataset.cuquestion;let sp=SPECIES[d.species];d.history.unshift(sp.name+" · "+d.topic+" · "+d.question);d.history=d.history.slice(0,30);try{save()}catch(e){}renderCuriosity()});
+ document.querySelectorAll("[data-cunav]").forEach(b=>b.onclick=()=>{let x=b.dataset.cunav;if(x==="animals"){d.species=null;d.topic=null;d.question=null}if(x==="topics"){d.topic=null;d.question=null}if(x==="questions")d.question=null;renderCuriosity()});
+}
+const oldProgram=program;program=function(k){if(k==="curiosity")return renderCuriosity();return oldProgram(k)};
+function addCuriosity(){
+ if(page!=="home"||document.querySelector("#cuHomeLink"))return;
+ let c=document.querySelector(".p10-buttons");if(!c)return;
+ let b=document.createElement("button");b.id="cuHomeLink";b.textContent="[30] ANIMAL_CURIOSITY.EXE";b.onclick=renderCuriosity;c.appendChild(b);
+}
+const oldHome=home;home=function(){oldHome();addCuriosity()};
+ensureCU();addCuriosity();
+window.VetGodsAnimalCuriosity50={render:renderCuriosity};
+})();
+</script>
+
+<script id="core-50-playable-cases">
+(function(){
+"use strict";
+const EXTRA_CASES=[{"name":"Nova","species":"Wolf","breed":"Gray Wolf","sex":"F","age":"young adult","temperament":"guarded, observant","traits":["LOYAL","CAUTIOUS","PACK-AWARE"],"story":"Forest-edge rescue after a severe storm","concern":"limping and dehydrated","health":61,"pain":42,"oxygen":95,"hydration":48,"nutrition":63,"stress":72,"trust":28,"mobility":58},{"name":"Pip","species":"Rabbit","breed":"Mini Rex","sex":"M","age":"adult","temperament":"gentle, startle-prone","traits":["CURIOUS","QUIET","FOOD-MOTIVATED"],"story":"Found loose near an abandoned garden","concern":"reduced appetite and sore hind leg","health":69,"pain":31,"oxygen":97,"hydration":57,"nutrition":49,"stress":68,"trust":35,"mobility":62},{"name":"Miso","species":"Ferret","breed":"Domestic Ferret","sex":"F","age":"adult","temperament":"busy, mischievous","traits":["BOLD","SOCIAL","EXPLORATORY"],"story":"Owner surrender after housing loss","concern":"lethargy and poor hydration","health":64,"pain":27,"oxygen":96,"hydration":45,"nutrition":52,"stress":54,"trust":57,"mobility":70},{"name":"Juniper","species":"Guinea Pig","breed":"American","sex":"F","age":"senior","temperament":"soft-spoken, cautious","traits":["SOCIAL","ROUTINE-LOVING","VOCAL"],"story":"Transferred from an overcrowded rescue","concern":"dental discomfort and weight loss","health":58,"pain":46,"oxygen":97,"hydration":60,"nutrition":42,"stress":63,"trust":44,"mobility":55},{"name":"Orbit","species":"Chinchilla","breed":"Standard Gray","sex":"M","age":"adult","temperament":"alert, sensitive","traits":["AGILE","CAUTIOUS","NIGHT-ACTIVE"],"story":"Recovered after enclosure damage","concern":"foot irritation and stress","health":72,"pain":24,"oxygen":98,"hydration":65,"nutrition":67,"stress":76,"trust":31,"mobility":73},{"name":"Bramble","species":"Hedgehog","breed":"African Pygmy","sex":"F","age":"adult","temperament":"defensive at first","traits":["SOLITARY","SNIFF-DRIVEN","PATIENT"],"story":"Found during an apartment evacuation","concern":"mild dehydration and skin irritation","health":70,"pain":19,"oxygen":97,"hydration":51,"nutrition":58,"stress":70,"trust":22,"mobility":66},{"name":"Sable","species":"Owl","breed":"Great Horned Owl","sex":"F","age":"adult","temperament":"silent, defensive","traits":["WATCHFUL","INDEPENDENT","NOCTURNAL"],"story":"Wildlife transfer after roadside discovery","concern":"wing strain and exhaustion","health":55,"pain":48,"oxygen":94,"hydration":53,"nutrition":61,"stress":82,"trust":18,"mobility":47},{"name":"Cipher","species":"Raven","breed":"Common Raven","sex":"M","age":"adult","temperament":"intensely curious","traits":["CLEVER","OBJECT-FOCUSED","SOCIAL"],"story":"Rehabilitation transfer after window collision","concern":"bruising and disorientation","health":67,"pain":33,"oxygen":96,"hydration":66,"nutrition":62,"stress":58,"trust":46,"mobility":60},{"name":"Rio","species":"Macaw","breed":"Blue-and-Gold Macaw","sex":"M","age":"adult","temperament":"loud, affiliative","traits":["SOCIAL","PLAYFUL","VOCAL"],"story":"Rescue placement after long-term neglect","concern":"feather damage and poor nutrition","health":60,"pain":25,"oxygen":97,"hydration":59,"nutrition":39,"stress":65,"trust":41,"mobility":68},{"name":"Ada","species":"African Grey","breed":"African Grey Parrot","sex":"F","age":"adult","temperament":"reserved, attentive","traits":["OBSERVANT","VOCAL","ROUTINE-SENSITIVE"],"story":"Transferred from a quiet-home placement","concern":"stress and appetite change","health":74,"pain":12,"oxygen":98,"hydration":67,"nutrition":56,"stress":73,"trust":38,"mobility":76},{"name":"Sol","species":"Cockatiel","breed":"Cockatiel","sex":"M","age":"young adult","temperament":"friendly, nervous","traits":["SOCIAL","WHISTLING","GENTLE"],"story":"Found after escaping during a move","concern":"fatigue and minor foot irritation","health":78,"pain":15,"oxygen":98,"hydration":61,"nutrition":64,"stress":59,"trust":52,"mobility":80},{"name":"Astra","species":"Eagle","breed":"Bald Eagle","sex":"F","age":"adult","temperament":"powerful, wary","traits":["INDEPENDENT","VISUAL","DEFENSIVE"],"story":"Wildlife rehabilitation transfer","concern":"shoulder strain and dehydration","health":52,"pain":51,"oxygen":94,"hydration":44,"nutrition":59,"stress":85,"trust":12,"mobility":43},{"name":"Kestrel","species":"Falcon","breed":"Peregrine Falcon","sex":"M","age":"adult","temperament":"high-alert","traits":["FAST","VISUAL","RESTRAINT-SENSITIVE"],"story":"Recovered after an urban collision","concern":"wing bruising and stress","health":57,"pain":44,"oxygen":95,"hydration":55,"nutrition":65,"stress":88,"trust":15,"mobility":49},{"name":"Pebble","species":"Duck","breed":"Mallard","sex":"F","age":"adult","temperament":"social, busy","traits":["FLOCKING","WATER-SEEKING","FOOD-MOTIVATED"],"story":"Rescued from a drainage canal","concern":"foot abrasion and dehydration","health":73,"pain":21,"oxygen":97,"hydration":49,"nutrition":68,"stress":61,"trust":39,"mobility":71},{"name":"Marsh","species":"Goose","breed":"Domestic Goose","sex":"M","age":"adult","temperament":"protective, vocal","traits":["TERRITORIAL","SOCIAL","BOLD"],"story":"Farm sanctuary transfer","concern":"leg soreness and stress","health":68,"pain":29,"oxygen":97,"hydration":62,"nutrition":72,"stress":57,"trust":33,"mobility":64},{"name":"Dot","species":"Chicken","breed":"Silkie","sex":"F","age":"adult","temperament":"calm, social","traits":["FLOCKING","GENTLE","FORAGING"],"story":"Backyard rescue after coop damage","concern":"minor wound and fatigue","health":77,"pain":18,"oxygen":98,"hydration":68,"nutrition":66,"stress":48,"trust":55,"mobility":75},{"name":"Copper","species":"Turkey","breed":"Heritage Turkey","sex":"M","age":"adult","temperament":"curious, cautious","traits":["SOCIAL","DISPLAYING","ROUTINE-AWARE"],"story":"Sanctuary intake from a small farm","concern":"foot soreness and low stamina","health":66,"pain":32,"oxygen":97,"hydration":60,"nutrition":65,"stress":54,"trust":36,"mobility":57},{"name":"Atlas","species":"Horse","breed":"Quarter Horse","sex":"M","age":"adult","temperament":"steady, cooperative","traits":["SOCIAL","SENSITIVE","TRAINED"],"story":"Emergency relocation after wildfire evacuation","concern":"dehydration and muscle strain","health":62,"pain":39,"oxygen":96,"hydration":43,"nutrition":58,"stress":66,"trust":47,"mobility":52},{"name":"Daisy","species":"Donkey","breed":"Miniature Donkey","sex":"F","age":"senior","temperament":"patient, stubborn","traits":["SOCIAL","CAUTIOUS","FOOD-MOTIVATED"],"story":"Sanctuary transfer after owner illness","concern":"hoof soreness and low condition","health":64,"pain":37,"oxygen":97,"hydration":55,"nutrition":48,"stress":51,"trust":59,"mobility":49},{"name":"Clover","species":"Goat","breed":"Nigerian Dwarf Goat","sex":"F","age":"adult","temperament":"bold, nosy","traits":["CLIMBING","SOCIAL","FOOD-MOTIVATED"],"story":"Rescued after fence collapse","concern":"minor leg strain and stress","health":75,"pain":22,"oxygen":98,"hydration":63,"nutrition":71,"stress":44,"trust":61,"mobility":72},{"name":"Woolsey","species":"Sheep","breed":"Shetland Sheep","sex":"M","age":"adult","temperament":"shy, flock-focused","traits":["FLOCKING","CAUTIOUS","ROUTINE-LOVING"],"story":"Transferred from an overcrowded pasture","concern":"skin irritation and low hydration","health":69,"pain":20,"oxygen":98,"hydration":52,"nutrition":60,"stress":62,"trust":34,"mobility":65},{"name":"Truffle","species":"Pig","breed":"Pot-Bellied Pig","sex":"F","age":"adult","temperament":"smart, demanding","traits":["FOOD-MOTIVATED","SOCIAL","PUZZLE-LOVING"],"story":"Owner surrender after zoning change","concern":"overgrown hoof discomfort and stress","health":71,"pain":28,"oxygen":97,"hydration":64,"nutrition":70,"stress":52,"trust":48,"mobility":60},{"name":"Nimbus","species":"Alpaca","breed":"Huacaya Alpaca","sex":"M","age":"adult","temperament":"reserved, herd-aware","traits":["HERDING","CAUTIOUS","GENTLE"],"story":"Sanctuary intake after transport delay","concern":"dehydration and fatigue","health":67,"pain":18,"oxygen":97,"hydration":46,"nutrition":62,"stress":69,"trust":29,"mobility":58},{"name":"Luna","species":"Llama","breed":"Llama","sex":"F","age":"adult","temperament":"watchful, calm","traits":["HERD-AWARE","ALERT","INDEPENDENT"],"story":"Transferred from a rural rescue","concern":"minor leg strain and low appetite","health":72,"pain":24,"oxygen":97,"hydration":58,"nutrition":51,"stress":55,"trust":42,"mobility":63},{"name":"Shellby","species":"Tortoise","breed":"Sulcata Tortoise","sex":"F","age":"adult","temperament":"slow, persistent","traits":["HEAT-SEEKING","ROUTINE-DRIVEN","CALM"],"story":"Relinquished after outgrowing home enclosure","concern":"shell abrasion and low hydration","health":65,"pain":23,"oxygen":98,"hydration":47,"nutrition":56,"stress":39,"trust":30,"mobility":54},{"name":"Moss","species":"Turtle","breed":"Red-Eared Slider","sex":"M","age":"adult","temperament":"wary, food-aware","traits":["AQUATIC","BASKING","CAUTIOUS"],"story":"Found in an unsuitable outdoor pond","concern":"shell condition concern and poor water history","health":68,"pain":16,"oxygen":98,"hydration":55,"nutrition":57,"stress":50,"trust":26,"mobility":62},{"name":"Ember","species":"Iguana","breed":"Green Iguana","sex":"M","age":"adult","temperament":"defensive, heat-seeking","traits":["VISUAL","TERRITORIAL","ROUTINE-SENSITIVE"],"story":"Rescue transfer from inadequate enclosure","concern":"skin shedding issue and dehydration","health":60,"pain":26,"oxygen":97,"hydration":42,"nutrition":49,"stress":78,"trust":17,"mobility":55},{"name":"Cinder","species":"Bearded Dragon","breed":"Central Bearded Dragon","sex":"F","age":"adult","temperament":"calm, basking-focused","traits":["HEAT-SEEKING","FOOD-AWARE","TOLERANT"],"story":"Owner surrender during relocation","concern":"low appetite and mild weakness","health":71,"pain":14,"oxygen":98,"hydration":61,"nutrition":44,"stress":43,"trust":52,"mobility":61},{"name":"Pixel","species":"Leopard Gecko","breed":"Leopard Gecko","sex":"M","age":"adult","temperament":"quiet, nocturnal","traits":["HIDE-SEEKING","NOCTURNAL","CAUTIOUS"],"story":"Rescue intake from a failed enclosure setup","concern":"retained shed on toes and dehydration","health":74,"pain":18,"oxygen":98,"hydration":48,"nutrition":58,"stress":57,"trust":36,"mobility":69},{"name":"Coil","species":"Python","breed":"Ball Python","sex":"F","age":"adult","temperament":"calm, defensive when stressed","traits":["SOLITARY","HEAT-SEEKING","SCENT-DRIVEN"],"story":"Transferred after prolonged power outage","concern":"dehydration and incomplete shed","health":70,"pain":15,"oxygen":98,"hydration":45,"nutrition":61,"stress":63,"trust":28,"mobility":58},{"name":"Sprout","species":"Frog","breed":"White's Tree Frog","sex":"M","age":"adult","temperament":"quiet, moisture-dependent","traits":["NOCTURNAL","CLIMBING","AMBUSH-FEEDING"],"story":"Habitat rescue after equipment failure","concern":"skin dryness risk and stress","health":63,"pain":10,"oxygen":97,"hydration":50,"nutrition":54,"stress":70,"trust":18,"mobility":66},{"name":"Echo","species":"Axolotl","breed":"Axolotl","sex":"F","age":"young adult","temperament":"calm, low-reactive","traits":["AQUATIC","LIGHT-SENSITIVE","FOOD-AWARE"],"story":"Aquarium surrender after filtration failure","concern":"water-quality exposure and reduced appetite","health":59,"pain":8,"oxygen":96,"hydration":58,"nutrition":43,"stress":46,"trust":25,"mobility":50},{"name":"Flash","species":"Koi","breed":"Koi Carp","sex":"M","age":"adult","temperament":"school-aware, food-responsive","traits":["AQUATIC","SOCIAL","ROUTINE-FED"],"story":"Pond evacuation after pump failure","concern":"oxygen stress and fin abrasion","health":56,"pain":12,"oxygen":89,"hydration":72,"nutrition":58,"stress":68,"trust":20,"mobility":55},{"name":"Velvet","species":"Betta","breed":"Betta Fish","sex":"M","age":"adult","temperament":"territorial, visual","traits":["SOLITARY","DISPLAYING","SURFACE-BREATHING"],"story":"Transferred from an undersized container","concern":"fin damage and environmental stress","health":62,"pain":9,"oxygen":92,"hydration":66,"nutrition":51,"stress":74,"trust":15,"mobility":60},{"name":"Comet","species":"Goldfish","breed":"Fancy Goldfish","sex":"F","age":"adult","temperament":"social, food-focused","traits":["AQUATIC","SOCIAL","FORAGING"],"story":"Aquarium rescue after water-quality crash","concern":"buoyancy concern and stress","health":60,"pain":11,"oxygen":91,"hydration":70,"nutrition":47,"stress":65,"trust":24,"mobility":48},{"name":"Glider","species":"Sugar Glider","breed":"Sugar Glider","sex":"M","age":"adult","temperament":"social, nocturnal","traits":["COLONY-SEEKING","CLIMBING","VOCAL"],"story":"Rescue transfer after companion loss","concern":"stress and reduced appetite","health":68,"pain":13,"oxygen":98,"hydration":60,"nutrition":45,"stress":79,"trust":21,"mobility":74},{"name":"Cricket","species":"Hermit Crab","breed":"Caribbean Hermit Crab","sex":"F","age":"adult","temperament":"cautious, exploratory","traits":["CLIMBING","HIDE-SEEKING","HUMIDITY-DEPENDENT"],"story":"Habitat intake after improper substrate","concern":"molting concern and low humidity history","health":70,"pain":7,"oxygen":99,"hydration":52,"nutrition":59,"stress":55,"trust":18,"mobility":61},{"name":"Lyric","species":"Lovebird","breed":"Peach-Faced Lovebird","sex":"F","age":"adult","temperament":"social, energetic","traits":["PAIR-BONDED","VOCAL","PLAYFUL"],"story":"Rescue intake after household transition","concern":"stress and feather wear","health":76,"pain":12,"oxygen":98,"hydration":64,"nutrition":62,"stress":60,"trust":47,"mobility":79},{"name":"Juno","species":"Conure","breed":"Green-Cheek Conure","sex":"M","age":"young adult","temperament":"playful, nippy","traits":["SOCIAL","CURIOUS","OBJECT-FOCUSED"],"story":"Found after an accidental escape","concern":"fatigue and mild dehydration","health":74,"pain":14,"oxygen":98,"hydration":51,"nutrition":65,"stress":67,"trust":39,"mobility":76},{"name":"Indigo","species":"Pigeon","breed":"Domestic Pigeon","sex":"F","age":"adult","temperament":"gentle, homing-focused","traits":["SOCIAL","VISUAL","ROUTINE-LOVING"],"story":"Recovered from a warehouse loft","concern":"wing soreness and low condition","health":70,"pain":26,"oxygen":97,"hydration":59,"nutrition":52,"stress":57,"trust":45,"mobility":64},{"name":"Pearl","species":"Dove","breed":"Ringneck Dove","sex":"F","age":"adult","temperament":"quiet, gentle","traits":["PAIR-BONDED","CALM","VOCAL"],"story":"Sanctuary transfer after owner relocation","concern":"stress and minor feather damage","health":79,"pain":9,"oxygen":99,"hydration":70,"nutrition":66,"stress":43,"trust":61,"mobility":82},{"name":"Bean","species":"Hamster","breed":"Syrian Hamster","sex":"M","age":"adult","temperament":"solitary, busy","traits":["BURROWING","NOCTURNAL","FOOD-STORING"],"story":"Shelter transfer after abandonment","concern":"dehydration and overgrown nails","health":72,"pain":12,"oxygen":98,"hydration":49,"nutrition":55,"stress":61,"trust":31,"mobility":70},{"name":"Tesla","species":"Rat","breed":"Fancy Rat","sex":"F","age":"adult","temperament":"social, clever","traits":["SOCIAL","TRAINABLE","FOOD-MOTIVATED"],"story":"Rescue intake from a crowded colony","concern":"respiratory irritation and stress","health":65,"pain":17,"oxygen":94,"hydration":62,"nutrition":60,"stress":69,"trust":50,"mobility":73},{"name":"Button","species":"Mouse","breed":"Fancy Mouse","sex":"M","age":"adult","temperament":"quick, cautious","traits":["SOCIAL","NESTING","EXPLORATORY"],"story":"Shelter transfer after enclosure escape","concern":"minor tail abrasion and stress","health":75,"pain":10,"oxygen":98,"hydration":67,"nutrition":64,"stress":72,"trust":33,"mobility":76},{"name":"Mako","species":"Aquarium Fish","breed":"Freshwater Angelfish","sex":"F","age":"adult","temperament":"territorial, visual","traits":["AQUATIC","SOCIAL","STRUCTURE-SEEKING"],"story":"Aquarium rescue after heater failure","concern":"temperature stress and reduced feeding","health":61,"pain":8,"oxygen":93,"hydration":69,"nutrition":46,"stress":71,"trust":20,"mobility":52},{"name":"Quill","species":"Quail","breed":"Coturnix Quail","sex":"M","age":"adult","temperament":"ground-dwelling, alert","traits":["FLOCKING","FORAGING","STARTLE-PRONE"],"story":"Recovered after aviary storm damage","concern":"foot irritation and fatigue","health":73,"pain":17,"oxygen":98,"hydration":61,"nutrition":65,"stress":74,"trust":29,"mobility":68},{"name":"Rook","species":"Parrot","breed":"Amazon Parrot","sex":"M","age":"adult","temperament":"vocal, opinionated","traits":["SOCIAL","VOCAL","PUZZLE-LOVING"],"story":"Rescue transfer after caregiver hospitalization","concern":"stress and dietary imbalance","health":69,"pain":15,"oxygen":98,"hydration":63,"nutrition":45,"stress":66,"trust":44,"mobility":75},{"name":"Aurora","species":"Miniature Horse","breed":"Miniature Horse","sex":"F","age":"adult","temperament":"gentle, social","traits":["HERDING","TRAINED","FOOD-MOTIVATED"],"story":"Sanctuary intake after property sale","concern":"hoof soreness and mild dehydration","health":70,"pain":30,"oxygen":97,"hydration":54,"nutrition":61,"stress":49,"trust":58,"mobility":62}];
+function normalizeCase(x,i){
+ return {
+   id:x.id||("expanded-"+i+"-"+x.name.toLowerCase().replace(/[^a-z0-9]+/g,"-")),
+   caseId:x.caseId||("VG-X"+String(i+1).padStart(3,"0")),
+   name:x.name, icon:x.icon||"🐾", species:x.species, breed:x.breed||x.species,
+   sex:x.sex||"U", age:x.age||"adult",
+   temperament:x.temperament||"observant",
+   personality:Array.isArray(x.traits)?x.traits:["CURIOUS"],
+   backstory:x.story||"Fictional VET GODS intake case.",
+   presentingConcern:x.concern||"examination required",
+   health:Number(x.health??70), pain:Number(x.pain??20), oxygen:Number(x.oxygen??97),
+   hydration:Number(x.hydration??60), nutrition:Number(x.nutrition??60),
+   stress:Number(x.stress??50), trust:Number(x.trust??40), mobility:Number(x.mobility??65),
+   comfort:55, food:60, stage:"INTAKE", disposition:"AVAILABLE CASE",
+   tests:{},evidence:[],history:[],research:{reports:[],flags:[]},
+   behavior:{observations:[]},rehab:{sessions:0},sanctuary:{resident:false,habitat:""}
+ };
+}
+function install50(){
+ if(!Array.isArray(state.animals))return;
+ let existing=new Set(state.animals.map(a=>(a.name+"|"+a.species).toLowerCase()));
+ EXTRA_CASES.forEach((x,i)=>{
+   let key=(x.name+"|"+x.species).toLowerCase();
+   if(state.animals.length<50&&!existing.has(key)){state.animals.push(normalizeCase(x,i));existing.add(key)}
+ });
+ // If the historical roster + unique expansion is still below 50, derive distinct simulation cases.
+ let n=1;
+ while(state.animals.length<50){
+   let base=EXTRA_CASES[(n-1)%EXTRA_CASES.length],x=JSON.parse(JSON.stringify(base));
+   x.name=base.name+"-"+(n+1);x.story=base.story+" Secondary fictional training case.";
+   state.animals.push(normalizeCase(x,EXTRA_CASES.length+n));n++;
+ }
+ // Never truncate a user's existing roster if it has already grown beyond 50.
+ state.coreRosterVersion="50-PLAYABLE-CASES-V1";
+ try{save()}catch(e){console.warn("50-case roster save deferred",e)}
+}
+install50();
+
+// Add a compact DOS roster browser without disturbing the existing clinic UI.
+function renderCaseRoster(){
+ page="caseRoster50";nav();
+ let rows=state.animals.slice(0,50).map((a,i)=>
+ '<button data-roster="'+i+'">['+String(i+1).padStart(2,"0")+'] '+a.name.toUpperCase()+
+ '<small>'+a.species+' / '+(a.breed||a.species)+' · '+(a.temperament||"observant")+
+ ' · H:'+a.health+' P:'+a.pain+' S:'+a.stress+' T:'+a.trust+'</small></button>').join("");
+ document.querySelector("#main").innerHTML=
+ '<div class="path">C:\\VETGODS\\CASE_ROSTER_50&gt;</div>'+
+ '<div class="p10-panel"><h4>50 PLAYABLE ANIMAL CASES</h4>'+
+ '<div class="p10-buttons">'+rows+'</div></div>'+
+ '<div class="out"><h4>ROSTER TERMINAL</h4><pre id="out">SELECT AN ANIMAL TO MAKE IT THE ACTIVE CASE AND OPEN CARE.</pre></div>';
+ document.querySelectorAll("[data-roster]").forEach(b=>b.onclick=function(){
+   state.active=+b.dataset.roster;let a=state.animals[state.active];
+   a.stage="INTAKE";a.disposition="ACTIVE CASE";a.tests={};a.evidence=[];
+   a.history=Array.isArray(a.history)?a.history:[];
+   a.history.unshift(new Date().toLocaleTimeString()+" · SELECTED FROM 50-CASE ROSTER");
+   open("care");try{save()}catch(e){}
+ });
+}
+function addRoster(){
+ if(page!=="home"||document.querySelector("#roster50Link"))return;
+ let c=document.querySelector(".p10-buttons");if(!c)return;
+ let b=document.createElement("button");b.id="roster50Link";b.textContent="[31] CASE_ROSTER_50.EXE";b.onclick=renderCaseRoster;c.appendChild(b);
+}
+const oldHome50=home;home=function(){oldHome50();install50();addRoster()};
+addRoster();
+window.VetGodsCaseRoster50={render:renderCaseRoster,install:install50};
+})();
+</script>
+
+<style id="rewards-pass1-css">
+.rw{border:1px solid #666;margin-top:8px}.rw h4{margin:0;background:#c9c9c9;color:#000;padding:5px 7px;font-size:10px}
+.rw-grid,.rw-btns{display:grid;grid-template-columns:repeat(2,1fr)}
+.rw-card,.rw-row{padding:8px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}
+.rw-card small,.rw-row small{display:block;color:#777;margin-top:3px}.rw-card b,.rw-row b{color:#fff}
+.rw-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:9px;text-align:left;font:700 9px "Courier New",monospace}
+.rw-btns button:hover{background:#c9c9c9;color:#000}
+.rw-input{padding:9px;border-bottom:1px dotted #555}.rw-input label{display:block;color:#888;font-size:8px;margin-bottom:3px}
+.rw-input input{width:100%;box-sizing:border-box;background:#000;color:#fff;border:1px solid #777;padding:9px;font:700 11px "Courier New",monospace}
+.rw-badge{display:inline-block;border:2px solid #aaa;padding:9px;margin:5px;min-width:115px;text-align:center;font-size:8px}
+.rw-badge strong{display:block;color:#fff;font-size:10px;margin:4px 0}.rw-term{padding:10px;white-space:pre-wrap;font-size:9px;line-height:1.55}
+@media(max-width:600px){.rw-grid,.rw-btns{grid-template-columns:1fr}}
+</style>
+<script id="rewards-pass1-js">
+(function(){
+"use strict";
+function ensureRewards(){
+ state.playerProfile=state.playerProfile||{firstName:"",lastName:"",created:null};
+ state.rewardSystem=state.rewardSystem||{xp:0,level:1,creditsEarned:0,badges:[],history:[],caseCompletions:0,recoveryCompletions:0,researchActions:0,sanctuaryActions:0};
+ try{save()}catch(e){}
+}
+function P(){return state.playerProfile}
+function R(){return state.rewardSystem}
+function fullName(){let p=P();return ((p.firstName||"")+" "+(p.lastName||"")).trim()||"UNREGISTERED PLAYER"}
+function esc(x){return String(x).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function calcLevel(){R().level=Math.max(1,Math.floor(R().xp/100)+1)}
+function awardXP(amount,reason){
+ ensureRewards();let r=R();amount=Math.max(0,Math.round(amount));r.xp+=amount;r.creditsEarned+=amount;calcLevel();
+ r.history.unshift(new Date().toLocaleString()+" · +"+amount+" XP · "+reason);r.history=r.history.slice(0,80);
+ checkStarterBadges();try{save()}catch(e){}
+}
+function badge(id,title,desc){
+ let r=R();if(r.badges.some(x=>x.id===id))return false;
+ r.badges.push({id,title,desc,recipient:fullName(),date:new Date().toLocaleDateString()});
+ r.history.unshift(new Date().toLocaleString()+" · BADGE UNLOCKED · "+title+" · "+fullName());return true;
+}
+function checkStarterBadges(){
+ let r=R();
+ if(P().firstName&&P().lastName)badge("ID-001","REGISTERED OPERATOR","Player identity registered in VET GODS.");
+ if(r.xp>=50)badge("XP-050","FIRST FIFTY","Earned 50 institutional XP.");
+ if(r.xp>=100)badge("XP-100","LEVEL TWO","Reached the second institutional rank.");
+ if(r.xp>=250)badge("XP-250","FIELD TRAINEE","Accumulated 250 institutional XP.");
+ if(r.caseCompletions>=1)badge("CASE-001","FIRST CASE","Completed the first recorded animal case.");
+}
+function saveIdentity(){
+ let f=document.querySelector("#rwFirst"),l=document.querySelector("#rwLast");
+ let first=(f?f.value:"").trim(),last=(l?l.value:"").trim();
+ if(!first||!last){let o=document.querySelector("#rwMsg");if(o)o.textContent="ERROR: FIRST AND LAST NAME ARE BOTH REQUIRED.";return}
+ let p=P();p.firstName=first;p.lastName=last;p.created=p.created||new Date().toISOString();
+ badge("ID-001","REGISTERED OPERATOR","Player identity registered in VET GODS.");
+ R().history.unshift(new Date().toLocaleString()+" · PLAYER ID UPDATED · "+fullName());
+ try{save()}catch(e){}renderRewards();
+}
+function renderRewards(){
+ ensureRewards();page="rewards1";nav();calcLevel();checkStarterBadges();
+ let p=P(),r=R(),need=r.level*100-r.xp;
+ document.querySelector("#main").innerHTML=
+ '<div class="path">C:\\VETGODS\\REWARDS\\PLAYER_ID&gt;</div>'+
+ '<div class="rw"><h4>REWARD_CORE.EXE // PASS 1 OF 4</h4><div class="rw-grid">'+
+ card("REGISTERED PLAYER",fullName(),"This name is embedded into newly earned badges and future certificates.")+
+ card("LEVEL",r.level,"Institutional progression rank")+
+ card("EXPERIENCE",r.xp+" XP",Math.max(0,need)+" XP until next level")+
+ card("BADGES",r.badges.length,"Permanent achievement records")+
+ '</div></div>'+
+ '<div class="rw"><h4>PLAYER IDENTITY REGISTRATION</h4>'+
+ '<div class="rw-input"><label>FIRST NAME</label><input id="rwFirst" maxlength="40" value="'+esc(p.firstName)+'" placeholder="FIRST NAME"></div>'+
+ '<div class="rw-input"><label>LAST NAME</label><input id="rwLast" maxlength="40" value="'+esc(p.lastName)+'" placeholder="LAST NAME"></div>'+
+ '<div class="rw-btns"><button id="rwSave">[ENTER] SAVE PLAYER ID<small>Stores the name for badges, awards and certificates.</small></button>'+
+ '<button id="rwTest">[T] TRAINING REWARD +10 XP<small>Tests the reward engine without completing a case.</small></button></div>'+
+ '<div class="rw-term" id="rwMsg">PLAYER NAME: '+esc(fullName())+'\nSTATUS: '+(p.firstName&&p.lastName?"REGISTERED":"AWAITING FIRST + LAST NAME")+'</div></div>'+
+ '<div class="rw"><h4>DOS BADGE CABINET // PASS 1 STARTER SET</h4>'+
+ (r.badges.length?r.badges.map(x=>'<div class="rw-badge">['+esc(x.id)+']<strong>'+esc(x.title)+'</strong>'+esc(x.recipient)+'<br>'+esc(x.date)+'<br><small>'+esc(x.desc)+'</small></div>').join(""):'<div class="rw-row">NO BADGES YET. REGISTER PLAYER ID OR EARN XP.</div>')+
+ '</div>'+
+ '<div class="rw"><h4>REWARD HISTORY</h4><div class="rw-term">'+(r.history.length?esc(r.history.slice(0,25).join("\\n")):"NO REWARD EVENTS RECORDED.")+'</div></div>';
+ document.querySelector("#rwSave").onclick=saveIdentity;
+ document.querySelector("#rwTest").onclick=function(){awardXP(10,"REWARD ENGINE TRAINING TEST");renderRewards()};
+}
+function card(k,v,n){return '<div class="rw-card"><small>'+k+'</small><b>'+esc(v)+'</b><small>'+esc(n)+'</small></div>'}
+const oldProgram=program;program=function(k){if(k==="rewards1")return renderRewards();return oldProgram(k)};
+function addRewardLink(){
+ if(page!=="home"||document.querySelector("#rwHomeLink"))return;
+ let c=document.querySelector(".p10-buttons");if(!c)return;
+ let b=document.createElement("button");b.id="rwHomeLink";b.textContent="[32] REWARD_CORE.EXE";b.onclick=renderRewards;c.appendChild(b);
+}
+const oldHome=home;home=function(){oldHome();addRewardLink()};
+ensureRewards();addRewardLink();
+window.VetGodsRewards={render:renderRewards,awardXP:awardXP,badge:badge,fullName:fullName,check:checkStarterBadges};
+})();
+</script>
+
+<style id="rewards-pass2-css">
+.b2{border:1px solid #666;margin-top:8px}.b2 h4{margin:0;background:#c9c9c9;color:#000;padding:5px 7px;font-size:10px}
+.b2-grid,.b2-btns{display:grid;grid-template-columns:repeat(2,1fr)}
+.b2-card,.b2-row{padding:8px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}
+.b2-card small,.b2-row small{display:block;color:#777;margin-top:3px}.b2-card b,.b2-row b{color:#fff}
+.b2-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:8px;text-align:left;font:700 9px "Courier New",monospace}
+.b2-btns button:hover,.b2-btns button.on{background:#c9c9c9;color:#000}
+.b2-badge{border:1px solid #777;padding:9px;margin:5px;font-size:8px;display:inline-block;vertical-align:top;width:150px;min-height:105px}
+.b2-badge strong{display:block;color:#fff;font-size:10px;margin:5px 0}.b2-badge .seal{font-size:17px;display:block}
+.b2-lock{opacity:.48}.b2-prog{height:7px;border:1px solid #555;margin-top:5px}.b2-prog i{display:block;height:100%;background:#aaa}
+.b2-term{padding:10px;white-space:pre-wrap;font-size:9px;line-height:1.5}
+@media(max-width:600px){.b2-grid,.b2-btns{grid-template-columns:1fr}.b2-badge{width:calc(50% - 30px)}}
+</style>
+<script id="rewards-pass2-js">
+(function(){
+"use strict";
+const BADGES=[
+["CARE-01","CLINIC INITIATE","CLINIC","Complete 1 care milestone","caseCompletions",1,"[+]"],
+["CARE-05","CASE KEEPER","CLINIC","Complete 5 care milestones","caseCompletions",5,"[+]"],
+["CARE-10","TEN CASE VETERAN","CLINIC","Complete 10 care milestones","caseCompletions",10,"[*]"],
+["CARE-25","CLINIC SPECIALIST","CLINIC","Complete 25 care milestones","caseCompletions",25,"[#]"],
+["CARE-50","FIFTY LIVES ARCHIVE","CLINIC","Complete 50 care milestones","caseCompletions",50,"[@]"],
+["REC-01","RECOVERY WATCH","RECOVERY","Record 1 recovery milestone","recoveryCompletions",1,"[R]"],
+["REC-05","RECOVERY HAND","RECOVERY","Record 5 recovery milestones","recoveryCompletions",5,"[R]"],
+["REC-15","REHABILITATION SPECIALIST","RECOVERY","Record 15 recovery milestones","recoveryCompletions",15,"[R*]"],
+["RES-01","RESEARCH READER","RESEARCH","Perform 1 research action","researchActions",1,"[?]"],
+["RES-05","CASE ANALYST","RESEARCH","Perform 5 research actions","researchActions",5,"[?]"],
+["RES-20","ARCHIVE INVESTIGATOR","RESEARCH","Perform 20 research actions","researchActions",20,"[?*]"],
+["SAN-01","SANCTUARY STEWARD","SANCTUARY","Perform 1 sanctuary milestone","sanctuaryActions",1,"[S]"],
+["SAN-05","HABITAT KEEPER","SANCTUARY","Perform 5 sanctuary milestones","sanctuaryActions",5,"[S]"],
+["SAN-20","RESIDENT GUARDIAN","SANCTUARY","Perform 20 sanctuary milestones","sanctuaryActions",20,"[S*]"],
+["MIS-01","FIELD DISPATCH","MISSIONS","Complete 1 mission","missions",1,"[M]"],
+["MIS-05","EXPEDITION HAND","MISSIONS","Complete 5 missions","missions",5,"[M]"],
+["MIS-15","DEEP RANGE OPERATOR","MISSIONS","Complete 15 missions","missions",15,"[M*]"],
+["PAR-01","SPECIAL ARCHIVES READER","PARANORMAL","Open 1 special archive","paranormal",1,"[P]"],
+["PAR-05","ANOMALOUS CASE ANALYST","PARANORMAL","Open 5 special archives","paranormal",5,"[P*]"],
+["CUR-05","CURIOUS MIND","EDUCATION","Record 5 curiosity topics","curiosity",5,"[C]"],
+["CUR-20","ANIMAL SCHOLAR","EDUCATION","Record 20 curiosity topics","curiosity",20,"[C*]"],
+["SPEC-10","SPECIES EXPLORER","SPECIES","Work with 10 different animals","species",10,"[10]"],
+["SPEC-25","EXOTIC CASE SCHOLAR","SPECIES","Work with 25 different animals","species",25,"[25]"],
+["SPEC-50","FIFTY SPECIES MASTER","SPECIES","Work with 50 different animals","species",50,"[50]"],
+["XP-500","INSTITUTION VETERAN","MASTERY","Earn 500 XP","xp",500,"[V]"],
+["XP-1000","COMMAND SPECIALIST","MASTERY","Earn 1000 XP","xp",1000,"[V*]"]
+];
+function ensure2(){
+ let r=state.rewardSystem;
+ if(!r)return;
+ r.visitedAnimals=Array.isArray(r.visitedAnimals)?r.visitedAnimals:[];
+ r.badgeCategory=r.badgeCategory||"ALL";
+}
+function val(k){
+ let r=state.rewardSystem||{};
+ if(k==="missions")return state.missionControl?.completed||0;
+ if(k==="paranormal")return state.occultArchive?.opened?.length||0;
+ if(k==="curiosity")return state.animalCuriosity?.history?.length||0;
+ if(k==="species")return r.visitedAnimals?.length||0;
+ return Number(r[k]||0);
+}
+function syncVisit(){
+ ensure2();let r=state.rewardSystem,a=state.animals?.[state.active];
+ if(a){let id=a.id||a.name+"|"+a.species;if(!r.visitedAnimals.includes(id))r.visitedAnimals.push(id)}
+}
+function check2(){
+ ensure2();syncVisit();let r=state.rewardSystem;if(!r)return;
+ BADGES.forEach(b=>{
+   if(val(b[4])>=b[5]&&!r.badges.some(x=>x.id===b[0])){
+     if(window.VetGodsRewards)window.VetGodsRewards.badge(b[0],b[1],b[3]);
+   }
+ });
+ try{save()}catch(e){}
+}
+function esc2(x){return String(x).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
+function renderBadges(){
+ ensure2();check2();page="badges2";nav();let r=state.rewardSystem,p=state.playerProfile||{};
+ let cats=["ALL",...new Set(BADGES.map(x=>x[2]))],cat=r.badgeCategory||"ALL";
+ let shown=BADGES.filter(x=>cat==="ALL"||x[2]===cat);
+ document.querySelector("#main").innerHTML=
+ '<div class="path">C:\\VETGODS\\REWARDS\\BADGE_CABINET&gt;</div>'+
+ '<div class="b2"><h4>BADGE_SYSTEM.EXE // PASS 2 OF 4</h4><div class="b2-grid">'+
+ card2("PLAYER",window.VetGodsRewards?window.VetGodsRewards.fullName():"UNREGISTERED","Badges are issued to this identity.")+
+ card2("UNLOCKED",r.badges.length+" BADGES","Persistent achievement archive")+
+ card2("XP",r.xp+" XP","Level "+r.level)+
+ card2("SPECIES WORKED",r.visitedAnimals.length+" / 50","Unique active animal records")+
+ '</div></div>'+
+ '<div class="b2"><h4>BADGE CATEGORY</h4><div class="b2-btns">'+cats.map(x=>'<button class="'+(x===cat?"on":"")+'" data-bcat="'+x+'">['+x+']</button>').join("")+'</div></div>'+
+ '<div class="b2"><h4>'+cat+' BADGES</h4>'+
+ shown.map(b=>badgeView(b,r)).join("")+'</div>'+
+ '<div class="b2"><h4>BADGE COMMANDS</h4><div class="b2-btns"><button id="b2check">[F5] SCAN ACHIEVEMENTS<small>Rechecks all live game systems.</small></button><button id="b2reward">[R] REWARD CORE<small>Return to player identity and XP.</small></button></div></div>'+
+ '<div class="b2"><h4>PROGRESS TELEMETRY</h4><div class="b2-term">'+
+ 'CASES ........ '+val("caseCompletions")+'\nRECOVERY ...... '+val("recoveryCompletions")+
+ '\nRESEARCH ...... '+val("researchActions")+'\nSANCTUARY ..... '+val("sanctuaryActions")+
+ '\nMISSIONS ...... '+val("missions")+'\nSPECIAL ARCHIVE '+val("paranormal")+
+ '\nCURIOSITY ..... '+val("curiosity")+'\nSPECIES ........ '+val("species")+
+ '\nXP ............. '+val("xp")+'</div></div>';
+ document.querySelectorAll("[data-bcat]").forEach(x=>x.onclick=()=>{r.badgeCategory=x.dataset.bcat;renderBadges()});
+ document.querySelector("#b2check").onclick=()=>{check2();renderBadges()};
+ document.querySelector("#b2reward").onclick=()=>program("rewards1");
+}
+function card2(k,v,n){return '<div class="b2-card"><small>'+k+'</small><b>'+esc2(v)+'</b><small>'+esc2(n)+'</small></div>'}
+function badgeView(b,r){
+ let got=r.badges.find(x=>x.id===b[0]),n=val(b[4]),pct=Math.min(100,Math.round(n/b[5]*100));
+ return '<div class="b2-badge '+(got?"":"b2-lock")+'"><span class="seal">'+b[6]+'</span><small>'+b[0]+' · '+b[2]+'</small><strong>'+b[1]+'</strong>'+
+ (got?'<span>'+esc2(got.recipient)+'</span><br><small>ISSUED '+esc2(got.date)+'</small>':'<span>LOCKED</span><br><small>'+esc2(b[3])+'</small><div class="b2-prog"><i style="width:'+pct+'%"></i></div><small>'+n+' / '+b[5]+'</small>')+'</div>';
+}
+const oldProgram2=program;program=function(k){if(k==="badges2")return renderBadges();return oldProgram2(k)};
+function add2(){
+ if(page!=="home"||document.querySelector("#b2Home"))return;
+ let c=document.querySelector(".p10-buttons");if(!c)return;
+ let b=document.createElement("button");b.id="b2Home";b.textContent="[33] BADGE_SYSTEM.EXE";b.onclick=renderBadges;c.appendChild(b);
+}
+const oldHome2=home;home=function(){oldHome2();syncVisit();check2();add2()};
+ensure2();syncVisit();check2();add2();
+window.VetGodsBadges2={render:renderBadges,check:check2,syncVisit:syncVisit};
+})();
+</script>
+
+<style id="rewards-pass3-css">
+.c3{border:1px solid #666;margin-top:8px}.c3 h4{margin:0;background:#c9c9c9;color:#000;padding:5px 7px;font-size:10px}
+.c3-grid,.c3-btns{display:grid;grid-template-columns:repeat(2,1fr)}
+.c3-card,.c3-row{padding:8px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}
+.c3-card small,.c3-row small{display:block;color:#777;margin-top:3px}.c3-card b,.c3-row b{color:#fff}
+.c3-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:9px;text-align:left;font:700 9px "Courier New",monospace}
+.c3-btns button:hover{background:#c9c9c9;color:#000}
+.c3-cert{margin:10px;border:4px double #aaa;padding:18px;text-align:center;background:#000;color:#ddd;font-family:"Courier New",monospace}
+.c3-cert .seal{font-size:28px;margin:8px}.c3-cert h2{font-size:16px;letter-spacing:2px;margin:8px}.c3-cert h3{font-size:14px;margin:12px 0;color:#fff}
+.c3-cert .name{font-size:18px;font-weight:900;border-top:1px solid #777;border-bottom:1px solid #777;padding:10px;margin:12px auto;max-width:520px}
+.c3-cert .siggrid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:20px}.c3-cert .sig{border-top:1px solid #777;padding-top:5px;font-size:8px}
+.c3-lock{opacity:.5}.c3-term{padding:10px;white-space:pre-wrap;font-size:9px;line-height:1.55}
+@media(max-width:600px){.c3-grid,.c3-btns,.c3-cert .siggrid{grid-template-columns:1fr}.c3-cert{padding:12px;margin:5px}}
+@media print{body *{visibility:hidden!important}.c3-cert,.c3-cert *{visibility:visible!important}.c3-cert{position:absolute;left:0;top:0;width:90%;border:4px double #000;color:#000;background:#fff}.c3-cert h3,.c3-cert .name{color:#000}}
+</style>
+<script id="rewards-pass3-js">
+(function(){
+"use strict";
+const CERTS=[
+["CERT-CARE-01","CERTIFICATE OF CLINICAL CASE CARE","CARE-01","successful completion of the introductory fictional animal-care case program","CLINICAL CARE"],
+["CERT-CARE-10","CERTIFICATE OF ADVANCED CASE SERVICE","CARE-10","sustained service across ten recorded fictional animal cases","ADVANCED CARE"],
+["CERT-REC-01","CERTIFICATE OF RECOVERY SUPPORT","REC-01","successful participation in the animal recovery and rehabilitation program","RECOVERY"],
+["CERT-RES-05","CERTIFICATE OF CASE RESEARCH","RES-05","documented achievement in fictional case analysis and research operations","RESEARCH"],
+["CERT-SAN-05","CERTIFICATE OF SANCTUARY STEWARDSHIP","SAN-05","documented service in sanctuary habitat and resident-care operations","SANCTUARY"],
+["CERT-MIS-05","CERTIFICATE OF FIELD OPERATIONS","MIS-05","completion of five fictional field and expedition assignments","FIELD OPS"],
+["CERT-PAR-05","CERTIFICATE OF SPECIAL ARCHIVE RESEARCH","PAR-05","study of five fictionalized or unverified Special Archive case records","SPECIAL ARCHIVES"],
+["CERT-CUR-20","CERTIFICATE OF ANIMAL STUDIES","CUR-20","completion of twenty animal curiosity and educational research topics","ANIMAL STUDIES"],
+["CERT-SPEC-25","CERTIFICATE OF EXOTIC CASE STUDIES","SPEC-25","recorded work across twenty-five distinct animal case records","EXOTIC STUDIES"],
+["CERT-SPEC-50","CERTIFICATE OF FIFTY-ANIMAL MASTERY","SPEC-50","recorded work across the complete fifty-animal case roster","50-CASE MASTERY"],
+["CERT-XP-500","INSTITUTIONAL SERVICE CERTIFICATE","XP-500","achievement of five hundred institutional experience points","SERVICE"],
+["CERT-XP-1000","COMMAND SPECIALIST CERTIFICATE","XP-1000","achievement of one thousand institutional experience points","COMMAND"]
+];
+function ensure3(){
+ state.certificateSystem=state.certificateSystem||{issued:[],active:null,serial:1};
+ try{save()}catch(e){}
+}
+function C(){return state.certificateSystem}
+function player(){return window.VetGodsRewards?window.VetGodsRewards.fullName():"UNREGISTERED PLAYER"}
+function esc3(x){return String(x).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
+function hasBadge(id){return !!state.rewardSystem?.badges?.find(x=>x.id===id)}
+function issue(def){
+ ensure3();
+ if(!state.playerProfile?.firstName||!state.playerProfile?.lastName){
+   alert("REGISTER FIRST AND LAST NAME IN REWARD_CORE.EXE BEFORE ISSUING A CERTIFICATE.");return;
+ }
+ let c=C(),old=c.issued.find(x=>x.type===def[0]);
+ if(old){c.active=old.id;return renderCertificates()}
+ let serial="VG-CERT-"+new Date().getFullYear()+"-"+String(c.serial++).padStart(5,"0");
+ let rec={id:serial,type:def[0],title:def[1],recipient:player(),statement:def[3],division:def[4],
+          date:new Date().toLocaleDateString(),timestamp:Date.now(),
+          signature1:"DR. K. NIX // PROGRAM DIRECTOR",signature2:"VET GODS // REGISTRAR",
+          seal:"[ V G ]"};
+ c.issued.unshift(rec);c.active=rec.id;
+ if(state.rewardSystem){
+   state.rewardSystem.history.unshift(new Date().toLocaleString()+" · CERTIFICATE ISSUED · "+def[1]+" · "+player());
+   if(window.VetGodsRewards)window.VetGodsRewards.awardXP(25,"CERTIFICATE ISSUED: "+def[4]);
+ }
+ try{save()}catch(e){}renderCertificates();
+}
+function renderCertificates(){
+ ensure3();page="certificates3";nav();let c=C(),active=c.issued.find(x=>x.id===c.active)||c.issued[0]||null;
+ document.querySelector("#main").innerHTML=
+ '<div class="path">C:\\VETGODS\\REWARDS\\CERTIFICATES&gt;</div>'+
+ '<div class="c3"><h4>CERTIFICATE_SYSTEM.EXE // PASS 3 OF 4</h4><div class="c3-grid">'+
+ card3("RECIPIENT",player(),"Registered player identity")+
+ card3("ISSUED",c.issued.length+" CERTIFICATES","Permanent award archive")+
+ card3("ELIGIBLE",CERTS.filter(x=>hasBadge(x[2])).length+" / "+CERTS.length,"Eligibility comes from Pass 2 badges")+
+ card3("NEXT SERIAL","VG-CERT-"+new Date().getFullYear()+"-"+String(c.serial).padStart(5,"0"),"Unique institutional certificate ID")+
+ '</div></div>'+
+ '<div class="c3"><h4>CERTIFICATE ELIGIBILITY</h4><div class="c3-btns">'+CERTS.map((x,i)=>{
+   let ok=hasBadge(x[2]),issued=c.issued.some(z=>z.type===x[0]);
+   return '<button class="'+(ok?"":"c3-lock")+'" data-cert="'+i+'" '+(ok?"":"disabled")+'>'+
+   '['+(issued?"ISSUED":"LOCKED".slice(0,ok?0:6))+'] '+x[1]+'<small>REQUIRES '+x[2]+' · '+(issued?"OPEN ARCHIVED CERTIFICATE":ok?"ELIGIBLE — ISSUE NOW":"BADGE REQUIRED")+'</small></button>'
+ }).join("")+'</div></div>'+
+ (active?certificateView(active):'<div class="c3"><h4>CERTIFICATE VIEWER</h4><div class="c3-term">NO CERTIFICATE SELECTED.\n\nEarn a qualifying badge in BADGE_SYSTEM.EXE, then return here to issue the corresponding named certificate.</div></div>')+
+ '<div class="c3"><h4>CERTIFICATE ARCHIVE</h4><div class="c3-btns">'+
+ (c.issued.length?c.issued.map(x=>'<button data-open-cert="'+esc3(x.id)+'">['+esc3(x.id)+'] '+esc3(x.title)+'<small>'+esc3(x.recipient)+' · '+esc3(x.date)+'</small></button>').join(""):'<div class="c3-row">ARCHIVE EMPTY.</div>')+
+ '</div></div>';
+ document.querySelectorAll("[data-cert]").forEach(b=>b.onclick=()=>issue(CERTS[+b.dataset.cert]));
+ document.querySelectorAll("[data-open-cert]").forEach(b=>b.onclick=()=>{c.active=b.dataset.openCert;renderCertificates()});
+ let pr=document.querySelector("#c3Print");if(pr)pr.onclick=()=>window.print();
+ let back=document.querySelector("#c3Badges");if(back)back.onclick=()=>program("badges2");
+}
+function card3(k,v,n){return '<div class="c3-card"><small>'+k+'</small><b>'+esc3(v)+'</b><small>'+esc3(n)+'</small></div>'}
+function certificateView(x){
+ return '<div class="c3"><h4>CERTIFICATE VIEWER // '+esc3(x.id)+'</h4>'+
+ '<div class="c3-cert"><div class="seal">'+esc3(x.seal)+'</div><small>VET GODS FICTIONAL TRAINING INSTITUTION</small>'+
+ '<h2>'+esc3(x.title)+'</h2><div>THIS DOCUMENT CERTIFIES THAT</div><div class="name">'+esc3(x.recipient)+'</div>'+
+ '<div>HAS SATISFIED THE GAME REQUIREMENTS FOR</div><h3>'+esc3(x.division)+'</h3>'+
+ '<div>'+esc3(x.statement)+'.</div><p><b>ISSUED:</b> '+esc3(x.date)+'<br><b>CERTIFICATE ID:</b> '+esc3(x.id)+'</p>'+
+ '<div class="siggrid"><div class="sig">'+esc3(x.signature1)+'</div><div class="sig">'+esc3(x.signature2)+'</div></div></div>'+
+ '<div class="c3-btns"><button id="c3Print">[P] PRINT / SAVE CERTIFICATE<small>Uses the browser print dialog; Save as PDF may be available on your device.</small></button>'+
+ '<button id="c3Badges">[B] OPEN BADGE SYSTEM</button></div></div>';
+}
+const oldProgram3=program;program=function(k){if(k==="certificates3")return renderCertificates();return oldProgram3(k)};
+function add3(){
+ if(page!=="home"||document.querySelector("#c3Home"))return;
+ let c=document.querySelector(".p10-buttons");if(!c)return;
+ let b=document.createElement("button");b.id="c3Home";b.textContent="[34] CERTIFICATES.EXE";b.onclick=renderCertificates;c.appendChild(b);
+}
+const oldHome3=home;home=function(){oldHome3();add3()};
+ensure3();add3();
+window.VetGodsCertificates3={render:renderCertificates,issue:issue};
+})();
+</script>
+
+<style id="rewards-pass4-css">
+.m4{border:1px solid #666;margin-top:8px}.m4 h4{margin:0;background:#c9c9c9;color:#000;padding:5px 7px;font-size:10px}
+.m4-grid,.m4-btns{display:grid;grid-template-columns:repeat(2,1fr)}
+.m4-card,.m4-row{padding:8px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}
+.m4-card small,.m4-row small{display:block;color:#777;margin-top:3px}.m4-card b,.m4-row b{color:#fff}
+.m4-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:9px;text-align:left;font:700 9px "Courier New",monospace}
+.m4-btns button:hover,.m4-btns button.on{background:#c9c9c9;color:#000}
+.m4-rank{padding:15px;text-align:center;border:3px double #888}.m4-rank strong{display:block;font-size:17px;color:#fff;letter-spacing:2px;margin:7px}
+.m4-meter{height:10px;border:1px solid #666;margin:6px 0}.m4-meter i{display:block;height:100%;background:#aaa}
+.m4-award{display:inline-block;vertical-align:top;width:155px;min-height:110px;border:2px solid #777;margin:5px;padding:9px;text-align:center;font-size:8px}
+.m4-award strong{display:block;color:#fff;font-size:10px;margin:6px}.m4-lock{opacity:.45}
+.m4-grad{margin:10px;border:5px double #aaa;padding:20px;text-align:center;font-family:"Courier New",monospace}
+.m4-grad h2{letter-spacing:3px;font-size:17px}.m4-grad .name{font-size:19px;font-weight:900;padding:12px;border-top:1px solid #777;border-bottom:1px solid #777;margin:14px auto;max-width:520px}
+.m4-term{padding:10px;white-space:pre-wrap;font-size:9px;line-height:1.55}
+@media(max-width:600px){.m4-grid,.m4-btns{grid-template-columns:1fr}.m4-award{width:calc(50% - 30px)}}
+@media print{body *{visibility:hidden!important}.m4-grad,.m4-grad *{visibility:visible!important}.m4-grad{position:absolute;left:0;top:0;width:90%;background:#fff;color:#000;border-color:#000}}
+</style>
+<script id="rewards-pass4-js">
+(function(){
+"use strict";
+const RANKS=[
+ [0,"PROBATIONARY OPERATOR"],[100,"CLINIC OPERATOR"],[250,"FIELD TRAINEE"],[500,"INSTITUTION VETERAN"],
+ [750,"SENIOR CASE OFFICER"],[1000,"COMMAND SPECIALIST"],[1500,"MASTER CARE OPERATOR"],[2500,"VET GODS COMMANDER"]
+];
+const MASTERIES=[
+ ["M4-CLINIC","CLINICAL MASTERY","CARE-25","25-case clinical achievement","UNLOCK: SENIOR CLINIC DOS TITLE"],
+ ["M4-RECOVERY","RECOVERY MASTERY","REC-15","Advanced rehabilitation achievement","UNLOCK: RECOVERY SPECIALIST TITLE"],
+ ["M4-RESEARCH","RESEARCH MASTERY","RES-20","Deep archive/research achievement","UNLOCK: ARCHIVE ANALYST TITLE"],
+ ["M4-SANCTUARY","SANCTUARY MASTERY","SAN-20","Advanced sanctuary stewardship","UNLOCK: SANCTUARY GUARDIAN TITLE"],
+ ["M4-FIELD","FIELD MASTERY","MIS-15","Advanced mission achievement","UNLOCK: DEEP RANGE TITLE"],
+ ["M4-SPECIES","SPECIES MASTERY","SPEC-50","Work across the 50-animal roster","UNLOCK: FIFTY SPECIES TITLE"],
+ ["M4-COMMAND","COMMAND MASTERY","XP-1000","Reach 1,000 XP","UNLOCK: COMMAND SPECIALIST TITLE"]
+];
+function ensure4(){
+ state.masterySystem=state.masterySystem||{awards:[],graduated:false,graduation:null,title:"OPERATOR",lastScan:null};
+ try{save()}catch(e){}
+}
+function M(){return state.masterySystem}
+function esc4(x){return String(x).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
+function name4(){return window.VetGodsRewards?window.VetGodsRewards.fullName():"UNREGISTERED PLAYER"}
+function badge4(id){return !!state.rewardSystem?.badges?.some(x=>x.id===id)}
+function rank4(){
+ let xp=Number(state.rewardSystem?.xp||0),r=RANKS[0];
+ RANKS.forEach(x=>{if(xp>=x[0])r=x});return r;
+}
+function scan4(){
+ ensure4();if(window.VetGodsBadges2)window.VetGodsBadges2.check();
+ let m=M();
+ MASTERIES.forEach(x=>{
+   if(badge4(x[2])&&!m.awards.some(a=>a.id===x[0])){
+     m.awards.push({id:x[0],title:x[1],recipient:name4(),date:new Date().toLocaleDateString(),unlock:x[4]});
+     if(state.rewardSystem)state.rewardSystem.history.unshift(new Date().toLocaleString()+" · MASTERY AWARD · "+x[1]+" · "+name4());
+   }
+ });
+ let rk=rank4();m.title=rk[1];m.lastScan=new Date().toLocaleString();
+ try{save()}catch(e){}
+}
+function eligibleGrad(){
+ let m=M();
+ return MASTERIES.filter(x=>x[0]!=="M4-COMMAND").every(x=>m.awards.some(a=>a.id===x[0])) &&
+        badge4("XP-1000");
+}
+function graduate(){
+ scan4();
+ if(!state.playerProfile?.firstName||!state.playerProfile?.lastName){alert("REGISTER FIRST AND LAST NAME IN REWARD_CORE.EXE FIRST.");return}
+ if(!eligibleGrad()){alert("MASTER PROGRAM REQUIREMENTS ARE NOT COMPLETE YET.");return}
+ let m=M();
+ if(!m.graduated){
+   m.graduated=true;
+   m.graduation={recipient:name4(),date:new Date().toLocaleDateString(),
+     id:"VG-MASTER-"+new Date().getFullYear()+"-"+String(Date.now()).slice(-6),
+     title:"VET GODS MASTER PROGRAM COMPLETION",
+     sig1:"DR. K. NIX // PROGRAM DIRECTOR",sig2:"VET GODS // COMMAND REGISTRAR"};
+   if(window.VetGodsRewards)window.VetGodsRewards.awardXP(250,"MASTER PROGRAM GRADUATION");
+ }
+ try{save()}catch(e){}renderMastery();
+}
+function renderMastery(){
+ ensure4();scan4();page="mastery4";nav();let m=M(),r=state.rewardSystem||{},rk=rank4();
+ let next=RANKS.find(x=>x[0]>Number(r.xp||0)),pct=next?Math.min(100,Math.round((r.xp-(rk[0]||0))/(next[0]-rk[0])*100)):100;
+ document.querySelector("#main").innerHTML=
+ '<div class="path">C:\\VETGODS\\REWARDS\\MASTERY&gt;</div>'+
+ '<div class="m4"><h4>MASTERY_COMMAND.EXE // PASS 4 OF 4</h4>'+
+ '<div class="m4-rank"><small>CURRENT INSTITUTIONAL RANK</small><strong>'+esc4(rk[1])+'</strong>'+
+ esc4(name4())+'<div class="m4-meter"><i style="width:'+pct+'%"></i></div><small>'+r.xp+' XP'+(next?' // NEXT: '+next[1]+' @ '+next[0]+' XP':' // MAXIMUM RANK')+'</small></div></div>'+
+ '<div class="m4"><h4>MASTER SPECIALTIES</h4>'+
+ MASTERIES.map(x=>award4(x,m)).join("")+'</div>'+
+ '<div class="m4"><h4>COMMAND SCORECARD</h4><div class="m4-grid">'+
+ card4("MASTERY AWARDS",m.awards.length+" / "+MASTERIES.length,"Permanent named mastery records")+
+ card4("BADGES",r.badges?.length||0,"Pass 2 achievement cabinet")+
+ card4("CERTIFICATES",state.certificateSystem?.issued?.length||0,"Pass 3 certificate archive")+
+ card4("SPECIES",r.visitedAnimals?.length||0,"Unique animal cases accessed")+
+ '</div></div>'+
+ '<div class="m4"><h4>MASTER PROGRAM</h4><div class="m4-term">'+
+ 'CLINICAL MASTERY .... '+yn("M4-CLINIC")+'\nRECOVERY MASTERY .... '+yn("M4-RECOVERY")+
+ '\nRESEARCH MASTERY .... '+yn("M4-RESEARCH")+'\nSANCTUARY MASTERY ... '+yn("M4-SANCTUARY")+
+ '\nFIELD MASTERY ....... '+yn("M4-FIELD")+'\n50-SPECIES MASTERY ... '+yn("M4-SPECIES")+
+ '\n1,000 XP BADGE ...... '+(badge4("XP-1000")?"COMPLETE":"INCOMPLETE")+
+ '\n\nGRADUATION STATUS ... '+(m.graduated?"GRADUATED":eligibleGrad()?"ELIGIBLE":"REQUIREMENTS INCOMPLETE")+'</div>'+
+ '<div class="m4-btns"><button id="m4scan">[F5] SCAN MASTERY<small>Checks badges and specialty milestones.</small></button>'+
+ '<button id="m4grad" '+(eligibleGrad()&&!m.graduated?"":"disabled")+'>[G] COMPLETE MASTER PROGRAM<small>Issues the final named graduation record.</small></button>'+
+ '<button id="m4badges">[B] BADGES</button><button id="m4certs">[C] CERTIFICATES</button></div></div>'+
+ (m.graduated?gradView(m.graduation):'');
+ document.querySelector("#m4scan").onclick=()=>{scan4();renderMastery()};
+ document.querySelector("#m4grad").onclick=graduate;
+ document.querySelector("#m4badges").onclick=()=>program("badges2");
+ document.querySelector("#m4certs").onclick=()=>program("certificates3");
+ let p=document.querySelector("#m4print");if(p)p.onclick=()=>window.print();
+}
+function yn(id){return M().awards.some(x=>x.id===id)?"COMPLETE":"INCOMPLETE"}
+function card4(k,v,n){return '<div class="m4-card"><small>'+k+'</small><b>'+esc4(v)+'</b><small>'+esc4(n)+'</small></div>'}
+function award4(x,m){
+ let a=m.awards.find(y=>y.id===x[0]);
+ return '<div class="m4-award '+(a?"":"m4-lock")+'"><small>'+x[0]+'</small><strong>'+x[1]+'</strong>'+
+ (a?esc4(a.recipient)+'<br><small>'+esc4(a.date)+'</small><br><small>'+esc4(a.unlock)+'</small>':'LOCKED<br><small>REQUIRES '+x[2]+'</small><br><small>'+x[3]+'</small>')+'</div>';
+}
+function gradView(g){
+ return '<div class="m4"><h4>MASTER GRADUATION RECORD</h4><div class="m4-grad"><div>[ VET GODS // MASTER SEAL ]</div>'+
+ '<h2>'+esc4(g.title)+'</h2><div>THE FICTIONAL TRAINING PROGRAM RECORDS THE COMPLETION OF</div>'+
+ '<div class="name">'+esc4(g.recipient)+'</div><div>CLINICAL CARE • RECOVERY • RESEARCH • SANCTUARY<br>FIELD OPERATIONS • FIFTY-ANIMAL CASE STUDIES • COMMAND MASTERY</div>'+
+ '<p>DATE: '+esc4(g.date)+'<br>MASTER RECORD: '+esc4(g.id)+'</p><br>'+esc4(g.sig1)+'<br><br>'+esc4(g.sig2)+'</div>'+
+ '<div class="m4-btns"><button id="m4print">[P] PRINT / SAVE MASTER RECORD</button></div></div>';
+}
+const oldProgram4=program;program=function(k){if(k==="mastery4")return renderMastery();return oldProgram4(k)};
+function add4(){
+ if(page!=="home"||document.querySelector("#m4Home"))return;
+ let c=document.querySelector(".p10-buttons");if(!c)return;
+ let b=document.createElement("button");b.id="m4Home";b.textContent="[35] MASTERY_COMMAND.EXE";b.onclick=renderMastery;c.appendChild(b);
+}
+const oldHome4=home;home=function(){oldHome4();scan4();add4()};
+ensure4();scan4();add4();
+window.VetGodsMastery4={render:renderMastery,scan:scan4,graduate:graduate};
+})();
+</script>
+
+<style id="myanimals-phase1-css">
+.ma1{border:1px solid #666;margin-top:8px}.ma1 h4{margin:0;background:#c9c9c9;color:#000;padding:5px 7px;font-size:10px}
+.ma1-grid,.ma1-btns{display:grid;grid-template-columns:repeat(2,1fr)}
+.ma1-card,.ma1-row{padding:8px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}
+.ma1-card small,.ma1-row small{display:block;color:#777;margin-top:3px}.ma1-card b,.ma1-row b{color:#fff}
+.ma1-btns button,.ma1-list button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:9px;text-align:left;font:700 9px "Courier New",monospace}
+.ma1-btns button:hover,.ma1-list button:hover,.ma1-list button.on{background:#c9c9c9;color:#000}
+.ma1-list{display:grid;grid-template-columns:1fr}
+.ma1-stat{display:grid;grid-template-columns:120px 1fr 48px;gap:7px;align-items:center;padding:5px 8px;border-bottom:1px dotted #444;font-size:9px}
+.ma1-meter{height:8px;border:1px solid #666}.ma1-meter i{display:block;height:100%;background:#aaa}
+.ma1-record{padding:10px;white-space:pre-wrap;font-size:9px;line-height:1.55}
+.ma1-name{font-size:16px;font-weight:900;color:#fff}.ma1-tag{display:inline-block;border:1px solid #666;padding:2px 5px;margin:3px 3px 0 0;font-size:8px}
+@media(max-width:600px){.ma1-grid,.ma1-btns{grid-template-columns:1fr}.ma1-stat{grid-template-columns:82px 1fr 35px}}
+</style>
+<script id="myanimals-phase1-js">
+(function(){
+"use strict";
+function ensureMA1(){
+ state.myAnimalsRegistry=state.myAnimalsRegistry||{selected:null,sort:"RECENT",filter:"ALL",opened:[],lastOpen:null};
+ try{save()}catch(e){}
+}
+function D(){return state.myAnimalsRegistry}
+function esc(x){return String(x??"").replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
+function worked(a){
+ return !!(a.caseId||a.history?.length||a.disposition==="ACTIVE CASE"||a.stage!=="INTAKE"||a.sanctuary?.resident);
+}
+function registry(){
+ let arr=(state.animals||[]).map((a,i)=>({a,i})).filter(x=>worked(x.a));
+ // Do not strand a fresh save with an empty registry: active animal is always available.
+ if(!arr.length&&state.animals?.length)arr=[{a:state.animals[state.active||0],i:state.active||0}];
+ let f=D().filter;
+ if(f==="SANCTUARY")arr=arr.filter(x=>x.a.sanctuary?.resident);
+ if(f==="CLINIC")arr=arr.filter(x=>x.a.disposition==="ACTIVE CASE"||x.a.stage==="INTAKE");
+ if(f==="RECOVERY")arr=arr.filter(x=>String(x.a.stage||"").toUpperCase().includes("RECOV"));
+ if(D().sort==="NAME")arr.sort((x,y)=>x.a.name.localeCompare(y.a.name));
+ if(D().sort==="HEALTH")arr.sort((x,y)=>Number(x.a.health)-Number(y.a.health));
+ return arr;
+}
+function loc(a){
+ if(a.sanctuary?.resident)return "SANCTUARY";
+ if(String(a.stage||"").toUpperCase().includes("RECOV"))return "RECOVERY";
+ if(a.disposition==="ACTIVE CASE"||a.stage==="INTAKE")return "CLINIC";
+ return a.disposition||a.stage||"ARCHIVE";
+}
+function last(a){return a.history?.[0]||"NO HISTORY ENTRY"}
+function stat(k,v,invert){
+ v=Math.max(0,Math.min(100,Number(v??0)));
+ let good=invert?100-v:v;
+ return '<div class="ma1-stat"><b>'+k+'</b><div class="ma1-meter"><i style="width:'+v+'%"></i></div><span>'+Math.round(v)+'</span></div>';
+}
+function renderMA1(){
+ ensureMA1();page="myanimals1";nav();let d=D(),list=registry();
+ let chosen=d.selected!=null?state.animals[d.selected]:null;
+ if(chosen&&!state.animals.includes(chosen))chosen=null;
+ document.querySelector("#main").innerHTML=
+ '<div class="path">C:\\VETGODS\\MY_ANIMALS&gt;</div>'+
+ '<div class="ma1"><h4>MY_ANIMALS.EXE // RETURNING ANIMAL REGISTRY // PHASE 1 OF 5</h4><div class="ma1-grid">'+
+ card("AVAILABLE RECORDS",list.length,"Previously worked / currently active animals")+
+ card("SELECTED",chosen?chosen.name:"NONE","One animal opens at a time")+
+ card("SORT",d.sort,"Registry ordering")+
+ card("FILTER",d.filter,"Registry location filter")+
+ '</div><div class="ma1-btns">'+
+ '<button data-masort="RECENT">[R] RECENT</button><button data-masort="NAME">[N] NAME</button>'+
+ '<button data-masort="HEALTH">[H] LOW HEALTH FIRST</button><button data-mafilter="ALL">[*] ALL</button>'+
+ '<button data-mafilter="CLINIC">[C] CLINIC</button><button data-mafilter="RECOVERY">[V] RECOVERY</button>'+
+ '<button data-mafilter="SANCTUARY">[S] SANCTUARY</button><button id="maRefresh">[F5] REFRESH RECORDS</button>'+
+ '</div></div>'+
+ '<div class="ma1"><h4>ANIMAL RECORD DIRECTORY</h4><div class="ma1-list">'+
+ (list.length?list.map(x=>row(x.a,x.i,d.selected===x.i)).join(""):'<div class="ma1-row">NO MATCHING SAVED ANIMALS.</div>')+
+ '</div></div>'+
+ (chosen?detail(chosen,d.selected):'<div class="ma1"><h4>PATIENT FILE VIEWER</h4><div class="ma1-record">SELECT ONE ANIMAL ABOVE.\n\nThe registry deliberately opens only one animal record at a time.</div></div>');
+ bind();
+}
+function row(a,i,on){
+ return '<button class="'+(on?"on":"")+'" data-maanimal="'+i+'">['+String(i+1).padStart(2,"0")+'] '+esc(a.name).toUpperCase()+
+ '<small>'+esc(a.species)+' / '+esc(a.breed||a.species)+' · '+esc(loc(a))+
+ ' · H:'+Math.round(a.health??0)+' P:'+Math.round(a.pain??0)+' HYD:'+Math.round(a.hydration??0)+
+ ' NUT:'+Math.round(a.nutrition??a.food??0)+' STR:'+Math.round(a.stress??0)+' TRUST:'+Math.round(a.trust??0)+'</small></button>';
+}
+function detail(a,i){
+ let traits=Array.isArray(a.personality)?a.personality:(Array.isArray(a.traits)?a.traits:[]);
+ return '<div class="ma1"><h4>SELECTED ANIMAL // '+esc(a.name).toUpperCase()+'</h4>'+
+ '<div class="ma1-card"><div class="ma1-name">'+esc(a.name)+'</div><small>'+esc(a.species)+' · '+esc(a.breed||a.species)+' · '+esc(a.sex||"U")+' · '+esc(a.age||"AGE UNKNOWN")+'</small>'+
+ '<div>'+traits.map(x=>'<span class="ma1-tag">'+esc(x)+'</span>').join("")+'</div></div>'+
+ stat("HEALTH",a.health)+stat("OXYGEN",a.oxygen)+stat("HYDRATION",a.hydration)+
+ stat("NUTRITION",a.nutrition??a.food)+stat("MOBILITY",a.mobility)+stat("TRUST",a.trust)+
+ stat("COMFORT",a.comfort)+stat("PAIN",a.pain,true)+stat("STRESS",a.stress,true)+
+ '<div class="ma1-grid">'+
+ card("LOCATION",loc(a),"Current saved program location")+
+ card("CASE ID",a.caseId||"NO CASE NUMBER","Persistent case reference")+
+ card("CONCERN",a.presentingConcern||"No current concern","Current / most recent presenting concern")+
+ card("LAST RECORD",last(a),"Most recent animal-history entry")+
+ '</div><div class="ma1-btns">'+
+ '<button id="maOpenCare">[ENTER] OPEN THIS ANIMAL IN CARE<small>Makes '+esc(a.name)+' active and opens the existing CARE system.</small></button>'+
+ '<button id="maRoster">[50] OPEN FULL CASE ROSTER<small>Go to the 50-case selector.</small></button>'+
+ '</div></div>'+
+ '<div class="ma1"><h4>QUICK RECORD</h4><div class="ma1-record">'+
+ 'TEMPERAMENT ... '+esc(a.temperament||"NOT RECORDED")+'\nBACKSTORY ...... '+esc(a.backstory||"NOT RECORDED")+
+ '\nCONCERN ........ '+esc(a.presentingConcern||"NONE")+'\nSTAGE .......... '+esc(a.stage||"UNKNOWN")+
+ '\nDISPOSITION .... '+esc(a.disposition||"UNKNOWN")+'\n\nRECENT HISTORY:\n'+
+ esc((a.history||[]).slice(0,8).join("\n")||"NO HISTORY YET.")+'</div></div>';
+}
+function card(k,v,n){return '<div class="ma1-card"><small>'+k+'</small><b>'+esc(v)+'</b><small>'+esc(n)+'</small></div>'}
+function bind(){
+ let d=D();
+ document.querySelectorAll("[data-maanimal]").forEach(b=>b.onclick=()=>{
+   d.selected=+b.dataset.maanimal;d.lastOpen=Date.now();
+   let a=state.animals[d.selected],id=a.id||a.name+"|"+a.species;
+   if(!d.opened.includes(id))d.opened.push(id);
+   try{save()}catch(e){}renderMA1()
+ });
+ document.querySelectorAll("[data-masort]").forEach(b=>b.onclick=()=>{d.sort=b.dataset.masort;renderMA1()});
+ document.querySelectorAll("[data-mafilter]").forEach(b=>b.onclick=()=>{d.filter=b.dataset.mafilter;renderMA1()});
+ let rf=document.querySelector("#maRefresh");if(rf)rf.onclick=renderMA1;
+ let care=document.querySelector("#maOpenCare");if(care)care.onclick=()=>{
+   state.active=d.selected;let a=state.animals[state.active];
+   a.history=Array.isArray(a.history)?a.history:[];
+   a.history.unshift(new Date().toLocaleTimeString()+" · RETURNED FROM MY_ANIMALS REGISTRY");
+   open("care");try{save()}catch(e){}
+ };
+ let roster=document.querySelector("#maRoster");if(roster)roster.onclick=()=>window.VetGodsCaseRoster50?.render();
+}
+const oldProgramMA=program;program=function(k){if(k==="myanimals1")return renderMA1();return oldProgramMA(k)};
+function addMA(){
+ if(page!=="home"||document.querySelector("#maHome"))return;
+ let c=document.querySelector(".p10-buttons");if(!c)return;
+ let b=document.createElement("button");b.id="maHome";b.textContent="[36] MY_ANIMALS.EXE";b.onclick=renderMA1;c.insertBefore(b,c.firstChild);
+}
+const oldHomeMA=home;home=function(){oldHomeMA();addMA()};
+ensureMA1();addMA();
+window.VetGodsMyAnimals1={render:renderMA1};
+})();
+</script>
+
+<style id="myanimals-phase2-css">
+.ma2{border:1px solid #666;margin-top:8px}.ma2 h4{margin:0;background:#c9c9c9;color:#000;padding:5px 7px;font-size:10px}
+.ma2-tabs,.ma2-grid,.ma2-actions{display:grid;grid-template-columns:repeat(2,1fr)}
+.ma2-tabs button,.ma2-actions button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:9px;text-align:left;font:700 9px "Courier New",monospace}
+.ma2-tabs button:hover,.ma2-tabs button.on,.ma2-actions button:hover{background:#c9c9c9;color:#000}
+.ma2-card,.ma2-line{padding:8px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}
+.ma2-card small,.ma2-line small{display:block;color:#777;margin-top:3px}.ma2-card b{color:#fff}
+.ma2-stat{display:grid;grid-template-columns:105px 1fr 78px;gap:7px;align-items:center;padding:6px 8px;border-bottom:1px dotted #444;font-size:9px}
+.ma2-meter{height:8px;border:1px solid #666;position:relative}.ma2-meter i{display:block;height:100%;background:#aaa}
+.ma2-target{color:#777;font-size:8px}.ma2-pre{padding:10px;white-space:pre-wrap;font-size:9px;line-height:1.55}
+.ma2-alert{border:1px solid #888;padding:8px;margin:6px;font-size:9px}
+.ma2-trait{display:inline-block;border:1px solid #666;padding:3px 6px;margin:3px;font-size:8px}
+@media(max-width:600px){.ma2-tabs,.ma2-grid,.ma2-actions{grid-template-columns:1fr}.ma2-stat{grid-template-columns:80px 1fr 65px}}
+</style>
+<script id="myanimals-phase2-js">
+(function(){
+"use strict";
+function ensure2(){
+ state.myAnimalsDeep=state.myAnimalsDeep||{tab:"OVERVIEW",notes:{}};
+ try{save()}catch(e){}
+}
+function D2(){return state.myAnimalsDeep}
+function E(x){return String(x??"").replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
+function A2(){let i=state.myAnimalsRegistry?.selected;return Number.isInteger(i)?state.animals?.[i]:null}
+function targets(k){
+ const t={health:[80,100],oxygen:[95,100],hydration:[65,90],nutrition:[60,90],mobility:[70,100],trust:[60,100],comfort:[65,100],pain:[0,20],stress:[0,35]};
+ return t[k]||[0,100];
+}
+function flag(k,v){
+ let t=targets(k),inverse=(k==="pain"||k==="stress");
+ if(inverse)return v<=t[1]?"TARGET":v<=50?"WATCH":"HIGH";
+ return v>=t[0]?"TARGET":v>=Math.max(0,t[0]-20)?"WATCH":"LOW";
+}
+function stat2(k,v){
+ v=Math.max(0,Math.min(100,Number(v??0)));let t=targets(k),f=flag(k,v);
+ return '<div class="ma2-stat"><b>'+k.toUpperCase()+'</b><div class="ma2-meter"><i style="width:'+v+'%"></i></div><span>'+Math.round(v)+' <small>'+f+'</small></span></div>'+
+ '<div class="ma2-line ma2-target">SIMULATED TARGET RANGE: '+t[0]+'–'+t[1]+'</div>';
+}
+function renderDeep(){
+ ensure2();let a=A2();
+ if(!a){if(window.VetGodsMyAnimals1)return window.VetGodsMyAnimals1.render();return}
+ page="myanimals2";nav();let d=D2(),tabs=["OVERVIEW","VITALS","CASE HISTORY","DIAGNOSTICS","CARE RECORD","PERSONALITY","SANCTUARY","NOTES"];
+ document.querySelector("#main").innerHTML=
+ '<div class="path">C:\\VETGODS\\MY_ANIMALS\\'+E(a.name).toUpperCase().replace(/ /g,"_")+'\\RECORD&gt;</div>'+
+ '<div class="ma2"><h4>ANIMAL_RECORD.EXE // PHASE 2 OF 5</h4><div class="ma2-grid">'+
+ card("PATIENT",a.name,a.species+" / "+(a.breed||a.species))+
+ card("CASE",a.caseId||"NO CASE ID",(a.stage||"UNKNOWN")+" / "+(a.disposition||"UNKNOWN"))+
+ card("TEMPERAMENT",a.temperament||"NOT RECORDED","Persistent behavioral descriptor")+
+ card("RECORD EVENTS",(a.history||[]).length,"Saved history entries")+
+ '</div><div class="ma2-tabs">'+tabs.map(x=>'<button class="'+(d.tab===x?"on":"")+'" data-ma2tab="'+x+'">['+x+']</button>').join("")+'</div></div>'+
+ '<div class="ma2"><h4>'+d.tab+'</h4>'+tabBody(a,d.tab)+'</div>'+
+ '<div class="ma2"><h4>RECORD COMMANDS</h4><div class="ma2-actions">'+
+ '<button id="ma2Back">[ESC] MY ANIMALS REGISTRY</button>'+
+ '<button id="ma2Care">[ENTER] OPEN ACTIVE CARE<small>Uses this exact saved animal.</small></button>'+
+ '<button id="ma2Refresh">[F5] REFRESH RECORD</button>'+
+ '<button id="ma2AddNote">[N] ADD QUICK OBSERVATION<small>Adds a timestamped fictional observation to this animal.</small></button>'+
+ '</div></div>';
+ bind2(a);
+}
+function card(k,v,n){return '<div class="ma2-card"><small>'+E(k)+'</small><b>'+E(v)+'</b><small>'+E(n)+'</small></div>'}
+function tabBody(a,t){
+ if(t==="OVERVIEW"){
+  let traits=Array.isArray(a.personality)?a.personality:(Array.isArray(a.traits)?a.traits:[]);
+  return '<div class="ma2-grid">'+card("NAME",a.name,a.sex+" · "+a.age)+card("SPECIES",a.species,a.breed||a.species)+
+  card("CURRENT CONCERN",a.presentingConcern||"NONE","Most recent saved concern")+card("LOCATION",loc2(a),"Current program area")+'</div>'+
+  '<div class="ma2-pre">BACKSTORY\n'+E(a.backstory||"No backstory recorded.")+'\n\nPERSONALITY / TRAITS\n'+traits.map(x=>'['+E(x)+']').join(" ")+'</div>'+
+  alertBody(a);
+ }
+ if(t==="VITALS")return stat2("health",a.health)+stat2("oxygen",a.oxygen)+stat2("hydration",a.hydration)+stat2("nutrition",a.nutrition??a.food)+stat2("mobility",a.mobility)+stat2("trust",a.trust)+stat2("comfort",a.comfort)+stat2("pain",a.pain)+stat2("stress",a.stress)+
+ '<div class="ma2-pre">These are fictional gameplay values and target bands, not veterinary measurements or medical guidance.</div>';
+ if(t==="CASE HISTORY")return '<div class="ma2-pre">'+E((a.history||[]).join("\n")||"NO SAVED CASE HISTORY.")+'</div>';
+ if(t==="DIAGNOSTICS"){
+   let tests=a.tests||{},ev=a.evidence||[];
+   return '<div class="ma2-grid">'+card("TEST RECORDS",Object.keys(tests).length,"Saved diagnostic flags / results")+card("EVIDENCE",ev.length,"Case evidence entries")+'</div>'+
+   '<div class="ma2-pre">TESTS\n'+E(JSON.stringify(tests,null,2))+'\n\nEVIDENCE\n'+E(ev.join("\n")||"NO EVIDENCE RECORDED.")+'</div>';
+ }
+ if(t==="CARE RECORD"){
+   return '<div class="ma2-grid">'+card("RECOVERY SESSIONS",a.rehab?.sessions||a.recoveryTicks||0,"Recorded rehabilitation activity")+
+   card("RESEARCH REPORTS",a.research?.reports?.length||0,"Animal-linked research entries")+
+   card("BEHAVIOR OBSERVATIONS",a.behavior?.observations?.length||0,"Saved observations")+
+   card("SANCTUARY",a.sanctuary?.resident?"RESIDENT":"NOT RESIDENT",a.sanctuary?.habitat||"No habitat assigned")+'</div>'+
+   '<div class="ma2-pre">RECENT CARE LOG\n'+E((a.history||[]).slice(0,20).join("\n")||"NO CARE EVENTS.")+'</div>';
+ }
+ if(t==="PERSONALITY"){
+   let tr=Array.isArray(a.personality)?a.personality:(Array.isArray(a.traits)?a.traits:[]);
+   return '<div class="ma2-pre">TEMPERAMENT: '+E(a.temperament||"NOT RECORDED")+'\n\nTRAITS:\n'+tr.map(x=>'['+E(x)+']').join(" ")+'\n\nThis is fictional character/gameplay data, not a real-world personality assessment.</div>';
+ }
+ if(t==="SANCTUARY"){
+   return '<div class="ma2-grid">'+card("RESIDENT",a.sanctuary?.resident?"YES":"NO","Persistent sanctuary state")+
+   card("HABITAT",a.sanctuary?.habitat||"UNASSIGNED","Current saved habitat")+
+   card("TRUST",Math.round(a.trust??0),"Current simulated trust")+
+   card("COMFORT",Math.round(a.comfort??0),"Current simulated comfort")+'</div>';
+ }
+ if(t==="NOTES"){
+   let id=a.id||a.name+"|"+a.species,notes=D2().notes[id]||[];
+   return '<div class="ma2-pre">'+E(notes.join("\n")||"NO PERSONAL RECORD NOTES YET.\nUse [N] ADD QUICK OBSERVATION below.")+'</div>';
+ }
+ return "";
+}
+function alertBody(a){
+ let vals=[["health",a.health],["oxygen",a.oxygen],["hydration",a.hydration],["nutrition",a.nutrition??a.food],["pain",a.pain],["stress",a.stress]];
+ let bad=vals.filter(x=>flag(x[0],Number(x[1]??0))!=="TARGET");
+ return '<div class="ma2-alert"><b>RECORD FLAGS:</b> '+(bad.length?bad.map(x=>x[0].toUpperCase()+"="+Math.round(x[1])+"("+flag(x[0],x[1])+")").join(" · "):"ALL TRACKED VALUES WITHIN GAME TARGET BANDS")+'</div>';
+}
+function loc2(a){
+ if(a.sanctuary?.resident)return "SANCTUARY";
+ if(String(a.stage||"").toUpperCase().includes("RECOV"))return "RECOVERY";
+ if(a.disposition==="ACTIVE CASE"||a.stage==="INTAKE")return "CLINIC";
+ return a.disposition||a.stage||"ARCHIVE";
+}
+function bind2(a){
+ document.querySelectorAll("[data-ma2tab]").forEach(b=>b.onclick=()=>{D2().tab=b.dataset.ma2tab;renderDeep()});
+ document.querySelector("#ma2Back").onclick=()=>window.VetGodsMyAnimals1?.render();
+ document.querySelector("#ma2Care").onclick=()=>{state.active=state.myAnimalsRegistry.selected;a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · OPENED ACTIVE CARE FROM DEEP RECORD");open("care");try{save()}catch(e){}};
+ document.querySelector("#ma2Refresh").onclick=renderDeep;
+ document.querySelector("#ma2AddNote").onclick=()=>{
+   let text=prompt("FICTIONAL ANIMAL OBSERVATION NOTE:");
+   if(!text||!text.trim())return;
+   let id=a.id||a.name+"|"+a.species,D=D2();D.notes[id]=D.notes[id]||[];
+   let line=new Date().toLocaleString()+" · "+text.trim();D.notes[id].unshift(line);
+   a.history=a.history||[];a.history.unshift("RECORD NOTE · "+text.trim());
+   try{save()}catch(e){}renderDeep();
+ };
+}
+const oldProgramMA2=program;program=function(k){if(k==="myanimals2")return renderDeep();return oldProgramMA2(k)};
+
+// Upgrade Phase 1 animal selection so selecting a saved animal immediately exposes a deep-record command.
+document.addEventListener("click",function(e){
+ let b=e.target.closest&&e.target.closest("[data-maanimal]");
+ if(!b)return;
+ setTimeout(function(){
+   let selected=state.myAnimalsRegistry?.selected;
+   if(selected==null)return;
+   let detail=document.querySelector("#maOpenCare");
+   if(detail&&!document.querySelector("#ma2DeepButton")){
+     let x=document.createElement("button");x.id="ma2DeepButton";x.innerHTML="[F] FULL ANIMAL RECORD<small>Open vitals, history, diagnostics, care, personality, sanctuary and notes.</small>";
+     x.onclick=renderDeep;detail.parentNode.insertBefore(x,detail);
+   }
+ },0);
+},false);
+
+// Also expose Phase 2 directly in Phase 1 render after redraws.
+const oldMA1Render=window.VetGodsMyAnimals1?.render;
+if(oldMA1Render){
+ window.VetGodsMyAnimals1.render=function(){
+   oldMA1Render();
+   setTimeout(function(){
+     if(state.myAnimalsRegistry?.selected==null)return;
+     let detail=document.querySelector("#maOpenCare");
+     if(detail&&!document.querySelector("#ma2DeepButton")){
+       let x=document.createElement("button");x.id="ma2DeepButton";x.innerHTML="[F] FULL ANIMAL RECORD<small>Open the complete persistent DOS patient file.</small>";
+       x.onclick=renderDeep;detail.parentNode.insertBefore(x,detail);
+     }
+   },0);
+ };
+}
+ensure2();
+window.VetGodsMyAnimals2={render:renderDeep};
+})();
+</script>
+
+<style id="myanimals-phase3-css">
+.ma3{border:1px solid #666;margin-top:8px}.ma3 h4{margin:0;background:#c9c9c9;color:#000;padding:5px 7px;font-size:10px}
+.ma3-grid,.ma3-actions{display:grid;grid-template-columns:repeat(2,1fr)}
+.ma3-card{padding:8px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}
+.ma3-card small{display:block;color:#777;margin-top:3px}.ma3-card b{color:#fff}
+.ma3-actions button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:9px;text-align:left;font:700 9px "Courier New",monospace}
+.ma3-actions button:hover:not(:disabled){background:#c9c9c9;color:#000}.ma3-actions button:disabled{opacity:.35}
+.ma3-stat{display:grid;grid-template-columns:100px 1fr 42px;gap:7px;align-items:center;padding:5px 8px;border-bottom:1px dotted #444;font-size:9px}
+.ma3-meter{height:8px;border:1px solid #666}.ma3-meter i{display:block;height:100%;background:#aaa}
+.ma3-log{padding:10px;white-space:pre-wrap;font-size:9px;line-height:1.55;max-height:240px;overflow:auto}
+.ma3-flash{padding:10px;border:2px double #888;font-size:10px;font-weight:900}
+@media(max-width:600px){.ma3-grid,.ma3-actions{grid-template-columns:1fr}.ma3-stat{grid-template-columns:78px 1fr 36px}}
+</style>
+<script id="myanimals-phase3-js">
+(function(){
+"use strict";
+const ACTIONS=[
+ ["water","OFFER WATER","Hydration +12 · Comfort +2","hydration",12,["comfort",2]],
+ ["food","OFFER FOOD / NUTRITION","Nutrition +10 · Trust +2","nutrition",10,["trust",2]],
+ ["comfort","COMFORT / QUIET SPACE","Comfort +10 · Stress -8","comfort",10,["stress",-8]],
+ ["oxygen","OXYGEN SUPPORT","Oxygen +5 · Stress -2","oxygen",5,["stress",-2]],
+ ["pain","PAIN CONTROL","Pain -10 · Comfort +4","pain",-10,["comfort",4]],
+ ["rest","SUPPORTED REST","Health +4 · Stress -5","health",4,["stress",-5]],
+ ["mobility","MOBILITY ASSIST","Mobility +6 · Trust +2","mobility",6,["trust",2]],
+ ["groom","GROOM / CLEAN","Comfort +6 · Trust +3","comfort",6,["trust",3]],
+ ["enrich","ENRICHMENT","Trust +5 · Stress -5","trust",5,["stress",-5]],
+ ["monitor","MONITOR / REASSESS","Records current values; Trust +1","trust",1,null]
+];
+function ensure3(){
+ state.myAnimalsCare=state.myAnimalsCare||{logs:{},counts:{},lastAction:{}};
+ try{save()}catch(e){}
+}
+function C3(){return state.myAnimalsCare}
+function A3(){let i=state.myAnimalsRegistry?.selected;return Number.isInteger(i)?state.animals?.[i]:null}
+function E3(x){return String(x??"").replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
+function key3(a){return a.id||a.caseId||a.name+"|"+a.species}
+function clamp(v){return Math.max(0,Math.min(100,Number(v||0)))}
+function getv(a,k){if(k==="nutrition")return Number(a.nutrition??a.food??0);return Number(a[k]??0)}
+function setv(a,k,v){v=clamp(v);a[k]=v;if(k==="nutrition"&&a.food!=null)a.food=v}
+function act3(id){
+ ensure3();let a=A3(),def=ACTIONS.find(x=>x[0]===id);if(!a||!def)return;
+ let k=key3(a),before={};
+ [def[3],def[5]?.[0]].filter(Boolean).forEach(x=>before[x]=getv(a,x));
+ setv(a,def[3],getv(a,def[3])+def[4]);
+ if(def[5])setv(a,def[5][0],getv(a,def[5][0])+def[5][1]);
+ if(id==="monitor"){
+   before.health=getv(a,"health");before.pain=getv(a,"pain");before.hydration=getv(a,"hydration");
+ }
+ C3().counts[k]=C3().counts[k]||{};C3().counts[k][id]=(C3().counts[k][id]||0)+1;C3().lastAction[k]=Date.now();
+ let changes=Object.keys(before).map(x=>x.toUpperCase()+" "+Math.round(before[x])+"→"+Math.round(getv(a,x))).join(" · ");
+ let line=new Date().toLocaleString()+" · "+def[1]+" · "+changes;
+ C3().logs[k]=C3().logs[k]||[];C3().logs[k].unshift(line);C3().logs[k]=C3().logs[k].slice(0,100);
+ a.history=Array.isArray(a.history)?a.history:[];a.history.unshift("MY ANIMALS CARE · "+line);
+ a.behavior=a.behavior||{observations:[]};
+ if(id==="enrich"||id==="comfort"||id==="groom")a.behavior.observations.unshift(new Date().toLocaleString()+" · "+def[1]);
+ try{save()}catch(e){}
+ renderCare3(line);
+}
+function stat3(k,v){
+ v=clamp(v);return '<div class="ma3-stat"><b>'+k.toUpperCase()+'</b><div class="ma3-meter"><i style="width:'+v+'%"></i></div><span>'+Math.round(v)+'</span></div>';
+}
+function renderCare3(flash){
+ ensure3();let a=A3();
+ if(!a){if(window.VetGodsMyAnimals1)return window.VetGodsMyAnimals1.render();return}
+ page="myanimals3";nav();let k=key3(a),logs=C3().logs[k]||[],counts=C3().counts[k]||{};
+ document.querySelector("#main").innerHTML=
+ '<div class="path">C:\\VETGODS\\MY_ANIMALS\\'+E3(a.name).toUpperCase().replace(/ /g,"_")+'\\CARE_PANEL&gt;</div>'+
+ '<div class="ma3"><h4>ACTIVE_ANIMAL_CARE.EXE // PHASE 3 OF 5</h4><div class="ma3-grid">'+
+ card3("ANIMAL",a.name,a.species+" / "+(a.breed||a.species))+
+ card3("CONCERN",a.presentingConcern||"NO CURRENT CONCERN","Fictional saved case")+
+ card3("LOCATION",a.sanctuary?.resident?"SANCTUARY":a.stage||"CLINIC","Persistent animal state")+
+ card3("CARE ACTIONS",Object.values(counts).reduce((x,y)=>x+y,0),"Actions recorded from this panel")+
+ '</div></div>'+
+ (flash?'<div class="ma3 ma3-flash">'+E3(flash)+'</div>':'')+
+ '<div class="ma3"><h4>LIVE SIMULATED STATUS</h4>'+
+ stat3("health",a.health)+stat3("oxygen",a.oxygen)+stat3("hydration",a.hydration)+
+ stat3("nutrition",a.nutrition??a.food)+stat3("mobility",a.mobility)+stat3("trust",a.trust)+
+ stat3("comfort",a.comfort)+stat3("pain",a.pain)+stat3("stress",a.stress)+'</div>'+
+ '<div class="ma3"><h4>CARE ACTIONS</h4><div class="ma3-actions">'+ACTIONS.map(x=>
+ '<button data-ma3="'+x[0]+'">['+x[0].toUpperCase()+'] '+x[1]+'<small>'+x[2]+' · USED '+(counts[x[0]]||0)+'×</small></button>').join("")+
+ '</div><div class="ma3-log">Gameplay simulation only. These controls are fictional and are not veterinary treatment instructions.</div></div>'+
+ '<div class="ma3"><h4>ANIMAL-SPECIFIC CARE LOG</h4><div class="ma3-log">'+E3(logs.join("\n")||"NO PHASE-3 CARE ACTIONS RECORDED FOR THIS ANIMAL.")+'</div></div>'+
+ '<div class="ma3"><h4>NAVIGATION</h4><div class="ma3-actions">'+
+ '<button id="ma3Record">[R] FULL ANIMAL RECORD</button><button id="ma3Registry">[ESC] MY ANIMALS</button>'+
+ '<button id="ma3Clinic">[C] EXISTING CLINIC CARE<small>Open the original deeper case-care system.</small></button>'+
+ '<button id="ma3Save">[S] SAVE / REFRESH<small>Persist current animal values.</small></button></div></div>';
+ bind3(a);
+}
+function card3(k,v,n){return '<div class="ma3-card"><small>'+E3(k)+'</small><b>'+E3(v)+'</b><small>'+E3(n)+'</small></div>'}
+function bind3(a){
+ document.querySelectorAll("[data-ma3]").forEach(b=>b.onclick=()=>act3(b.dataset.ma3));
+ document.querySelector("#ma3Record").onclick=()=>window.VetGodsMyAnimals2?.render();
+ document.querySelector("#ma3Registry").onclick=()=>window.VetGodsMyAnimals1?.render();
+ document.querySelector("#ma3Clinic").onclick=()=>{state.active=state.myAnimalsRegistry.selected;a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · TRANSFERRED FROM MY ANIMALS CARE PANEL TO CLINIC");try{save()}catch(e){}open("care")};
+ document.querySelector("#ma3Save").onclick=()=>{try{save()}catch(e){}renderCare3("SAVE CONFIRMED · "+new Date().toLocaleTimeString())};
+}
+const oldProgram3=program;program=function(k){if(k==="myanimals3")return renderCare3();return oldProgram3(k)};
+
+// Add Phase 3 to the Phase 2 deep-record screen after each render.
+const oldDeep=window.VetGodsMyAnimals2?.render;
+if(oldDeep){
+ window.VetGodsMyAnimals2.render=function(){
+   oldDeep();
+   setTimeout(function(){
+     let anchor=document.querySelector("#ma2Care");
+     if(anchor&&!document.querySelector("#ma3CareButton")){
+       let b=document.createElement("button");b.id="ma3CareButton";
+       b.innerHTML="[H] HELP THIS ANIMAL<small>Open live food, water, comfort, oxygen, pain, rest, mobility, grooming, enrichment and monitoring controls.</small>";
+       b.onclick=()=>renderCare3();anchor.parentNode.insertBefore(b,anchor);
+     }
+   },0);
+ };
+}
+ensure3();
+window.VetGodsMyAnimals3={render:renderCare3,action:act3};
+})();
+</script>
+
+<style id="myanimals-phase4-css">
+.ma4{border:1px solid #666;margin-top:8px}.ma4 h4{margin:0;background:#c9c9c9;color:#000;padding:5px 7px;font-size:10px}
+.ma4-grid,.ma4-actions{display:grid;grid-template-columns:repeat(2,1fr)}
+.ma4-card{padding:8px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}
+.ma4-card small{display:block;color:#777;margin-top:3px}.ma4-card b{color:#fff}
+.ma4-actions button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:9px;text-align:left;font:700 9px "Courier New",monospace}
+.ma4-actions button:hover{background:#c9c9c9;color:#000}
+.ma4-time{padding:12px;text-align:center;border:3px double #777}.ma4-time strong{display:block;color:#fff;font-size:15px;margin:5px}
+.ma4-log{padding:10px;white-space:pre-wrap;font-size:9px;line-height:1.55;max-height:240px;overflow:auto}
+.ma4-state{display:grid;grid-template-columns:100px 1fr 42px;gap:7px;padding:5px 8px;border-bottom:1px dotted #444;font-size:9px;align-items:center}
+.ma4-meter{height:8px;border:1px solid #666}.ma4-meter i{display:block;height:100%;background:#aaa}
+@media(max-width:600px){.ma4-grid,.ma4-actions{grid-template-columns:1fr}.ma4-state{grid-template-columns:78px 1fr 36px}}
+</style>
+<script id="myanimals-phase4-js">
+(function(){
+"use strict";
+const HOUR=3600000, MAX_HOURS=24;
+function ensure4(){
+ state.livingAnimals=state.livingAnimals||{records:{},log:{},enabled:true};
+ (state.animals||[]).forEach(a=>{
+   let k=key(a),r=state.livingAnimals.records[k];
+   if(!r)state.livingAnimals.records[k]={lastUpdate:Date.now(),lastVisit:Date.now(),totalElapsedHours:0};
+ });
+ try{save()}catch(e){}
+}
+function L(){return state.livingAnimals}
+function key(a){return a.id||a.caseId||a.name+"|"+a.species}
+function E(x){return String(x??"").replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
+function clamp(v){return Math.max(0,Math.min(100,Number(v??0)))}
+function current(){let i=state.myAnimalsRegistry?.selected;return Number.isInteger(i)?state.animals?.[i]:null}
+function elapsedText(ms){
+ let m=Math.floor(ms/60000);if(m<60)return m+" MIN";
+ let h=Math.floor(m/60),mm=m%60;if(h<48)return h+" HR "+mm+" MIN";
+ return Math.floor(h/24)+" DAYS "+(h%24)+" HR";
+}
+function simulate(a,forceHours){
+ ensure4();let k=key(a),r=L().records[k]||(L().records[k]={lastUpdate:Date.now(),lastVisit:Date.now(),totalElapsedHours:0});
+ let now=Date.now(),raw=forceHours!=null?forceHours:(now-r.lastUpdate)/HOUR;
+ if(raw<1&&!forceHours)return null; // no twitchy minute-by-minute decay
+ let hours=Math.min(MAX_HOURS,Math.max(0,Math.floor(raw)));
+ if(hours<=0)return null;
+ let before={hydration:+(a.hydration??60),nutrition:+(a.nutrition??a.food??60),comfort:+(a.comfort??55),stress:+(a.stress??50),trust:+(a.trust??40),health:+(a.health??70)};
+ // Gentle game pacing: meaningful over hours, capped at one day of unattended simulation.
+ a.hydration=clamp(before.hydration-hours*0.75);
+ a.nutrition=clamp(before.nutrition-hours*0.55);if(a.food!=null)a.food=a.nutrition;
+ a.comfort=clamp(before.comfort-hours*0.22);
+ a.stress=clamp(before.stress+hours*0.18);
+ // Trust is intentionally very stable while away.
+ a.trust=clamp(before.trust-hours*0.04);
+ // Health only drifts if basic needs have fallen substantially.
+ let needPenalty=(a.hydration<30?0.25:0)+(a.nutrition<25?0.2:0)+(a.comfort<25?0.1:0);
+ a.health=clamp(before.health-hours*needPenalty);
+ r.lastUpdate=forceHours!=null?now:r.lastUpdate+hours*HOUR;
+ r.totalElapsedHours=(r.totalElapsedHours||0)+hours;
+ let line=new Date().toLocaleString()+" · ELAPSED TIME UPDATE · "+hours+" HR · HYD "+Math.round(before.hydration)+"→"+Math.round(a.hydration)+" · NUT "+Math.round(before.nutrition)+"→"+Math.round(a.nutrition)+" · COMF "+Math.round(before.comfort)+"→"+Math.round(a.comfort)+" · STRESS "+Math.round(before.stress)+"→"+Math.round(a.stress);
+ L().log[k]=L().log[k]||[];L().log[k].unshift(line);L().log[k]=L().log[k].slice(0,60);
+ a.history=a.history||[];a.history.unshift("LIVING SYSTEM · "+line);
+ try{save()}catch(e){}return line;
+}
+function updateAll(){
+ ensure4();if(!L().enabled)return;
+ (state.animals||[]).forEach(a=>{if(a.history?.length||a.sanctuary?.resident||a.disposition==="ACTIVE CASE")simulate(a)});
+}
+function stateRow(k,v){
+ v=clamp(v);return '<div class="ma4-state"><b>'+k.toUpperCase()+'</b><div class="ma4-meter"><i style="width:'+v+'%"></i></div><span>'+Math.round(v)+'</span></div>';
+}
+function render4(msg){
+ ensure4();let a=current();if(!a)return window.VetGodsMyAnimals1?.render();
+ simulate(a);page="myanimals4";nav();let k=key(a),r=L().records[k],logs=L().log[k]||[],now=Date.now();
+ r.lastVisit=now;try{save()}catch(e){}
+ document.querySelector("#main").innerHTML=
+ '<div class="path">C:\\VETGODS\\MY_ANIMALS\\'+E(a.name).toUpperCase().replace(/ /g,"_")+'\\LIVING_STATUS&gt;</div>'+
+ '<div class="ma4"><h4>LIVING_ANIMAL_CLOCK.EXE // PHASE 4 OF 5</h4>'+
+ '<div class="ma4-time"><small>RETURNING ANIMAL</small><strong>'+E(a.name)+' // '+E(a.species)+'</strong>'+
+ '<span>TIME SYSTEM: '+(L().enabled?"ACTIVE":"PAUSED")+' · MAX OFFLINE CHANGE: 24 HOURS</span></div>'+
+ '<div class="ma4-grid">'+card("TOTAL SIMULATED TIME",Math.round(r.totalElapsedHours||0)+" HOURS","Accumulated elapsed-time updates")+
+ card("LAST CLOCK UPDATE",new Date(r.lastUpdate).toLocaleString(),"No minute-by-minute decay")+
+ card("CARE LOCATION",a.sanctuary?.resident?"SANCTUARY":a.stage||"CLINIC","Saved animal location")+
+ card("OFFLINE PROTECTION","ENABLED","Unattended simulation caps at 24 hours")+'</div></div>'+
+ (msg?'<div class="ma4"><div class="ma4-log">'+E(msg)+'</div></div>':'')+
+ '<div class="ma4"><h4>CURRENT LIVING STATUS</h4>'+
+ stateRow("health",a.health)+stateRow("hydration",a.hydration)+stateRow("nutrition",a.nutrition??a.food)+stateRow("comfort",a.comfort)+stateRow("stress",a.stress)+stateRow("trust",a.trust)+'</div>'+
+ '<div class="ma4"><h4>ELAPSED-TIME RULES</h4><div class="ma4-log">HYDRATION .... -0.75 / HOUR\nNUTRITION .... -0.55 / HOUR\nCOMFORT ...... -0.22 / HOUR\nSTRESS ....... +0.18 / HOUR\nTRUST ........ -0.04 / HOUR\nHEALTH ....... STABLE UNLESS BASIC NEEDS BECOME VERY LOW\n\nUpdates happen in whole-hour steps. Closing the game for days cannot stack more than 24 hours of unattended change in one return. This is fictional gameplay simulation.</div></div>'+
+ '<div class="ma4"><h4>TIME HISTORY</h4><div class="ma4-log">'+E(logs.join("\n")||"NO ELAPSED-TIME UPDATE YET.")+'</div></div>'+
+ '<div class="ma4"><h4>COMMANDS</h4><div class="ma4-actions">'+
+ '<button id="ma4Care">[H] HELP THIS ANIMAL<small>Open Phase 3 active care.</small></button>'+
+ '<button id="ma4Record">[R] FULL RECORD</button>'+
+ '<button id="ma4Registry">[ESC] MY ANIMALS</button>'+
+ '<button id="ma4Toggle">[T] '+(L().enabled?"PAUSE":"ENABLE")+' TIME SYSTEM<small>Controls future elapsed-time updates.</small></button>'+
+ '</div></div>';
+ document.querySelector("#ma4Care").onclick=()=>window.VetGodsMyAnimals3?.render();
+ document.querySelector("#ma4Record").onclick=()=>window.VetGodsMyAnimals2?.render();
+ document.querySelector("#ma4Registry").onclick=()=>window.VetGodsMyAnimals1?.render();
+ document.querySelector("#ma4Toggle").onclick=()=>{L().enabled=!L().enabled;L().records[k].lastUpdate=Date.now();try{save()}catch(e){}render4("TIME SYSTEM "+(L().enabled?"ENABLED":"PAUSED"))};
+}
+function card(k,v,n){return '<div class="ma4-card"><small>'+E(k)+'</small><b>'+E(v)+'</b><small>'+E(n)+'</small></div>'}
+const oldProgram4=program;program=function(k){if(k==="myanimals4")return render4();return oldProgram4(k)};
+
+// Add the living-status command to Phase 3 whenever it renders.
+const oldCare3=window.VetGodsMyAnimals3?.render;
+if(oldCare3){
+ window.VetGodsMyAnimals3.render=function(){
+   oldCare3();
+   setTimeout(function(){
+     let a=document.querySelector("#ma3Record");
+     if(a&&!document.querySelector("#ma4Living")){
+       let b=document.createElement("button");b.id="ma4Living";b.innerHTML="[L] LIVING STATUS<small>See elapsed-time needs and return history.</small>";
+       b.onclick=()=>render4();a.parentNode.insertBefore(b,a);
+     }
+   },0);
+ };
+}
+ensure4();updateAll();
+window.VetGodsMyAnimals4={render:render4,updateAll:updateAll,simulate:simulate};
+})();
+</script>
+
+<style id="myanimals-phase5-css">
+.ma5{border:1px solid #666;margin-top:8px}.ma5 h4{margin:0;background:#c9c9c9;color:#000;padding:5px 7px;font-size:10px}
+.ma5-grid,.ma5-actions,.ma5-tabs{display:grid;grid-template-columns:repeat(2,1fr)}
+.ma5-card,.ma5-line{padding:8px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}
+.ma5-card small,.ma5-line small{display:block;color:#777;margin-top:3px}.ma5-card b{color:#fff}
+.ma5-actions button,.ma5-tabs button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:9px;text-align:left;font:700 9px "Courier New",monospace}
+.ma5-actions button:hover,.ma5-tabs button:hover,.ma5-tabs button.on{background:#c9c9c9;color:#000}
+.ma5-life{border:4px double #777;padding:13px;text-align:center}.ma5-life strong{display:block;color:#fff;font-size:16px;letter-spacing:1px;margin:5px}
+.ma5-pre{padding:10px;white-space:pre-wrap;font-size:9px;line-height:1.55;max-height:300px;overflow:auto}
+.ma5-event{padding:8px;border-bottom:1px dotted #555;font-size:9px}.ma5-event b{color:#fff}
+.ma5-trend{display:grid;grid-template-columns:90px 1fr 55px;gap:7px;align-items:center;padding:6px 8px;border-bottom:1px dotted #444;font-size:9px}
+.ma5-bar{height:8px;border:1px solid #666}.ma5-bar i{display:block;height:100%;background:#aaa}
+@media(max-width:600px){.ma5-grid,.ma5-actions,.ma5-tabs{grid-template-columns:1fr}.ma5-trend{grid-template-columns:72px 1fr 48px}}
+</style>
+<script id="myanimals-phase5-js">
+(function(){
+"use strict";
+function ensure5(){
+ state.lifetimeAnimals=state.lifetimeAnimals||{records:{},tab:"SUMMARY"};
+ try{save()}catch(e){}
+}
+function DB(){return state.lifetimeAnimals}
+function animal5(){let i=state.myAnimalsRegistry?.selected;return Number.isInteger(i)?state.animals?.[i]:null}
+function key5(a){return a.id||a.caseId||a.name+"|"+a.species}
+function E5(x){return String(x??"").replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
+function rec5(a){
+ ensure5();let k=key5(a),r=DB().records[k];
+ if(!r)r=DB().records[k]={firstSeen:Date.now(),visits:0,checkups:0,episodes:[],snapshots:[],milestones:[],lastVisit:null};
+ DB().records[k]=r;return r;
+}
+function snapshot(a,label){
+ let r=rec5(a),x={time:Date.now(),label:label||"STATUS",health:+(a.health??0),pain:+(a.pain??0),hydration:+(a.hydration??0),nutrition:+(a.nutrition??a.food??0),stress:+(a.stress??0),trust:+(a.trust??0),comfort:+(a.comfort??0),mobility:+(a.mobility??0)};
+ r.snapshots.unshift(x);r.snapshots=r.snapshots.slice(0,80);r.lastVisit=Date.now();try{save()}catch(e){}return x;
+}
+function checkup(){
+ let a=animal5();if(!a)return;let r=rec5(a);r.checkups++;r.visits++;let x=snapshot(a,"RETURN CHECKUP #"+r.checkups);
+ let event={time:Date.now(),type:"CHECKUP",text:"Return checkup recorded · H "+Math.round(x.health)+" · PAIN "+Math.round(x.pain)+" · HYD "+Math.round(x.hydration)+" · NUT "+Math.round(x.nutrition)+" · STRESS "+Math.round(x.stress)};
+ r.episodes.unshift(event);r.episodes=r.episodes.slice(0,100);a.history=a.history||[];a.history.unshift("LIFETIME RECORD · "+new Date().toLocaleString()+" · "+event.text);
+ if(r.checkups===1)r.milestones.push("FIRST RETURN CHECKUP");
+ if(r.checkups===5)r.milestones.push("FIVE RETURN CHECKUPS");
+ if(r.checkups===10)r.milestones.push("TEN RETURN CHECKUPS");
+ try{save()}catch(e){}render5("CHECKUP SAVED TO "+a.name.toUpperCase()+"'S LIFETIME RECORD");
+}
+function trend(a,k){
+ let r=rec5(a),sn=r.snapshots;if(sn.length<2)return "NO TREND";
+ let newest=sn[0][k],oldest=sn[sn.length-1][k],d=newest-oldest;
+ return d>1?"UP +"+Math.round(d):d<-1?"DOWN "+Math.round(d):"STABLE";
+}
+function bar(k,v){
+ v=Math.max(0,Math.min(100,+v||0));return '<div class="ma5-trend"><b>'+k.toUpperCase()+'</b><div class="ma5-bar"><i style="width:'+v+'%"></i></div><span>'+Math.round(v)+'</span></div>';
+}
+function render5(msg){
+ ensure5();let a=animal5();if(!a)return window.VetGodsMyAnimals1?.render();
+ let r=rec5(a);page="myanimals5";nav();r.visits++;r.lastVisit=Date.now();
+ if(!r.snapshots.length)snapshot(a,"LIFETIME BASELINE");
+ let tabs=["SUMMARY","VISITS","TRENDS","CARE","SANCTUARY","RESEARCH","MORPH","ACHIEVEMENTS"],tab=DB().tab||"SUMMARY";
+ try{save()}catch(e){}
+ document.querySelector("#main").innerHTML=
+ '<div class="path">C:\\VETGODS\\MY_ANIMALS\\'+E5(a.name).toUpperCase().replace(/ /g,"_")+'\\LIFETIME&gt;</div>'+
+ '<div class="ma5"><h4>LIFETIME_ANIMAL_RECORD.EXE // PHASE 5 OF 5</h4><div class="ma5-life"><small>PERSISTENT ANIMAL RECORD</small><strong>'+E5(a.name)+' // '+E5(a.species)+'</strong>'+
+ '<span>CASE '+E5(a.caseId||"UNNUMBERED")+' · '+E5(a.breed||a.species)+' · '+E5(a.sex||"U")+' · '+E5(a.age||"AGE UNKNOWN")+'</span></div>'+
+ '<div class="ma5-grid">'+card5("RETURN CHECKUPS",r.checkups,"Explicit saved checkup events")+card5("LIFETIME EVENTS",r.episodes.length,"Persistent animal timeline")+
+ card5("STATUS SNAPSHOTS",r.snapshots.length,"Used for simple trend comparisons")+card5("MILESTONES",r.milestones.length,"Animal-specific achievements")+'</div>'+
+ '<div class="ma5-tabs">'+tabs.map(x=>'<button class="'+(tab===x?"on":"")+'" data-ma5tab="'+x+'">['+x+']</button>').join("")+'</div></div>'+
+ (msg?'<div class="ma5"><div class="ma5-pre">'+E5(msg)+'</div></div>':'')+
+ '<div class="ma5"><h4>'+tab+'</h4>'+body5(a,r,tab)+'</div>'+
+ '<div class="ma5"><h4>RETURN / CHECKUP LOOP</h4><div class="ma5-actions">'+
+ '<button id="ma5Check">[K] RECORD CHECKUP<small>Stores a timestamped snapshot and lifetime event.</small></button>'+
+ '<button id="ma5Help">[H] HELP THIS ANIMAL<small>Food, water, comfort, pain, mobility and other Phase 3 controls.</small></button>'+
+ '<button id="ma5Living">[L] LIVING STATUS<small>Elapsed-time needs from Phase 4.</small></button>'+
+ '<button id="ma5Record">[R] FULL MEDICAL/GAME RECORD<small>Phase 2 diagnostics, history and notes.</small></button>'+
+ '<button id="ma5Clinic">[C] CLINIC CARE</button><button id="ma5Home">[ESC] MY ANIMALS</button>'+
+ '</div></div>';
+ bind5(a);
+}
+function card5(k,v,n){return '<div class="ma5-card"><small>'+E5(k)+'</small><b>'+E5(v)+'</b><small>'+E5(n)+'</small></div>'}
+function body5(a,r,t){
+ if(t==="SUMMARY")return bar("health",a.health)+bar("hydration",a.hydration)+bar("nutrition",a.nutrition??a.food)+bar("comfort",a.comfort)+bar("trust",a.trust)+bar("mobility",a.mobility)+bar("pain",a.pain)+bar("stress",a.stress)+
+ '<div class="ma5-pre">CURRENT LOCATION: '+E5(a.sanctuary?.resident?"SANCTUARY":a.stage||a.disposition||"ARCHIVE")+'\nCURRENT CONCERN: '+E5(a.presentingConcern||"NONE")+'\nLAST LIFETIME VISIT: '+E5(r.lastVisit?new Date(r.lastVisit).toLocaleString():"NONE")+'</div>';
+ if(t==="VISITS")return '<div class="ma5-pre">'+E5(r.episodes.map(x=>new Date(x.time).toLocaleString()+" · "+x.type+" · "+x.text).join("\n")||"NO RETURN CHECKUPS YET.")+'</div>';
+ if(t==="TRENDS")return '<div class="ma5-pre">SNAPSHOTS: '+r.snapshots.length+'\nHEALTH ....... '+trend(a,"health")+'\nPAIN ......... '+trend(a,"pain")+'\nHYDRATION .... '+trend(a,"hydration")+'\nNUTRITION .... '+trend(a,"nutrition")+'\nSTRESS ....... '+trend(a,"stress")+'\nTRUST ........ '+trend(a,"trust")+'\nCOMFORT ...... '+trend(a,"comfort")+'\nMOBILITY ..... '+trend(a,"mobility")+'\n\nTrends compare this animal’s oldest retained snapshot with the newest. They are fictional game telemetry.</div>';
+ if(t==="CARE"){
+   let k=key5(a),logs=state.myAnimalsCare?.logs?.[k]||[];
+   return '<div class="ma5-pre">PHASE-3 CARE EVENTS\n'+E5(logs.join("\n")||"NO DIRECT CARE EVENTS RECORDED.")+'\n\nGENERAL CASE HISTORY\n'+E5((a.history||[]).slice(0,25).join("\n"))+'</div>';
+ }
+ if(t==="SANCTUARY")return '<div class="ma5-grid">'+card5("RESIDENT",a.sanctuary?.resident?"YES":"NO","Persistent state")+card5("HABITAT",a.sanctuary?.habitat||"UNASSIGNED","Saved habitat")+card5("TRUST",Math.round(a.trust??0),"Current simulated value")+card5("COMFORT",Math.round(a.comfort??0),"Current simulated value")+'</div>';
+ if(t==="RESEARCH")return '<div class="ma5-pre">REPORTS: '+(a.research?.reports?.length||0)+'\nFLAGS: '+(a.research?.flags?.length||0)+'\n\n'+E5((a.research?.reports||[]).join("\n")||"NO ANIMAL-LINKED RESEARCH REPORTS.")+'</div>';
+ if(t==="MORPH"){
+   let morph=a.morph||a.morphology||a.transformations||null;
+   return '<div class="ma5-pre">'+(morph?E5(JSON.stringify(morph,null,2)):"NO MORPH / TRANSFORMATION HISTORY IS ATTACHED TO THIS ANIMAL YET.\n\nThis tab is ready to display persistent morph data when an animal has it; it does not invent transformations.")+'</div>';
+ }
+ if(t==="ACHIEVEMENTS")return '<div class="ma5-pre">ANIMAL MILESTONES\n'+E5(r.milestones.join("\n")||"NO LIFETIME MILESTONES YET.")+'\n\nPLAYER BADGES\n'+E5((state.rewardSystem?.badges||[]).map(x=>"["+x.id+"] "+x.title+" · "+x.recipient).join("\n")||"NO PLAYER BADGES.")+'</div>';
+ return "";
+}
+function bind5(a){
+ document.querySelectorAll("[data-ma5tab]").forEach(b=>b.onclick=()=>{DB().tab=b.dataset.ma5tab;render5()});
+ document.querySelector("#ma5Check").onclick=checkup;
+ document.querySelector("#ma5Help").onclick=()=>window.VetGodsMyAnimals3?.render();
+ document.querySelector("#ma5Living").onclick=()=>window.VetGodsMyAnimals4?.render();
+ document.querySelector("#ma5Record").onclick=()=>window.VetGodsMyAnimals2?.render();
+ document.querySelector("#ma5Clinic").onclick=()=>{state.active=state.myAnimalsRegistry.selected;a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · RETURNED TO CLINIC FROM LIFETIME RECORD");try{save()}catch(e){}open("care")};
+ document.querySelector("#ma5Home").onclick=()=>window.VetGodsMyAnimals1?.render();
+}
+const oldProgram5=program;program=function(k){if(k==="myanimals5")return render5();return oldProgram5(k)};
+
+// Add lifetime record access to Phase 4.
+const oldLiving=window.VetGodsMyAnimals4?.render;
+if(oldLiving){
+ window.VetGodsMyAnimals4.render=function(){
+   oldLiving();
+   setTimeout(function(){
+     let a=document.querySelector("#ma4Care");
+     if(a&&!document.querySelector("#ma5Lifetime")){
+       let b=document.createElement("button");b.id="ma5Lifetime";b.innerHTML="[X] LIFETIME RECORD<small>Visits, trends, care, sanctuary, research, morph history and achievements.</small>";
+       b.onclick=()=>render5();a.parentNode.insertBefore(b,a);
+     }
+   },0);
+ };
+}
+
+// Add lifetime record directly to Phase 1 selected-animal controls too.
+document.addEventListener("click",function(e){
+ let b=e.target.closest&&e.target.closest("[data-maanimal]");if(!b)return;
+ setTimeout(function(){
+   let a=document.querySelector("#maOpenCare");
+   if(a&&!document.querySelector("#ma5QuickLifetime")){
+     let x=document.createElement("button");x.id="ma5QuickLifetime";x.innerHTML="[X] LIFETIME RECORD<small>Open this animal's complete return history.</small>";
+     x.onclick=()=>render5();a.parentNode.insertBefore(x,a);
+   }
+ },0);
+},false);
+
+ensure5();
+window.VetGodsMyAnimals5={render:render5,snapshot:snapshot,checkup:checkup};
+})();
+</script>
+
+<style id="graphics-phase1-css">
+:root{--vg-phosphor:#d8d8d8;--vg-dim:#737373;--vg-panel:#090909;--vg-line:#5c5c5c}
+.vgPortrait{position:relative;overflow:hidden;border:2px solid var(--vg-line);background:#020202;min-height:150px}
+.vgPortrait:before{content:"";position:absolute;inset:0;pointer-events:none;z-index:5;background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 4px)}
+.vgPortrait img{display:block;width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.12) brightness(.86)}
+.vgPortrait .vgScan{position:absolute;left:0;right:0;height:2px;background:#ddd;opacity:.22;animation:vgscan 4.5s linear infinite;z-index:6}
+.vgPortrait .vgCap{position:absolute;left:5px;right:5px;bottom:5px;background:rgba(0,0,0,.82);border:1px solid #555;padding:4px 6px;font:700 8px "Courier New",monospace;color:#ddd;z-index:7}
+.vgPortrait .vgId{position:absolute;top:5px;left:5px;background:#000;border:1px solid #666;padding:3px 5px;font:700 8px "Courier New",monospace;color:#ddd;z-index:7}
+.vgPortrait.sm{min-height:82px;height:82px}.vgPortrait.md{height:190px}.vgPortrait.lg{height:280px}
+.vgPortraitStrip{display:grid;grid-template-columns:160px 1fr;border-bottom:1px dotted #555}
+.vgPortraitStrip .vgInfo{padding:10px;font-size:9px;line-height:1.55}
+.vgPortraitStrip .vgInfo strong{display:block;color:#fff;font-size:14px;margin-bottom:4px}
+.vgThumbRow{display:grid;grid-template-columns:74px 1fr;align-items:stretch}
+.vgThumbRow .vgPortrait{height:70px;min-height:70px;border-width:0 1px 0 0}
+.vgThumbRow .vgPortrait .vgCap,.vgThumbRow .vgPortrait .vgId{display:none}
+.vgPortraitBoot{border:3px double #777;margin:8px 0;padding:5px;background:#000}
+.vgPortraitBoot .vgPortrait{height:230px}
+@keyframes vgscan{0%{top:2%}100%{top:98%}}
+@media(max-width:600px){.vgPortraitStrip{grid-template-columns:115px 1fr}.vgPortrait.md{height:165px}.vgPortrait.lg{height:225px}}
+@media(prefers-reduced-motion:reduce){.vgPortrait .vgScan{animation:none;top:48%}}
+</style>
+<script id="graphics-phase1-js">
+(function(){
+"use strict";
+const SPECIES_ART={
+ dog:["#bdbdbd","dog"],wolf:["#a8a8a8","wolf"],cat:["#c7c7c7","cat"],rabbit:["#d0d0d0","rabbit"],
+ ferret:["#a5a5a5","ferret"],"guinea pig":["#bcbcbc","guinea pig"],chinchilla:["#aaa","chinchilla"],hedgehog:["#999","hedgehog"],
+ owl:["#b8b8b8","owl"],raven:["#777","raven"],macaw:["#b0b0b0","macaw"],parrot:["#b5b5b5","parrot"],
+ "african grey":["#aaa","african grey"],cockatiel:["#c8c8c8","cockatiel"],eagle:["#aaa","eagle"],falcon:["#999","falcon"],
+ duck:["#bbb","duck"],goose:["#c5c5c5","goose"],chicken:["#ccc","chicken"],turkey:["#aaa","turkey"],pigeon:["#aaa","pigeon"],dove:["#d0d0d0","dove"],quail:["#aaa","quail"],
+ horse:["#aaa","horse"],"miniature horse":["#aaa","mini horse"],donkey:["#999","donkey"],goat:["#bbb","goat"],sheep:["#ccc","sheep"],pig:["#bbb","pig"],alpaca:["#ccc","alpaca"],llama:["#bbb","llama"],
+ tortoise:["#999","tortoise"],turtle:["#999","turtle"],iguana:["#8f8f8f","iguana"],"bearded dragon":["#999","bearded dragon"],"leopard gecko":["#aaa","gecko"],python:["#888","python"],
+ frog:["#999","frog"],axolotl:["#c8c8c8","axolotl"],koi:["#aaa","koi"],betta:["#aaa","betta"],goldfish:["#bbb","goldfish"],"aquarium fish":["#aaa","fish"],
+ "sugar glider":["#aaa","sugar glider"],"hermit crab":["#999","hermit crab"],hamster:["#bbb","hamster"],rat:["#aaa","rat"],mouse:["#bbb","mouse"],lovebird:["#bbb","lovebird"],conure:["#aaa","conure"]
+};
+function esc(s){return String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+function speciesKey(a){return String(a.species||"animal").toLowerCase()}
+function svgPortrait(a){
+ let seed=hash((a.name||"")+"|"+(a.species||"")+"|"+(a.breed||"")),sp=speciesKey(a),cfg=SPECIES_ART[sp]||["#aaa",sp];
+ let eye=14+(seed%7),ear=24+((seed>>3)%12),mark=(seed>>6)%4;
+ let shapes="";
+ if(/owl|raven|macaw|parrot|grey|cockatiel|eagle|falcon|duck|goose|chicken|turkey|pigeon|dove|quail|lovebird|conure/.test(sp)){
+   shapes=`<ellipse cx="160" cy="112" rx="69" ry="78" fill="${cfg[0]}"/><circle cx="160" cy="68" r="51" fill="#cfcfcf"/>
+   <circle cx="142" cy="62" r="${eye}" fill="#111"/><circle cx="178" cy="62" r="${eye}" fill="#111"/><circle cx="142" cy="59" r="4" fill="#eee"/><circle cx="178" cy="59" r="4" fill="#eee"/>
+   <path d="M150 78 L160 91 L170 78 Z" fill="#777"/><path d="M93 112 Q55 132 86 180 Q111 157 122 126Z" fill="#8d8d8d"/><path d="M227 112 Q265 132 234 180 Q209 157 198 126Z" fill="#8d8d8d"/>`;
+ } else if(/tortoise|turtle/.test(sp)){
+   shapes=`<ellipse cx="160" cy="125" rx="94" ry="62" fill="#999"/><ellipse cx="160" cy="125" rx="72" ry="48" fill="#bdbdbd"/>
+   <path d="M160 78v94M102 98l116 54M218 98l-116 54" stroke="#777" stroke-width="4"/><circle cx="262" cy="122" r="25" fill="#aaa"/><circle cx="270" cy="115" r="5" fill="#111"/>
+   <ellipse cx="75" cy="96" rx="25" ry="12" fill="#888"/><ellipse cx="75" cy="154" rx="25" ry="12" fill="#888"/><ellipse cx="235" cy="88" rx="23" ry="10" fill="#888"/><ellipse cx="235" cy="162" rx="23" ry="10" fill="#888"/>`;
+ } else if(/iguana|dragon|gecko|python|frog|axolotl|koi|betta|goldfish|fish|crab/.test(sp)){
+   shapes=`<ellipse cx="160" cy="120" rx="92" ry="50" fill="${cfg[0]}"/><circle cx="230" cy="105" r="38" fill="#bbb"/><circle cx="242" cy="96" r="7" fill="#111"/>
+   <path d="M75 120 Q35 92 22 130 Q48 144 78 135Z" fill="#888"/><path d="M145 160 Q130 195 108 184 M177 160 Q192 195 214 184" fill="none" stroke="#999" stroke-width="12" stroke-linecap="round"/>`;
+ } else {
+   let longEar=/rabbit|donkey|horse|alpaca|llama|goat|sheep/.test(sp);
+   shapes=`<ellipse cx="160" cy="132" rx="88" ry="58" fill="${cfg[0]}"/><circle cx="160" cy="83" r="57" fill="#c4c4c4"/>
+   <ellipse cx="122" cy="${longEar?32:45}" rx="${longEar?17:24}" ry="${longEar?45:30}" fill="#999" transform="rotate(-${ear} 122 ${longEar?32:45})"/>
+   <ellipse cx="198" cy="${longEar?32:45}" rx="${longEar?17:24}" ry="${longEar?45:30}" fill="#999" transform="rotate(${ear} 198 ${longEar?32:45})"/>
+   <circle cx="140" cy="78" r="${eye/2}" fill="#111"/><circle cx="180" cy="78" r="${eye/2}" fill="#111"/>
+   <ellipse cx="160" cy="104" rx="28" ry="21" fill="#aaa"/><circle cx="151" cy="101" r="4" fill="#222"/><circle cx="169" cy="101" r="4" fill="#222"/>
+   <path d="M154 113 Q160 119 166 113" fill="none" stroke="#555" stroke-width="3"/>
+   <path d="M98 163 L91 205 M135 177 L132 211 M185 177 L188 211 M222 163 L229 205" stroke="#999" stroke-width="15" stroke-linecap="round"/>`;
+ }
+ if(mark===1)shapes+=`<path d="M120 105 Q160 78 200 105" fill="none" stroke="#777" stroke-width="10" opacity=".55"/>`;
+ if(mark===2)shapes+=`<circle cx="125" cy="125" r="17" fill="#777" opacity=".45"/>`;
+ if(mark===3)shapes+=`<path d="M112 137 L208 137" stroke="#777" stroke-width="9" opacity=".4"/>`;
+ let svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220">
+ <rect width="320" height="220" fill="#050505"/><path d="M0 25H320M0 55H320M0 85H320M0 115H320M0 145H320M0 175H320M0 205H320" stroke="#151515"/>
+ <circle cx="160" cy="110" r="101" fill="none" stroke="#333" stroke-width="2"/><path d="M160 8V212M58 110H262" stroke="#222" stroke-width="1"/>
+ ${shapes}<text x="12" y="207" fill="#888" font-family="monospace" font-size="10">${esc(a.name||"ANIMAL").toUpperCase()} // ${esc(cfg[1]).toUpperCase()}</text></svg>`;
+ return "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg);
+}
+function install(){
+ (state.animals||[]).forEach((a,i)=>{
+   a.visual=a.visual||{};
+   a.visual.portrait=a.visual.portrait||svgPortrait(a);
+   a.visual.portraitId=a.visual.portraitId||("VG-PORTRAIT-"+String(i+1).padStart(3,"0"));
+   a.visual.version=1;
+ });
+ try{save()}catch(e){}
+}
+function portrait(a,size="md"){
+ if(!a)return "";
+ a.visual=a.visual||{};if(!a.visual.portrait)a.visual.portrait=svgPortrait(a);
+ return '<div class="vgPortrait '+size+'"><img alt="'+esc(a.name)+' portrait" src="'+a.visual.portrait+'"><span class="vgScan"></span><span class="vgId">'+esc(a.visual.portraitId||"VG-PORTRAIT")+'</span><span class="vgCap">'+esc(a.name).toUpperCase()+' // '+esc(a.species).toUpperCase()+'</span></div>';
+}
+function selected(){let i=state.myAnimalsRegistry?.selected;return Number.isInteger(i)?state.animals?.[i]:state.animals?.[state.active||0]}
+function injectSelected(){
+ let a=selected();if(!a)return;
+ let main=document.querySelector("#main");if(!main||main.querySelector(".vgPortraitBoot"))return;
+ let path=main.querySelector(".path"),box=document.createElement("div");box.className="vgPortraitBoot";box.innerHTML=portrait(a,"md");
+ if(path)path.insertAdjacentElement("afterend",box);else main.prepend(box);
+}
+function upgradeRows(){
+ document.querySelectorAll("[data-maanimal]").forEach(b=>{
+   if(b.dataset.vgPic)return;b.dataset.vgPic="1";let i=+b.dataset.maanimal,a=state.animals?.[i];if(!a)return;
+   let old=b.innerHTML;b.innerHTML='<div class="vgThumbRow">'+portrait(a,"sm")+'<div>'+old+'</div></div>';
+ });
+}
+function renderGallery(){
+ install();page="graphics1";nav();
+ let list=(state.animals||[]).slice(0,50);
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\VISUALS\\ANIMAL_PORTRAITS&gt;</div>'+
+ '<div class="ma5"><h4>ANIMAL_PORTRAIT_CORE.EXE // GRAPHICS PHASE 1 OF 5</h4><div class="ma5-pre">ONE CANONICAL PORTRAIT PER ANIMAL.\nThe same embedded image follows the animal through My Animals, deep records, care, living status and lifetime records.\n\nPORTRAITS INSTALLED: '+list.length+' / 50</div></div>'+
+ '<div class="ma5"><h4>PORTRAIT DATABASE</h4>'+list.map((a,i)=>'<button data-vgopen="'+i+'" style="display:block;width:100%;background:#000;color:#ccc;border:0;border-bottom:1px dotted #555;padding:6px;text-align:left;font:9px Courier New">'+portrait(a,"sm")+'</button>').join("")+'</div>';
+ document.querySelectorAll("[data-vgopen]").forEach(b=>b.onclick=()=>{state.myAnimalsRegistry=state.myAnimalsRegistry||{};state.myAnimalsRegistry.selected=+b.dataset.vgopen;try{save()}catch(e){}window.VetGodsMyAnimals5?.render()});
+}
+const oldProgramG=program;program=function(k){if(k==="graphics1")return renderGallery();return oldProgramG(k)};
+function homeLink(){
+ if(page!=="home"||document.querySelector("#vgGraphics1"))return;
+ let c=document.querySelector(".p10-buttons");if(!c)return;
+ let b=document.createElement("button");b.id="vgGraphics1";b.textContent="[37] ANIMAL_PORTRAITS.EXE";b.onclick=renderGallery;c.appendChild(b);
+}
+const oldHomeG=home;home=function(){oldHomeG();install();homeLink()};
+install();homeLink();
+
+// Wrap the existing My Animals renderers without replacing their logic.
+["VetGodsMyAnimals1","VetGodsMyAnimals2","VetGodsMyAnimals3","VetGodsMyAnimals4","VetGodsMyAnimals5"].forEach(n=>{
+ let api=window[n];if(!api||typeof api.render!=="function"||api.__vgWrapped)return;
+ let old=api.render;
+ api.render=function(){let r=old.apply(this,arguments);setTimeout(()=>{injectSelected();upgradeRows()},0);return r};
+ api.__vgWrapped=true;
+});
+document.addEventListener("click",function(e){if(e.target.closest&&e.target.closest("[data-maanimal]"))setTimeout(()=>{upgradeRows();injectSelected()},10)},false);
+window.VetGodsPortraits={portrait,install,gallery:renderGallery};
+})();
+</script>
+
+<style id="graphics-phase2-css">
+.vgInst{border:1px solid #666;background:#050505;margin:8px 0;font:9px "Courier New",monospace;color:#ccc}
+.vgInstHead{background:#c9c9c9;color:#000;padding:5px 7px;font-weight:900}
+.vgInstGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+.vgGauge{position:relative;min-height:116px;border-right:1px dotted #555;border-bottom:1px dotted #555;padding:8px;text-align:center;overflow:hidden}
+.vgGauge label{display:block;font-size:8px;color:#888;margin-bottom:5px}.vgGauge strong{font-size:18px;color:#eee}
+.vgDial{width:64px;height:64px;border:2px solid #777;border-radius:50%;margin:4px auto;position:relative;background:radial-gradient(circle,#111 0 48%,#030303 49%)}
+.vgDial:before{content:"";position:absolute;inset:6px;border:1px dotted #555;border-radius:50%}
+.vgNeedle{position:absolute;width:2px;height:25px;background:#ddd;left:30px;top:8px;transform-origin:1px 24px;transition:transform .45s ease}
+.vgDialDot{position:absolute;width:8px;height:8px;border-radius:50%;background:#aaa;left:27px;top:27px}
+.vgWave{height:74px;border:1px solid #555;margin:5px;background:#020202;position:relative;overflow:hidden}
+.vgWave canvas{width:100%;height:100%;display:block}
+.vgLedRow{display:flex;justify-content:center;gap:5px;margin:5px}.vgLed{width:7px;height:7px;border:1px solid #777;border-radius:50%;background:#222}.vgLed.on{background:#bbb;box-shadow:0 0 5px #aaa}
+.vgReadout{font-size:8px;color:#777;margin-top:4px}.vgScannerBar{height:12px;border:1px solid #555;margin:5px;position:relative;overflow:hidden;background:#030303}
+.vgScannerBar i{display:block;height:100%;background:repeating-linear-gradient(90deg,#999 0 2px,#333 2px 5px);animation:vgInstPulse 2.5s linear infinite}
+.vgEquipment{display:grid;grid-template-columns:repeat(4,1fr)}
+.vgEquip{border-right:1px dotted #555;border-bottom:1px dotted #555;padding:7px;text-align:center}.vgEquip b{display:block;color:#eee;font-size:8px}.vgEquip small{color:#666}
+@keyframes vgInstPulse{0%{transform:translateX(-20%)}50%{transform:translateX(10%)}100%{transform:translateX(-20%)}}
+@media(max-width:650px){.vgInstGrid{grid-template-columns:repeat(2,1fr)}.vgEquipment{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:380px){.vgInstGrid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.vgScannerBar i{animation:none}.vgNeedle{transition:none}}
+</style>
+<script id="graphics-phase2-js">
+(function(){
+"use strict";
+function A(){let i=state.myAnimalsRegistry?.selected;return Number.isInteger(i)?state.animals?.[i]:state.animals?.[state.active||0]}
+function E(x){return String(x??"").replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
+function C(v){return Math.max(0,Math.min(100,Number(v??0)))}
+function dial(label,v,unit){
+ v=C(v);let deg=-120+(v/100)*240;
+ return '<div class="vgGauge"><label>'+E(label)+'</label><div class="vgDial"><i class="vgNeedle" style="transform:rotate('+deg+'deg)"></i><i class="vgDialDot"></i></div><strong>'+Math.round(v)+'</strong><div class="vgReadout">'+E(unit||"SIM INDEX")+'</div></div>';
+}
+function led(label,v,inverse){
+ v=C(v);let n=Math.max(0,Math.min(5,Math.round((inverse?100-v:v)/20)));
+ return '<div class="vgGauge"><label>'+E(label)+'</label><strong>'+Math.round(v)+'</strong><div class="vgLedRow">'+[0,1,2,3,4].map(i=>'<i class="vgLed '+(i<n?"on":"")+'"></i>').join("")+'</div><div class="vgScannerBar"><i style="width:'+v+'%"></i></div><div class="vgReadout">'+(inverse?"LOWER IS BETTER":"HIGHER IS BETTER")+'</div></div>';
+}
+function panel(a){
+ if(!a)return "";
+ return '<div class="vgInst" id="vgInstrumentation"><div class="vgInstHead">VET_GODS // LIVE INSTRUMENT BUS // '+E(a.name).toUpperCase()+'</div>'+
+ '<div class="vgWave"><canvas class="vgWaveCanvas" width="700" height="74"></canvas></div>'+
+ '<div class="vgInstGrid">'+
+ dial("OXYGEN",a.oxygen,"% SIM")+dial("HYDRATION",a.hydration,"% SIM")+dial("NUTRITION",a.nutrition??a.food,"% SIM")+
+ dial("HEALTH",a.health,"STATUS")+led("PAIN",a.pain,true)+led("STRESS",a.stress,true)+
+ led("TRUST",a.trust,false)+led("COMFORT",a.comfort,false)+led("MOBILITY",a.mobility,false)+
+ '</div><div class="vgEquipment">'+
+ equip("ECG BUS","TRACKING")+equip("BIO SCAN","LINKED")+equip("O2 ARRAY",Math.round(C(a.oxygen))+"%")+equip("CASE CORE",E(a.caseId||"ONLINE"))+
+ '</div></div>';
+}
+function equip(k,v){return '<div class="vgEquip"><b>'+k+'</b><small>'+v+'</small></div>'}
+function drawWave(root,a){
+ let cv=root.querySelector(".vgWaveCanvas");if(!cv)return;
+ let ctx=cv.getContext("2d"),w=cv.width,h=cv.height,t=0,health=C(a.health),stress=C(a.stress);
+ function frame(){
+   if(!cv.isConnected)return;
+   ctx.fillStyle="#020202";ctx.fillRect(0,0,w,h);
+   ctx.strokeStyle="#171717";ctx.lineWidth=1;
+   for(let x=0;x<w;x+=35){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}
+   for(let y=0;y<h;y+=18){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+   ctx.strokeStyle="#bcbcbc";ctx.lineWidth=2;ctx.beginPath();
+   for(let x=0;x<w;x++){
+     let p=(x+t)%120,y=h*.56+Math.sin((x+t)*.075)*3;
+     if(p>48&&p<54)y-=12+(health/100)*16;
+     if(p>=54&&p<60)y+=7+(stress/100)*7;
+     if(x===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+   }ctx.stroke();t=(t+1)%120;
+   requestAnimationFrame(frame);
+ }frame();
+}
+function inject(){
+ let a=A(),main=document.querySelector("#main");if(!a||!main||main.querySelector("#vgInstrumentation"))return;
+ let portrait=main.querySelector(".vgPortraitBoot");
+ let holder=document.createElement("div");holder.innerHTML=panel(a);let p=holder.firstElementChild;
+ if(portrait)portrait.insertAdjacentElement("afterend",p);
+ else {let path=main.querySelector(".path");if(path)path.insertAdjacentElement("afterend",p);else main.prepend(p)}
+ drawWave(p,a);
+}
+function renderLab(){
+ let a=A();if(!a)return window.VetGodsMyAnimals1?.render();
+ page="graphics2";nav();
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\VISUALS\\INSTRUMENTATION&gt;</div>'+
+ (window.VetGodsPortraits?'<div class="vgPortraitBoot">'+window.VetGodsPortraits.portrait(a,"md")+'</div>':'')+
+ panel(a)+
+ '<div class="ma5"><h4>GRAPHICS PHASE 2 OF 5 // INSTRUMENTATION</h4><div class="ma5-pre">The dials, LEDs, scanner bars and waveform read the SAME saved animal stats used by the game. They are visual instruments, not a second stat system.\n\nAll values remain fictional gameplay telemetry.</div>'+
+ '<div class="ma5-actions"><button id="g2Care">[H] HELP ANIMAL</button><button id="g2Life">[X] LIFETIME RECORD</button><button id="g2Home">[ESC] MY ANIMALS</button></div></div>';
+ drawWave(document.querySelector("#vgInstrumentation"),a);
+ document.querySelector("#g2Care").onclick=()=>window.VetGodsMyAnimals3?.render();
+ document.querySelector("#g2Life").onclick=()=>window.VetGodsMyAnimals5?.render();
+ document.querySelector("#g2Home").onclick=()=>window.VetGodsMyAnimals1?.render();
+}
+const oldProgram=program;program=function(k){if(k==="graphics2")return renderLab();return oldProgram(k)}
+function homeLink(){
+ if(page!=="home"||document.querySelector("#vgGraphics2"))return;
+ let c=document.querySelector(".p10-buttons");if(!c)return;
+ let b=document.createElement("button");b.id="vgGraphics2";b.textContent="[38] INSTRUMENTATION.EXE";b.onclick=renderLab;c.appendChild(b);
+}
+const oldHome=home;home=function(){oldHome();homeLink()};
+homeLink();
+
+// Instrument the animal-focused screens while preserving their existing render logic.
+["VetGodsMyAnimals2","VetGodsMyAnimals3","VetGodsMyAnimals4","VetGodsMyAnimals5"].forEach(n=>{
+ let api=window[n];if(!api||typeof api.render!=="function"||api.__vgInstWrapped)return;
+ let old=api.render;
+ api.render=function(){let r=old.apply(this,arguments);setTimeout(inject,0);return r};
+ api.__vgInstWrapped=true;
+});
+window.VetGodsInstrumentation={render:renderLab,inject:inject};
+})();
+</script>
+
+<style id="graphics-phase3-css">
+.vgEnv{position:relative;border:3px double #666;background:#030303;margin:8px 0;overflow:hidden;min-height:250px;font:9px "Courier New",monospace;color:#ccc}
+.vgEnv:after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,transparent 1px 4px);z-index:8}
+.vgEnvHead{position:relative;z-index:9;background:#c9c9c9;color:#000;padding:5px 7px;font-weight:900}
+.vgScene{position:relative;height:225px;overflow:hidden;background:linear-gradient(#080808,#020202)}
+.vgStars{position:absolute;inset:0;background-image:radial-gradient(#777 1px,transparent 1px);background-size:31px 29px;opacity:.28}
+.vgFloor{position:absolute;left:-10%;right:-10%;bottom:-55px;height:130px;border-top:1px solid #555;background:repeating-linear-gradient(90deg,transparent 0 39px,#222 40px),repeating-linear-gradient(0deg,#050505 0 24px,#171717 25px)}
+.vgWindow{position:absolute;left:4%;top:18px;width:32%;height:110px;border:5px double #555;background:#020202;overflow:hidden}
+.vgWindow:before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:1px solid #555}.vgWindow:after{content:"";position:absolute;top:50%;left:0;right:0;border-top:1px solid #555}
+.vgConsole{position:absolute;right:4%;top:26px;width:34%;height:92px;border:2px solid #666;background:#0b0b0b;transform:skew(-2deg)}
+.vgConsole .screen{margin:8px;height:38px;border:1px solid #555;background:repeating-linear-gradient(0deg,#080808 0 3px,#161616 4px);position:relative}
+.vgConsole .screen i{position:absolute;left:5%;right:5%;top:50%;border-top:2px solid #aaa;transform:rotate(-4deg)}
+.vgLights{display:flex;gap:6px;padding:0 9px}.vgLights i{width:7px;height:7px;border:1px solid #777;border-radius:50%;background:#aaa;animation:vgenvblink 2.4s infinite}.vgLights i:nth-child(2){animation-delay:.7s}.vgLights i:nth-child(3){animation-delay:1.4s}
+.vgBed{position:absolute;left:31%;bottom:48px;width:38%;height:38px;border:2px solid #777;background:#111;transform:perspective(120px) rotateX(8deg)}
+.vgBed:after{content:"";position:absolute;left:8%;right:8%;top:7px;height:18px;border:1px solid #555;background:#181818}
+.vgHabitat{position:absolute;left:7%;right:7%;bottom:34px;height:105px;border:2px solid #666;border-radius:50% 50% 5px 5px;background:radial-gradient(ellipse at bottom,#171717,#050505 70%);overflow:hidden}
+.vgHabitat:before{content:"";position:absolute;left:10%;right:10%;bottom:13px;border-top:13px dotted #777}
+.vgArchiveDoor{position:absolute;left:11%;top:24px;width:25%;height:158px;border:5px double #555;background:repeating-linear-gradient(90deg,#090909 0 17px,#151515 18px);box-shadow:inset 0 0 30px #000}
+.vgArchiveDoor:after{content:"ARCHIVE // RESTRICTED";position:absolute;top:48%;left:7%;right:7%;border:1px solid #666;padding:5px;text-align:center}
+.vgTank{position:absolute;left:36%;bottom:34px;width:28%;height:145px;border:4px double #666;border-radius:45% 45% 10% 10%;background:linear-gradient(90deg,#050505,#171717,#050505)}
+.vgTank:after{content:"";position:absolute;left:12%;right:12%;top:28%;bottom:16%;border:1px solid #555;background:repeating-linear-gradient(0deg,#070707 0 6px,#151515 7px)}
+.vgNavOrb{position:absolute;left:37%;top:32px;width:105px;height:105px;border:2px solid #777;border-radius:50%;background:radial-gradient(circle at 42% 35%,#333,#090909 55%,#000);box-shadow:0 0 0 9px #090909,0 0 0 10px #555}
+.vgNavOrb:after{content:"";position:absolute;left:-25px;right:-25px;top:50%;border-top:1px solid #777;transform:rotate(-18deg)}
+.vgSceneLabel{position:absolute;left:8px;bottom:7px;z-index:9;background:#000;border:1px solid #555;padding:4px 6px;color:#aaa}
+.vgAnimalViewport{position:absolute;z-index:7;width:105px;height:82px;left:50%;bottom:52px;transform:translateX(-50%);border:1px solid #777;background:#020202;overflow:hidden}
+.vgAnimalViewport .vgPortrait{height:82px!important;min-height:82px!important;border:0}.vgAnimalViewport .vgCap,.vgAnimalViewport .vgId{display:none}
+.vgEnvMenu{display:grid;grid-template-columns:repeat(3,1fr)}
+.vgEnvMenu button{background:#000;color:#ccc;border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;padding:9px;text-align:left;font:700 9px "Courier New",monospace}.vgEnvMenu button:hover,.vgEnvMenu button.on{background:#ccc;color:#000}
+@keyframes vgenvblink{0%,80%,100%{opacity:.25}85%,95%{opacity:1}}
+@media(max-width:600px){.vgEnvMenu{grid-template-columns:repeat(2,1fr)}.vgScene{height:205px}.vgConsole{width:38%}.vgWindow{width:35%}.vgAnimalViewport{width:90px}}
+@media(prefers-reduced-motion:reduce){.vgLights i{animation:none}}
+</style>
+<script id="graphics-phase3-js">
+(function(){
+"use strict";
+const ENVS={
+ CLINIC:["CLINIC // OPERATING THEATER","bed"],
+ RECOVERY:["RECOVERY // OBSERVATION DECK","bed"],
+ SANCTUARY:["SANCTUARY // HABITAT RING","habitat"],
+ RESEARCH:["RESEARCH // BIOANALYSIS LAB","tank"],
+ MORPH:["MORPH // AUTHORIZED RECONSTRUCTION LAB","tank"],
+ ARCHIVES:["SPECIAL ARCHIVES // ANOMALOUS CASE VAULT","archive"],
+ NAVIGATION:["NAVIGATION // ORBITAL COMMAND","nav"],
+ FOOD:["NUTRITION // FORMULATION GALLEY","console"],
+ HUMAN:["HUMAN MEDICAL // FICTIONAL SIMULATION BAY","bed"]
+};
+function A(){let i=state.myAnimalsRegistry?.selected;return Number.isInteger(i)?state.animals?.[i]:state.animals?.[state.active||0]}
+function E(x){return String(x??"").replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
+function scene(type,a){
+ let cfg=ENVS[type]||ENVS.CLINIC,kind=cfg[1],mid="";
+ if(kind==="bed")mid='<div class="vgBed"></div>';
+ if(kind==="habitat")mid='<div class="vgHabitat"></div>';
+ if(kind==="tank")mid='<div class="vgTank"></div>';
+ if(kind==="archive")mid='<div class="vgArchiveDoor"></div>';
+ if(kind==="nav")mid='<div class="vgNavOrb"></div>';
+ if(kind==="console")mid='<div class="vgBed" style="width:25%;left:38%"></div>';
+ let animal=(a&&window.VetGodsPortraits)?'<div class="vgAnimalViewport">'+window.VetGodsPortraits.portrait(a,"sm")+'</div>':"";
+ return '<div class="vgEnv" data-env="'+type+'"><div class="vgEnvHead">'+cfg[0]+'</div><div class="vgScene">'+
+ '<div class="vgStars"></div><div class="vgWindow"></div><div class="vgConsole"><div class="screen"><i></i></div><div class="vgLights"><i></i><i></i><i></i><i></i></div></div>'+
+ mid+animal+'<div class="vgFloor"></div><div class="vgSceneLabel">DECK VISUAL FEED // '+type+' // '+(a?E(a.name).toUpperCase():"NO ANIMAL SELECTED")+'</div></div></div>';
+}
+function infer(){
+ let p=String(page||"").toLowerCase();
+ if(p.includes("sanct"))return "SANCTUARY";
+ if(p.includes("recover")||p.includes("rehab"))return "RECOVERY";
+ if(p.includes("research"))return "RESEARCH";
+ if(p.includes("morph"))return "MORPH";
+ if(p.includes("archive")||p.includes("paranormal")||p.includes("special"))return "ARCHIVES";
+ if(p.includes("nav"))return "NAVIGATION";
+ if(p.includes("food")||p.includes("nutrition"))return "FOOD";
+ if(p.includes("human"))return "HUMAN";
+ return "CLINIC";
+}
+function inject(type){
+ let main=document.querySelector("#main"),a=A();if(!main||main.querySelector(".vgEnv"))return;
+ let box=document.createElement("div");box.innerHTML=scene(type||infer(),a);let el=box.firstElementChild;
+ let inst=main.querySelector("#vgInstrumentation"),portrait=main.querySelector(".vgPortraitBoot"),path=main.querySelector(".path");
+ if(inst)inst.insertAdjacentElement("beforebegin",el);else if(portrait)portrait.insertAdjacentElement("afterend",el);else if(path)path.insertAdjacentElement("afterend",el);else main.prepend(el);
+}
+function renderDeck(type){
+ let a=A();page="graphics3";nav();
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\SHIP\\ENVIRONMENT_FEED&gt;</div>'+
+ '<div class="ma5"><h4>DECK_ENVIRONMENT_CORE.EXE // GRAPHICS PHASE 3 OF 5</h4><div class="vgEnvMenu">'+
+ Object.keys(ENVS).map(k=>'<button class="'+(k===type?"on":"")+'" data-envpick="'+k+'">['+k+'] '+ENVS[k][0]+'</button>').join("")+'</div></div>'+
+ scene(type||"CLINIC",a)+
+ '<div class="ma5"><h4>ENVIRONMENT COMMANDS</h4><div class="ma5-pre">These graphical rooms sit around the existing DOS programs. They do not replace Clinic, Recovery, Sanctuary, Research, Morph, Archives or the animal records.</div><div class="ma5-actions"><button id="g3Animals">[A] MY ANIMALS</button><button id="g3Care">[C] ANIMAL CARE</button></div></div>';
+ document.querySelectorAll("[data-envpick]").forEach(b=>b.onclick=()=>renderDeck(b.dataset.envpick));
+ document.querySelector("#g3Animals").onclick=()=>window.VetGodsMyAnimals1?.render();
+ document.querySelector("#g3Care").onclick=()=>window.VetGodsMyAnimals3?.render();
+}
+const oldProgram=program;program=function(k){if(k==="graphics3")return renderDeck("CLINIC");return oldProgram(k)}
+function homeLink(){
+ if(page!=="home"||document.querySelector("#vgGraphics3"))return;
+ let c=document.querySelector(".p10-buttons");if(!c)return;
+ let b=document.createElement("button");b.id="vgGraphics3";b.textContent="[39] SHIP_ENVIRONMENTS.EXE";b.onclick=()=>renderDeck("CLINIC");c.appendChild(b);
+}
+const oldHome=home;home=function(){oldHome();homeLink()};homeLink();
+
+// Safely layer environments into the already-working animal screens.
+["VetGodsMyAnimals2","VetGodsMyAnimals3","VetGodsMyAnimals4","VetGodsMyAnimals5"].forEach(n=>{
+ let api=window[n];if(!api||typeof api.render!=="function"||api.__vgEnvWrapped)return;
+ let old=api.render;api.render=function(){let r=old.apply(this,arguments);setTimeout(()=>inject(infer()),0);return r};api.__vgEnvWrapped=true;
+});
+window.VetGodsEnvironments={render:renderDeck,inject:inject,scene:scene};
+})();
+</script>
+
+<style id="graphics-phase4-css">
+.vgReactShell{position:relative}
+.vgReactHud{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #555;background:#030303}
+.vgReactHud div{padding:5px;border-right:1px dotted #555;text-align:center;font:8px "Courier New",monospace;color:#777}
+.vgReactHud b{display:block;color:#ddd;font-size:9px}
+.vgReactStatus{border:1px solid #555;border-top:0;padding:6px 8px;background:#050505;font:9px "Courier New",monospace;color:#aaa}
+.vgReactFx{position:absolute;inset:0;z-index:20;pointer-events:none;overflow:hidden}
+.vgReactFx span{position:absolute;font:900 10px "Courier New",monospace;color:#ddd;border:1px solid #666;background:#000;padding:3px 5px;animation:vgFx 1.5s ease forwards}
+.vgReactFx .drop{border-radius:50%;width:8px;height:12px;padding:0;background:#aaa}
+.vgReactFx .food{width:7px;height:7px;padding:0;border-radius:50%;background:#aaa}
+.vgReactFx .heart{font-size:16px;border:0;background:transparent}
+.vgReactFx .scan{left:5%;right:5%;width:auto;height:2px;padding:0;background:#ccc;opacity:.5;animation:vgScanReact 1.1s linear forwards}
+.vgPortrait img.vgBreathing{animation:vgBreathe 4.8s ease-in-out infinite}
+.vgPortrait img.vgResting{animation:vgRest 6s ease-in-out infinite;filter:grayscale(1) contrast(1.05) brightness(.65)}
+.vgPortrait img.vgAlert{animation:vgAlert 1.8s ease-in-out infinite}
+.vgPortrait img.vgComforted{filter:grayscale(1) contrast(1.05) brightness(.98)}
+.vgEyeBlink{position:absolute;left:0;right:0;top:0;bottom:0;z-index:9;pointer-events:none;animation:vgBlink 6.7s infinite}
+.vgMoodTag{position:absolute;right:5px;top:5px;z-index:11;border:1px solid #666;background:#000;padding:3px 5px;font:700 8px "Courier New",monospace;color:#ddd}
+@keyframes vgBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.018)}}
+@keyframes vgRest{0%,100%{transform:scale(1) translateY(1px)}50%{transform:scale(1.012) translateY(3px)}}
+@keyframes vgAlert{0%,100%{transform:translateX(0)}50%{transform:translateX(1px)}}
+@keyframes vgBlink{0%,43%,46%,100%{background:transparent}44%,45%{background:linear-gradient(transparent 30%,rgba(0,0,0,.38) 45%,rgba(0,0,0,.38) 55%,transparent 70%)}}
+@keyframes vgFx{0%{opacity:0;transform:translateY(20px)}25%{opacity:1}100%{opacity:0;transform:translateY(-30px)}}
+@keyframes vgScanReact{0%{top:5%;opacity:0}15%{opacity:.6}100%{top:95%;opacity:0}}
+@media(max-width:600px){.vgReactHud{grid-template-columns:repeat(2,1fr)}}
+@media(prefers-reduced-motion:reduce){.vgPortrait img.vgBreathing,.vgPortrait img.vgResting,.vgPortrait img.vgAlert,.vgEyeBlink{animation:none}}
+</style>
+<script id="graphics-phase4-js">
+(function(){
+"use strict";
+function A(){let i=state.myAnimalsRegistry?.selected;return Number.isInteger(i)?state.animals?.[i]:state.animals?.[state.active||0]}
+function C(v){return Math.max(0,Math.min(100,Number(v??0)))}
+function mood(a){
+ let pain=C(a.pain),stress=C(a.stress),comfort=C(a.comfort),health=C(a.health);
+ if(health<35)return ["WEAK / RECOVERING","vgResting"];
+ if(pain>65||stress>70)return ["GUARDED / ALERT","vgAlert"];
+ if(comfort>75&&stress<35)return ["CALM / COMFORTABLE","vgComforted"];
+ return ["STABLE / OBSERVING","vgBreathing"];
+}
+function poseText(a){
+ let m=mood(a)[0];
+ if(m.includes("WEAK"))return "RESTING POSTURE";
+ if(m.includes("GUARDED"))return "WATCHFUL POSTURE";
+ if(m.includes("CALM"))return "RELAXED POSTURE";
+ return "NORMAL OBSERVATION";
+}
+function enhance(root){
+ root=root||document;let a=A();if(!a)return;
+ root.querySelectorAll(".vgPortrait").forEach(p=>{
+   if(p.dataset.react==="1")return;p.dataset.react="1";
+   let img=p.querySelector("img");if(!img)return;
+   let m=mood(a);img.classList.add(m[1]);
+   let blink=document.createElement("i");blink.className="vgEyeBlink";p.appendChild(blink);
+   let tag=document.createElement("span");tag.className="vgMoodTag";tag.textContent=m[0];p.appendChild(tag);
+ });
+ let main=document.querySelector("#main");
+ if(main&&!main.querySelector("#vgReactHud")&&(page==="myanimals3"||page==="myanimals4"||page==="myanimals5")){
+   let inst=main.querySelector("#vgInstrumentation"),env=main.querySelector(".vgEnv");
+   let hud=document.createElement("div");hud.id="vgReactHud";hud.innerHTML=
+   '<div class="vgReactHud"><div><small>VISUAL STATE</small><b>'+mood(a)[0]+'</b></div>'+
+   '<div><small>POSE</small><b>'+poseText(a)+'</b></div>'+
+   '<div><small>STRESS</small><b>'+Math.round(C(a.stress))+'</b></div>'+
+   '<div><small>COMFORT</small><b>'+Math.round(C(a.comfort))+'</b></div></div>'+
+   '<div class="vgReactStatus">ANIMAL_VISUAL_RESPONSE.EXE // slow breathing + blink cycle + care reaction layer // fictional presentation</div>';
+   if(inst)inst.insertAdjacentElement("afterend",hud);else if(env)env.insertAdjacentElement("afterend",hud);
+ }
+}
+function fx(type){
+ let main=document.querySelector("#main"),p=main?.querySelector(".vgPortraitBoot .vgPortrait")||main?.querySelector(".vgAnimalViewport .vgPortrait")||main?.querySelector(".vgPortrait");
+ if(!p)return;
+ let layer=p.querySelector(".vgReactFx");if(!layer){layer=document.createElement("div");layer.className="vgReactFx";p.appendChild(layer)}
+ let defs={
+ water:[["drop","72%","72%"],["drop","78%","65%"],["TXT","8%","75%","WATER +"]],
+ food:[["food","72%","73%"],["food","79%","66%"],["TXT","8%","75%","NUTRITION +"]],
+ comfort:[["heart","70%","65%","♡"],["TXT","8%","75%","COMFORT +"]],
+ oxygen:[["TXT","8%","75%","O2 SUPPORT"],["scan","0","0",""]],
+ pain:[["TXT","8%","75%","PAIN ↓"],["scan","0","0",""]],
+ rest:[["TXT","8%","75%","REST MODE"]],
+ mobility:[["TXT","8%","75%","MOBILITY +"]],
+ groom:[["TXT","8%","75%","CLEAN / GROOM"]],
+ enrich:[["heart","72%","63%","◇"],["TXT","8%","75%","ENRICHMENT +"]],
+ monitor:[["scan","0","0",""],["TXT","8%","75%","REASSESS"]]
+ };
+ (defs[type]||[]).forEach((d,i)=>{
+   let x=document.createElement("span");x.className=d[0]==="TXT"?"":d[0];x.textContent=d[3]||"";
+   if(d[0]!=="scan"){x.style.left=d[1];x.style.top=d[2]}x.style.animationDelay=(i*.12)+"s";layer.appendChild(x);setTimeout(()=>x.remove(),1900);
+ });
+ setTimeout(()=>refreshPortraitState(),300);
+}
+function refreshPortraitState(){
+ let a=A();if(!a)return;
+ document.querySelectorAll(".vgPortrait").forEach(p=>{
+   let img=p.querySelector("img"),tag=p.querySelector(".vgMoodTag");if(!img)return;
+   img.classList.remove("vgBreathing","vgResting","vgAlert","vgComforted");let m=mood(a);img.classList.add(m[1]);if(tag)tag.textContent=m[0];
+ });
+ let hud=document.querySelector("#vgReactHud");if(hud)hud.remove();enhance();
+}
+function renderDemo(){
+ let a=A();if(!a)return window.VetGodsMyAnimals1?.render();
+ page="graphics4";nav();
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\VISUALS\\ANIMAL_RESPONSE&gt;</div>'+
+ '<div class="ma5"><h4>ANIMAL_VISUAL_RESPONSE.EXE // GRAPHICS PHASE 4 OF 5</h4>'+
+ (window.VetGodsPortraits?'<div class="vgPortraitBoot">'+window.VetGodsPortraits.portrait(a,"lg")+'</div>':'')+
+ '<div class="ma5-pre">The selected animal now has slow visual states driven by its existing game stats. High stress/pain becomes guarded, low health becomes resting, and high comfort/low stress becomes calm. Care actions trigger short visual feedback without changing the care logic.</div>'+
+ '<div class="ma5-actions"><button data-g4="water">[W] WATER FX</button><button data-g4="food">[F] FOOD FX</button><button data-g4="comfort">[C] COMFORT FX</button><button data-g4="monitor">[S] SCANNER FX</button><button id="g4Care">[H] REAL CARE PANEL</button><button id="g4Back">[ESC] MY ANIMALS</button></div></div>';
+ enhance();
+ document.querySelectorAll("[data-g4]").forEach(b=>b.onclick=()=>fx(b.dataset.g4));
+ document.querySelector("#g4Care").onclick=()=>window.VetGodsMyAnimals3?.render();
+ document.querySelector("#g4Back").onclick=()=>window.VetGodsMyAnimals1?.render();
+}
+const oldProgram=program;program=function(k){if(k==="graphics4")return renderDemo();return oldProgram(k)}
+function homeLink(){
+ if(page!=="home"||document.querySelector("#vgGraphics4"))return;
+ let c=document.querySelector(".p10-buttons");if(!c)return;
+ let b=document.createElement("button");b.id="vgGraphics4";b.textContent="[40] ANIMAL_RESPONSE.EXE";b.onclick=renderDemo;c.appendChild(b);
+}
+const oldHome=home;home=function(){oldHome();homeLink()};homeLink();
+
+// Enhance all animal screens after their existing renderers finish.
+["VetGodsMyAnimals2","VetGodsMyAnimals3","VetGodsMyAnimals4","VetGodsMyAnimals5"].forEach(n=>{
+ let api=window[n];if(!api||typeof api.render!=="function"||api.__vgReactWrapped)return;
+ let old=api.render;api.render=function(){let r=old.apply(this,arguments);setTimeout(()=>enhance(),20);return r};api.__vgReactWrapped=true;
+});
+
+// Listen to the existing Phase-3 care buttons and add visual feedback AFTER the real care action runs.
+document.addEventListener("click",function(e){
+ let b=e.target.closest&&e.target.closest("[data-ma3]");if(!b)return;
+ let type=b.dataset.ma3;setTimeout(()=>{fx(type);refreshPortraitState()},40);
+},false);
+window.VetGodsAnimalResponse={enhance,fx,mood,render:renderDemo};
+})();
+</script>
+
+<style id="graphics-phase5-css">
+/* Final visual integration: still DOS, but with a finished command-deck skin. */
+body{background:#020202}
+#main{position:relative}
+#main:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;
+ background:repeating-linear-gradient(0deg,rgba(255,255,255,.012) 0 1px,transparent 1px 4px)}
+.vg5Frame{border:4px double #666;background:#030303;margin:8px 0;box-shadow:inset 0 0 28px #000}
+.vg5Title{background:#c9c9c9;color:#000;padding:6px 8px;font:900 10px "Courier New",monospace;letter-spacing:.7px}
+.vg5Grid{display:grid;grid-template-columns:repeat(4,1fr)}
+.vg5Cell{min-height:58px;border-right:1px dotted #555;border-bottom:1px dotted #555;padding:8px;font:9px "Courier New",monospace}
+.vg5Cell small{display:block;color:#666}.vg5Cell b{display:block;color:#eee;margin-top:5px;font-size:11px}
+.vg5Boot{position:relative;height:175px;overflow:hidden;background:#010101;border:4px double #666;margin:8px 0}
+.vg5BootGrid{position:absolute;inset:0;background:
+ linear-gradient(90deg,transparent 49.7%,#222 50%,transparent 50.3%),
+ linear-gradient(0deg,transparent 49.7%,#222 50%,transparent 50.3%),
+ repeating-linear-gradient(90deg,transparent 0 39px,#111 40px),
+ repeating-linear-gradient(0deg,transparent 0 29px,#111 30px)}
+.vg5BootCore{position:absolute;left:50%;top:50%;width:104px;height:104px;transform:translate(-50%,-50%);
+ border:2px solid #777;border-radius:50%;box-shadow:0 0 0 10px #080808,0 0 0 11px #444}
+.vg5BootCore:before,.vg5BootCore:after{content:"";position:absolute;left:50%;top:-22px;bottom:-22px;border-left:1px solid #555}
+.vg5BootCore:after{left:-22px;right:-22px;top:50%;bottom:auto;border-left:0;border-top:1px solid #555}
+.vg5BootText{position:absolute;left:10px;right:10px;bottom:8px;text-align:center;font:900 10px "Courier New",monospace;color:#bbb;letter-spacing:1px}
+.vg5LedRack{position:absolute;top:9px;left:9px;display:flex;gap:5px}.vg5LedRack i{width:6px;height:6px;border:1px solid #777;border-radius:50%;background:#aaa;animation:vg5led 2.2s infinite}.vg5LedRack i:nth-child(2){animation-delay:.5s}.vg5LedRack i:nth-child(3){animation-delay:1s}
+.vg5Folder{border:1px solid #666;margin:8px 0;background:#080808;position:relative;padding-top:19px}
+.vg5Folder:before{content:"CASE FILE";position:absolute;left:8px;top:-1px;padding:3px 12px;border:1px solid #666;border-top:0;background:#bbb;color:#000;font:900 8px "Courier New",monospace}
+.vg5Seal{width:72px;height:72px;border:4px double #777;border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;margin:8px auto;font:900 8px "Courier New",monospace;color:#ccc;transform:rotate(-5deg)}
+.vg5Cert{border:5px double #777;margin:8px;padding:14px;text-align:center;background:#050505;font-family:"Courier New",monospace}
+.vg5Cert h3{margin:4px;color:#eee;letter-spacing:2px}.vg5Cert small{color:#777}.vg5Cert strong{display:block;font-size:15px;margin:10px}
+.vg5Route{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid #555}
+.vg5Route div{padding:7px 3px;text-align:center;border-right:1px dotted #555;font:700 7px "Courier New",monospace;color:#777}.vg5Route div.on{color:#eee;background:#111}
+.vg5Transition{animation:vg5in .18s ease-out}
+@keyframes vg5in{from{opacity:.55;transform:translateY(2px)}to{opacity:1;transform:none}}
+@keyframes vg5led{0%,75%,100%{opacity:.2}80%,95%{opacity:1}}
+@media(max-width:650px){.vg5Grid{grid-template-columns:repeat(2,1fr)}.vg5Route{grid-template-columns:repeat(3,1fr)}}
+@media(prefers-reduced-motion:reduce){.vg5Transition,.vg5LedRack i{animation:none}}
+</style>
+<script id="graphics-phase5-js">
+(function(){
+"use strict";
+function A(){let i=state.myAnimalsRegistry?.selected;return Number.isInteger(i)?state.animals?.[i]:state.animals?.[state.active||0]}
+function E(x){return String(x??"").replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
+function route(){
+ let p=String(page||"").toLowerCase(),steps=["HOME","CASE","CARE","RECOVERY","MY ANIMALS","LIFETIME"];
+ let on=p==="home"?0:p.includes("case")||p.includes("intake")?1:p.includes("myanimals3")||p==="care"?2:p.includes("recover")?3:p.includes("myanimals1")?4:p.includes("myanimals5")?5:-1;
+ return '<div class="vg5Route">'+steps.map((x,i)=>'<div class="'+(i===on?"on":"")+'">'+x+'</div>').join("")+'</div>';
+}
+function caseFolder(a){
+ if(!a)return "";
+ return '<div class="vg5Folder"><div class="vg5Grid">'+
+ cell("PATIENT",a.name)+cell("SPECIES",a.species)+cell("CASE",a.caseId||"UNNUMBERED")+cell("STAGE",a.stage||a.disposition||"ACTIVE")+
+ '</div></div>';
+}
+function cell(k,v){return '<div class="vg5Cell"><small>'+E(k)+'</small><b>'+E(v)+'</b></div>'}
+function polish(){
+ let main=document.querySelector("#main");if(!main)return;
+ main.classList.remove("vg5Transition");void main.offsetWidth;main.classList.add("vg5Transition");
+ if(!main.querySelector(".vg5Route")){
+   let path=main.querySelector(".path");if(path)path.insertAdjacentHTML("afterend",route());
+ }
+ let a=A();
+ if(a&&!main.querySelector(".vg5Folder")&&(String(page).includes("myanimals")||page==="care")){
+   let env=main.querySelector(".vgEnv"),portrait=main.querySelector(".vgPortraitBoot");
+   let html=caseFolder(a);
+   if(env)env.insertAdjacentHTML("beforebegin",html);else if(portrait)portrait.insertAdjacentHTML("beforebegin",html);
+ }
+}
+function renderFinal(){
+ let a=A(),name=(state.playerProfile?.firstName||state.player?.firstName||"PLAYER")+" "+(state.playerProfile?.lastName||state.player?.lastName||"");
+ page="graphics5";nav();
+ document.querySelector("#main").innerHTML=
+ '<div class="path">C:\\VETGODS\\SYSTEM\\VISUAL_INTEGRATION&gt;</div>'+route()+
+ '<div class="vg5Boot"><div class="vg5BootGrid"></div><div class="vg5LedRack"><i></i><i></i><i></i><i></i></div><div class="vg5BootCore"></div><div class="vg5BootText">VET GODS // APEX INTERVENTION COMMAND // VISUAL CORE ONLINE</div></div>'+
+ '<div class="vg5Frame"><div class="vg5Title">GRAPHICS PHASE 5 OF 5 // FINAL INTEGRATION</div><div class="vg5Grid">'+
+ cell("PORTRAIT BUS","ONLINE")+cell("INSTRUMENT BUS","ONLINE")+cell("ENVIRONMENT BUS","ONLINE")+cell("REACTION BUS","ONLINE")+
+ cell("DOS SHELL","PRESERVED")+cell("CARE LOGIC","PRESERVED")+cell("LIVING CLOCK","PRESERVED")+cell("LIFETIME RECORD","PRESERVED")+
+ '</div></div>'+
+ (a?(window.VetGodsPortraits?'<div class="vg5Frame"><div class="vg5Title">CURRENT ANIMAL VISUAL IDENTITY</div>'+window.VetGodsPortraits.portrait(a,"lg")+'</div>':''):"")+
+ '<div class="vg5Cert"><small>VET GODS // VISUAL SYSTEM CERTIFICATE</small><h3>GRAPHICS CORE COMPLETE</h3><strong>'+E(name.trim()||"PLAYER")+'</strong><div class="vg5Seal">VG<br>5 / 5<br>VISUAL</div><small>PORTRAITS · INSTRUMENTS · ENVIRONMENTS · REACTIONS · DOS INTEGRATION</small></div>'+
+ '<div class="ma5"><h4>FINAL COMMANDS</h4><div class="ma5-actions"><button id="g5Animals">[A] MY ANIMALS</button><button id="g5Care">[C] CARE</button><button id="g5Life">[L] LIFETIME</button><button id="g5Env">[E] ENVIRONMENTS</button><button id="g5Inst">[I] INSTRUMENTATION</button><button id="g5Resp">[R] ANIMAL RESPONSE</button></div></div>';
+ document.querySelector("#g5Animals").onclick=()=>window.VetGodsMyAnimals1?.render();
+ document.querySelector("#g5Care").onclick=()=>window.VetGodsMyAnimals3?.render();
+ document.querySelector("#g5Life").onclick=()=>window.VetGodsMyAnimals5?.render();
+ document.querySelector("#g5Env").onclick=()=>window.VetGodsEnvironments?.render("CLINIC");
+ document.querySelector("#g5Inst").onclick=()=>window.VetGodsInstrumentation?.render();
+ document.querySelector("#g5Resp").onclick=()=>window.VetGodsAnimalResponse?.render();
+}
+const oldProgram5g=program;program=function(k){if(k==="graphics5")return renderFinal();return oldProgram5g(k)}
+function homeLink(){
+ if(page!=="home"||document.querySelector("#vgGraphics5"))return;
+ let c=document.querySelector(".p10-buttons");if(!c)return;
+ let b=document.createElement("button");b.id="vgGraphics5";b.textContent="[41] VISUAL_INTEGRATION.EXE";b.onclick=renderFinal;c.appendChild(b);
+}
+const oldHome5g=home;home=function(){oldHome5g();homeLink();setTimeout(polish,0)};homeLink();
+
+// Apply final framing after all important existing screens render; no care/state functions are replaced.
+["VetGodsMyAnimals1","VetGodsMyAnimals2","VetGodsMyAnimals3","VetGodsMyAnimals4","VetGodsMyAnimals5"].forEach(n=>{
+ let api=window[n];if(!api||typeof api.render!=="function"||api.__vg5Wrapped)return;
+ let old=api.render;api.render=function(){let r=old.apply(this,arguments);setTimeout(polish,35);return r};api.__vg5Wrapped=true;
+});
+document.addEventListener("click",function(){setTimeout(polish,70)},false);
+window.VetGodsVisualIntegration={render:renderFinal,polish:polish};
+})();
+</script>
+
+<style id="first-animal-guide-css">
+@keyframes vgGuideBlink{
+  0%,100%{background:inherit;color:inherit;box-shadow:none}
+  20%,40%,60%{background:#bcbcbc!important;color:#000!important;box-shadow:0 0 0 2px #777,0 0 12px #888}
+  30%,50%,70%{background:#111!important;color:#ddd!important;box-shadow:none}
+}
+.vgGuideBlink{animation:vgGuideBlink 2.15s ease-in-out 1!important;position:relative;z-index:50}
+.vgGuideBlink:after{content:"  << NEXT";font:900 8px "Courier New",monospace}
+@media(prefers-reduced-motion:reduce){.vgGuideBlink{animation:none!important;background:#bcbcbc!important;color:#000!important;outline:2px double #777}}
+</style>
+<script id="first-animal-guide-js">
+(function(){
+"use strict";
+function firstAnimal(){
+ let a=state.animals?.[0],active=state.active;
+ let selected=state.myAnimalsRegistry?.selected;
+ return !!a && (active===0 || selected===0 || (!Number.isInteger(active)&&!Number.isInteger(selected)));
+}
+function visible(el){
+ if(!el)return false;let r=el.getBoundingClientRect(),cs=getComputedStyle(el);
+ return cs.display!=="none"&&cs.visibility!=="hidden"&&r.width>0&&r.height>0;
+}
+function findNext(){
+ let p=String(page||"").toLowerCase(),selectors=[];
+ // Prefer the actual next-step control already present on the current screen.
+ if(p==="home")selectors=["[data-program='newcase']","#newCaseBtn","button[onclick*='case']","button[onclick*='intake']"];
+ else if(p.includes("case")||p.includes("intake"))selectors=["button[data-action*='exam']","button[data-action*='diagn']","button[onclick*='care']","#startCare"];
+ else if(p==="care"||p.includes("myanimals3"))selectors=[
+   "button[data-ma3='monitor']","button[data-ma3='water']","button[data-ma3='food']","button[data-ma3='comfort']",
+   "button[data-ma3='oxygen']","button[data-ma3='pain']","#ma3Clinic"
+ ];
+ else if(p.includes("recover"))selectors=["button[onclick*='home']","button[onclick*='discharge']","button[onclick*='sanct']"];
+ else if(p.includes("myanimals1"))selectors=["[data-maanimal='0']","#ma2DeepButton","#ma5QuickLifetime"];
+ else if(p.includes("myanimals2"))selectors=["#ma3CareButton","#ma2Care"];
+ else if(p.includes("myanimals4"))selectors=["#ma4Care","#ma5Lifetime"];
+ else if(p.includes("myanimals5"))selectors=["#ma5Check","#ma5Help"];
+ for(let sel of selectors){let el=[...document.querySelectorAll(sel)].find(visible);if(el)return el}
+ // Fallback: first visible enabled action button, but never menu/home/back controls.
+ return [...document.querySelectorAll("#main button")].find(b=>visible(b)&&!b.disabled&&!/BACK|ESC|HOME|MENU/i.test(b.textContent||""));
+}
+let timer=null;
+function guide(){
+ clearTimeout(timer);
+ document.querySelectorAll(".vgGuideBlink").forEach(x=>x.classList.remove("vgGuideBlink"));
+ if(!firstAnimal())return;
+ timer=setTimeout(()=>{
+   let next=findNext();if(!next)return;
+   next.classList.remove("vgGuideBlink");void next.offsetWidth;next.classList.add("vgGuideBlink");
+   setTimeout(()=>next.classList.remove("vgGuideBlink"),2350);
+ },280);
+}
+// Run after navigation and after first-animal actions redraw the screen.
+document.addEventListener("click",function(){setTimeout(guide,130)},false);
+const oldHomeGuide=home;home=function(){let r=oldHomeGuide();setTimeout(guide,180);return r};
+["VetGodsMyAnimals1","VetGodsMyAnimals2","VetGodsMyAnimals3","VetGodsMyAnimals4","VetGodsMyAnimals5"].forEach(n=>{
+ let api=window[n];if(!api||typeof api.render!=="function"||api.__guideWrapped)return;
+ let old=api.render;api.render=function(){let r=old.apply(this,arguments);setTimeout(guide,180);return r};api.__guideWrapped=true;
+});
+setTimeout(guide,400);
+window.VetGodsFirstAnimalGuide={run:guide};
+})();
+</script>
 </body></html>
