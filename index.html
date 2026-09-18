@@ -18392,6 +18392,118 @@ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",
 .vgcb15-modules{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:8px}.vgcb15-modules button{text-align:left;min-height:68px}.vgcb15-modules button.done{border-color:#7d9e75!important;background:#1d3426!important}.vgcb15-modules strong{float:left;font-size:23px;margin-right:5px}.vgcb15-modules b,.vgcb15-modules small{display:block}.vgcb15-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:8px}.vgcb15-actions button{min-height:56px}.vgcb15-bottom{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.vgcb15-bottom>div{border:2px solid #507062;padding:7px}.vgcb15-bottom span{display:block;font-size:8px;padding:3px;border-bottom:1px solid #ffffff12}
 @media(max-width:720px){.vgcb15-main,.vgcb15-bottom{grid-template-columns:1fr}.vgcb15-readouts,.vgcb15-modules{grid-template-columns:1fr 1fr}.vgcb15-actions{grid-template-columns:1fr 1fr}.vgcb15-dome{height:380px}}
 </style>
+
+<script id="vg-command-bridge-pass16">
+(function(){
+"use strict";
+const Q={
+ trust:48,confidence:41,curiosity:52,focus:44,calm:46,play:39,social:45,rest:53,
+ stress:54,bond:42,points:0,streak:0,session:0,unlocked:["QUIET CONTACT","SCENT TRAIL"],
+ log:["PASS 16 · Behavior & Enrichment Command initialized."],
+ stations:[
+ ["QUIET CONTACT","♡","Low-pressure trust session","trust",10,"calm",8],
+ ["SCENT TRAIL","⌁","Fictional scent-following puzzle","curiosity",10,"focus",8],
+ ["FORAGE PUZZLE","♧","Species-style foraging game","focus",10,"play",7],
+ ["TARGET GAME","◎","Simple target / attention game","confidence",10,"focus",8],
+ ["HIDE & SEEK","⌂","Shelter-search enrichment","curiosity",9,"confidence",7],
+ ["TOY LAB","✦","Interactive enrichment object","play",12,"curiosity",6],
+ ["SOCIAL BAY","🐾","Gentle social interaction","social",11,"bond",8],
+ ["CONFIDENCE WALK","▲","Exploration confidence simulation","confidence",12,"calm",5],
+ ["REST NEST","☾","Protected decompression period","rest",14,"calm",8],
+ ["BOND SESSION","◇","Resident-handler bond activity","bond",12,"trust",8],
+ ["MEMORY GAME","▣","Fictional pattern-memory challenge","focus",12,"confidence",5],
+ ["CHOICE BOARD","◈","Resident chooses preferred activity","trust",7,"curiosity",7]
+ ]};
+window.VG_COMMAND_BRIDGE16=Q;
+const clamp=v=>Math.max(0,Math.min(100,v));
+function host(){return document.getElementById("vg-cb2-live")}
+function animal(){try{return VG_COMMAND_BRIDGE6.animals[VG_COMMAND_BRIDGE6.animal]}catch(_){return "Animal"}}
+function icon(a){return a==="Wolf"?"🐺":a==="Owl"?"🦉":a==="Fox"?"🦊":a==="Dog"?"🐕":a==="Cat"?"🐈":a==="Octopus"?"🐙":a==="Python"?"🐍":a==="Gecko"?"🦎":a==="Bee Colony"?"🐝":a==="Tortoise"?"🐢":a==="Seal"?"🦭":"🦅"}
+function level(){return Math.floor(Q.points/50)+1}
+function draw(){
+ const root=host();if(!root)return;
+ let box=document.getElementById("vg-cb16-behavior");
+ if(!box){box=document.createElement("div");box.id="vg-cb16-behavior";box.className="vgcb16";root.appendChild(box)}
+ const a=animal(),lv=level();
+ box.innerHTML=`<div class="vgcb16-head"><div><small>PANEL 19 · CENTRAL COMMAND BRIDGE · PASS 16/20</small><h3>BEHAVIOR, TRUST & ENRICHMENT COMMAND</h3></div><strong>LV ${lv}<small>${Q.points} ENRICHMENT XP</small></strong></div>
+ <div class="vgcb16-room"><div class="resident">${icon(a)}<small>${a}</small></div><div class="station s1">⌁<small>TRAIL</small></div><div class="station s2">✦<small>TOY</small></div><div class="station s3">⌂<small>HIDE</small></div><div class="station s4">♧<small>FORAGE</small></div><div class="station s5">☾<small>REST</small></div><div class="floor"></div><div class="status">SESSION ${Q.session} · STREAK ${Q.streak} · ${Q.unlocked.length}/12 ACTIVITIES UNLOCKED</div></div>
+ <div class="vgcb16-bars">${[["TRUST",Q.trust],["CONFIDENCE",Q.confidence],["CURIOSITY",Q.curiosity],["FOCUS",Q.focus],["CALM",Q.calm],["PLAY",Q.play],["SOCIAL",Q.social],["REST",Q.rest],["LOW STRESS",100-Q.stress],["BOND",Q.bond]].map(x=>`<div class="${x[1]>=75?"good":x[1]<35?"low":""}"><b>${x[0]}</b><strong>${x[1]}%</strong><i><em style="width:${x[1]}%"></em></i></div>`).join("")}</div>
+ <div class="vgcb16-stations">${Q.stations.map((x,i)=>{const open=Q.unlocked.includes(x[0]);return `<button data-cb16-act="${x[0]}" class="${open?"open":"locked"}" ${open?"":"disabled"}><strong>${x[1]}</strong><b>${x[0]}</b><small>${x[2]}</small><em>${open?"▶ PLAY":"🔒 "+(i*20)+" XP"}</em></button>`}).join("")}</div>
+ <div class="vgcb16-actions"><button data-cb16="RANDOM">🎲 RESIDENT CHOOSES ACTIVITY</button><button data-cb16="DECOMPRESS">☾ DECOMPRESSION CYCLE</button><button data-cb16="ROUND">🐾 COMPLETE ENRICHMENT ROUND</button><button data-cb16="TRANSFER" ${Q.bond<70||Q.trust<70?"disabled":""}>★ COMPLETE BOND MILESTONE</button></div>
+ <div class="vgcb16-bottom"><div><h4>ENRICHMENT PROGRESSION</h4><span>Every activity earns XP and can unlock new stations.</span><span>Repeated activity gives a smaller reward; variety builds streak.</span><span>Trust + Bond target: 70%</span><span>${Q.trust>=70&&Q.bond>=70?"★ BOND MILESTONE READY":"◇ RELATIONSHIP DEVELOPMENT ACTIVE"}</span></div><div><h4>SESSION LOG</h4>${Q.log.slice(0,12).map(x=>`<span>${x}</span>`).join("")}</div></div>`;
+}
+function unlock(){
+ Q.stations.forEach((x,i)=>{if(Q.points>=i*20&&!Q.unlocked.includes(x[0])){Q.unlocked.push(x[0]);Q.log.unshift("🔓 ACTIVITY UNLOCKED · "+x[0])}})
+}
+function play(name){
+ const x=Q.stations.find(y=>y[0]===name);if(!x||!Q.unlocked.includes(name))return;
+ Q.session++;Q[x[3]]=clamp(Q[x[3]]+x[4]);Q[x[5]]=clamp(Q[x[5]]+x[6]);Q.stress=clamp(Q.stress-5);
+ Q.points+=10+Math.min(10,Q.streak);Q.streak++;Q.log.unshift(`${x[1]} ${name} · +${10+Math.min(10,Q.streak-1)} XP`);
+ unlock();
+}
+document.addEventListener("click",ev=>{
+ const b=ev.target.closest("[data-cb16-act],[data-cb16]");if(!b)return;
+ ev.preventDefault();ev.stopImmediatePropagation();
+ if(b.dataset.cb16Act){play(b.dataset.cb16Act);draw();return}
+ const k=b.dataset.cb16,a=animal();
+ if(k==="RANDOM"){const choices=Q.stations.filter(x=>Q.unlocked.includes(x[0]));play(choices[(Q.session*7+Q.points)%choices.length][0])}
+ if(k==="DECOMPRESS"){Q.rest=clamp(Q.rest+15);Q.calm=clamp(Q.calm+12);Q.stress=clamp(Q.stress-14);Q.points+=5;Q.log.unshift("☾ DECOMPRESSION CYCLE · +5 XP");unlock()}
+ if(k==="ROUND"){Q.trust=clamp(Q.trust+5);Q.bond=clamp(Q.bond+5);Q.social=clamp(Q.social+4);Q.points+=8;Q.log.unshift("🐾 ENRICHMENT ROUND COMPLETE · +8 XP");unlock()}
+ if(k==="TRANSFER"&&Q.bond>=70&&Q.trust>=70){
+   Q.log.unshift("★ BOND MILESTONE COMPLETE · "+a.toUpperCase());
+   try{if(window.VG_COMMAND_BRIDGE13){VG_COMMAND_BRIDGE13.trust=clamp(VG_COMMAND_BRIDGE13.trust+12);VG_COMMAND_BRIDGE13.comfort=clamp(VG_COMMAND_BRIDGE13.comfort+10);VG_COMMAND_BRIDGE13.stress=clamp(VG_COMMAND_BRIDGE13.stress-10);VG_COMMAND_BRIDGE13.log.unshift("♡ ENRICHMENT MILESTONE · "+a)}}catch(_){}
+   try{if(window.VG_COMMAND_BRIDGE3){VG_COMMAND_BRIDGE3.score+=20;VG_COMMAND_BRIDGE3.log.unshift("🐾 BEHAVIOR / ENRICHMENT MILESTONE COMPLETE")}}catch(_){}
+ }
+ draw();
+},true);
+const mo=new MutationObserver(()=>{if(host()&&!document.getElementById("vg-cb16-behavior"))draw()});
+mo.observe(document.documentElement,{childList:true,subtree:true});
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",draw);else draw();
+})();
+</script>
+<style id="vg-command-bridge-pass16-style">
+.vgcb16{margin-top:10px;border:4px double #6f5c86;border-radius:16px;padding:10px;background:radial-gradient(circle at 70% 0,#392b4d,#0c0812 76%)}
+.vgcb16-head{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #68577d;padding-bottom:7px}.vgcb16-head h3{margin:2px 0;color:#f1e5ff}.vgcb16-head>strong{font-size:27px;color:#ffe078}.vgcb16-head small{display:block;font-size:7px}
+.vgcb16-room{height:410px;position:relative;overflow:hidden;border:5px double #68577d;border-radius:18px;background:linear-gradient(#1a2037 0 57%,#302b3d 57%)}.vgcb16-room .resident{position:absolute;left:43%;bottom:13%;font-size:120px;text-align:center;z-index:3}.vgcb16-room .resident small,.vgcb16-room .station small{display:block;font-size:6px}.vgcb16-room .station{position:absolute;font-size:50px;text-align:center;z-index:3}.vgcb16-room .s1{left:7%;bottom:14%}.vgcb16-room .s2{left:22%;bottom:9%}.vgcb16-room .s3{right:22%;bottom:11%}.vgcb16-room .s4{right:6%;bottom:15%}.vgcb16-room .s5{left:8%;top:13%}.vgcb16-room .floor{position:absolute;left:-10%;right:-10%;bottom:-35%;height:65%;border-radius:50%;background:#443b51}.vgcb16-room .status{position:absolute;left:0;right:0;bottom:2px;text-align:center;font-size:7px;z-index:4}
+.vgcb16-bars{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:8px}.vgcb16-bars>div{border:2px solid #68577d;padding:6px}.vgcb16-bars .good{border-color:#7e9d77}.vgcb16-bars .low{border-color:#9d6262}.vgcb16-bars b,.vgcb16-bars strong{display:block}.vgcb16-bars strong{color:#ffe078}.vgcb16-bars i{display:block;height:5px;background:#25182f}.vgcb16-bars em{display:block;height:100%;background:#9a7bb2}
+.vgcb16-stations{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:8px}.vgcb16-stations button{text-align:left;min-height:76px}.vgcb16-stations button.open{border-color:#7f6b98!important}.vgcb16-stations button.locked{opacity:.42}.vgcb16-stations strong{float:left;font-size:24px;margin-right:6px}.vgcb16-stations b,.vgcb16-stations small,.vgcb16-stations em{display:block}.vgcb16-stations em{font-size:7px;color:#ffe078}.vgcb16-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:8px}.vgcb16-actions button{min-height:56px}.vgcb16-bottom{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.vgcb16-bottom>div{border:2px solid #68577d;padding:7px}.vgcb16-bottom span{display:block;font-size:8px;padding:3px;border-bottom:1px solid #ffffff12}
+@media(max-width:720px){.vgcb16-bars,.vgcb16-stations{grid-template-columns:1fr 1fr}.vgcb16-actions{grid-template-columns:1fr 1fr}.vgcb16-bottom{grid-template-columns:1fr}.vgcb16-room{height:370px}}
+</style>
+
+<script id="vg-pass17-observations-repair">
+(function(){
+"use strict";
+function fixObject(o){
+  if(!o || typeof o!=="object") return;
+  if(!Array.isArray(o.observations)) o.observations=[];
+}
+function repair(){
+  const seen=new Set(), roots=[];
+  for(const k of Object.keys(window)){
+    if(k.indexOf("VG_")===0 || k.indexOf("vet")===0 || k.indexOf("VET")===0){
+      try{const v=window[k];if(v&&typeof v==="object")roots.push(v)}catch(_){}
+    }
+  }
+  let budget=2500;
+  function walk(o,depth){
+    if(!o||typeof o!=="object"||seen.has(o)||depth>4||budget--<=0)return;
+    seen.add(o); fixObject(o);
+    if(Array.isArray(o)){for(let i=0;i<Math.min(o.length,100);i++)walk(o[i],depth+1);return}
+    for(const k of Object.keys(o).slice(0,120)){
+      let v;try{v=o[k]}catch(_){continue}
+      if(v&&typeof v==="object")walk(v,depth+1);
+    }
+  }
+  roots.forEach(x=>walk(x,0));
+}
+window.VGRepairObservations=repair;
+repair();
+document.addEventListener("click",repair,true);
+document.addEventListener("DOMContentLoaded",repair);
+setTimeout(repair,0);
+setTimeout(repair,500);
+})();
+</script>
 </body>
 </html><style id="vg-road-campaign-pass1-css">
 .roadBoard{margin-top:12px;border:1px solid #365f73;border-radius:18px;padding:13px;background:linear-gradient(145deg,#07131d,#11172a);box-shadow:0 16px 38px #0007}.roadHead{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.roadHead h3{margin:3px 0;font-size:18px}.roadBadges{display:flex;gap:5px;flex-wrap:wrap}.roadBadges span{border:1px solid #395d70;border-radius:999px;padding:5px 8px;font-size:7px;background:#071822}.roadMap{position:relative;min-height:110px;margin:10px 0;border:1px solid #294d5e;border-radius:13px;background:linear-gradient(90deg,#071722,#10162a);overflow:hidden;padding:15px}.roadLine{position:absolute;left:7%;right:7%;top:54%;height:4px;background:#183544;border-radius:99px}.roadLine i{display:block;height:100%;background:linear-gradient(90deg,#54dfff,#a879ff,#ffd66f);border-radius:99px}.roadStops{position:relative;display:flex;justify-content:space-between;align-items:flex-start;z-index:2}.roadStop{width:52px;text-align:center;font-size:7px;color:#7896a4}.roadStop b{display:grid;place-items:center;width:31px;height:31px;margin:auto;border-radius:50%;border:1px solid #345c70;background:#081722;font-size:15px}.roadStop.on b{border-color:#ffd66f;box-shadow:0 0 16px #ffd66f55}.roadStop.done b{border-color:#67df9e;background:#10271e}.missionGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.missionCard{border:1px solid #315568;border-radius:12px;background:#091923;padding:10px;min-height:135px;color:#eefaff;text-align:left}.missionCard:hover{border-color:#6edcf4}.missionCard strong{display:block;font-size:11px;margin:5px 0}.missionCard span{display:block;font-size:8px;color:#93afba;line-height:1.5}.missionCard em{display:block;margin-top:8px;color:#ffd66f;font-size:7px;font-style:normal;font-weight:900}.missionScene{border:1px solid #3e6577;border-radius:14px;padding:12px;background:radial-gradient(circle at 50% 0,#173349,#07121b 55%);min-height:230px}.missionScene .sceneAnimal{width:120px;height:120px;margin:4px auto}.missionScene h2{text-align:center;margin:5px}.missionScene p{font-size:9px;line-height:1.65;color:#a8c1cb;max-width:780px;margin:8px auto;text-align:center}.missionStats{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:8px 0}.missionStats div{border:1px solid #294b5c;border-radius:8px;background:#071620;padding:7px;text-align:center}.missionStats small{display:block;font-size:6px;color:#7f9eab}.missionStats b{font-size:13px}.missionChoices{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.missionChoice{min-height:105px;border:1px solid #46687a;border-radius:12px;background:linear-gradient(160deg,#102534,#10152a);color:#fff;padding:10px;text-align:left}.missionChoice .ico{font-size:26px}.missionChoice strong{display:block;margin:5px 0}.missionChoice span{font-size:8px;color:#9eb6c0;line-height:1.45}.missionChoice em{display:block;margin-top:7px;color:#7cf0b1;font-size:7px;font-style:normal}.roadLog{max-height:150px;overflow:auto;border:1px solid #294858;border-radius:10px;background:#051018;padding:8px;font-size:8px;color:#91adba;line-height:1.55}.roadLog div+div{border-top:1px solid #142934;margin-top:4px;padding-top:4px}@media(max-width:760px){.missionGrid,.missionChoices{grid-template-columns:1fr}.missionStats{grid-template-columns:repeat(2,1fr)}.roadStop{font-size:6px;width:38px}.roadStop b{width:27px;height:27px}}
