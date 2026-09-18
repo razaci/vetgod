@@ -3475,4 +3475,303 @@ ensureS();addHome();
 window.VetGodsStaff17={renderStaff};
 })();
 </script>
+
+<style id="institution-p18-css">
+.oc{border:1px solid #666;margin-top:8px}.oc h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.oc-grid{display:grid;grid-template-columns:repeat(2,1fr)}.oc-card,.oc-row{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.oc-card small,.oc-row small{display:block;color:#777}.oc-card b,.oc-row b{color:#fff}
+.oc-btns{display:grid;grid-template-columns:repeat(2,1fr)}.oc-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.oc-btns button:hover,.oc-btns button.on{background:#c9c9c9;color:#000}.oc-btns small{display:block;color:#777;margin-top:3px}
+.oc-meter{display:grid;grid-template-columns:118px 1fr 42px;gap:6px;padding:5px 7px;border-bottom:1px dotted #444;font-size:9px}.oc-meter span{color:#888}.oc-meter b{color:#fff;text-align:right}.oc-bar{height:8px;border:1px solid #555}.oc-bar i{display:block;height:100%;background:#aaa}
+.oc-term{padding:8px;white-space:pre-wrap;font-size:9px;line-height:1.5;min-height:120px}
+@media(max-width:600px){.oc-grid,.oc-btns{grid-template-columns:1fr}.oc-meter{grid-template-columns:96px 1fr 38px}}
+</style>
+<script id="institution-p18-js">
+(function(){
+"use strict";
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+function ensureO(){state.operationsCommand=state.operationsCommand||{cycle:0,log:[],orders:[],activeOrder:null,last:"OPERATIONS COMMAND READY.",readiness:70};save()}
+function O(){return state.operationsCommand}
+function meter(k,v){return '<div class="oc-meter"><span>'+k+'</span><div class="oc-bar"><i style="width:'+clamp(v)+'%"></i></div><b>'+clamp(v)+'%</b></div>'}
+function metrics(){
+ let f=state.facilitiesDept||{},st=state.staffCommand||{},dp=state.dispatchDept||{},rs=state.researchArchive||{};
+ let staff=st.staff?.length?st.staff.reduce((q,x)=>q+x.energy+x.morale,0)/(st.staff.length*2):70;
+ let infra=([f.power,f.water,f.air,f.network,f.sterility,f.security].filter(x=>typeof x==="number").reduce((a,b)=>a+b,0)/( [f.power,f.water,f.air,f.network,f.sterility,f.security].filter(x=>typeof x==="number").length||1))||70;
+ let care=state.animals.length?state.animals.reduce((q,a)=>q+a.health+(100-a.pain)+(100-a.stress)+a.trust,0)/(state.animals.length*4):70;
+ let habitat=state.habitatDept?.rooms?.length?state.habitatDept.rooms.reduce((q,x)=>q+x.condition+x.clean+x.safety,0)/(state.habitatDept.rooms.length*3):70;
+ let research=Math.min(100,30+(rs.points||0));
+ let response=Math.max(30,dp.reputation||30);
+ return {staff:clamp(staff),infra:clamp(infra),care:clamp(care),habitat:clamp(habitat),research:clamp(research),response:clamp(response)};
+}
+function renderOperations(){
+ ensureO();page="operations";nav();let d=O(),m=metrics();d.readiness=clamp((m.staff+m.infra+m.care+m.habitat+m.research+m.response)/6);
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\OPS&gt;</div>'+
+ '<div class="oc"><h4>OPS.EXE — INSTITUTION COMMAND CENTER</h4><div class="oc-grid">'+card("COMMAND CYCLE",d.cycle,"institution-wide simulation step")+card("READINESS",d.readiness+"%","combined department state")+card("ACTIVE ORDERS",d.orders.filter(x=>x.status!=="COMPLETE").length,d.orders.length+" total orders")+card("ANIMAL POPULATION",state.animals.length,"persistent institutional cases")+'</div></div>'+
+ '<div class="oc"><h4>INSTITUTION READINESS BOARD</h4>'+meter("STAFF",m.staff)+meter("INFRASTRUCTURE",m.infra)+meter("ANIMAL CARE",m.care)+meter("HABITAT SYSTEMS",m.habitat)+meter("RESEARCH",m.research)+meter("DISPATCH RESPONSE",m.response)+meter("TOTAL READINESS",d.readiness)+'</div>'+
+ '<div class="oc"><h4>COMMAND ORDERS</h4><div class="oc-btns"><button data-oc="care">[01] PRIORITIZE PATIENT CARE<small>Institution order favoring health, calm and recovery.</small></button><button data-oc="maintenance">[02] PRIORITIZE MAINTENANCE<small>Focus facilities and habitat upkeep.</small></button><button data-oc="staff">[03] PRIORITIZE STAFF ROTATION<small>Reduce workload and improve workforce condition.</small></button><button data-oc="research">[04] PRIORITIZE RESEARCH<small>Focus archive/research progression.</small></button><button data-oc="sanctuary">[05] PRIORITIZE SANCTUARY<small>Focus resident living conditions.</small></button><button data-oc="response">[06] PRIORITIZE DISPATCH<small>Focus operational response readiness.</small></button></div></div>'+
+ '<div class="oc"><h4>ORDER QUEUE</h4>'+(d.orders.length?d.orders.slice(0,12).map(x=>'<div class="oc-row"><b>'+x.id+' · '+x.title+' · '+x.status+'</b><small>created '+x.time+' · cycles '+x.cycles+'</small></div>').join(""):'<div class="oc-row">NO COMMAND ORDERS.</div>')+'</div>'+
+ '<div class="oc"><h4>MASTER SIMULATION</h4><div class="oc-btns"><button data-oc="cycle">[C1] RUN INSTITUTION CYCLE<small>Advances staff, facilities, habitat, residents and active command orders together.</small></button><button data-oc="report">[C2] GENERATE COMMAND REPORT<small>Creates a DOS-style institution status report.</small></button><button data-oc="clear">[C3] ARCHIVE COMPLETED ORDERS</button></div></div>'+
+ '<div class="oc"><h4>COMMAND ROUTING</h4><div class="oc-btns"><button data-or="records">RECORDS</button><button data-or="dispatch">DISPATCH</button><button data-or="facilities">FACILITIES</button><button data-or="staff">STAFF</button><button data-or="sanctuary2">SANCTUARY</button><button data-or="habitat">HABITAT</button><button data-or="research">RESEARCH</button><button data-or="clinic">CLINIC</button></div></div>'+
+ '<div class="oc"><h4>COMMAND TERMINAL</h4><div class="oc-term">'+esc(d.last)+'</div></div>'+
+ '<div class="out"><h4>OPERATIONS LOG</h4><pre id="out">'+(d.log.length?d.log.slice(0,18).join("\n"):"INSTITUTION COMMAND ONLINE.")+'</pre></div>';
+ document.querySelectorAll("[data-oc]").forEach(b=>b.onclick=()=>act(b.dataset.oc));
+ document.querySelectorAll("[data-or]").forEach(b=>b.onclick=()=>b.dataset.or==="clinic"?open("care"):program(b.dataset.or));
+}
+function esc(x){return String(x).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
+function card(k,v,n){return '<div class="oc-card"><small>'+k+'</small><b>'+v+'</b><small>'+n+'</small></div>'}
+function order(kind,title){let d=O(),x={id:"ORD-"+String(d.orders.length+1).padStart(3,"0"),kind,title,status:"ACTIVE",time:new Date().toLocaleTimeString(),cycles:0};d.orders.unshift(x);d.activeOrder=x;d.last="COMMAND ORDER ISSUED\n"+x.id+" · "+title;d.log.unshift(x.id+" · ISSUED · "+title)}
+function cycle(){
+ let d=O();d.cycle++;
+ // institution-wide slow simulation
+ if(state.facilitiesDept){let f=state.facilitiesDept;f.power=clamp(f.power-1);f.water=clamp(f.water-1);f.network=clamp(f.network-1);f.sterility=clamp(f.sterility-1)}
+ if(state.staffCommand?.staff)state.staffCommand.staff.forEach(x=>{if(x.status==="ASSIGNED"){x.energy=clamp(x.energy-4);x.load=clamp(x.load+3)}else{x.load=clamp(x.load-1)}});
+ if(state.habitatDept?.rooms)state.habitatDept.rooms.forEach(x=>{x.clean=clamp(x.clean-1);x.condition=clamp(x.condition-1)});
+ state.animals.forEach(a=>{if(a.sanctuary?.resident){a.hydration=clamp(a.hydration-1);a.nutrition=clamp((a.nutrition||60)-1)}});
+ d.orders.filter(x=>x.status==="ACTIVE").forEach(x=>{
+   x.cycles++;
+   if(x.kind==="care")state.animals.forEach(a=>{a.health=clamp(a.health+1);a.stress=clamp(a.stress-1)});
+   if(x.kind==="maintenance"&&state.facilitiesDept){state.facilitiesDept.power=clamp(state.facilitiesDept.power+2);state.facilitiesDept.air=clamp(state.facilitiesDept.air+2)}
+   if(x.kind==="staff"&&state.staffCommand?.staff)state.staffCommand.staff.forEach(s=>{s.energy=clamp(s.energy+3);s.load=clamp(s.load-3)});
+   if(x.kind==="research"&&state.researchArchive)state.researchArchive.points=(state.researchArchive.points||0)+2;
+   if(x.kind==="sanctuary")state.animals.forEach(a=>{if(a.sanctuary?.resident){a.stress=clamp(a.stress-2);a.trust=clamp(a.trust+1)}});
+   if(x.kind==="response"&&state.dispatchDept)state.dispatchDept.reputation=clamp((state.dispatchDept.reputation||0)+2);
+   if(x.cycles>=3)x.status="COMPLETE";
+ });
+ let m=metrics();d.readiness=clamp((m.staff+m.infra+m.care+m.habitat+m.research+m.response)/6);d.last="INSTITUTION CYCLE "+d.cycle+" COMPLETE\nReadiness "+d.readiness+"%\nActive orders "+d.orders.filter(x=>x.status==="ACTIVE").length;d.log.unshift("CYCLE "+d.cycle+" · READINESS "+d.readiness+"%");
+ save();renderOperations();
+}
+function act(c){
+ let d=O();
+ if(c==="care")order("care","PATIENT CARE PRIORITY");
+ if(c==="maintenance")order("maintenance","INFRASTRUCTURE MAINTENANCE PRIORITY");
+ if(c==="staff")order("staff","STAFF ROTATION PRIORITY");
+ if(c==="research")order("research","RESEARCH PRIORITY");
+ if(c==="sanctuary")order("sanctuary","SANCTUARY WELFARE PRIORITY");
+ if(c==="response")order("response","DISPATCH RESPONSE PRIORITY");
+ if(c==="cycle")return cycle();
+ if(c==="report"){let m=metrics();d.last="VET GODS INSTITUTION COMMAND REPORT\nCYCLE "+d.cycle+"\nTOTAL READINESS "+d.readiness+"%\nSTAFF "+m.staff+"%\nINFRASTRUCTURE "+m.infra+"%\nANIMAL CARE "+m.care+"%\nHABITAT "+m.habitat+"%\nRESEARCH "+m.research+"%\nDISPATCH "+m.response+"%\nOPEN ORDERS "+d.orders.filter(x=>x.status==="ACTIVE").length+"\nCOMPLETED ORDERS "+d.orders.filter(x=>x.status==="COMPLETE").length}
+ if(c==="clear"){d.orders=d.orders.filter(x=>x.status!=="COMPLETE");d.last="COMPLETED COMMAND ORDERS ARCHIVED."}
+ save();renderOperations();
+}
+const oldProgram=program;program=function(k){if(k==="operations")return renderOperations();return oldProgram(k)};
+function addHome(){if(page!=="home"||document.querySelector("#ocHomeLink"))return;let c=document.querySelector(".p10-buttons");if(!c)return;let b=document.createElement("button");b.id="ocHomeLink";b.textContent="[25] OPS.EXE";b.onclick=renderOperations;c.appendChild(b)}
+const oldHome=home;home=function(){oldHome();addHome()};
+ensureO();addHome();
+window.VetGodsOperations18={renderOperations,metrics};
+})();
+</script>
+
+<style id="institution-p19-css">
+.mc{border:1px solid #666;margin-top:8px}.mc h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.mc-grid{display:grid;grid-template-columns:repeat(2,1fr)}.mc-card,.mc-row{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.mc-card small,.mc-row small{display:block;color:#777}.mc-card b,.mc-row b{color:#fff}
+.mc-btns{display:grid;grid-template-columns:repeat(2,1fr)}.mc-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.mc-btns button:hover,.mc-btns button.on{background:#c9c9c9;color:#000}.mc-btns small{display:block;color:#777;margin-top:3px}
+.mc-meter{display:grid;grid-template-columns:118px 1fr 42px;gap:6px;padding:5px 7px;border-bottom:1px dotted #444;font-size:9px}.mc-meter span{color:#888}.mc-meter b{color:#fff;text-align:right}.mc-bar{height:8px;border:1px solid #555}.mc-bar i{display:block;height:100%;background:#aaa}
+.mc-term{padding:8px;white-space:pre-wrap;font-size:9px;line-height:1.5;min-height:120px}
+.mc-flow{display:flex;overflow:auto;border:1px solid #666;margin-top:8px}.mc-flow span{flex:1;min-width:86px;text-align:center;padding:5px;border-right:1px dotted #555;font-size:8px;color:#666}.mc-flow .done{color:#aaa}.mc-flow .now{background:#c9c9c9;color:#000;font-weight:900}
+@media(max-width:600px){.mc-grid,.mc-btns{grid-template-columns:1fr}.mc-meter{grid-template-columns:96px 1fr 38px}}
+</style>
+<script id="institution-p19-js">
+(function(){
+"use strict";
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+function A(){return state.animals[state.active]}
+const MISSIONS=[
+ ["rescue","DEEP RANGE RESCUE","Locate, stabilize and return a fictional animal case."],
+ ["survey","HABITAT SURVEY","Survey a remote environment and recover research data."],
+ ["recovery","LOST RESIDENT RECOVERY","Track and safely recover a missing Sanctuary resident."],
+ ["supply","REMOTE SUPPLY RUN","Deliver critical fictional supplies to an isolated station."],
+ ["signal","ANOMALOUS SIGNAL","Investigate a fictional paranormal research signal."],
+ ["ecology","ECOLOGY EXPEDITION","Collect fictional environmental observations and archive them."]
+];
+const PHASES=["BRIEF","PREPARE","DEPLOY","ENCOUNTER","RETURN","DEBRIEF"];
+function ensureM(){
+ state.missionControl=state.missionControl||{missions:[],active:null,completed:0,log:[],range:60,nav:75,comms:80,supplies:70,last:"MISSION CONTROL READY."};
+ save();
+}
+function M(){return state.missionControl}
+function meter(k,v){return '<div class="mc-meter"><span>'+k+'</span><div class="mc-bar"><i style="width:'+clamp(v)+'%"></i></div><b>'+clamp(v)+'%</b></div>'}
+function flow(m){let n=m?m.phase:0;return '<div class="mc-flow">'+PHASES.map((x,i)=>'<span class="'+(i<n?"done":i===n?"now":"")+'">'+(i<n?"[X] ":i===n?"[>] ":"[ ] ")+x+'</span>').join("")+'</div>'}
+function renderMission(){
+ ensureM();page="mission";nav();let d=M(),m=d.active,a=A();
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\MISSION_CONTROL&gt;</div>'+
+ '<div class="mc"><h4>MISSION.EXE — EXPEDITION CONTROL</h4><div class="mc-grid">'+card("ACTIVE ANIMAL",a.icon+" "+a.name,a.species)+card("ACTIVE MISSION",m?m.id:"NONE",m?m.title:"mission board ready")+card("COMPLETED",d.completed,"persistent expedition history")+card("MISSION RANGE",d.range+"%","institution field capability")+'</div></div>'+
+ '<div class="mc"><h4>FIELD SYSTEMS</h4>'+meter("NAVIGATION",d.nav)+meter("COMMUNICATIONS",d.comms)+meter("SUPPLIES",d.supplies)+meter("RANGE",d.range)+(m?meter("MISSION PROGRESS",m.progress):"")+'</div>'+
+ '<div class="mc"><h4>MISSION BOARD</h4><div class="mc-btns">'+MISSIONS.map((x,i)=>'<button data-mnew="'+x[0]+'">['+String(i+1).padStart(2,"0")+'] '+x[1]+'<small>'+x[2]+'</small></button>').join("")+'</div></div>'+
+ (m?flow(m)+missionPanel(m,a):'')+
+ '<div class="mc"><h4>FIELD SYSTEM SERVICE</h4><div class="mc-btns"><button data-mc="nav">[F1] CALIBRATE NAV · 4 CR</button><button data-mc="comms">[F2] SERVICE COMMS · 4 CR</button><button data-mc="supplies">[F3] RESTOCK FIELD KIT · 6 CR</button><button data-mc="range">[F4] RANGE UPGRADE · 10 CR</button></div></div>'+
+ '<div class="mc"><h4>MISSION ARCHIVE</h4>'+(d.missions.length?d.missions.slice(0,12).map(x=>'<div class="mc-row"><b>'+x.id+' · '+x.title+' · '+x.status+'</b><small>'+x.patient+' · progress '+x.progress+'% · reward '+x.reward+' CR</small></div>').join(""):'<div class="mc-row">NO MISSIONS RECORDED.</div>')+'</div>'+
+ '<div class="mc"><h4>COMMAND ROUTING</h4><div class="mc-btns"><button data-mr="dispatch">DISPATCH</button><button data-mr="operations">OPS</button><button data-mr="research">RESEARCH</button><button data-mr="records">RECORDS</button><button data-mr="sanctuary2">SANCTUARY</button><button data-mr="clinic">CLINIC</button></div></div>'+
+ '<div class="mc"><h4>MISSION TERMINAL</h4><div class="mc-term">'+esc(d.last)+'</div></div>'+
+ '<div class="out"><h4>MISSION LOG</h4><pre id="out">'+(d.log.length?d.log.slice(0,18).join("\n"):"FIELD CHANNEL ONLINE.")+'</pre></div>';
+ document.querySelectorAll("[data-mnew]").forEach(b=>b.onclick=()=>newMission(b.dataset.mnew));
+ document.querySelectorAll("[data-mc]").forEach(b=>b.onclick=()=>act(b.dataset.mc));
+ document.querySelectorAll("[data-mr]").forEach(b=>b.onclick=()=>b.dataset.mr==="clinic"?open("care"):program(b.dataset.mr));
+}
+function esc(x){return String(x).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
+function card(k,v,n){return '<div class="mc-card"><small>'+k+'</small><b>'+v+'</b><small>'+n+'</small></div>'}
+function missionPanel(m,a){
+ let labels=["ACKNOWLEDGE BRIEF","LOAD FIELD KIT","DEPLOY TEAM","RESOLVE ENCOUNTER","RETURN TO BASE","DEBRIEF / COMPLETE"];
+ return '<div class="mc"><h4>ACTIVE MISSION — '+m.id+'</h4><div class="mc-grid">'+card("TYPE",m.title,m.text)+card("SUBJECT",m.patient,a.caseId)+card("FIELD RISK",m.risk+"%","fictional mission difficulty")+card("REWARD",m.reward+" CR","completion reward")+'</div><div class="mc-btns"><button data-mc="advance">[>] '+labels[m.phase]+'<small>Advance exactly one mission phase.</small></button><button data-mc="fieldcare">[+] FIELD CARE<small>Uses supplies to support the connected animal.</small></button><button data-mc="scan">[?] FIELD SCAN<small>Creates a fictional research observation.</small></button><button data-mc="abort">[X] ABORT / RETURN</button></div></div>';
+}
+function spend(n){if(typeof state.funds==="number"&&state.funds<n)return false;if(typeof state.funds==="number")state.funds-=n;return true}
+function log(x){M().log.unshift(new Date().toLocaleTimeString()+" · "+x)}
+function newMission(k){
+ let d=M(),a=A(),t=MISSIONS.find(x=>x[0]===k),n=d.missions.length+1;
+ let risk=clamp(25+(n*7)%45),reward=10+Math.round(risk/5);
+ let m={id:"MSN-"+String(n).padStart(3,"0"),kind:k,title:t[1],text:t[2],patient:a.name,patientId:a.id,phase:0,progress:0,risk,reward,status:"BRIEFING",observations:[],created:new Date().toLocaleTimeString()};
+ d.missions.unshift(m);d.active=m;d.last="MISSION CREATED\n"+m.id+" · "+m.title+"\nSubject: "+a.name+"\nRisk "+risk+"%\nAwaiting briefing.";log(m.id+" · CREATED · "+m.title);save();renderMission();
+}
+function act(c){
+ let d=M(),m=d.active,a=m?(state.animals.find(x=>x.id===m.patientId)||A()):A();
+ if(["nav","comms","supplies","range"].includes(c)){
+   let costs={nav:4,comms:4,supplies:6,range:10},amt={nav:15,comms:15,supplies:20,range:10};
+   if(spend(costs[c])){d[c]=clamp(d[c]+amt[c]);d.last=c.toUpperCase()+" SERVICE COMPLETE.";log(c.toUpperCase()+" SERVICED")}else d.last="SERVICE BLOCKED · insufficient funds.";
+   save();return renderMission();
+ }
+ if(!m){d.last="NO ACTIVE MISSION.";save();return renderMission()}
+ if(c==="advance"){
+   if(m.phase===1&&d.supplies<15){d.last="PREPARATION BLOCKED · field supplies below 15%.";save();return renderMission()}
+   if(m.phase===2&&(d.nav<20||d.comms<20)){d.last="DEPLOYMENT BLOCKED · navigation/comms too low.";save();return renderMission()}
+   if(m.phase===1)d.supplies=clamp(d.supplies-8);
+   if(m.phase===2){d.nav=clamp(d.nav-4);d.comms=clamp(d.comms-3)}
+   if(m.phase===3){a.stress=clamp(a.stress+Math.max(1,Math.round(m.risk/20)));if(m.kind==="rescue"||m.kind==="recovery"){a.trust=clamp(a.trust+5);a.health=clamp(a.health+2)}if(m.kind==="signal")m.observations.push("FICTIONAL SIGNAL TRACE "+(m.observations.length+1))}
+   if(m.phase===4){d.nav=clamp(d.nav-3);d.supplies=clamp(d.supplies-3)}
+   m.phase++;m.progress=clamp(m.phase/PHASES.length*100);m.status=m.phase>=PHASES.length?"COMPLETE":PHASES[m.phase];
+   log(m.id+" · "+(m.status));
+   if(m.phase>=PHASES.length){d.completed++;if(typeof state.funds==="number")state.funds+=m.reward;d.range=clamp(d.range+2);a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · MISSION · "+m.title+" COMPLETE");if(state.researchArchive)state.researchArchive.points=(state.researchArchive.points||0)+3;d.last="MISSION COMPLETE\n"+m.id+" · "+m.title+"\n+"+m.reward+" institutional credits\n+3 research points\nField range +2%";d.active=null}
+   else d.last=m.id+" ADVANCED\nCurrent phase: "+m.status+"\nProgress "+m.progress+"%";
+ }
+ if(c==="fieldcare"){if(d.supplies<6){d.last="FIELD CARE BLOCKED · insufficient field supplies."}else{d.supplies-=6;a.health=clamp(a.health+3);a.stress=clamp(a.stress-4);a.hydration=clamp(a.hydration+3);d.last="FIELD CARE COMPLETE\nHealth, calm and hydration supported.";log(m.id+" · FIELD CARE")}}
+ if(c==="scan"){let obs="OBS-"+String(m.observations.length+1).padStart(2,"0")+" · "+m.title+" · "+new Date().toLocaleTimeString();m.observations.push(obs);if(a.research){a.research.flags=a.research.flags||[];if(!a.research.flags.includes("FIELD OBSERVATION"))a.research.flags.push("FIELD OBSERVATION")}d.last="FIELD SCAN COMPLETE\n"+obs;log(m.id+" · FIELD SCAN")}
+ if(c==="abort"){m.status="ABORTED";m.progress=clamp(m.progress);a.stress=clamp(a.stress+2);d.last="MISSION ABORTED\nTeam returned to institution.";log(m.id+" · ABORTED");d.active=null}
+ save();renderMission();
+}
+const oldProgram=program;program=function(k){if(k==="mission")return renderMission();return oldProgram(k)};
+function addHome(){if(page!=="home"||document.querySelector("#mcHomeLink"))return;let c=document.querySelector(".p10-buttons");if(!c)return;let b=document.createElement("button");b.id="mcHomeLink";b.textContent="[26] MISSION.EXE";b.onclick=renderMission;c.appendChild(b)}
+const oldHome=home;home=function(){oldHome();addHome()};
+ensureM();addHome();
+window.VetGodsMission19={renderMission,newMission};
+})();
+</script>
+
+<style id="institution-p20-css">
+.nx{border:1px solid #666;margin-top:8px}.nx h4{margin:0;background:#c9c9c9;color:#000;padding:4px 6px;font-size:10px}
+.nx-grid{display:grid;grid-template-columns:repeat(2,1fr)}.nx-card,.nx-row{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;font-size:9px}.nx-card small,.nx-row small{display:block;color:#777}.nx-card b,.nx-row b{color:#fff}
+.nx-btns{display:grid;grid-template-columns:repeat(2,1fr)}.nx-btns button{border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;background:#000;color:#c9c9c9;padding:7px;text-align:left;font:700 9px "Courier New",monospace}.nx-btns button:hover{background:#c9c9c9;color:#000}.nx-btns small{display:block;color:#777;margin-top:3px}
+.nx-meter{display:grid;grid-template-columns:118px 1fr 42px;gap:6px;padding:5px 7px;border-bottom:1px dotted #444;font-size:9px}.nx-meter span{color:#888}.nx-meter b{color:#fff;text-align:right}.nx-bar{height:8px;border:1px solid #555}.nx-bar i{display:block;height:100%;background:#aaa}
+.nx-term{padding:8px;white-space:pre-wrap;font-size:9px;line-height:1.5;min-height:135px}
+.nx-map{padding:8px;white-space:pre;overflow:auto;font-size:8px;line-height:1.35}
+@media(max-width:600px){.nx-grid,.nx-btns{grid-template-columns:1fr}.nx-meter{grid-template-columns:96px 1fr 38px}}
+</style>
+<script id="institution-p20-js">
+(function(){
+"use strict";
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+function ensureN(){state.commandNexus=state.commandNexus||{cycles:0,log:[],milestones:[],last:"VET GODS COMMAND NEXUS ONLINE.",score:0};save()}
+function N(){return state.commandNexus}
+function A(){return state.animals[state.active]}
+function meter(k,v){return '<div class="nx-meter"><span>'+k+'</span><div class="nx-bar"><i style="width:'+clamp(v)+'%"></i></div><b>'+clamp(v)+'%</b></div>'}
+function stats(){
+ let a=A(),ops=state.operationsCommand||{},f=state.facilitiesDept||{},st=state.staffCommand||{},r=state.researchArchive||{},dp=state.dispatchDept||{},ms=state.missionControl||{};
+ let facility=clamp(([f.power,f.water,f.air,f.network,f.sterility,f.security].filter(Number.isFinite).reduce((q,x)=>q+x,0))/([f.power,f.water,f.air,f.network,f.sterility,f.security].filter(Number.isFinite).length||1)||70);
+ let staff=st.staff?.length?clamp(st.staff.reduce((q,x)=>q+x.energy+x.morale,0)/(st.staff.length*2)):70;
+ let care=clamp((a.health+(100-a.pain)+(100-a.stress)+a.trust+(a.hydration||60)+(a.nutrition||60))/6);
+ let research=clamp(25+(r.points||0));
+ let field=clamp(((dp.reputation||30)+(ms.range||60)+(ms.nav||70)+(ms.comms||70))/4);
+ let institution=clamp((facility+staff+care+research+field+(ops.readiness||70))/6);
+ return {facility,staff,care,research,field,operations:clamp(ops.readiness||70),institution};
+}
+function card(k,v,n){return '<div class="nx-card"><small>'+k+'</small><b>'+v+'</b><small>'+n+'</small></div>'}
+function renderNexus(){
+ ensureN();page="nexus";nav();let d=N(),a=A(),m=stats();d.score=m.institution;
+ let alerts=[];
+ if(m.facility<55)alerts.push("FACILITIES REQUIRE ATTENTION");
+ if(m.staff<55)alerts.push("STAFF CONDITION LOW");
+ if(m.care<55)alerts.push("ACTIVE ANIMAL CARE PRIORITY");
+ if(m.field<50)alerts.push("FIELD OPERATIONS READINESS LOW");
+ if(a.pain>45)alerts.push(a.name.toUpperCase()+" PAIN CONTROL REVIEW");
+ if(a.hydration<45)alerts.push(a.name.toUpperCase()+" HYDRATION REVIEW");
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\COMMAND_NEXUS&gt;</div>'+
+ '<div class="nx"><h4>VET GODS // FINAL DOS COMMAND NEXUS</h4><div class="nx-grid">'+card("ACTIVE CASE",a.icon+" "+a.name,a.caseId+" · "+a.stage)+card("INSTITUTION SCORE",m.institution+"%","combined live system state")+card("NEXUS CYCLES",d.cycles,"master synchronization passes")+card("MILESTONES",d.milestones.length,"persistent institution achievements")+'</div></div>'+
+ '<div class="nx"><h4>MASTER READOUT</h4>'+meter("ANIMAL CARE",m.care)+meter("FACILITIES",m.facility)+meter("STAFF",m.staff)+meter("OPERATIONS",m.operations)+meter("RESEARCH",m.research)+meter("FIELD SYSTEMS",m.field)+meter("TOTAL INSTITUTION",m.institution)+'</div>'+
+ '<div class="nx"><h4>PRIMARY ANIMAL TELEMETRY</h4><div class="nx-grid">'+card("HEALTH",a.health+"%","live connected value")+card("PAIN",a.pain+"%","0 = no pain")+card("HYDRATION",a.hydration+"%","live connected value")+card("NUTRITION",(a.nutrition||0)+"%","live connected value")+card("STRESS",a.stress+"%","live connected value")+card("TRUST",a.trust+"%","live connected value")+card("MOBILITY",(a.mobility||0)+"%","live connected value")+card("OXYGEN",(a.oxygen??"--")+"%","when available")+'</div></div>'+
+ '<div class="nx"><h4>MASTER PROGRAM DIRECTORY</h4><div class="nx-btns">'+
+ btn("clinic","CLINIC.EXE","Intake and active care")+btn("diagnostics","DIAGNOSTICS.EXE","Evidence and testing")+btn("treatment","TREATMENT.EXE","Definitive care")+btn("recovery","RECOVERY.EXE","Post-care recovery")+
+ btn("pharmacy","PHARMACY.EXE","Medication inventory")+btn("nutrition","NUTRITION.EXE","Food/hydration plans")+btn("sanctuary2","SANCTUARY.EXE","Resident living system")+btn("habitat","HABITAT.EXE","Environmental management")+
+ btn("nursery","NURSERY.EXE","Young/resident development")+btn("rehab","REHAB.EXE","Mobility reconditioning")+btn("behavior","BEHAVIOR.EXE","Fictional observation lab")+btn("research","RESEARCH.EXE","Institution archive")+
+ btn("records","RECORDS.EXE","Master case record")+btn("dispatch","DISPATCH.EXE","Operational calls")+btn("facilities","FACILITIES.EXE","Infrastructure control")+btn("staff","STAFF.EXE","Personnel command")+
+ btn("operations","OPS.EXE","Institution command center")+btn("mission","MISSION.EXE","Expedition control")+
+ '</div></div>'+
+ '<div class="nx"><h4>NEXUS COMMANDS</h4><div class="nx-btns"><button data-nx="sync">[N1] SYNCHRONIZE ALL SYSTEMS<small>Recalculates institution state and records a master cycle.</small></button><button data-nx="report">[N2] FULL STATUS REPORT<small>Produces one consolidated DOS report.</small></button><button data-nx="milestone">[N3] CHECK MILESTONES<small>Evaluates persistent institutional achievements.</small></button><button data-nx="backup">[N4] SAVE / BACKUP STATE<small>Forces the existing persistent save routine.</small></button></div></div>'+
+ '<div class="nx"><h4>COMMAND ALERTS</h4>'+(alerts.length?alerts.map(x=>'<div class="nx-row"><b>[!] '+x+'</b><small>Generated from current fictional game state.</small></div>').join(""):'<div class="nx-row"><b>[OK] NO MASTER ALERTS</b></div>')+'</div>'+
+ '<div class="nx"><h4>INSTITUTION NETWORK MAP</h4><div class="nx-map">                  [MISSION.EXE]\n                       |\n[DISPATCH]----[OPS.EXE]----[COMMAND NEXUS]----[RECORDS]\n    |              |              |                |\n [CLINIC]------[DIAGNOSTICS]---[TREATMENT]------[RESEARCH]\n    |              |              |                |\n [PHARMACY]----[SURGERY]------[RECOVERY]--------[REHAB]\n    |                             |                |\n[NUTRITION]-----------------[SANCTUARY]------[BEHAVIOR]\n                                  |\n                              [HABITAT]\n                                  |\n                              [NURSERY]\n\n            [STAFF] + [FACILITIES] SUPPORT ALL NODES</div></div>'+
+ '<div class="nx"><h4>NEXUS TERMINAL</h4><div class="nx-term">'+esc(d.last)+'</div></div>'+
+ '<div class="out"><h4>MASTER LOG</h4><pre id="out">'+(d.log.length?d.log.slice(0,20).join("\n"):"FINAL INTEGRATION ONLINE.")+'</pre></div>';
+ document.querySelectorAll("[data-prog]").forEach(b=>b.onclick=()=>b.dataset.prog==="clinic"?open("care"):program(b.dataset.prog));
+ document.querySelectorAll("[data-nx]").forEach(b=>b.onclick=()=>act(b.dataset.nx));
+}
+function btn(k,n,d){return '<button data-prog="'+k+'">['+n+']<small>'+d+'</small></button>'}
+function esc(x){return String(x).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
+function report(){
+ let a=A(),m=stats(),d=N();
+ return "VET GODS // MASTER INSTITUTION REPORT"+
+ "\n======================================"+
+ "\nACTIVE CASE: "+a.caseId+" · "+a.name+" · "+a.species+
+ "\nSTAGE: "+a.stage+
+ "\n--------------------------------------"+
+ "\nHEALTH "+a.health+"% | PAIN "+a.pain+"% | OXYGEN "+(a.oxygen??"--")+"%"+
+ "\nHYDRATION "+a.hydration+"% | NUTRITION "+(a.nutrition||0)+"%"+
+ "\nSTRESS "+a.stress+"% | TRUST "+a.trust+"% | MOBILITY "+(a.mobility||0)+"%"+
+ "\n--------------------------------------"+
+ "\nCARE READINESS "+m.care+"%"+
+ "\nFACILITIES "+m.facility+"%"+
+ "\nSTAFF "+m.staff+"%"+
+ "\nOPERATIONS "+m.operations+"%"+
+ "\nRESEARCH "+m.research+"%"+
+ "\nFIELD SYSTEMS "+m.field+"%"+
+ "\nTOTAL INSTITUTION "+m.institution+"%"+
+ "\n--------------------------------------"+
+ "\nSANCTUARY: "+(a.sanctuary?.resident?"RESIDENT":"NOT RESIDENT")+" · "+(a.sanctuary?.habitat||"NO HABITAT")+
+ "\nBEHAVIOR OBS: "+(a.behavior?.observations?.length||0)+
+ "\nREHAB SESSIONS: "+(a.rehab?.sessions||0)+
+ "\nRESEARCH REPORTS: "+(a.research?.reports?.length||0)+
+ "\nMISSIONS COMPLETE: "+(state.missionControl?.completed||0)+
+ "\nDISPATCH COMPLETE: "+(state.dispatchDept?.completed||0)+
+ "\nMILESTONES: "+d.milestones.length;
+}
+function checkMilestones(){
+ let d=N(),m=stats(),a=A(),tests=[
+ ["INSTITUTION ONLINE",true],
+ ["CARE NETWORK 75",m.care>=75],
+ ["FACILITY NETWORK 75",m.facility>=75],
+ ["STAFF NETWORK 75",m.staff>=75],
+ ["RESEARCH NETWORK 75",m.research>=75],
+ ["FIELD NETWORK 75",m.field>=75],
+ ["FULL READINESS 80",m.institution>=80],
+ ["SANCTUARY RESIDENT",!!a.sanctuary?.resident],
+ ["BEHAVIOR FILE",(a.behavior?.observations?.length||0)>=3],
+ ["REHAB VETERAN",(a.rehab?.sessions||0)>=3],
+ ["RESEARCH CASE",(a.research?.reports?.length||0)>=1],
+ ["FIELD VETERAN",(state.missionControl?.completed||0)>=1]
+ ];
+ let added=[];tests.forEach(x=>{if(x[1]&&!d.milestones.includes(x[0])){d.milestones.push(x[0]);added.push(x[0])}});
+ d.last=added.length?"MILESTONES UNLOCKED\n"+added.map(x=>"[+] "+x).join("\n"):"MILESTONE CHECK COMPLETE\nNo new milestones.\nUnlocked: "+d.milestones.length;
+}
+function act(c){
+ let d=N();
+ if(c==="sync"){d.cycles++;let m=stats();d.score=m.institution;d.last="SYSTEM SYNCHRONIZATION COMPLETE\nCycle "+d.cycles+"\nInstitution "+m.institution+"%\nAll connected department readouts refreshed.";d.log.unshift(new Date().toLocaleTimeString()+" · NEXUS SYNC "+d.cycles+" · "+m.institution+"%")}
+ if(c==="report"){d.last=report();d.log.unshift(new Date().toLocaleTimeString()+" · MASTER REPORT GENERATED")}
+ if(c==="milestone"){checkMilestones();d.log.unshift(new Date().toLocaleTimeString()+" · MILESTONE CHECK · "+d.milestones.length+" unlocked")}
+ if(c==="backup"){save();d.last="PERSISTENT STATE SAVED\nAnimals, departments, research, missions, staff, facilities and command state written through the game's existing save system.";d.log.unshift(new Date().toLocaleTimeString()+" · MANUAL SAVE COMPLETE")}
+ save();renderNexus();
+}
+const oldProgram=program;program=function(k){if(k==="nexus")return renderNexus();return oldProgram(k)};
+function addHome(){
+ if(page!=="home"||document.querySelector("#nxHomeLink"))return;
+ let c=document.querySelector(".p10-buttons");if(!c)return;
+ let b=document.createElement("button");b.id="nxHomeLink";b.textContent="[27] COMMAND_NEXUS.EXE";b.onclick=renderNexus;c.insertBefore(b,c.firstChild);
+}
+const oldHome=home;home=function(){oldHome();addHome()};
+ensureN();addHome();
+window.VetGodsFinal20={renderNexus,stats,report};
+})();
+</script>
 </body></html>
