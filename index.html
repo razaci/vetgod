@@ -37837,5 +37837,835 @@ document.addEventListener("click",e=>{
 window.VGNewLook21=draw;
 })();
 </script>
+
+<style id="vg-cde-pass01-css">
+/* C+D+E REDESIGN — PASS 01/10
+   C: card-table actions
+   D: planet sanctuary map
+   E: clean animal OS
+   Additive shell only: original VET GODS systems remain in file. */
+:root{
+ --cde-bg:#101713;--cde-ground:#18231c;--cde-card:#f5f0df;--cde-ink:#1e2924;
+ --cde-line:#d6d0bd;--cde-green:#5c7f67;--cde-pale:#dfe9df;--cde-gold:#d4b968;
+}
+#vg-mobile-console{background:var(--cde-bg)!important;color:#edf3ec!important}
+#vg-mobile-console [data-view="console"]{background:var(--cde-bg)!important}
+.cde1{max-width:620px;margin:auto;padding:8px 8px 74px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.cde1 *{box-shadow:none!important;text-shadow:none!important}
+.cde1-top{display:flex;justify-content:space-between;align-items:center;padding:4px 2px 8px}
+.cde1-top b{font-size:14px;letter-spacing:.08em}.cde1-top small{display:block;font-size:5px;color:#94a69a;margin-top:2px}
+.cde1-top button{border:1px solid #425348;background:#17221b;color:#e9f0e9;border-radius:16px;padding:7px 10px;font-size:5.5px;font-weight:800}
+.cde1-map{position:relative;min-height:310px;border:1px solid #3a4d40;border-radius:20px;overflow:hidden;background:
+ radial-gradient(circle at 50% 45%,#35523b 0 13%,transparent 14%),
+ radial-gradient(circle at 20% 25%,#253b2b 0 8%,transparent 9%),
+ radial-gradient(circle at 80% 28%,#263c2c 0 9%,transparent 10%),
+ radial-gradient(circle at 22% 76%,#2b412f 0 9%,transparent 10%),
+ radial-gradient(circle at 78% 76%,#2a402f 0 9%,transparent 10%),
+ linear-gradient(145deg,#152019,#1e2d22);
+}
+.cde1-map:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 49.5%,#ffffff08 50%,transparent 50.5%),linear-gradient(0deg,transparent 49.5%,#ffffff08 50%,transparent 50.5%);pointer-events:none}
+.cde1-place{position:absolute;width:92px;min-height:61px;border:1px solid #617465;border-radius:14px;background:#f5f0df;color:#1e2924;padding:7px;text-align:left;z-index:2}
+.cde1-place strong{display:block;font-size:6.3px}.cde1-place small{display:block;font-size:4.7px;color:#6c776f;margin-top:3px}.cde1-place span{font-size:19px;float:right;margin-left:4px}
+.cde1-place.active{border:2px solid var(--cde-gold);background:#fff8dc}
+.cde1-clinic{left:8px;top:13px}.cde1-habitat{right:8px;top:13px}.cde1-nutrition{left:8px;bottom:12px}.cde1-morph{right:8px;bottom:12px}.cde1-expedition{left:50%;transform:translateX(-50%);bottom:9px}.cde1-research{left:50%;transform:translateX(-50%);top:9px}
+.cde1-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:124px;height:124px;border-radius:50%;background:#e8eee6;color:#1e2924;border:4px solid #6f8d76;display:grid;place-items:center;text-align:center;z-index:3}
+.cde1-center .face{font-size:47px;line-height:1}.cde1-center b{display:block;font-size:8px;margin-top:2px}.cde1-center small{font-size:4.8px;color:#647269}
+.cde1-locationbar{display:flex;justify-content:space-between;align-items:center;margin:7px 2px 5px}.cde1-locationbar b{font-size:7px}.cde1-locationbar small{font-size:5px;color:#94a69a}
+.cde1-os{background:#f7f3e6;color:#1e2924;border-radius:17px;padding:10px;border:1px solid #d6d0bd}
+.cde1-oshead{display:grid;grid-template-columns:55px 1fr auto;gap:8px;align-items:center}.cde1-avatar{width:55px;height:55px;border-radius:16px;background:#dfe9df;display:grid;place-items:center;font-size:34px}
+.cde1-os h2{font-size:15px;margin:0}.cde1-os p{font-size:5.5px;color:#6c776f;margin:3px 0 0}.cde1-pill{font-size:4.8px;border:1px solid #b8c1b7;border-radius:12px;padding:5px 6px}
+.cde1-readings{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;margin:8px 0}.cde1-readings div{border-top:1px solid #d7d1bf;padding-top:5px;text-align:center}.cde1-readings small{display:block;font-size:4px;color:#778179}.cde1-readings b{font-size:8px}
+.cde1-handtitle{display:flex;justify-content:space-between;margin:9px 1px 5px}.cde1-handtitle b{font-size:6.5px}.cde1-handtitle small{font-size:4.8px;color:#727d75}
+.cde1-hand{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.cde1-card{min-height:104px;border:1px solid #cbc5b3;border-radius:12px;background:#fffdf5;color:#1e2924;padding:8px 5px;text-align:center;position:relative}
+.cde1-card.best{border:2px solid #5c7f67;background:#e6eee5}.cde1-card .ico{font-size:25px;display:block}.cde1-card strong{display:block;font-size:6.4px;margin-top:4px}.cde1-card small{display:block;font-size:4.7px;color:#6f7972;line-height:1.3;margin-top:4px}.cde1-card em{position:absolute;top:4px;right:5px;font-style:normal;font-size:4px;color:#4b6c56;font-weight:900}
+.cde1-result{font-size:6px;color:#667269;border-top:1px solid #d7d1bf;margin-top:7px;padding-top:7px}
+.cde1-console{margin-top:7px;border-top:1px solid #435349}.cde1-console>button{width:100%;border:0;background:transparent;color:#e7eee8;text-align:left;min-height:38px;font-size:6px;font-weight:900;padding:7px 2px}.cde1-console .inside{display:none;padding:3px 0 7px}.cde1-console.open .inside{display:block}
+.cde1-tools{display:grid;grid-template-columns:1fr 1fr;gap:4px}.cde1-tools button{min-height:38px;border:1px solid #45574a;border-radius:9px;background:#17221b;color:#edf2ed;text-align:left;padding:6px;font-size:5.8px;font-weight:850}.cde1-tools small{display:block;font-size:4.6px;color:#94a69a;margin-top:2px}
+.cde1-picker{display:none;background:#17221b;border:1px solid #425348;border-radius:12px;padding:6px;margin-bottom:6px}.cde1-picker.open{display:block}
+@media(max-width:390px){.cde1-place{width:80px;min-height:57px}.cde1-center{width:112px;height:112px}.cde1-map{min-height:290px}}
+</style>
+<script id="vg-cde-pass01-js">
+(function(){
+"use strict";
+const KEY="vetgods_cde_pass01";
+let C={selected:0,location:"SANCTUARY",last:"Sanctuary ready.",turn:1};
+try{C=Object.assign(C,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(_){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(C))}catch(_){}};
+const clamp=v=>Math.max(0,Math.min(100,Math.round(v)));
+function model(){try{return JSON.parse(localStorage.getItem("vetgods_mobile_sanctuary_pass05")||"{}")}catch(_){return{pets:[]}}}
+function put(m){try{localStorage.setItem("vetgods_mobile_sanctuary_pass05",JSON.stringify(m))}catch(_){}}
+function icon(s){s=String(s||"").toLowerCase();if(s.includes("owl"))return"🦉";if(s.includes("wolf"))return"🐺";if(s.includes("cat"))return"🐈";if(s.includes("fox"))return"🦊";if(s.includes("snake"))return"🐍";if(s.includes("bird"))return"🦅";return"🐕"}
+function cur(){let m=model(),ps=Array.isArray(m.pets)?m.pets:[];if(!ps.length)return null;C.selected=Math.max(0,Math.min(C.selected,ps.length-1));return{m,ps,p:ps[C.selected]}}
+function stats(p){return{HEALTH:+(p.health??72),FOOD:100-+(p.hunger??35),WATER:100-+(p.thirst??30),COMFORT:+(p.comfort??60),TRUST:+(p.trust??50),ENERGY:+(p.energy??65)}}
+function low(p){return Object.entries(stats(p)).sort((a,b)=>a[1]-b[1])[0]}
+function act(k,label){
+ let x=cur();if(!x)return;let p=x.p;
+ if(k==="food"){p.hunger=clamp((p.hunger??35)-16);p.energy=clamp((p.energy??65)+4)}
+ if(k==="water"){p.thirst=clamp((p.thirst??30)-18);p.health=clamp((p.health??72)+2)}
+ if(k==="bond"){p.comfort=clamp((p.comfort??60)+10);p.trust=clamp((p.trust??50)+7)}
+ if(k==="enrich"){p.trust=clamp((p.trust??50)+5);p.comfort=clamp((p.comfort??60)+5);p.energy=clamp((p.energy??65)-5)}
+ if(k==="rest"){p.energy=clamp((p.energy??65)+15);p.comfort=clamp((p.comfort??60)+3)}
+ C.last="Turn "+C.turn+" · "+label+" complete.";C.turn++;x.m.selected=C.selected;put(x.m);save();draw();
+}
+function deep(term){
+ document.body.classList.add("vgmc-advanced");document.documentElement.classList.remove("vgmc-lock");
+ let rx=new RegExp(term,"i"),els=[...document.querySelectorAll("button,a,h1,h2,h3,h4")].filter(e=>!e.closest("#vg-mobile-console"));
+ let hit=els.find(e=>rx.test((e.textContent||"").trim()));if(hit){try{if(hit.matches("button,a"))hit.click();hit.scrollIntoView({behavior:"smooth",block:"start"})}catch(_){}}
+}
+const places=[
+ ["CLINIC","🏥","Clinic","Care & recovery","CARE|CLINIC","cde1-clinic"],
+ ["HABITAT","🌲","Habitat","Home & enrichment","HABITAT","cde1-habitat"],
+ ["NUTRITION","🍲","Nutrition","Meals & diet","NUTRITION","cde1-nutrition"],
+ ["MORPH","🧬","Morph Lab","Development","MORPH","cde1-morph"],
+ ["EXPEDITION","🚀","Expedition","Planet missions","MISSION|EXPEDITION","cde1-expedition"],
+ ["RESEARCH","🔬","Research","Discoveries","RESEARCH","cde1-research"]
+];
+function draw(){
+ let view=document.querySelector('#vg-mobile-console [data-view="console"]');if(!view)return;
+ let x=cur();if(!x){view.innerHTML='<div class="cde1"><div class="cde1-top"><b>VET GODS</b><small>No resident available.</small></div></div>';return}
+ let p=x.p,st=stats(p),lo=low(p);
+ let cards=[["food","🍲","MEAL","Improve food + a little energy"],["bond","♡","BOND","Improve comfort + trust"],["enrich","✦","ENRICH","Play and activity"]];
+ view.innerHTML=`<div class="cde1">
+ <div class="cde1-top"><div><b>VET GODS</b><small>C + D + E REDESIGN · PASS 01 / 10</small></div><button data-cde1-picker>CHANGE RESIDENT</button></div>
+ <div class="cde1-picker" id="cde1-picker"><div class="cde1-tools">${x.ps.map((q,i)=>`<button data-cde1-select="${i}">${icon(q.species)} ${q.name}<small>${i===C.selected?"Current resident":"Open resident"}</small></button>`).join("")}</div></div>
+ <div class="cde1-map">${places.map(a=>`<button class="cde1-place ${a[5]} ${C.location===a[0]?"active":""}" data-cde1-place="${a[0]}" data-route="${a[4]}"><span>${a[1]}</span><strong>${a[2]}</strong><small>${a[3]}</small></button>`).join("")}
+ <div class="cde1-center"><div><div class="face">${icon(p.species)}</div><b>${p.name}</b><small>${p.species||"Resident"}<br>SANCTUARY</small></div></div></div>
+ <div class="cde1-locationbar"><b>${C.location}</b><small>Tap a location to select it · open deeper system only when needed</small></div>
+ <section class="cde1-os"><div class="cde1-oshead"><div class="cde1-avatar">${icon(p.species)}</div><div><h2>${p.name}</h2><p>ANIMAL OS · ${p.species||"Resident"}${p.form?" · "+p.form:""}</p></div><span class="cde1-pill">${lo[0]} ${clamp(lo[1])}%</span></div>
+ <div class="cde1-readings">${Object.entries(st).map(z=>`<div><small>${z[0]}</small><b>${clamp(z[1])}</b></div>`).join("")}</div>
+ <div class="cde1-handtitle"><b>CARE HAND</b><small>TURN ${C.turn}</small></div>
+ <div class="cde1-hand">${cards.map(c=>`<button class="cde1-card ${(lo[0]==="FOOD"&&c[0]==="food")||((lo[0]==="COMFORT"||lo[0]==="TRUST")&&c[0]==="bond")?"best":""}" data-cde1-act="${c[0]}" data-label="${c[2].toLowerCase()} card">${((lo[0]==="FOOD"&&c[0]==="food")||((lo[0]==="COMFORT"||lo[0]==="TRUST")&&c[0]==="bond"))?'<em>TRY THIS</em>':""}<span class="ico">${c[1]}</span><strong>${c[2]}</strong><small>${c[3]}</small></button>`).join("")}</div>
+ <div class="cde1-result">${C.last}</div></section>
+ <div class="cde1-console"><button class="cde1-toggle">▸ OPEN SELECTED LOCATION</button><div class="inside"><div class="cde1-tools"><button data-cde1-open>ENTER ${C.location}<small>Launch the existing underlying VET GODS system for this location.</small></button><button data-cde1-act="water" data-label="water interaction">WATER<small>Quick resident interaction</small></button><button data-cde1-act="rest" data-label="rest interaction">REST<small>Quick resident interaction</small></button><button data-cde1-deep="RECORD|ARCHIVE">RECORDS<small>Resident history</small></button></div></div></div>
+ </div>`;
+}
+document.addEventListener("click",e=>{
+ let a=e.target.closest("[data-cde1-act]");if(a){act(a.dataset.cde1Act,a.dataset.label);return}
+ let q=e.target.closest("[data-cde1-select]");if(q){C.selected=Number(q.dataset.cde1Select);save();draw();return}
+ let p=e.target.closest("[data-cde1-place]");if(p){C.location=p.dataset.cde1Place;save();draw();return}
+ if(e.target.closest("[data-cde1-open]")){let found=places.find(a=>a[0]===C.location);if(found)deep(found[4]);return}
+ let d=e.target.closest("[data-cde1-deep]");if(d){deep(d.dataset.cde1Deep);return}
+ if(e.target.closest("[data-cde1-picker]")){document.getElementById("cde1-picker")?.classList.toggle("open");return}
+ let t=e.target.closest(".cde1-toggle");if(t){let box=t.closest(".cde1-console"),on=box.classList.toggle("open");t.textContent=(on?"▾ ":"▸ ")+"OPEN SELECTED LOCATION";}
+},true);
+window.VGCDEPass01=draw;
+})();
+</script>
+
+<style id="vg-cde-pass02-css">
+/* C+D+E PASS 02 — destinations now feel like places, while staying compact */
+.cde2{max-width:620px;margin:auto;padding:8px 8px 76px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.cde2 *{box-shadow:none!important;text-shadow:none!important}
+.cde2-head{display:flex;justify-content:space-between;align-items:center;margin:2px 2px 7px}.cde2-head b{font-size:14px;letter-spacing:.07em}.cde2-head small{display:block;font-size:5px;color:#94a69a}.cde2-head button{border:1px solid #405246;border-radius:16px;background:#17221b;color:#edf3ed;padding:7px 10px;font-size:5.5px;font-weight:850}
+.cde2-map{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:7px;border:1px solid #3c4f42;border-radius:17px;background:#17231b}
+.cde2-place{min-height:70px;border:1px solid #506456;border-radius:12px;background:#202f24;color:#edf3ed;padding:7px;text-align:left}.cde2-place.on{background:#f2ecd9;color:#1e2924;border:2px solid #d1b966}.cde2-place span{font-size:21px;display:block}.cde2-place strong{font-size:6.3px;display:block;margin-top:3px}.cde2-place small{font-size:4.5px;color:#9aaca0;display:block;margin-top:2px}.cde2-place.on small{color:#6c766f}
+.cde2-scene{margin-top:7px;border-radius:17px;background:#f5f0df;color:#1e2924;border:1px solid #d6d0bd;overflow:hidden}
+.cde2-scenehero{min-height:154px;padding:12px;display:grid;grid-template-columns:78px 1fr 72px;gap:9px;align-items:center;background:linear-gradient(145deg,#e9eee3,#f7f2e4)}
+.cde2-side{height:92px;border:1px solid #c9c5b6;border-radius:14px;background:#fffdf5;display:grid;place-items:center;text-align:center;padding:5px}.cde2-side span{font-size:28px}.cde2-side b{display:block;font-size:5.6px}.cde2-side small{display:block;font-size:4.3px;color:#788079;margin-top:2px}
+.cde2-pet{text-align:center}.cde2-face{font-size:62px}.cde2-pet h1{font-size:16px;margin:3px 0}.cde2-pet small{font-size:5px;color:#707a72}
+.cde2-mission{border-top:1px solid #d7d1bf;padding:9px 10px}.cde2-mission small{font-size:4.8px;color:#758078}.cde2-mission b{font-size:8px;display:block;margin:3px 0}.cde2-mission p{font-size:5.7px;line-height:1.4;color:#69746c;margin:0}
+.cde2-vitals{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;padding:7px 9px}.cde2-vitals div{text-align:center;border-top:1px solid #d7d1bf;padding-top:5px}.cde2-vitals small{display:block;font-size:3.8px;color:#788179}.cde2-vitals b{font-size:8px}
+.cde2-handtitle{display:flex;justify-content:space-between;padding:5px 10px}.cde2-handtitle b{font-size:6.4px}.cde2-handtitle small{font-size:4.7px;color:#768078}
+.cde2-hand{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:0 9px 9px}.cde2-card{min-height:104px;border:1px solid #cbc5b3;border-radius:12px;background:#fffdf5;color:#1e2924;padding:7px 5px;text-align:center;position:relative}.cde2-card.best{border:2px solid #5c7f67;background:#e4eee4}.cde2-card span{font-size:25px;display:block}.cde2-card strong{display:block;font-size:6.2px;margin-top:4px}.cde2-card small{display:block;font-size:4.6px;color:#707a72;line-height:1.3;margin-top:4px}.cde2-card em{position:absolute;right:5px;top:4px;font-style:normal;font-size:4px;color:#4f715a;font-weight:900}
+.cde2-open{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center;border-top:1px solid #d7d1bf;padding:8px 9px}.cde2-open div b{font-size:6px;display:block}.cde2-open div small{font-size:4.7px;color:#758078}.cde2-open button{border:0;border-radius:9px;background:#4f725a;color:white;padding:9px 11px;font-size:5.5px;font-weight:900}
+.cde2-picker{display:none;border:1px solid #425348;background:#17221b;border-radius:12px;padding:6px;margin-bottom:6px}.cde2-picker.open{display:block}.cde2-pickergrid{display:grid;grid-template-columns:1fr 1fr;gap:4px}.cde2-pickergrid button{border:1px solid #45574a;background:#202f24;color:#edf3ed;border-radius:9px;padding:7px;text-align:left;font-size:5.8px;font-weight:850}.cde2-pickergrid small{display:block;font-size:4.5px;color:#94a69a}
+@media(max-width:390px){.cde2-map{grid-template-columns:repeat(2,1fr)}.cde2-scenehero{grid-template-columns:64px 1fr 64px}.cde2-side{height:84px}.cde2-face{font-size:54px}}
+</style>
+<script id="vg-cde-pass02-js">
+(function(){
+"use strict";
+const KEY="vetgods_cde_pass02";
+let S={selected:0,location:"CLINIC",turn:1,last:"Choose a destination, then play a card."};
+try{S=Object.assign(S,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(_){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(_){}};
+const clamp=v=>Math.max(0,Math.min(100,Math.round(v)));
+function model(){try{return JSON.parse(localStorage.getItem("vetgods_mobile_sanctuary_pass05")||"{}")}catch(_){return{pets:[]}}}
+function put(m){try{localStorage.setItem("vetgods_mobile_sanctuary_pass05",JSON.stringify(m))}catch(_){}}
+function face(s){s=String(s||"").toLowerCase();if(s.includes("owl"))return"🦉";if(s.includes("wolf"))return"🐺";if(s.includes("cat"))return"🐈";if(s.includes("fox"))return"🦊";if(s.includes("snake"))return"🐍";if(s.includes("bird"))return"🦅";return"🐕"}
+function cur(){let m=model(),ps=Array.isArray(m.pets)?m.pets:[];if(!ps.length)return null;S.selected=Math.max(0,Math.min(S.selected,ps.length-1));return{m,ps,p:ps[S.selected]}}
+function stats(p){return{HEALTH:+(p.health??72),FOOD:100-+(p.hunger??35),WATER:100-+(p.thirst??30),COMFORT:+(p.comfort??60),TRUST:+(p.trust??50),ENERGY:+(p.energy??65)}}
+function low(p){return Object.entries(stats(p)).sort((a,b)=>a[1]-b[1])[0]}
+const places={
+ CLINIC:{ico:"🏥",name:"Clinic",sub:"Care & recovery",route:"CARE|CLINIC",left:["🩺","Exam Stand","Check resident"],right:["🛏️","Recovery Cot","Rest & recover"],mission:"Assess the resident and choose the next care action.",cards:[["bond","♡","COMFORT","Calm + trust"],["rest","☾","RECOVER","Energy + comfort"],["water","💧","HYDRATE","Water + health"]]},
+ HABITAT:{ico:"🌲",name:"Habitat",sub:"Home & enrichment",route:"HABITAT",left:["🧸","Play Zone","Enrichment"],right:["🏡","Quiet Den","Safe rest"],mission:"Keep the resident comfortable, active, and settled.",cards:[["enrich","✦","PLAY","Activity + trust"],["bond","♡","BOND","Comfort + trust"],["rest","☾","REST","Restore energy"]]},
+ NUTRITION:{ico:"🍲",name:"Nutrition",sub:"Meals & diet",route:"NUTRITION",left:["🥣","Meal Bench","Prepare food"],right:["💧","Water Point","Hydration"],mission:"Prepare a simple resident meal and watch food and water readings.",cards:[["food","🍲","MEAL","Food + energy"],["water","💧","WATER","Hydration"],["bond","♡","ENCOURAGE","Comfort at meal"]]},
+ MORPH:{ico:"🧬",name:"Morph Lab",sub:"Development",route:"MORPH",left:["🧬","Genome Desk","Development"],right:["🔹","Trait Vault","Saved traits"],mission:"Review development options without burying the resident in machinery.",cards:[["bond","♡","STABILIZE","Trust + comfort"],["enrich","✦","TRAIN","Activity"],["rest","☾","SETTLE","Restore energy"]]},
+ RESEARCH:{ico:"🔬",name:"Research",sub:"Discoveries",route:"RESEARCH",left:["🔬","Study Desk","Observe"],right:["📚","Archive","Findings"],mission:"Study the resident and open deeper research only when you need it.",cards:[["bond","♡","OBSERVE","Quiet interaction"],["enrich","✦","TEST PLAY","Activity"],["rest","☾","PAUSE","Restore energy"]]},
+ EXPEDITION:{ico:"🚀",name:"Expedition",sub:"Planet missions",route:"MISSION|EXPEDITION",left:["🧭","Trail Gate","Mission route"],right:["🎒","Field Pack","Supplies"],mission:"Prepare the resident before entering the next planet mission.",cards:[["food","🍲","PACK MEAL","Food + energy"],["water","💧","FILL WATER","Hydration"],["rest","☾","REST UP","Restore energy"]]}
+};
+function act(k,label){let x=cur();if(!x)return;let p=x.p;
+ if(k==="food"){p.hunger=clamp((p.hunger??35)-16);p.energy=clamp((p.energy??65)+4)}
+ if(k==="water"){p.thirst=clamp((p.thirst??30)-18);p.health=clamp((p.health??72)+2)}
+ if(k==="bond"){p.comfort=clamp((p.comfort??60)+10);p.trust=clamp((p.trust??50)+7)}
+ if(k==="enrich"){p.trust=clamp((p.trust??50)+5);p.comfort=clamp((p.comfort??60)+5);p.energy=clamp((p.energy??65)-5)}
+ if(k==="rest"){p.energy=clamp((p.energy??65)+15);p.comfort=clamp((p.comfort??60)+3)}
+ S.last="Turn "+S.turn+" · "+label+" complete.";S.turn++;x.m.selected=S.selected;put(x.m);save();draw();
+}
+function deep(term){document.body.classList.add("vgmc-advanced");document.documentElement.classList.remove("vgmc-lock");let rx=new RegExp(term,"i"),els=[...document.querySelectorAll("button,a,h1,h2,h3,h4")].filter(e=>!e.closest("#vg-mobile-console"));let hit=els.find(e=>rx.test((e.textContent||"").trim()));if(hit){try{if(hit.matches("button,a"))hit.click();hit.scrollIntoView({behavior:"smooth",block:"start"})}catch(_){}}}
+function draw(){
+ let view=document.querySelector('#vg-mobile-console [data-view="console"]');if(!view)return;let x=cur();if(!x){view.innerHTML='<div class="cde2">No resident available.</div>';return}
+ let p=x.p,st=stats(p),lo=low(p),L=places[S.location]||places.CLINIC;
+ let recommend={FOOD:"food",WATER:"water",COMFORT:"bond",TRUST:"bond",ENERGY:"rest",HEALTH:"rest"}[lo[0]];
+ view.innerHTML=`<div class="cde2">
+ <div class="cde2-head"><div><b>VET GODS</b><small>C + D + E · PASS 02 / 10 · DESTINATIONS BECOME PLAYABLE ROOMS</small></div><button data-cde2-picker>CHANGE</button></div>
+ <div class="cde2-picker" id="cde2-picker"><div class="cde2-pickergrid">${x.ps.map((q,i)=>`<button data-cde2-select="${i}">${face(q.species)} ${q.name}<small>${i===S.selected?"Current resident":"Open resident"}</small></button>`).join("")}</div></div>
+ <div class="cde2-map">${Object.entries(places).map(([k,v])=>`<button class="cde2-place ${S.location===k?"on":""}" data-cde2-place="${k}"><span>${v.ico}</span><strong>${v.name}</strong><small>${v.sub}</small></button>`).join("")}</div>
+ <div class="cde2-scene"><div class="cde2-scenehero"><div class="cde2-side"><div><span>${L.left[0]}</span><b>${L.left[1]}</b><small>${L.left[2]}</small></div></div><div class="cde2-pet"><div class="cde2-face">${face(p.species)}</div><h1>${p.name}</h1><small>${L.name} · ${p.species||"Resident"}</small></div><div class="cde2-side"><div><span>${L.right[0]}</span><b>${L.right[1]}</b><small>${L.right[2]}</small></div></div></div>
+ <div class="cde2-mission"><small>CURRENT ROOM</small><b>${L.ico} ${L.name}</b><p>${L.mission}</p></div>
+ <div class="cde2-vitals">${Object.entries(st).map(z=>`<div><small>${z[0]}</small><b>${clamp(z[1])}</b></div>`).join("")}</div>
+ <div class="cde2-handtitle"><b>${L.name.toUpperCase()} CARDS</b><small>${lo[0]} ${clamp(lo[1])}% · TURN ${S.turn}</small></div>
+ <div class="cde2-hand">${L.cards.map(c=>`<button class="cde2-card ${recommend===c[0]?"best":""}" data-cde2-act="${c[0]}" data-label="${c[2].toLowerCase()}">${recommend===c[0]?'<em>SUGGESTED</em>':""}<span>${c[1]}</span><strong>${c[2]}</strong><small>${c[3]}</small></button>`).join("")}</div>
+ <div class="cde2-open"><div><b>${S.last}</b><small>The old deep system stays hidden until you deliberately enter it.</small></div><button data-cde2-deep="${L.route}">ENTER ${L.name.toUpperCase()}</button></div></div>
+ </div>`;
+}
+document.addEventListener("click",e=>{
+ let a=e.target.closest("[data-cde2-act]");if(a){act(a.dataset.cde2Act,a.dataset.label);return}
+ let p=e.target.closest("[data-cde2-place]");if(p){S.location=p.dataset.cde2Place;save();draw();return}
+ let q=e.target.closest("[data-cde2-select]");if(q){S.selected=Number(q.dataset.cde2Select);save();draw();return}
+ let d=e.target.closest("[data-cde2-deep]");if(d){deep(d.dataset.cde2Deep);return}
+ if(e.target.closest("[data-cde2-picker]"))document.getElementById("cde2-picker")?.classList.toggle("open");
+},true);
+window.VGCDEPass02=draw;
+})();
+</script>
+
+<style id="vg-cde-pass03-css">
+/* C+D+E PASS 03 — room objectives, card chains, rewards; still a single clean view */
+.cde3{max-width:620px;margin:auto;padding:8px 8px 76px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.cde3 *{box-shadow:none!important;text-shadow:none!important}
+.cde3-head{display:flex;justify-content:space-between;align-items:center;margin:2px 2px 7px}.cde3-head b{font-size:14px;letter-spacing:.07em}.cde3-head small{display:block;font-size:5px;color:#94a69a}.cde3-head button{border:1px solid #405246;border-radius:16px;background:#17221b;color:#edf3ed;padding:7px 10px;font-size:5.5px;font-weight:850}
+.cde3-map{display:flex;gap:5px;overflow-x:auto;padding:6px;border:1px solid #3c4f42;border-radius:15px;background:#17231b;scrollbar-width:none}.cde3-map::-webkit-scrollbar{display:none}
+.cde3-place{flex:0 0 83px;min-height:59px;border:1px solid #506456;border-radius:11px;background:#202f24;color:#edf3ed;padding:6px;text-align:left}.cde3-place.on{background:#f2ecd9;color:#1e2924;border:2px solid #d1b966}.cde3-place span{font-size:18px}.cde3-place strong{display:block;font-size:5.8px;margin-top:2px}.cde3-place small{display:block;font-size:4.2px;color:#9aaca0}.cde3-place.on small{color:#69736c}
+.cde3-scene{margin-top:7px;background:#f5f0df;color:#1e2924;border:1px solid #d6d0bd;border-radius:17px;overflow:hidden}
+.cde3-stage{display:grid;grid-template-columns:74px 1fr 74px;gap:8px;align-items:center;padding:11px;background:linear-gradient(145deg,#e8eee3,#f8f3e5)}
+.cde3-object{height:91px;border:1px solid #cbc6b7;border-radius:13px;background:#fffdf5;display:grid;place-items:center;text-align:center;padding:5px}.cde3-object span{font-size:27px}.cde3-object b{display:block;font-size:5.5px}.cde3-object small{display:block;font-size:4.2px;color:#778078}
+.cde3-pet{text-align:center}.cde3-face{font-size:61px}.cde3-pet h1{font-size:16px;margin:3px 0}.cde3-pet small{font-size:4.8px;color:#707970}
+.cde3-progress{padding:8px 10px;border-top:1px solid #d8d2c0}.cde3-progressline{display:flex;justify-content:space-between;align-items:center}.cde3-progressline b{font-size:6.4px}.cde3-progressline small{font-size:4.6px;color:#758078}.cde3-track{height:6px;background:#ded9c8;border-radius:8px;overflow:hidden;margin-top:5px}.cde3-fill{height:100%;background:#5c7f67;border-radius:8px}
+.cde3-objective{padding:0 10px 8px}.cde3-objective b{font-size:7px}.cde3-objective p{font-size:5.4px;color:#68736b;line-height:1.4;margin:3px 0}.cde3-reward{display:inline-block;border:1px solid #d1c69e;border-radius:12px;background:#fff7d8;padding:4px 7px;font-size:4.8px}
+.cde3-vitals{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;padding:6px 9px}.cde3-vitals div{text-align:center;border-top:1px solid #d7d1bf;padding-top:5px}.cde3-vitals small{display:block;font-size:3.8px;color:#788179}.cde3-vitals b{font-size:8px}
+.cde3-handtitle{display:flex;justify-content:space-between;padding:5px 10px}.cde3-handtitle b{font-size:6.3px}.cde3-handtitle small{font-size:4.6px;color:#758078}
+.cde3-hand{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:0 9px 9px}.cde3-card{min-height:108px;border:1px solid #cbc5b3;border-radius:12px;background:#fffdf5;color:#1e2924;padding:7px 5px;text-align:center;position:relative}.cde3-card.next{border:2px solid #5c7f67;background:#e4eee4}.cde3-card.done{opacity:.52}.cde3-card span{font-size:25px;display:block}.cde3-card strong{display:block;font-size:6.1px;margin-top:4px}.cde3-card small{display:block;font-size:4.5px;color:#707a72;line-height:1.3;margin-top:4px}.cde3-card em{position:absolute;right:5px;top:4px;font-style:normal;font-size:4px;color:#4f715a;font-weight:900}
+.cde3-msg{border-top:1px solid #d7d1bf;padding:8px 10px;font-size:5.7px;color:#68736b}
+.cde3-enter{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#ebe6d8}.cde3-enter small{font-size:4.6px;color:#707a72;max-width:65%}.cde3-enter button{border:0;border-radius:9px;background:#4f725a;color:white;padding:9px 11px;font-size:5.4px;font-weight:900}
+.cde3-picker{display:none;border:1px solid #425348;background:#17221b;border-radius:12px;padding:6px;margin-bottom:6px}.cde3-picker.open{display:block}.cde3-pickergrid{display:grid;grid-template-columns:1fr 1fr;gap:4px}.cde3-pickergrid button{border:1px solid #45574a;background:#202f24;color:#edf3ed;border-radius:9px;padding:7px;text-align:left;font-size:5.7px;font-weight:850}.cde3-pickergrid small{display:block;font-size:4.4px;color:#94a69a}
+@media(max-width:390px){.cde3-stage{grid-template-columns:62px 1fr 62px;gap:5px}.cde3-object{height:82px}.cde3-face{font-size:53px}}
+</style>
+<script id="vg-cde-pass03-js">
+(function(){
+"use strict";
+const KEY="vetgods_cde_pass03";
+let G={selected:0,location:"CLINIC",turn:1,credits:0,progress:{},last:"Choose a room objective and play its cards."};
+try{G=Object.assign(G,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(_){}
+if(!G.progress||typeof G.progress!=="object")G.progress={};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(G))}catch(_){}};
+const clamp=v=>Math.max(0,Math.min(100,Math.round(v)));
+function model(){try{return JSON.parse(localStorage.getItem("vetgods_mobile_sanctuary_pass05")||"{}")}catch(_){return{pets:[]}}}
+function put(m){try{localStorage.setItem("vetgods_mobile_sanctuary_pass05",JSON.stringify(m))}catch(_){}}
+function face(s){s=String(s||"").toLowerCase();if(s.includes("owl"))return"🦉";if(s.includes("wolf"))return"🐺";if(s.includes("cat"))return"🐈";if(s.includes("fox"))return"🦊";if(s.includes("snake"))return"🐍";if(s.includes("bird"))return"🦅";return"🐕"}
+function cur(){let m=model(),ps=Array.isArray(m.pets)?m.pets:[];if(!ps.length)return null;G.selected=Math.max(0,Math.min(G.selected,ps.length-1));return{m,ps,p:ps[G.selected]}}
+function stats(p){return{HEALTH:+(p.health??72),FOOD:100-+(p.hunger??35),WATER:100-+(p.thirst??30),COMFORT:+(p.comfort??60),TRUST:+(p.trust??50),ENERGY:+(p.energy??65)}}
+const rooms={
+ CLINIC:{ico:"🏥",name:"Clinic",sub:"Care",route:"CARE|CLINIC",left:["🩺","Exam","Assessment"],right:["🛏️","Cot","Recovery"],objective:"Complete a calm intake sequence.",reward:"Clinic token + 25 credits",cards:[["bond","♡","SETTLE","Calm the resident"],["water","💧","SUPPORT","Offer water"],["rest","☾","RECOVER","Rest after intake"]]},
+ HABITAT:{ico:"🌲",name:"Habitat",sub:"Home",route:"HABITAT",left:["🧸","Toy","Activity"],right:["🏡","Den","Quiet zone"],objective:"Complete the resident's habitat routine.",reward:"Habitat token + 20 credits",cards:[["enrich","✦","EXPLORE","Use the play area"],["bond","♡","CHECK IN","Spend quiet time"],["rest","☾","SETTLE","Return to den"]]},
+ NUTRITION:{ico:"🍲",name:"Nutrition",sub:"Meals",route:"NUTRITION",left:["🥣","Prep","Meal station"],right:["💧","Water","Hydration"],objective:"Finish a simple fictional meal routine.",reward:"Nutrition token + 20 credits",cards:[["food","🍲","PREPARE","Prepare meal"],["water","💧","HYDRATE","Offer water"],["bond","♡","OBSERVE","Quiet meal check"]]},
+ MORPH:{ico:"🧬",name:"Morph Lab",sub:"Develop",route:"MORPH",left:["🧬","Genome","Trait desk"],right:["🔹","Vault","Saved traits"],objective:"Complete a stable development review.",reward:"Trait token + 30 credits",cards:[["bond","♡","SYNC","Settle resident"],["enrich","✦","TEST","Try activity"],["rest","☾","LOCK","Finish and rest"]]},
+ RESEARCH:{ico:"🔬",name:"Research",sub:"Study",route:"RESEARCH",left:["🔬","Desk","Observe"],right:["📚","Archive","Findings"],objective:"Complete one observation cycle.",reward:"Research token + 25 credits",cards:[["bond","♡","OBSERVE","Quiet observation"],["enrich","✦","ACTIVITY","Observe activity"],["rest","☾","LOG","Close observation"]]},
+ EXPEDITION:{ico:"🚀",name:"Expedition",sub:"Mission",route:"MISSION|EXPEDITION",left:["🧭","Gate","Route"],right:["🎒","Pack","Supplies"],objective:"Prepare the resident for a planet mission.",reward:"Field token + 35 credits",cards:[["food","🍲","PACK FOOD","Prepare provisions"],["water","💧","PACK WATER","Prepare hydration"],["rest","☾","READY","Rest before launch"]]}
+};
+function roomProg(){let a=G.progress[G.location];if(!Array.isArray(a))a=[];return a}
+function act(k,label,index){let x=cur();if(!x)return;let p=x.p;
+ if(k==="food"){p.hunger=clamp((p.hunger??35)-16);p.energy=clamp((p.energy??65)+4)}
+ if(k==="water"){p.thirst=clamp((p.thirst??30)-18);p.health=clamp((p.health??72)+2)}
+ if(k==="bond"){p.comfort=clamp((p.comfort??60)+10);p.trust=clamp((p.trust??50)+7)}
+ if(k==="enrich"){p.trust=clamp((p.trust??50)+5);p.comfort=clamp((p.comfort??60)+5);p.energy=clamp((p.energy??65)-5)}
+ if(k==="rest"){p.energy=clamp((p.energy??65)+15);p.comfort=clamp((p.comfort??60)+3)}
+ let a=roomProg(),wasDone=a.length>=3;
+ if(index===a.length)a.push(index);
+ G.progress[G.location]=a;
+ if(!wasDone&&a.length>=3){let reward={CLINIC:25,HABITAT:20,NUTRITION:20,MORPH:30,RESEARCH:25,EXPEDITION:35}[G.location]||20;G.credits+=reward;G.last="Objective complete · +"+reward+" fictional credits."}
+ else G.last="Turn "+G.turn+" · "+label+" complete.";
+ G.turn++;x.m.selected=G.selected;put(x.m);save();draw();
+}
+function deep(term){document.body.classList.add("vgmc-advanced");document.documentElement.classList.remove("vgmc-lock");let rx=new RegExp(term,"i"),els=[...document.querySelectorAll("button,a,h1,h2,h3,h4")].filter(e=>!e.closest("#vg-mobile-console"));let hit=els.find(e=>rx.test((e.textContent||"").trim()));if(hit){try{if(hit.matches("button,a"))hit.click();hit.scrollIntoView({behavior:"smooth",block:"start"})}catch(_){}}}
+function draw(){
+ let view=document.querySelector('#vg-mobile-console [data-view="console"]');if(!view)return;let x=cur();if(!x){view.innerHTML='<div class="cde3">No resident available.</div>';return}
+ let p=x.p,st=stats(p),R=rooms[G.location]||rooms.CLINIC,done=roomProg(),pct=Math.min(100,(done.length/3)*100);
+ view.innerHTML=`<div class="cde3">
+ <div class="cde3-head"><div><b>VET GODS</b><small>C + D + E · PASS 03 / 10 · OBJECTIVES + CARD CHAINS</small></div><button data-cde3-picker>CHANGE · ¢${G.credits}</button></div>
+ <div class="cde3-picker" id="cde3-picker"><div class="cde3-pickergrid">${x.ps.map((q,i)=>`<button data-cde3-select="${i}">${face(q.species)} ${q.name}<small>${i===G.selected?"Current resident":"Open resident"}</small></button>`).join("")}</div></div>
+ <div class="cde3-map">${Object.entries(rooms).map(([k,v])=>`<button class="cde3-place ${G.location===k?"on":""}" data-cde3-place="${k}"><span>${v.ico}</span><strong>${v.name}</strong><small>${v.sub}</small></button>`).join("")}</div>
+ <section class="cde3-scene">
+ <div class="cde3-stage"><div class="cde3-object"><div><span>${R.left[0]}</span><b>${R.left[1]}</b><small>${R.left[2]}</small></div></div><div class="cde3-pet"><div class="cde3-face">${face(p.species)}</div><h1>${p.name}</h1><small>${R.name} · ${p.species||"Resident"}</small></div><div class="cde3-object"><div><span>${R.right[0]}</span><b>${R.right[1]}</b><small>${R.right[2]}</small></div></div></div>
+ <div class="cde3-progress"><div class="cde3-progressline"><b>${R.ico} ${R.name.toUpperCase()} OBJECTIVE</b><small>${done.length}/3 STEPS</small></div><div class="cde3-track"><div class="cde3-fill" style="width:${pct}%"></div></div></div>
+ <div class="cde3-objective"><b>${R.objective}</b><p>Cards now form a tiny sequence. Play the highlighted next card to advance the room objective.</p><span class="cde3-reward">REWARD · ${R.reward}</span></div>
+ <div class="cde3-vitals">${Object.entries(st).map(z=>`<div><small>${z[0]}</small><b>${clamp(z[1])}</b></div>`).join("")}</div>
+ <div class="cde3-handtitle"><b>ROOM CARDS</b><small>TURN ${G.turn}</small></div>
+ <div class="cde3-hand">${R.cards.map((c,i)=>`<button class="cde3-card ${done.includes(i)?"done":i===done.length?"next":""}" data-cde3-act="${c[0]}" data-index="${i}" data-label="${c[2].toLowerCase()}" ${done.includes(i)||i>done.length?"disabled":""}>${i===done.length?'<em>NEXT</em>':done.includes(i)?'<em>DONE</em>':""}<span>${c[1]}</span><strong>${c[2]}</strong><small>${c[3]}</small></button>`).join("")}</div>
+ <div class="cde3-msg">${G.last}</div>
+ <div class="cde3-enter"><small>Advanced original machinery remains available, but it no longer dominates ordinary play.</small><button data-cde3-deep="${R.route}">DEEP ${R.name.toUpperCase()}</button></div>
+ </section></div>`;
+}
+document.addEventListener("click",e=>{
+ let a=e.target.closest("[data-cde3-act]");if(a){act(a.dataset.cde3Act,a.dataset.label,Number(a.dataset.index));return}
+ let p=e.target.closest("[data-cde3-place]");if(p){G.location=p.dataset.cde3Place;save();draw();return}
+ let q=e.target.closest("[data-cde3-select]");if(q){G.selected=Number(q.dataset.cde3Select);save();draw();return}
+ let d=e.target.closest("[data-cde3-deep]");if(d){deep(d.dataset.cde3Deep);return}
+ if(e.target.closest("[data-cde3-picker]"))document.getElementById("cde3-picker")?.classList.toggle("open");
+},true);
+window.VGCDEPass03=draw;
+})();
+</script>
+
+<style id="vg-cde-pass04-css">
+/* PASS 04 — compact world progression + destination unlocks + one-view quest board */
+.cde4{max-width:620px;margin:auto;padding:8px 8px 76px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.cde4 *{box-shadow:none!important;text-shadow:none!important}
+.cde4-head{display:flex;justify-content:space-between;align-items:center;margin:2px 2px 7px}.cde4-head b{font-size:14px;letter-spacing:.07em}.cde4-head small{display:block;font-size:5px;color:#94a69a}.cde4-wallet{font-size:5.5px;border:1px solid #43554a;border-radius:15px;padding:6px 9px;background:#17221b}
+.cde4-world{border:1px solid #3c4f42;border-radius:16px;background:#17231b;padding:7px}
+.cde4-worldtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}.cde4-worldtop b{font-size:6.5px}.cde4-worldtop small{font-size:4.6px;color:#93a59a}
+.cde4-route{display:grid;grid-template-columns:repeat(6,1fr);gap:3px}.cde4-node{min-height:58px;border:1px solid #4b6051;border-radius:10px;background:#202f24;color:#edf3ed;padding:5px 2px;text-align:center}.cde4-node.on{background:#f4eedb;color:#1e2924;border:2px solid #d0b966}.cde4-node.complete{background:#314c38}.cde4-node.locked{opacity:.38}.cde4-node span{font-size:18px;display:block}.cde4-node strong{display:block;font-size:4.8px;margin-top:2px}
+.cde4-scene{margin-top:7px;background:#f5f0df;color:#1e2924;border:1px solid #d6d0bd;border-radius:17px;overflow:hidden}
+.cde4-stage{display:grid;grid-template-columns:68px 1fr 68px;gap:7px;align-items:center;padding:10px;background:linear-gradient(145deg,#e8eee3,#f8f3e5)}
+.cde4-object{height:82px;border:1px solid #cbc6b7;border-radius:13px;background:#fffdf5;display:grid;place-items:center;text-align:center;padding:5px}.cde4-object span{font-size:25px}.cde4-object b{display:block;font-size:5.2px}.cde4-object small{display:block;font-size:4px;color:#778078}
+.cde4-pet{text-align:center}.cde4-face{font-size:58px}.cde4-pet h1{font-size:15px;margin:2px}.cde4-pet small{font-size:4.7px;color:#707970}
+.cde4-quest{padding:8px 10px;border-top:1px solid #d8d2c0}.cde4-qtop{display:flex;justify-content:space-between}.cde4-qtop b{font-size:6.4px}.cde4-qtop small{font-size:4.5px;color:#758078}.cde4-quest p{font-size:5.3px;color:#68736b;margin:4px 0;line-height:1.35}
+.cde4-track{height:6px;background:#ddd7c6;border-radius:6px;overflow:hidden}.cde4-fill{height:100%;background:#5c7f67}
+.cde4-hand{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:8px 9px}.cde4-card{min-height:101px;border:1px solid #cbc5b3;border-radius:12px;background:#fffdf5;color:#1e2924;padding:7px 5px;text-align:center;position:relative}.cde4-card.next{border:2px solid #5c7f67;background:#e4eee4}.cde4-card.done{opacity:.5}.cde4-card span{font-size:24px;display:block}.cde4-card strong{display:block;font-size:6px;margin-top:4px}.cde4-card small{display:block;font-size:4.4px;color:#707a72;margin-top:4px}.cde4-card em{position:absolute;right:5px;top:4px;font-style:normal;font-size:4px;color:#4f715a;font-weight:900}
+.cde4-summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;padding:0 9px 8px}.cde4-summary div{border:1px solid #d2ccba;border-radius:9px;padding:6px;background:#eee9dc}.cde4-summary small{display:block;font-size:4px;color:#727c74}.cde4-summary b{font-size:6.5px}
+.cde4-footer{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #d7d1bf;padding:8px 9px}.cde4-footer small{font-size:4.6px;color:#6e7870;max-width:64%}.cde4-footer button{border:0;border-radius:9px;background:#4f725a;color:#fff;padding:8px 10px;font-size:5.2px;font-weight:900}
+@media(max-width:390px){.cde4-route{grid-template-columns:repeat(3,1fr)}.cde4-stage{grid-template-columns:58px 1fr 58px}.cde4-face{font-size:51px}}
+</style>
+<script id="vg-cde-pass04-js">
+(function(){
+"use strict";
+const KEY="vetgods_cde_pass04";
+let P={selected:0,location:"CLINIC",credits:0,progress:{},tokens:[],turn:1,last:"World route initialized."};
+try{P=Object.assign(P,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(_){}
+if(!P.progress||typeof P.progress!=="object")P.progress={};if(!Array.isArray(P.tokens))P.tokens=[];
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(P))}catch(_){}};
+const clamp=v=>Math.max(0,Math.min(100,Math.round(v)));
+function model(){try{return JSON.parse(localStorage.getItem("vetgods_mobile_sanctuary_pass05")||"{}")}catch(_){return{pets:[]}}}
+function put(m){try{localStorage.setItem("vetgods_mobile_sanctuary_pass05",JSON.stringify(m))}catch(_){}}
+function face(s){s=String(s||"").toLowerCase();if(s.includes("owl"))return"🦉";if(s.includes("wolf"))return"🐺";if(s.includes("cat"))return"🐈";if(s.includes("fox"))return"🦊";if(s.includes("snake"))return"🐍";if(s.includes("bird"))return"🦅";return"🐕"}
+function cur(){let m=model(),ps=Array.isArray(m.pets)?m.pets:[];if(!ps.length)return null;P.selected=Math.max(0,Math.min(P.selected,ps.length-1));return{m,ps,p:ps[P.selected]}}
+const rooms=[
+ ["CLINIC","🏥","Clinic","CARE|CLINIC",["🩺","Exam"],["🛏️","Cot"],"Complete resident intake.",25,[["bond","♡","SETTLE"],["water","💧","SUPPORT"],["rest","☾","RECOVER"]]],
+ ["HABITAT","🌲","Habitat","HABITAT",["🧸","Play"],["🏡","Den"],"Set up a stable home routine.",20,[["enrich","✦","EXPLORE"],["bond","♡","BOND"],["rest","☾","SETTLE"]]],
+ ["NUTRITION","🍲","Nutrition","NUTRITION",["🥣","Prep"],["💧","Water"],"Complete the fictional meal routine.",20,[["food","🍲","PREPARE"],["water","💧","HYDRATE"],["bond","♡","OBSERVE"]]],
+ ["RESEARCH","🔬","Research","RESEARCH",["🔬","Study"],["📚","Archive"],"Finish one observation cycle.",25,[["bond","♡","OBSERVE"],["enrich","✦","ACTIVITY"],["rest","☾","LOG"]]],
+ ["MORPH","🧬","Morph Lab","MORPH",["🧬","Genome"],["🔹","Vault"],"Finish a development review.",30,[["bond","♡","SYNC"],["enrich","✦","TEST"],["rest","☾","LOCK"]]],
+ ["EXPEDITION","🚀","Expedition","MISSION|EXPEDITION",["🧭","Gate"],["🎒","Pack"],"Prepare for the planet mission.",35,[["food","🍲","PACK FOOD"],["water","💧","PACK WATER"],["rest","☾","READY"]]]
+];
+function room(k){return rooms.find(r=>r[0]===k)||rooms[0]}
+function done(k){let a=P.progress[k];return Array.isArray(a)?a:[]}
+function unlocked(i){if(i===0)return true;return done(rooms[i-1][0]).length>=3}
+function act(k,label,index){let x=cur(); if(!x)return; let p=x.p;
+ if(k==="food"){p.hunger=clamp((p.hunger??35)-16);p.energy=clamp((p.energy??65)+4)}
+ if(k==="water"){p.thirst=clamp((p.thirst??30)-18);p.health=clamp((p.health??72)+2)}
+ if(k==="bond"){p.comfort=clamp((p.comfort??60)+10);p.trust=clamp((p.trust??50)+7)}
+ if(k==="enrich"){p.trust=clamp((p.trust??50)+5);p.comfort=clamp((p.comfort??60)+5);p.energy=clamp((p.energy??65)-5)}
+ if(k==="rest"){p.energy=clamp((p.energy??65)+15);p.comfort=clamp((p.comfort??60)+3)}
+ let a=done(P.location),was=a.length>=3,R=room(P.location);if(index===a.length)a.push(index);P.progress[P.location]=a;
+ if(!was&&a.length>=3){P.credits+=R[7];if(!P.tokens.includes(R[0]))P.tokens.push(R[0]);P.last=R[2]+" complete · next destination unlocked."}else P.last="Turn "+P.turn+" · "+label+" complete.";
+ P.turn++;x.m.selected=P.selected;put(x.m);save();draw();
+}
+function deep(term){document.body.classList.add("vgmc-advanced");document.documentElement.classList.remove("vgmc-lock");let rx=new RegExp(term,"i"),els=[...document.querySelectorAll("button,a,h1,h2,h3,h4")].filter(e=>!e.closest("#vg-mobile-console"));let hit=els.find(e=>rx.test((e.textContent||"").trim()));if(hit){try{if(hit.matches("button,a"))hit.click();hit.scrollIntoView({behavior:"smooth",block:"start"})}catch(_){}}}
+function draw(){let view=document.querySelector('#vg-mobile-console [data-view="console"]'); if(!view)return; let x=cur(); if(!x){view.innerHTML='<div class="cde4">No resident available.</div>';return}
+ let p=x.p,R=room(P.location),a=done(P.location),pct=Math.min(100,a.length/3*100),completed=rooms.filter(r=>done(r[0]).length>=3).length;
+ view.innerHTML=`<div class="cde4"><div class="cde4-head"><div><b>VET GODS</b><small>C+D+E · PASS 04/10 · WORLD PROGRESSION</small></div><div class="cde4-wallet">¢ ${P.credits} · ${P.tokens.length} TOKENS</div></div>
+ <div class="cde4-world"><div class="cde4-worldtop"><b>PLANET SANCTUARY ROUTE</b><small>${completed}/6 LOCATIONS COMPLETE</small></div><div class="cde4-route">${rooms.map((r,i)=>`<button class="cde4-node ${P.location===r[0]?"on":""} ${done(r[0]).length>=3?"complete":""} ${!unlocked(i)?"locked":""}" data-cde4-place="${r[0]}" ${!unlocked(i)?"disabled":""}><span>${!unlocked(i)?"🔒":r[1]}</span><strong>${r[2]}</strong></button>`).join("")}</div></div>
+ <section class="cde4-scene"><div class="cde4-stage"><div class="cde4-object"><div><span>${R[4][0]}</span><b>${R[4][1]}</b><small>Room object</small></div></div><div class="cde4-pet"><div class="cde4-face">${face(p.species)}</div><h1>${p.name}</h1><small>${R[2]} · ${p.species||"Resident"}</small></div><div class="cde4-object"><div><span>${R[5][0]}</span><b>${R[5][1]}</b><small>Room object</small></div></div></div>
+ <div class="cde4-quest"><div class="cde4-qtop"><b>${R[1]} ${R[2].toUpperCase()} QUEST</b><small>${a.length}/3</small></div><p>${R[6]}</p><div class="cde4-track"><div class="cde4-fill" style="width:${pct}%"></div></div></div>
+ <div class="cde4-hand">${R[8].map((c,i)=>`<button class="cde4-card ${a.includes(i)?"done":i===a.length?"next":""}" data-cde4-act="${c[0]}" data-index="${i}" data-label="${c[2]}" ${a.includes(i)||i>a.length?"disabled":""}>${i===a.length?'<em>NEXT</em>':a.includes(i)?'<em>DONE</em>':""}<span>${c[1]}</span><strong>${c[2]}</strong><small>Step ${i+1} of 3</small></button>`).join("")}</div>
+ <div class="cde4-summary"><div><small>WORLD</small><b>${completed}/6</b></div><div><small>CREDITS</small><b>${P.credits}</b></div><div><small>TURN</small><b>${P.turn}</b></div></div>
+ <div class="cde4-footer"><small>${P.last} Advanced original systems remain available separately.</small><button data-cde4-deep="${R[3]}">DEEP ${R[2].toUpperCase()}</button></div></section></div>`;
+}
+document.addEventListener("click",e=>{let a=e.target.closest("[data-cde4-act]");if(a){act(a.dataset.cde4Act,a.dataset.label,Number(a.dataset.index));return}let p=e.target.closest("[data-cde4-place]");if(p){P.location=p.dataset.cde4Place;save();draw();return}let d=e.target.closest("[data-cde4-deep]");if(d){deep(d.dataset.cde4Deep);return}},true);
+window.VGCDEPass04=draw;
+})();
+</script>
+
+<style id="vg-cde-pass05-css">
+/* PASS 05 — location decks + inventory/reward loop, kept intentionally compact */
+.cde5{max-width:620px;margin:auto;padding:8px 8px 76px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.cde5 *{box-shadow:none!important;text-shadow:none!important}
+.cde5-head{display:flex;justify-content:space-between;align-items:center;margin:2px 2px 7px}.cde5-head b{font-size:14px;letter-spacing:.07em}.cde5-head small{display:block;font-size:5px;color:#94a69a}.cde5-bank{border:1px solid #45574a;background:#17221b;border-radius:15px;padding:6px 9px;font-size:5.3px}
+.cde5-route{display:flex;gap:4px;overflow-x:auto;border:1px solid #3c4f42;border-radius:15px;background:#17231b;padding:6px;scrollbar-width:none}.cde5-route::-webkit-scrollbar{display:none}.cde5-node{flex:0 0 79px;min-height:56px;border:1px solid #4b6051;border-radius:10px;background:#202f24;color:#edf3ed;padding:5px;text-align:center}.cde5-node.on{background:#f4eedb;color:#1e2924;border:2px solid #d0b966}.cde5-node.done{background:#304b37}.cde5-node.lock{opacity:.36}.cde5-node span{display:block;font-size:18px}.cde5-node b{display:block;font-size:4.8px}
+.cde5-main{margin-top:7px;background:#f5f0df;color:#1e2924;border:1px solid #d6d0bd;border-radius:17px;overflow:hidden}
+.cde5-stage{display:grid;grid-template-columns:64px 1fr 64px;gap:7px;align-items:center;padding:9px;background:linear-gradient(145deg,#e8eee3,#f8f3e5)}.cde5-prop{height:78px;border:1px solid #cbc6b7;border-radius:12px;background:#fffdf5;display:grid;place-items:center;text-align:center}.cde5-prop span{font-size:24px}.cde5-prop b{display:block;font-size:5px}.cde5-pet{text-align:center}.cde5-face{font-size:55px}.cde5-pet h1{font-size:15px;margin:2px}.cde5-pet small{font-size:4.6px;color:#707970}
+.cde5-quest{padding:8px 10px;border-top:1px solid #d8d2c0}.cde5-qrow{display:flex;justify-content:space-between}.cde5-qrow b{font-size:6.2px}.cde5-qrow small{font-size:4.5px;color:#758078}.cde5-quest p{font-size:5.2px;color:#68736b;margin:4px 0}.cde5-track{height:6px;background:#ddd7c6;border-radius:6px;overflow:hidden}.cde5-fill{height:100%;background:#5c7f67}
+.cde5-hand{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:8px 9px}.cde5-card{min-height:105px;border:1px solid #cbc5b3;border-radius:12px;background:#fffdf5;color:#1e2924;padding:7px 5px;text-align:center;position:relative}.cde5-card.next{border:2px solid #5c7f67;background:#e4eee4}.cde5-card.done{opacity:.48}.cde5-card span{font-size:24px;display:block}.cde5-card strong{display:block;font-size:5.9px;margin-top:4px}.cde5-card small{display:block;font-size:4.4px;color:#707a72;margin-top:4px;line-height:1.3}.cde5-card em{position:absolute;right:5px;top:4px;font-style:normal;font-size:4px;color:#4f715a;font-weight:900}
+.cde5-loot{border-top:1px solid #d7d1bf;padding:8px 9px}.cde5-loothead{display:flex;justify-content:space-between;margin-bottom:5px}.cde5-loothead b{font-size:6px}.cde5-loothead small{font-size:4.5px;color:#727c74}.cde5-items{display:flex;gap:4px;overflow-x:auto}.cde5-item{flex:0 0 93px;border:1px solid #d0cab8;border-radius:9px;background:#eee9dc;padding:6px}.cde5-item span{font-size:17px}.cde5-item b{font-size:5px;display:block}.cde5-item small{font-size:4px;color:#747e76;display:block}.cde5-empty{font-size:5px;color:#747e76;padding:5px}
+.cde5-actions{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center;padding:8px 9px;background:#ebe6d8}.cde5-actions small{font-size:4.6px;color:#6e7870}.cde5-actions button{border:0;border-radius:9px;background:#4f725a;color:white;padding:8px 10px;font-size:5.1px;font-weight:900}
+@media(max-width:390px){.cde5-stage{grid-template-columns:56px 1fr 56px}.cde5-face{font-size:49px}}
+</style>
+<script id="vg-cde-pass05-js">
+(function(){
+"use strict";
+const KEY="vetgods_cde_pass05";
+let Q={selected:0,location:"CLINIC",credits:0,progress:{},inventory:[],turn:1,last:"Complete locations to earn usable game items."};
+try{Q=Object.assign(Q,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(_){}
+if(!Q.progress||typeof Q.progress!=="object")Q.progress={};if(!Array.isArray(Q.inventory))Q.inventory=[];
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(Q))}catch(_){}};
+const clamp=v=>Math.max(0,Math.min(100,Math.round(v)));
+function model(){try{return JSON.parse(localStorage.getItem("vetgods_mobile_sanctuary_pass05")||"{}")}catch(_){return{pets:[]}}}
+function put(m){try{localStorage.setItem("vetgods_mobile_sanctuary_pass05",JSON.stringify(m))}catch(_){}}
+function face(s){s=String(s||"").toLowerCase();if(s.includes("owl"))return"🦉";if(s.includes("wolf"))return"🐺";if(s.includes("cat"))return"🐈";if(s.includes("fox"))return"🦊";if(s.includes("snake"))return"🐍";if(s.includes("bird"))return"🦅";return"🐕"}
+function cur(){let m=model(),ps=Array.isArray(m.pets)?m.pets:[];if(!ps.length)return null;Q.selected=Math.max(0,Math.min(Q.selected,ps.length-1));return{m,ps,p:ps[Q.selected]}}
+const rooms=[
+ ["CLINIC","🏥","Clinic","CARE|CLINIC",["🩺","Exam"],["🛏️","Cot"],25,["🧰","Field Care Kit","Unlocks a compact care resource"],[["bond","♡","SETTLE","Calm resident"],["water","💧","SUPPORT","Water support"],["rest","☾","RECOVER","Recovery rest"]]],
+ ["HABITAT","🌲","Habitat","HABITAT",["🧸","Play"],["🏡","Den"],20,["🧸","Enrichment Pack","Resident play resource"],[["enrich","✦","EXPLORE","Explore habitat"],["bond","♡","BOND","Quiet time"],["rest","☾","SETTLE","Return to den"]]],
+ ["NUTRITION","🍲","Nutrition","NUTRITION",["🥣","Prep"],["💧","Water"],20,["🥣","Meal Pack","Fictional resident meal resource"],[["food","🍲","PREPARE","Prepare meal"],["water","💧","HYDRATE","Offer water"],["bond","♡","OBSERVE","Meal check"]]],
+ ["RESEARCH","🔬","Research","RESEARCH",["🔬","Study"],["📚","Archive"],25,["📓","Field Notes","Adds a research collectible"],[["bond","♡","OBSERVE","Quiet study"],["enrich","✦","ACTIVITY","Activity test"],["rest","☾","LOG","Close study"]]],
+ ["MORPH","🧬","Morph Lab","MORPH",["🧬","Genome"],["🔹","Vault"],30,["🔹","Trait Shard","Fictional morph collectible"],[["bond","♡","SYNC","Stabilize"],["enrich","✦","TEST","Trait activity"],["rest","☾","LOCK","Save state"]]],
+ ["EXPEDITION","🚀","Expedition","MISSION|EXPEDITION",["🧭","Gate"],["🎒","Pack"],35,["💎","Planet Relic","Mission collectible"],[["food","🍲","PACK FOOD","Prepare provisions"],["water","💧","PACK WATER","Prepare hydration"],["rest","☾","READY","Rest before launch"]]]
+];
+function room(k){return rooms.find(r=>r[0]===k)||rooms[0]} function done(k){let a=Q.progress[k];return Array.isArray(a)?a:[]} function unlocked(i){return i===0||done(rooms[i-1][0]).length>=3}
+function act(k,label,index){let x=cur();if(!x)return;let p=x.p;
+ if(k==="food"){p.hunger=clamp((p.hunger??35)-16);p.energy=clamp((p.energy??65)+4)}
+ if(k==="water"){p.thirst=clamp((p.thirst??30)-18);p.health=clamp((p.health??72)+2)}
+ if(k==="bond"){p.comfort=clamp((p.comfort??60)+10);p.trust=clamp((p.trust??50)+7)}
+ if(k==="enrich"){p.trust=clamp((p.trust??50)+5);p.comfort=clamp((p.comfort??60)+5);p.energy=clamp((p.energy??65)-5)}
+ if(k==="rest"){p.energy=clamp((p.energy??65)+15);p.comfort=clamp((p.comfort??60)+3)}
+ let a=done(Q.location),R=room(Q.location),was=a.length>=3;if(index===a.length)a.push(index);Q.progress[Q.location]=a;
+ if(!was&&a.length>=3){Q.credits+=R[6];if(!Q.inventory.some(z=>z.room===R[0]))Q.inventory.push({room:R[0],ico:R[7][0],name:R[7][1],desc:R[7][2]});Q.last=R[2]+" complete · "+R[7][1]+" acquired."}else Q.last="Turn "+Q.turn+" · "+label+" complete.";
+ Q.turn++;x.m.selected=Q.selected;put(x.m);save();draw();
+}
+function deep(term){document.body.classList.add("vgmc-advanced");document.documentElement.classList.remove("vgmc-lock");let rx=new RegExp(term,"i"),els=[...document.querySelectorAll("button,a,h1,h2,h3,h4")].filter(e=>!e.closest("#vg-mobile-console"));let hit=els.find(e=>rx.test((e.textContent||"").trim()));if(hit){try{if(hit.matches("button,a"))hit.click();hit.scrollIntoView({behavior:"smooth",block:"start"})}catch(_){}}}
+function draw(){let view=document.querySelector('#vg-mobile-console [data-view="console"]');if(!view)return;let x=cur();if(!x){view.innerHTML='<div class="cde5">No resident available.</div>';return}let p=x.p,R=room(Q.location),a=done(Q.location),pct=Math.min(100,a.length/3*100);
+ view.innerHTML=`<div class="cde5"><div class="cde5-head"><div><b>VET GODS</b><small>C+D+E · PASS 05/10 · LOCATION DECKS + INVENTORY</small></div><div class="cde5-bank">¢ ${Q.credits} · 🎒 ${Q.inventory.length}</div></div>
+ <div class="cde5-route">${rooms.map((r,i)=>`<button class="cde5-node ${Q.location===r[0]?"on":""} ${done(r[0]).length>=3?"done":""} ${!unlocked(i)?"lock":""}" data-cde5-place="${r[0]}" ${!unlocked(i)?"disabled":""}><span>${!unlocked(i)?"🔒":r[1]}</span><b>${r[2]}</b></button>`).join("")}</div>
+ <section class="cde5-main"><div class="cde5-stage"><div class="cde5-prop"><div><span>${R[4][0]}</span><b>${R[4][1]}</b></div></div><div class="cde5-pet"><div class="cde5-face">${face(p.species)}</div><h1>${p.name}</h1><small>${R[2]} · ${p.species||"Resident"}</small></div><div class="cde5-prop"><div><span>${R[5][0]}</span><b>${R[5][1]}</b></div></div></div>
+ <div class="cde5-quest"><div class="cde5-qrow"><b>${R[1]} ${R[2].toUpperCase()} DECK</b><small>${a.length}/3 · REWARD ¢${R[6]}</small></div><p>Finish this room's three-card sequence to earn its permanent collectible.</p><div class="cde5-track"><div class="cde5-fill" style="width:${pct}%"></div></div></div>
+ <div class="cde5-hand">${R[8].map((c,i)=>`<button class="cde5-card ${a.includes(i)?"done":i===a.length?"next":""}" data-cde5-act="${c[0]}" data-index="${i}" data-label="${c[2]}" ${a.includes(i)||i>a.length?"disabled":""}>${i===a.length?'<em>PLAY</em>':a.includes(i)?'<em>DONE</em>':""}<span>${c[1]}</span><strong>${c[2]}</strong><small>${c[3]}</small></button>`).join("")}</div>
+ <div class="cde5-loot"><div class="cde5-loothead"><b>🎒 FIELD INVENTORY</b><small>REWARDS STAY WITH YOU</small></div><div class="cde5-items">${Q.inventory.length?Q.inventory.map(z=>`<div class="cde5-item"><span>${z.ico}</span><b>${z.name}</b><small>${z.desc}</small></div>`).join(""):'<div class="cde5-empty">Complete your first location to earn an item.</div>'}</div></div>
+ <div class="cde5-actions"><small>${Q.last}</small><button data-cde5-deep="${R[3]}">OPEN ADVANCED ${R[2].toUpperCase()}</button></div></section></div>`;
+}
+document.addEventListener("click",e=>{let a=e.target.closest("[data-cde5-act]");if(a){act(a.dataset.cde5Act,a.dataset.label,Number(a.dataset.index));return}let p=e.target.closest("[data-cde5-place]");if(p){Q.location=p.dataset.cde5Place;save();draw();return}let d=e.target.closest("[data-cde5-deep]");if(d){deep(d.dataset.cde5Deep);return}},true);
+window.VGCDEPass05=draw;
+})();
+</script>
+
+<style id="vg-cde-pass06-css">
+/* PASS 06 — inventory becomes playable: equip one earned field item to alter the next card */
+.cde6{max-width:620px;margin:auto;padding:8px 8px 76px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.cde6 *{box-shadow:none!important;text-shadow:none!important}
+.cde6-head{display:flex;justify-content:space-between;align-items:center;margin:2px 2px 7px}.cde6-head b{font-size:14px;letter-spacing:.07em}.cde6-head small{display:block;font-size:5px;color:#94a69a}.cde6-bank{border:1px solid #45574a;background:#17221b;border-radius:15px;padding:6px 9px;font-size:5.3px}
+.cde6-route{display:flex;gap:4px;overflow-x:auto;border:1px solid #3c4f42;border-radius:15px;background:#17231b;padding:6px;scrollbar-width:none}.cde6-route::-webkit-scrollbar{display:none}.cde6-node{flex:0 0 79px;min-height:56px;border:1px solid #4b6051;border-radius:10px;background:#202f24;color:#edf3ed;padding:5px;text-align:center}.cde6-node.on{background:#f4eedb;color:#1e2924;border:2px solid #d0b966}.cde6-node.done{background:#304b37}.cde6-node.lock{opacity:.36}.cde6-node span{display:block;font-size:18px}.cde6-node b{display:block;font-size:4.8px}
+.cde6-main{margin-top:7px;background:#f5f0df;color:#1e2924;border:1px solid #d6d0bd;border-radius:17px;overflow:hidden}
+.cde6-stage{display:grid;grid-template-columns:64px 1fr 64px;gap:7px;align-items:center;padding:9px;background:linear-gradient(145deg,#e8eee3,#f8f3e5)}.cde6-prop{height:78px;border:1px solid #cbc6b7;border-radius:12px;background:#fffdf5;display:grid;place-items:center;text-align:center}.cde6-prop span{font-size:24px}.cde6-prop b{display:block;font-size:5px}.cde6-pet{text-align:center}.cde6-face{font-size:55px}.cde6-pet h1{font-size:15px;margin:2px}.cde6-pet small{font-size:4.6px;color:#707970}
+.cde6-slot{margin:0 9px 7px;border:1px dashed #aaa28d;border-radius:11px;background:#ebe6d8;padding:7px;display:grid;grid-template-columns:36px 1fr auto;gap:7px;align-items:center}.cde6-slot .ico{font-size:23px;text-align:center}.cde6-slot b{font-size:5.8px;display:block}.cde6-slot small{font-size:4.4px;color:#6f7971;display:block;margin-top:2px}.cde6-slot button{border:1px solid #bcb5a2;border-radius:8px;background:#fffdf5;padding:6px;font-size:4.8px;font-weight:900;color:#26312b}
+.cde6-quest{padding:8px 10px;border-top:1px solid #d8d2c0}.cde6-qrow{display:flex;justify-content:space-between}.cde6-qrow b{font-size:6.2px}.cde6-qrow small{font-size:4.5px;color:#758078}.cde6-quest p{font-size:5.2px;color:#68736b;margin:4px 0}.cde6-track{height:6px;background:#ddd7c6;border-radius:6px;overflow:hidden}.cde6-fill{height:100%;background:#5c7f67}
+.cde6-hand{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:8px 9px}.cde6-card{min-height:105px;border:1px solid #cbc5b3;border-radius:12px;background:#fffdf5;color:#1e2924;padding:7px 5px;text-align:center;position:relative}.cde6-card.next{border:2px solid #5c7f67;background:#e4eee4}.cde6-card.done{opacity:.48}.cde6-card.boost{background:#fff5cf;border-color:#c5aa58}.cde6-card span{font-size:24px;display:block}.cde6-card strong{display:block;font-size:5.9px;margin-top:4px}.cde6-card small{display:block;font-size:4.4px;color:#707a72;margin-top:4px;line-height:1.3}.cde6-card em{position:absolute;right:5px;top:4px;font-style:normal;font-size:4px;color:#4f715a;font-weight:900}
+.cde6-pack{border-top:1px solid #d7d1bf;padding:8px 9px}.cde6-packhead{display:flex;justify-content:space-between;margin-bottom:5px}.cde6-packhead b{font-size:6px}.cde6-packhead small{font-size:4.4px;color:#727c74}.cde6-items{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}.cde6-item{border:1px solid #d0cab8;border-radius:9px;background:#eee9dc;color:#1e2924;padding:6px;text-align:left}.cde6-item.equipped{border:2px solid #b99c48;background:#fff4c9}.cde6-item span{font-size:17px}.cde6-item b{font-size:4.8px;display:block}.cde6-item small{font-size:3.9px;color:#747e76;display:block;margin-top:2px}.cde6-empty{font-size:5px;color:#747e76;padding:5px}
+.cde6-footer{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center;padding:8px 9px;background:#ebe6d8}.cde6-footer small{font-size:4.5px;color:#6e7870}.cde6-footer button{border:0;border-radius:9px;background:#4f725a;color:#fff;padding:8px 10px;font-size:5px;font-weight:900}
+@media(max-width:390px){.cde6-stage{grid-template-columns:55px 1fr 55px}.cde6-face{font-size:49px}.cde6-items{grid-template-columns:1fr 1fr}}
+</style>
+<script id="vg-cde-pass06-js">
+(function(){
+"use strict";
+const KEY="vetgods_cde_pass06";
+let X={selected:0,location:"CLINIC",credits:0,progress:{},inventory:[],equipped:null,turn:1,last:"Earn a field item, then equip it before playing a card."};
+try{X=Object.assign(X,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(_){}
+if(!X.progress||typeof X.progress!=="object")X.progress={};if(!Array.isArray(X.inventory))X.inventory=[];
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(X))}catch(_){}};
+const clamp=v=>Math.max(0,Math.min(100,Math.round(v)));
+function model(){try{return JSON.parse(localStorage.getItem("vetgods_mobile_sanctuary_pass05")||"{}")}catch(_){return{pets:[]}}}
+function put(m){try{localStorage.setItem("vetgods_mobile_sanctuary_pass05",JSON.stringify(m))}catch(_){}}
+function face(s){s=String(s||"").toLowerCase();if(s.includes("owl"))return"🦉";if(s.includes("wolf"))return"🐺";if(s.includes("cat"))return"🐈";if(s.includes("fox"))return"🦊";if(s.includes("snake"))return"🐍";if(s.includes("bird"))return"🦅";return"🐕"}
+function cur(){let m=model(),ps=Array.isArray(m.pets)?m.pets:[];if(!ps.length)return null;X.selected=Math.max(0,Math.min(X.selected,ps.length-1));return{m,ps,p:ps[X.selected]}}
+const rooms=[
+ ["CLINIC","🏥","Clinic","CARE|CLINIC",["🩺","Exam"],["🛏️","Cot"],25,["care","🧰","Field Care Kit","Next card gets +4 health"],[["bond","♡","SETTLE"],["water","💧","SUPPORT"],["rest","☾","RECOVER"]]],
+ ["HABITAT","🌲","Habitat","HABITAT",["🧸","Play"],["🏡","Den"],20,["play","🧸","Enrichment Pack","Next card gets +5 trust"],[["enrich","✦","EXPLORE"],["bond","♡","BOND"],["rest","☾","SETTLE"]]],
+ ["NUTRITION","🍲","Nutrition","NUTRITION",["🥣","Prep"],["💧","Water"],20,["meal","🥣","Meal Pack","Next card gets +8 food"],[["food","🍲","PREPARE"],["water","💧","HYDRATE"],["bond","♡","OBSERVE"]]],
+ ["RESEARCH","🔬","Research","RESEARCH",["🔬","Study"],["📚","Archive"],25,["notes","📓","Field Notes","Next card gets +4 comfort"],[["bond","♡","OBSERVE"],["enrich","✦","ACTIVITY"],["rest","☾","LOG"]]],
+ ["MORPH","🧬","Morph Lab","MORPH",["🧬","Genome"],["🔹","Vault"],30,["trait","🔹","Trait Shard","Next card gets +5 energy"],[["bond","♡","SYNC"],["enrich","✦","TEST"],["rest","☾","LOCK"]]],
+ ["EXPEDITION","🚀","Expedition","MISSION|EXPEDITION",["🧭","Gate"],["🎒","Pack"],35,["relic","💎","Planet Relic","Next card gets +3 to health & trust"],[["food","🍲","PACK FOOD"],["water","💧","PACK WATER"],["rest","☾","READY"]]]
+];
+function room(k){return rooms.find(r=>r[0]===k)||rooms[0]}function done(k){let a=X.progress[k];return Array.isArray(a)?a:[]}function unlocked(i){return i===0||done(rooms[i-1][0]).length>=3}
+function applyBoost(p){
+ if(!X.equipped)return "";
+ let id=X.equipped;
+ if(id==="care")p.health=clamp((p.health??72)+4);
+ if(id==="play")p.trust=clamp((p.trust??50)+5);
+ if(id==="meal")p.hunger=clamp((p.hunger??35)-8);
+ if(id==="notes")p.comfort=clamp((p.comfort??60)+4);
+ if(id==="trait")p.energy=clamp((p.energy??65)+5);
+ if(id==="relic"){p.health=clamp((p.health??72)+3);p.trust=clamp((p.trust??50)+3)}
+ let item=X.inventory.find(z=>z.id===id),name=item?item.name:"Field item";X.equipped=null;return " · "+name+" bonus applied";
+}
+function act(k,label,index){let x=cur();if(!x)return;let p=x.p;
+ if(k==="food"){p.hunger=clamp((p.hunger??35)-16);p.energy=clamp((p.energy??65)+4)}
+ if(k==="water"){p.thirst=clamp((p.thirst??30)-18);p.health=clamp((p.health??72)+2)}
+ if(k==="bond"){p.comfort=clamp((p.comfort??60)+10);p.trust=clamp((p.trust??50)+7)}
+ if(k==="enrich"){p.trust=clamp((p.trust??50)+5);p.comfort=clamp((p.comfort??60)+5);p.energy=clamp((p.energy??65)-5)}
+ if(k==="rest"){p.energy=clamp((p.energy??65)+15);p.comfort=clamp((p.comfort??60)+3)}
+ let bonus=applyBoost(p),a=done(X.location),R=room(X.location),was=a.length>=3;if(index===a.length)a.push(index);X.progress[X.location]=a;
+ if(!was&&a.length>=3){X.credits+=R[6];if(!X.inventory.some(z=>z.id===R[7][0]))X.inventory.push({id:R[7][0],ico:R[7][1],name:R[7][2],desc:R[7][3]});X.last=R[2]+" complete · "+R[7][2]+" unlocked"+bonus+"."}else X.last="Turn "+X.turn+" · "+label+" complete"+bonus+".";
+ X.turn++;x.m.selected=X.selected;put(x.m);save();draw();
+}
+function deep(term){document.body.classList.add("vgmc-advanced");document.documentElement.classList.remove("vgmc-lock");let rx=new RegExp(term,"i"),els=[...document.querySelectorAll("button,a,h1,h2,h3,h4")].filter(e=>!e.closest("#vg-mobile-console"));let hit=els.find(e=>rx.test((e.textContent||"").trim()));if(hit){try{if(hit.matches("button,a"))hit.click();hit.scrollIntoView({behavior:"smooth",block:"start"})}catch(_){}}}
+function draw(){let view=document.querySelector('#vg-mobile-console [data-view="console"]');if(!view)return;let x=cur();if(!x){view.innerHTML='<div class="cde6">No resident available.</div>';return}let p=x.p,R=room(X.location),a=done(X.location),pct=Math.min(100,a.length/3*100),eq=X.inventory.find(z=>z.id===X.equipped);
+ view.innerHTML=`<div class="cde6"><div class="cde6-head"><div><b>VET GODS</b><small>C+D+E · PASS 06/10 · PLAYABLE INVENTORY</small></div><div class="cde6-bank">¢ ${X.credits} · 🎒 ${X.inventory.length}</div></div>
+ <div class="cde6-route">${rooms.map((r,i)=>`<button class="cde6-node ${X.location===r[0]?"on":""} ${done(r[0]).length>=3?"done":""} ${!unlocked(i)?"lock":""}" data-cde6-place="${r[0]}" ${!unlocked(i)?"disabled":""}><span>${!unlocked(i)?"🔒":r[1]}</span><b>${r[2]}</b></button>`).join("")}</div>
+ <section class="cde6-main"><div class="cde6-stage"><div class="cde6-prop"><div><span>${R[4][0]}</span><b>${R[4][1]}</b></div></div><div class="cde6-pet"><div class="cde6-face">${face(p.species)}</div><h1>${p.name}</h1><small>${R[2]} · ${p.species||"Resident"}</small></div><div class="cde6-prop"><div><span>${R[5][0]}</span><b>${R[5][1]}</b></div></div></div>
+ <div class="cde6-slot"><div class="ico">${eq?eq.ico:"＋"}</div><div><b>${eq?"EQUIPPED · "+eq.name:"EMPTY FIELD SLOT"}</b><small>${eq?eq.desc:"Tap an earned item below. It will boost your next played card."}</small></div>${eq?'<button data-cde6-clear>UNEQUIP</button>':""}</div>
+ <div class="cde6-quest"><div class="cde6-qrow"><b>${R[1]} ${R[2].toUpperCase()} DECK</b><small>${a.length}/3 · ¢${R[6]}</small></div><p>Cards advance the room. An equipped field item is consumed as a one-turn bonus, but the collectible itself remains unlocked in your pack.</p><div class="cde6-track"><div class="cde6-fill" style="width:${pct}%"></div></div></div>
+ <div class="cde6-hand">${R[8].map((c,i)=>`<button class="cde6-card ${a.includes(i)?"done":i===a.length?"next":""} ${eq&&i===a.length?"boost":""}" data-cde6-act="${c[0]}" data-index="${i}" data-label="${c[2]}" ${a.includes(i)||i>a.length?"disabled":""}>${i===a.length?'<em>'+(eq?"BOOSTED":"PLAY")+'</em>':a.includes(i)?'<em>DONE</em>':""}<span>${c[1]}</span><strong>${c[2]}</strong><small>Step ${i+1} of 3</small></button>`).join("")}</div>
+ <div class="cde6-pack"><div class="cde6-packhead"><b>🎒 FIELD PACK</b><small>TAP TO EQUIP</small></div><div class="cde6-items">${X.inventory.length?X.inventory.map(z=>`<button class="cde6-item ${X.equipped===z.id?"equipped":""}" data-cde6-equip="${z.id}"><span>${z.ico}</span><b>${z.name}</b><small>${z.desc}</small></button>`).join(""):'<div class="cde6-empty">Finish Clinic to unlock your first usable item.</div>'}</div></div>
+ <div class="cde6-footer"><small>${X.last}</small><button data-cde6-deep="${R[3]}">ADVANCED ${R[2].toUpperCase()}</button></div></section></div>`;
+}
+document.addEventListener("click",e=>{let a=e.target.closest("[data-cde6-act]");if(a){act(a.dataset.cde6Act,a.dataset.label,Number(a.dataset.index));return}let p=e.target.closest("[data-cde6-place]");if(p){X.location=p.dataset.cde6Place;save();draw();return}let it=e.target.closest("[data-cde6-equip]");if(it){X.equipped=it.dataset.cde6Equip;X.last="Field item equipped for the next card.";save();draw();return}if(e.target.closest("[data-cde6-clear]")){X.equipped=null;save();draw();return}let d=e.target.closest("[data-cde6-deep]");if(d){deep(d.dataset.cde6Deep);return}},true);
+window.VGCDEPass06=draw;
+})();
+</script>
+
+<style id="vg-cde-pass07-css">
+/* PASS 07 — choice events: each destination now deals a small encounter between card steps */
+.cde7{max-width:620px;margin:auto;padding:8px 8px 76px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.cde7 *{box-shadow:none!important;text-shadow:none!important}
+.cde7-head{display:flex;justify-content:space-between;align-items:center;margin:2px 2px 7px}.cde7-head b{font-size:14px;letter-spacing:.07em}.cde7-head small{display:block;font-size:5px;color:#94a69a}.cde7-bank{border:1px solid #45574a;background:#17221b;border-radius:15px;padding:6px 9px;font-size:5.3px}
+.cde7-route{display:flex;gap:4px;overflow-x:auto;border:1px solid #3c4f42;border-radius:15px;background:#17231b;padding:6px;scrollbar-width:none}.cde7-route::-webkit-scrollbar{display:none}.cde7-node{flex:0 0 78px;min-height:55px;border:1px solid #4b6051;border-radius:10px;background:#202f24;color:#edf3ed;padding:5px;text-align:center}.cde7-node.on{background:#f4eedb;color:#1e2924;border:2px solid #d0b966}.cde7-node.done{background:#304b37}.cde7-node.lock{opacity:.35}.cde7-node span{display:block;font-size:18px}.cde7-node b{font-size:4.8px;display:block}
+.cde7-main{margin-top:7px;background:#f5f0df;color:#1e2924;border:1px solid #d6d0bd;border-radius:17px;overflow:hidden}
+.cde7-stage{display:grid;grid-template-columns:62px 1fr 62px;gap:7px;align-items:center;padding:9px;background:linear-gradient(145deg,#e8eee3,#f8f3e5)}.cde7-prop{height:76px;border:1px solid #cbc6b7;border-radius:12px;background:#fffdf5;display:grid;place-items:center;text-align:center}.cde7-prop span{font-size:23px}.cde7-prop b{display:block;font-size:5px}.cde7-pet{text-align:center}.cde7-face{font-size:54px}.cde7-pet h1{font-size:15px;margin:2px}.cde7-pet small{font-size:4.5px;color:#707970}
+.cde7-event{margin:0 9px 8px;border:1px solid #c8b77d;border-radius:12px;background:#fff6d7;padding:8px}.cde7-eventtag{font-size:4.2px;font-weight:900;color:#816d31}.cde7-event h3{font-size:8px;margin:3px 0}.cde7-event p{font-size:5.1px;line-height:1.4;color:#6e674f;margin:3px 0 6px}.cde7-choices{display:grid;grid-template-columns:1fr 1fr;gap:4px}.cde7-choices button{border:1px solid #c6b981;border-radius:8px;background:#fffdf5;color:#292d27;text-align:left;padding:7px;font-size:5px;font-weight:900}.cde7-choices small{display:block;font-size:4px;color:#766f57;margin-top:2px}
+.cde7-slot{margin:0 9px 7px;border:1px dashed #aaa28d;border-radius:10px;background:#ebe6d8;padding:6px;display:flex;gap:6px;align-items:center}.cde7-slot span{font-size:20px}.cde7-slot b{font-size:5.4px;display:block}.cde7-slot small{font-size:4.2px;color:#707970;display:block}
+.cde7-progress{padding:7px 10px;border-top:1px solid #d8d2c0}.cde7-progressrow{display:flex;justify-content:space-between}.cde7-progressrow b{font-size:6px}.cde7-progressrow small{font-size:4.4px;color:#758078}.cde7-track{height:6px;background:#ddd7c6;border-radius:6px;overflow:hidden;margin-top:5px}.cde7-fill{height:100%;background:#5c7f67}
+.cde7-hand{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:8px 9px}.cde7-card{min-height:100px;border:1px solid #cbc5b3;border-radius:12px;background:#fffdf5;color:#1e2924;padding:7px 5px;text-align:center;position:relative}.cde7-card.next{border:2px solid #5c7f67;background:#e4eee4}.cde7-card.done{opacity:.47}.cde7-card span{font-size:23px;display:block}.cde7-card strong{display:block;font-size:5.8px;margin-top:4px}.cde7-card small{display:block;font-size:4.3px;color:#707a72;margin-top:4px}.cde7-card em{position:absolute;right:5px;top:4px;font-style:normal;font-size:4px;color:#4f715a;font-weight:900}
+.cde7-pack{border-top:1px solid #d7d1bf;padding:7px 9px}.cde7-pack b{font-size:5.7px}.cde7-items{display:flex;gap:4px;overflow-x:auto;margin-top:4px}.cde7-item{flex:0 0 88px;border:1px solid #d0cab8;border-radius:8px;background:#eee9dc;color:#1e2924;padding:5px;text-align:left}.cde7-item.on{border:2px solid #b99c48;background:#fff4c9}.cde7-item span{font-size:15px}.cde7-item strong{display:block;font-size:4.5px}.cde7-footer{display:grid;grid-template-columns:1fr auto;gap:5px;align-items:center;background:#ebe6d8;padding:8px 9px}.cde7-footer small{font-size:4.4px;color:#6e7870}.cde7-footer button{border:0;border-radius:8px;background:#4f725a;color:white;padding:8px 9px;font-size:4.9px;font-weight:900}
+@media(max-width:390px){.cde7-stage{grid-template-columns:54px 1fr 54px}.cde7-face{font-size:48px}}
+</style>
+<script id="vg-cde-pass07-js">
+(function(){
+"use strict";
+const KEY="vetgods_cde_pass07";
+let Y={selected:0,location:"CLINIC",credits:0,progress:{},inventory:[],equipped:null,eventDone:{},turn:1,last:"Room encounters now appear during objectives."};
+try{Y=Object.assign(Y,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(_){}
+if(!Y.progress||typeof Y.progress!=="object")Y.progress={};if(!Array.isArray(Y.inventory))Y.inventory=[];if(!Y.eventDone||typeof Y.eventDone!=="object")Y.eventDone={};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(Y))}catch(_){}};
+const clamp=v=>Math.max(0,Math.min(100,Math.round(v)));
+function model(){try{return JSON.parse(localStorage.getItem("vetgods_mobile_sanctuary_pass05")||"{}")}catch(_){return{pets:[]}}}
+function put(m){try{localStorage.setItem("vetgods_mobile_sanctuary_pass05",JSON.stringify(m))}catch(_){}}
+function face(s){s=String(s||"").toLowerCase();if(s.includes("owl"))return"🦉";if(s.includes("wolf"))return"🐺";if(s.includes("cat"))return"🐈";if(s.includes("fox"))return"🦊";if(s.includes("snake"))return"🐍";if(s.includes("bird"))return"🦅";return"🐕"}
+function cur(){let m=model(),ps=Array.isArray(m.pets)?m.pets:[];if(!ps.length)return null;Y.selected=Math.max(0,Math.min(Y.selected,ps.length-1));return{m,ps,p:ps[Y.selected]}}
+const rooms=[
+ ["CLINIC","🏥","Clinic","CARE|CLINIC",["🩺","Exam"],["🛏️","Cot"],25,["care","🧰","Care Kit"],[["bond","♡","SETTLE"],["water","💧","SUPPORT"],["rest","☾","RECOVER"]],["A nervous intake","Your resident pauses at the clinic threshold.",["Wait quietly","comfort"],["Walk in together","trust"]]],
+ ["HABITAT","🌲","Habitat","HABITAT",["🧸","Play"],["🏡","Den"],20,["play","🧸","Play Pack"],[["enrich","✦","EXPLORE"],["bond","♡","BOND"],["rest","☾","SETTLE"]],["Something moved","A sound comes from the far side of the habitat.",["Investigate together","trust"],["Return to the den","comfort"]]],
+ ["NUTRITION","🍲","Nutrition","NUTRITION",["🥣","Prep"],["💧","Water"],20,["meal","🥣","Meal Pack"],[["food","🍲","PREPARE"],["water","💧","HYDRATE"],["bond","♡","OBSERVE"]],["Meal choice","Your resident studies the prepared fictional meal.",["Offer the meal","food"],["Give it more time","comfort"]]],
+ ["RESEARCH","🔬","Research","RESEARCH",["🔬","Study"],["📚","Archive"],25,["notes","📓","Field Notes"],[["bond","♡","OBSERVE"],["enrich","✦","ACTIVITY"],["rest","☾","LOG"]],["Unexpected behavior","The resident notices something interesting during observation.",["Follow the behavior","trust"],["Record and pause","comfort"]]],
+ ["MORPH","🧬","Morph Lab","MORPH",["🧬","Genome"],["🔹","Vault"],30,["trait","🔹","Trait Shard"],[["bond","♡","SYNC"],["enrich","✦","TEST"],["rest","☾","LOCK"]],["Trait resonance","A fictional trait pattern flickers on the development display.",["Study the pattern","energy"],["Keep the resident calm","comfort"]]],
+ ["EXPEDITION","🚀","Expedition","MISSION|EXPEDITION",["🧭","Gate"],["🎒","Pack"],35,["relic","💎","Planet Relic"],[["food","🍲","PACK FOOD"],["water","💧","PACK WATER"],["rest","☾","READY"]],["Signal at the gate","A distant field signal appears before departure.",["Mark it for the mission","trust"],["Finish preparation first","energy"]]]
+];
+function room(k){return rooms.find(r=>r[0]===k)||rooms[0]}function done(k){let a=Y.progress[k];return Array.isArray(a)?a:[]}function unlocked(i){return i===0||done(rooms[i-1][0]).length>=3}
+function boost(p){if(!Y.equipped)return"";let id=Y.equipped;if(id==="care")p.health=clamp((p.health??72)+4);if(id==="play")p.trust=clamp((p.trust??50)+5);if(id==="meal")p.hunger=clamp((p.hunger??35)-8);if(id==="notes")p.comfort=clamp((p.comfort??60)+4);if(id==="trait")p.energy=clamp((p.energy??65)+5);if(id==="relic"){p.health=clamp((p.health??72)+3);p.trust=clamp((p.trust??50)+3)}Y.equipped=null;return" + field item";}
+function act(k,label,index){let x=cur();if(!x)return;let p=x.p;if(k==="food"){p.hunger=clamp((p.hunger??35)-16);p.energy=clamp((p.energy??65)+4)}if(k==="water"){p.thirst=clamp((p.thirst??30)-18);p.health=clamp((p.health??72)+2)}if(k==="bond"){p.comfort=clamp((p.comfort??60)+10);p.trust=clamp((p.trust??50)+7)}if(k==="enrich"){p.trust=clamp((p.trust??50)+5);p.comfort=clamp((p.comfort??60)+5);p.energy=clamp((p.energy??65)-5)}if(k==="rest"){p.energy=clamp((p.energy??65)+15);p.comfort=clamp((p.comfort??60)+3)}
+ let b=boost(p),a=done(Y.location),R=room(Y.location),was=a.length>=3;if(index===a.length)a.push(index);Y.progress[Y.location]=a;if(!was&&a.length>=3){Y.credits+=R[6];if(!Y.inventory.some(z=>z.id===R[7][0]))Y.inventory.push({id:R[7][0],ico:R[7][1],name:R[7][2]});Y.last=R[2]+" objective complete · reward acquired"+b+"."}else Y.last="Turn "+Y.turn+" · "+label+b+".";Y.turn++;x.m.selected=Y.selected;put(x.m);save();draw();}
+function choice(stat,label){let x=cur();if(!x)return;let p=x.p;if(stat==="comfort")p.comfort=clamp((p.comfort??60)+6);if(stat==="trust")p.trust=clamp((p.trust??50)+6);if(stat==="food")p.hunger=clamp((p.hunger??35)-6);if(stat==="energy")p.energy=clamp((p.energy??65)+6);Y.eventDone[Y.location]=true;Y.last="Encounter choice · "+label+".";put(x.m);save();draw();}
+function deep(term){document.body.classList.add("vgmc-advanced");document.documentElement.classList.remove("vgmc-lock");let rx=new RegExp(term,"i"),els=[...document.querySelectorAll("button,a,h1,h2,h3,h4")].filter(e=>!e.closest("#vg-mobile-console"));let hit=els.find(e=>rx.test((e.textContent||"").trim()));if(hit){try{if(hit.matches("button,a"))hit.click();hit.scrollIntoView({behavior:"smooth",block:"start"})}catch(_){}}}
+function draw(){let view=document.querySelector('#vg-mobile-console [data-view="console"]');if(!view)return;let x=cur();if(!x){view.innerHTML='<div class="cde7">No resident available.</div>';return}let p=x.p,R=room(Y.location),a=done(Y.location),pct=Math.min(100,a.length/3*100),eq=Y.inventory.find(z=>z.id===Y.equipped),showEvent=a.length>=1&&!Y.eventDone[Y.location],E=R[9];
+ view.innerHTML=`<div class="cde7"><div class="cde7-head"><div><b>VET GODS</b><small>C+D+E · PASS 07/10 · CHOICE ENCOUNTERS</small></div><div class="cde7-bank">¢ ${Y.credits} · 🎒 ${Y.inventory.length}</div></div><div class="cde7-route">${rooms.map((r,i)=>`<button class="cde7-node ${Y.location===r[0]?"on":""} ${done(r[0]).length>=3?"done":""} ${!unlocked(i)?"lock":""}" data-cde7-place="${r[0]}" ${!unlocked(i)?"disabled":""}><span>${!unlocked(i)?"🔒":r[1]}</span><b>${r[2]}</b></button>`).join("")}</div>
+ <section class="cde7-main"><div class="cde7-stage"><div class="cde7-prop"><div><span>${R[4][0]}</span><b>${R[4][1]}</b></div></div><div class="cde7-pet"><div class="cde7-face">${face(p.species)}</div><h1>${p.name}</h1><small>${R[2]} · ${p.species||"Resident"}</small></div><div class="cde7-prop"><div><span>${R[5][0]}</span><b>${R[5][1]}</b></div></div></div>
+ ${showEvent?`<div class="cde7-event"><div class="cde7-eventtag">ROOM ENCOUNTER</div><h3>${E[0]}</h3><p>${E[1]}</p><div class="cde7-choices"><button data-cde7-choice="${E[2][1]}" data-label="${E[2][0]}">${E[2][0]}<small>Changes resident response</small></button><button data-cde7-choice="${E[3][1]}" data-label="${E[3][0]}">${E[3][0]}<small>Changes resident response</small></button></div></div>`:""}
+ <div class="cde7-slot"><span>${eq?eq.ico:"＋"}</span><div><b>${eq?"EQUIPPED · "+eq.name:"FIELD SLOT EMPTY"}</b><small>${eq?"Applies to the next card":"Tap an earned item below to equip it"}</small></div></div>
+ <div class="cde7-progress"><div class="cde7-progressrow"><b>${R[1]} ${R[2].toUpperCase()} OBJECTIVE</b><small>${a.length}/3</small></div><div class="cde7-track"><div class="cde7-fill" style="width:${pct}%"></div></div></div>
+ <div class="cde7-hand">${R[8].map((c,i)=>`<button class="cde7-card ${a.includes(i)?"done":i===a.length?"next":""}" data-cde7-act="${c[0]}" data-index="${i}" data-label="${c[2]}" ${showEvent||a.includes(i)||i>a.length?"disabled":""}>${i===a.length?'<em>PLAY</em>':a.includes(i)?'<em>DONE</em>':""}<span>${c[1]}</span><strong>${c[2]}</strong><small>Step ${i+1} of 3</small></button>`).join("")}</div>
+ <div class="cde7-pack"><b>🎒 FIELD PACK</b><div class="cde7-items">${Y.inventory.length?Y.inventory.map(z=>`<button class="cde7-item ${Y.equipped===z.id?"on":""}" data-cde7-equip="${z.id}"><span>${z.ico}</span><strong>${z.name}</strong></button>`).join(""):'<small>No items yet.</small>'}</div></div><div class="cde7-footer"><small>${Y.last}</small><button data-cde7-deep="${R[3]}">ADVANCED ${R[2].toUpperCase()}</button></div></section></div>`;
+}
+document.addEventListener("click",e=>{let a=e.target.closest("[data-cde7-act]");if(a){act(a.dataset.cde7Act,a.dataset.label,Number(a.dataset.index));return}let c=e.target.closest("[data-cde7-choice]");if(c){choice(c.dataset.cde7Choice,c.dataset.label);return}let p=e.target.closest("[data-cde7-place]");if(p){Y.location=p.dataset.cde7Place;save();draw();return}let it=e.target.closest("[data-cde7-equip]");if(it){Y.equipped=it.dataset.cde7Equip;Y.last="Field item equipped.";save();draw();return}let d=e.target.closest("[data-cde7-deep]");if(d){deep(d.dataset.cde7Deep);return}},true);
+window.VGCDEPass07=draw;
+})();
+</script>
+
+<style id="vg-cde-pass08-css">
+/* PASS 08 — planet survival loadout + compact mission readiness */
+.cde8{max-width:620px;margin:auto;padding:8px 8px 76px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.cde8 *{box-shadow:none!important;text-shadow:none!important}
+.cde8-head{display:flex;justify-content:space-between;align-items:center;margin:2px 2px 7px}.cde8-head b{font-size:14px;letter-spacing:.07em}.cde8-head small{display:block;font-size:5px;color:#94a69a}.cde8-bank{border:1px solid #45574a;background:#17221b;border-radius:15px;padding:6px 9px;font-size:5.3px}
+.cde8-route{display:flex;gap:4px;overflow-x:auto;border:1px solid #3c4f42;border-radius:15px;background:#17231b;padding:6px;scrollbar-width:none}.cde8-route::-webkit-scrollbar{display:none}.cde8-node{flex:0 0 78px;min-height:55px;border:1px solid #4b6051;border-radius:10px;background:#202f24;color:#edf3ed;padding:5px;text-align:center}.cde8-node.on{background:#f4eedb;color:#1e2924;border:2px solid #d0b966}.cde8-node.done{background:#304b37}.cde8-node.lock{opacity:.35}.cde8-node span{display:block;font-size:18px}.cde8-node b{display:block;font-size:4.8px}
+.cde8-main{margin-top:7px;background:#f5f0df;color:#1e2924;border:1px solid #d6d0bd;border-radius:17px;overflow:hidden}
+.cde8-stage{display:grid;grid-template-columns:62px 1fr 62px;gap:7px;align-items:center;padding:9px;background:linear-gradient(145deg,#e8eee3,#f8f3e5)}.cde8-prop{height:76px;border:1px solid #cbc6b7;border-radius:12px;background:#fffdf5;display:grid;place-items:center;text-align:center}.cde8-prop span{font-size:23px}.cde8-prop b{display:block;font-size:5px}.cde8-pet{text-align:center}.cde8-face{font-size:54px}.cde8-pet h1{font-size:15px;margin:2px}.cde8-pet small{font-size:4.5px;color:#707970}
+.cde8-survival{margin:0 9px 8px;border:1px solid #a8b49e;border-radius:12px;background:#edf2e8;padding:8px}.cde8-survivalhead{display:flex;justify-content:space-between;align-items:center}.cde8-survivalhead b{font-size:6.2px}.cde8-survivalhead small{font-size:4.4px;color:#657068}.cde8-needs{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:6px}.cde8-need{border:1px solid #c7d0c1;border-radius:8px;background:#fffdf5;padding:5px;text-align:center}.cde8-need.ready{background:#dcebdc}.cde8-need span{font-size:17px;display:block}.cde8-need b{font-size:4.4px;display:block}.cde8-need small{font-size:3.7px;color:#707a72;display:block}
+.cde8-readiness{height:6px;background:#d7ddcf;border-radius:8px;overflow:hidden;margin-top:6px}.cde8-readyfill{height:100%;background:#58765f}
+.cde8-event{margin:0 9px 8px;border:1px solid #c8b77d;border-radius:11px;background:#fff6d7;padding:7px}.cde8-event h3{font-size:7.5px;margin:2px 0}.cde8-event p{font-size:4.9px;color:#6e674f;margin:3px 0 6px}.cde8-choices{display:grid;grid-template-columns:1fr 1fr;gap:4px}.cde8-choices button{border:1px solid #c6b981;border-radius:8px;background:#fffdf5;color:#292d27;padding:7px;text-align:left;font-size:4.8px;font-weight:900}
+.cde8-progress{padding:7px 10px;border-top:1px solid #d8d2c0}.cde8-prow{display:flex;justify-content:space-between}.cde8-prow b{font-size:6px}.cde8-prow small{font-size:4.4px;color:#758078}.cde8-track{height:6px;background:#ddd7c6;border-radius:6px;overflow:hidden;margin-top:5px}.cde8-fill{height:100%;background:#5c7f67}
+.cde8-hand{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:8px 9px}.cde8-card{min-height:98px;border:1px solid #cbc5b3;border-radius:12px;background:#fffdf5;color:#1e2924;padding:7px 5px;text-align:center;position:relative}.cde8-card.next{border:2px solid #5c7f67;background:#e4eee4}.cde8-card.done{opacity:.47}.cde8-card span{font-size:23px;display:block}.cde8-card strong{display:block;font-size:5.8px;margin-top:4px}.cde8-card small{display:block;font-size:4.2px;color:#707a72;margin-top:4px}.cde8-card em{position:absolute;right:5px;top:4px;font-style:normal;font-size:4px;color:#4f715a;font-weight:900}
+.cde8-pack{border-top:1px solid #d7d1bf;padding:7px 9px}.cde8-pack b{font-size:5.7px}.cde8-items{display:flex;gap:4px;overflow-x:auto;margin-top:4px}.cde8-item{flex:0 0 88px;border:1px solid #d0cab8;border-radius:8px;background:#eee9dc;color:#1e2924;padding:5px;text-align:left}.cde8-item.on{border:2px solid #b99c48;background:#fff4c9}.cde8-item span{font-size:15px}.cde8-item strong{display:block;font-size:4.5px}.cde8-footer{display:grid;grid-template-columns:1fr auto;gap:5px;align-items:center;background:#ebe6d8;padding:8px 9px}.cde8-footer small{font-size:4.4px;color:#6e7870}.cde8-footer button{border:0;border-radius:8px;background:#4f725a;color:white;padding:8px 9px;font-size:4.9px;font-weight:900}
+@media(max-width:390px){.cde8-stage{grid-template-columns:54px 1fr 54px}.cde8-face{font-size:48px}.cde8-needs{grid-template-columns:repeat(2,1fr)}}
+</style>
+<script id="vg-cde-pass08-js">
+(function(){
+"use strict";
+const KEY="vetgods_cde_pass08";
+let Z={selected:0,location:"CLINIC",credits:0,progress:{},inventory:[],equipped:null,eventDone:{},survival:{},turn:1,last:"Prepare the resident and build a planet survival loadout."};
+try{Z=Object.assign(Z,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(_){}
+for(let k of ["progress","eventDone","survival"])if(!Z[k]||typeof Z[k]!=="object")Z[k]={};if(!Array.isArray(Z.inventory))Z.inventory=[];
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(Z))}catch(_){}};
+const clamp=v=>Math.max(0,Math.min(100,Math.round(v)));
+function model(){try{return JSON.parse(localStorage.getItem("vetgods_mobile_sanctuary_pass05")||"{}")}catch(_){return{pets:[]}}}
+function put(m){try{localStorage.setItem("vetgods_mobile_sanctuary_pass05",JSON.stringify(m))}catch(_){}}
+function face(s){s=String(s||"").toLowerCase();if(s.includes("owl"))return"🦉";if(s.includes("wolf"))return"🐺";if(s.includes("cat"))return"🐈";if(s.includes("fox"))return"🦊";if(s.includes("snake"))return"🐍";if(s.includes("bird"))return"🦅";return"🐕"}
+function cur(){let m=model(),ps=Array.isArray(m.pets)?m.pets:[];if(!ps.length)return null;Z.selected=Math.max(0,Math.min(Z.selected,ps.length-1));return{m,ps,p:ps[Z.selected]}}
+const rooms=[
+["CLINIC","🏥","Clinic","CARE|CLINIC",["🩺","Exam"],["🛏️","Cot"],25,["care","🧰","Care Kit"],[["bond","♡","SETTLE"],["water","💧","SUPPORT"],["rest","☾","RECOVER"]],["Nervous intake","Your resident pauses at the threshold.",["Wait quietly","comfort"],["Walk together","trust"]]],
+["HABITAT","🌲","Habitat","HABITAT",["🧸","Play"],["🏡","Den"],20,["shelter","🏕️","Shelter Kit"],[["enrich","✦","EXPLORE"],["bond","♡","BOND"],["rest","☾","SETTLE"]],["Habitat sound","Something moves beyond the den.",["Investigate","trust"],["Stay sheltered","comfort"]]],
+["NUTRITION","🍲","Nutrition","NUTRITION",["🥣","Prep"],["💧","Water"],20,["meal","🥣","Provision Pack"],[["food","🍲","PREPARE"],["water","💧","HYDRATE"],["bond","♡","OBSERVE"]],["Meal choice","The resident studies the prepared fictional meal.",["Offer meal","food"],["Wait calmly","comfort"]]],
+["RESEARCH","🔬","Research","RESEARCH",["🔬","Study"],["📚","Archive"],25,["scanner","📡","Field Scanner"],[["bond","♡","OBSERVE"],["enrich","✦","ACTIVITY"],["rest","☾","LOG"]],["Unknown trace","A harmless fictional trace appears.",["Scan it","trust"],["Log location","comfort"]]],
+["MORPH","🧬","Morph Lab","MORPH",["🧬","Genome"],["🔹","Vault"],30,["climate","🛡️","Climate Shell"],[["bond","♡","SYNC"],["enrich","✦","TEST"],["rest","☾","LOCK"]],["Climate test","The fictional adaptation rig requests a setting.",["Test mobility","energy"],["Keep stable","comfort"]]],
+["EXPEDITION","🚀","Expedition","MISSION|EXPEDITION",["🧭","Gate"],["🎒","Pack"],35,["relic","💎","Planet Relic"],[["food","🍲","PACK FOOD"],["water","💧","PACK WATER"],["rest","☾","READY"]],["Rescue signal","A field beacon marks an animal rescue zone.",["Mark route","trust"],["Check supplies","energy"]]]
+];
+const needs=[["water","💧","Water","Hydration"],["food","🥣","Food","Nutrition"],["shelter","🏕️","Shelter","Safe habitat"],["climate","🛡️","Climate","Protection"],["care","🧰","Care","Support kit"],["scanner","📡","Scanner","Environment"],["rest","🛏️","Rest","Recovery"],["trust","♡","Bond","Handling"]];
+function room(k){return rooms.find(r=>r[0]===k)||rooms[0]}function done(k){let a=Z.progress[k];return Array.isArray(a)?a:[]}function unlocked(i){return i===0||done(rooms[i-1][0]).length>=3}
+function readiness(){let ready=0;needs.forEach(n=>{if(Z.survival[n[0]])ready++});return Math.round(ready/needs.length*100)}
+function rewardNeed(R){let map={CLINIC:"care",HABITAT:"shelter",NUTRITION:"food",RESEARCH:"scanner",MORPH:"climate",EXPEDITION:"trust"};Z.survival[map[R[0]]]=true;if(R[0]==="NUTRITION")Z.survival.water=true;if(R[0]==="CLINIC")Z.survival.rest=true}
+function act(k,label,index){let x=cur();if(!x)return;let p=x.p;if(k==="food"){p.hunger=clamp((p.hunger??35)-16);p.energy=clamp((p.energy??65)+4)}if(k==="water"){p.thirst=clamp((p.thirst??30)-18);p.health=clamp((p.health??72)+2)}if(k==="bond"){p.comfort=clamp((p.comfort??60)+10);p.trust=clamp((p.trust??50)+7)}if(k==="enrich"){p.trust=clamp((p.trust??50)+5);p.comfort=clamp((p.comfort??60)+5)}if(k==="rest"){p.energy=clamp((p.energy??65)+15)}
+let a=done(Z.location),R=room(Z.location),was=a.length>=3;if(index===a.length)a.push(index);Z.progress[Z.location]=a;if(!was&&a.length>=3){Z.credits+=R[6];rewardNeed(R);if(!Z.inventory.some(v=>v.id===R[7][0]))Z.inventory.push({id:R[7][0],ico:R[7][1],name:R[7][2]});Z.last=R[2]+" complete · survival loadout updated."}else Z.last="Turn "+Z.turn+" · "+label+".";Z.turn++;x.m.selected=Z.selected;put(x.m);save();draw()}
+function choice(stat,label){let x=cur();if(!x)return;let p=x.p;if(stat==="comfort")p.comfort=clamp((p.comfort??60)+6);if(stat==="trust")p.trust=clamp((p.trust??50)+6);if(stat==="food")p.hunger=clamp((p.hunger??35)-6);if(stat==="energy")p.energy=clamp((p.energy??65)+6);Z.eventDone[Z.location]=true;Z.last="Encounter · "+label+".";put(x.m);save();draw()}
+function deep(term){document.body.classList.add("vgmc-advanced");document.documentElement.classList.remove("vgmc-lock");let rx=new RegExp(term,"i"),els=[...document.querySelectorAll("button,a,h1,h2,h3,h4")].filter(e=>!e.closest("#vg-mobile-console"));let hit=els.find(e=>rx.test((e.textContent||"").trim()));if(hit){try{if(hit.matches("button,a"))hit.click();hit.scrollIntoView({behavior:"smooth",block:"start"})}catch(_){}}}
+function draw(){let view=document.querySelector('#vg-mobile-console [data-view="console"]');if(!view)return;let x=cur();if(!x){view.innerHTML='<div class="cde8">No resident available.</div>';return}let p=x.p,R=room(Z.location),a=done(Z.location),pct=Math.min(100,a.length/3*100),show=a.length>=1&&!Z.eventDone[Z.location],E=R[9],ready=readiness();
+view.innerHTML=`<div class="cde8"><div class="cde8-head"><div><b>VET GODS</b><small>C+D+E · PASS 08/10 · PLANET SURVIVAL LOADOUT</small></div><div class="cde8-bank">¢ ${Z.credits} · READINESS ${ready}%</div></div>
+<div class="cde8-route">${rooms.map((r,i)=>`<button class="cde8-node ${Z.location===r[0]?"on":""} ${done(r[0]).length>=3?"done":""} ${!unlocked(i)?"lock":""}" data-cde8-place="${r[0]}" ${!unlocked(i)?"disabled":""}><span>${!unlocked(i)?"🔒":r[1]}</span><b>${r[2]}</b></button>`).join("")}</div>
+<section class="cde8-main"><div class="cde8-stage"><div class="cde8-prop"><div><span>${R[4][0]}</span><b>${R[4][1]}</b></div></div><div class="cde8-pet"><div class="cde8-face">${face(p.species)}</div><h1>${p.name}</h1><small>${R[2]} · ${p.species||"Resident"}</small></div><div class="cde8-prop"><div><span>${R[5][0]}</span><b>${R[5][1]}</b></div></div></div>
+<div class="cde8-survival"><div class="cde8-survivalhead"><b>🌎 PLANET SURVIVAL LOADOUT</b><small>${ready}% READY</small></div><div class="cde8-needs">${needs.map(n=>`<div class="cde8-need ${Z.survival[n[0]]?"ready":""}"><span>${Z.survival[n[0]]?"✓":n[1]}</span><b>${n[2]}</b><small>${Z.survival[n[0]]?"READY":n[3]}</small></div>`).join("")}</div><div class="cde8-readiness"><div class="cde8-readyfill" style="width:${ready}%"></div></div></div>
+${show?`<div class="cde8-event"><h3>${E[0]}</h3><p>${E[1]}</p><div class="cde8-choices"><button data-cde8-choice="${E[2][1]}" data-label="${E[2][0]}">${E[2][0]}</button><button data-cde8-choice="${E[3][1]}" data-label="${E[3][0]}">${E[3][0]}</button></div></div>`:""}
+<div class="cde8-progress"><div class="cde8-prow"><b>${R[1]} ${R[2].toUpperCase()} DECK</b><small>${a.length}/3</small></div><div class="cde8-track"><div class="cde8-fill" style="width:${pct}%"></div></div></div>
+<div class="cde8-hand">${R[8].map((c,i)=>`<button class="cde8-card ${a.includes(i)?"done":i===a.length?"next":""}" data-cde8-act="${c[0]}" data-index="${i}" data-label="${c[2]}" ${show||a.includes(i)||i>a.length?"disabled":""}>${i===a.length?'<em>PLAY</em>':a.includes(i)?'<em>DONE</em>':""}<span>${c[1]}</span><strong>${c[2]}</strong><small>Step ${i+1} of 3</small></button>`).join("")}</div>
+<div class="cde8-pack"><b>🎒 ACQUIRED FIELD GEAR</b><div class="cde8-items">${Z.inventory.length?Z.inventory.map(v=>`<button class="cde8-item ${Z.equipped===v.id?"on":""}" data-cde8-equip="${v.id}"><span>${v.ico}</span><strong>${v.name}</strong></button>`).join(""):'<small>No gear yet.</small>'}</div></div>
+<div class="cde8-footer"><small>${Z.last}</small><button data-cde8-deep="${R[3]}">ADVANCED ${R[2].toUpperCase()}</button></div></section></div>`}
+document.addEventListener("click",e=>{let a=e.target.closest("[data-cde8-act]");if(a){act(a.dataset.cde8Act,a.dataset.label,Number(a.dataset.index));return}let c=e.target.closest("[data-cde8-choice]");if(c){choice(c.dataset.cde8Choice,c.dataset.label);return}let p=e.target.closest("[data-cde8-place]");if(p){Z.location=p.dataset.cde8Place;save();draw();return}let it=e.target.closest("[data-cde8-equip]");if(it){Z.equipped=it.dataset.cde8Equip;Z.last="Field gear selected.";save();draw();return}let d=e.target.closest("[data-cde8-deep]");if(d){deep(d.dataset.cde8Deep);return}},true);
+window.VGCDEPass08=draw;
+})();
+</script>
+
+<style id="vg-cde-pass09-css">
+/* PASS 09 — expedition becomes a playable landing/rescue loop, still inside one compact console */
+.cde9{max-width:620px;margin:auto;padding:8px 8px 76px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.cde9 *{box-shadow:none!important;text-shadow:none!important}
+.cde9-head{display:flex;justify-content:space-between;align-items:center;margin:2px 2px 7px}.cde9-head b{font-size:14px;letter-spacing:.07em}.cde9-head small{display:block;font-size:5px;color:#94a69a}.cde9-bank{border:1px solid #45574a;background:#17221b;border-radius:15px;padding:6px 9px;font-size:5.3px}
+.cde9-route{display:flex;gap:4px;overflow-x:auto;border:1px solid #3c4f42;border-radius:15px;background:#17231b;padding:6px;scrollbar-width:none}.cde9-route::-webkit-scrollbar{display:none}.cde9-node{flex:0 0 78px;min-height:55px;border:1px solid #4b6051;border-radius:10px;background:#202f24;color:#edf3ed;padding:5px;text-align:center}.cde9-node.on{background:#f4eedb;color:#1e2924;border:2px solid #d0b966}.cde9-node.done{background:#304b37}.cde9-node.lock{opacity:.35}.cde9-node span{display:block;font-size:18px}.cde9-node b{display:block;font-size:4.8px}
+.cde9-main{margin-top:7px;background:#f5f0df;color:#1e2924;border:1px solid #d6d0bd;border-radius:17px;overflow:hidden}
+.cde9-stage{display:grid;grid-template-columns:62px 1fr 62px;gap:7px;align-items:center;padding:9px;background:linear-gradient(145deg,#e8eee3,#f8f3e5)}.cde9-prop{height:76px;border:1px solid #cbc6b7;border-radius:12px;background:#fffdf5;display:grid;place-items:center;text-align:center}.cde9-prop span{font-size:23px}.cde9-prop b{display:block;font-size:5px}.cde9-pet{text-align:center}.cde9-face{font-size:54px}.cde9-pet h1{font-size:15px;margin:2px}.cde9-pet small{font-size:4.5px;color:#707970}
+.cde9-mission{margin:0 9px 8px;border:1px solid #aab59f;border-radius:12px;background:#edf2e8;padding:8px}.cde9-mtop{display:flex;justify-content:space-between}.cde9-mtop b{font-size:6.2px}.cde9-mtop small{font-size:4.4px;color:#667169}.cde9-mission h3{font-size:8px;margin:4px 0 2px}.cde9-mission p{font-size:5px;color:#69736b;line-height:1.4;margin:0 0 6px}.cde9-msteps{display:grid;grid-template-columns:repeat(4,1fr);gap:3px}.cde9-step{border:1px solid #c8d0c2;border-radius:8px;background:#fffdf5;padding:5px;text-align:center}.cde9-step.done{background:#dcebdc}.cde9-step.on{border:2px solid #5c7f67}.cde9-step span{font-size:17px;display:block}.cde9-step b{font-size:4.2px;display:block}
+.cde9-survival{padding:7px 9px;border-top:1px solid #d7d1bf}.cde9-survivalrow{display:flex;justify-content:space-between}.cde9-survivalrow b{font-size:5.8px}.cde9-survivalrow small{font-size:4.3px;color:#717b73}.cde9-needs{display:flex;gap:3px;overflow-x:auto;margin-top:5px}.cde9-need{flex:0 0 55px;border:1px solid #d0cab8;border-radius:7px;background:#eee9dc;padding:4px;text-align:center}.cde9-need.ready{background:#dcebdc}.cde9-need span{font-size:14px}.cde9-need b{display:block;font-size:3.9px}
+.cde9-enc{margin:0 9px 8px;border:1px solid #c8b77d;border-radius:11px;background:#fff6d7;padding:7px}.cde9-enc h3{font-size:7.5px;margin:2px 0}.cde9-enc p{font-size:4.9px;color:#6e674f;margin:3px 0 6px}.cde9-choice{display:grid;grid-template-columns:1fr 1fr;gap:4px}.cde9-choice button{border:1px solid #c6b981;border-radius:8px;background:#fffdf5;color:#292d27;padding:7px;text-align:left;font-size:4.8px;font-weight:900}
+.cde9-progress{padding:7px 10px;border-top:1px solid #d8d2c0}.cde9-prow{display:flex;justify-content:space-between}.cde9-prow b{font-size:6px}.cde9-prow small{font-size:4.4px;color:#758078}.cde9-track{height:6px;background:#ddd7c6;border-radius:6px;overflow:hidden;margin-top:5px}.cde9-fill{height:100%;background:#5c7f67}
+.cde9-hand{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:8px 9px}.cde9-card{min-height:98px;border:1px solid #cbc5b3;border-radius:12px;background:#fffdf5;color:#1e2924;padding:7px 5px;text-align:center;position:relative}.cde9-card.next{border:2px solid #5c7f67;background:#e4eee4}.cde9-card.done{opacity:.47}.cde9-card span{font-size:23px;display:block}.cde9-card strong{display:block;font-size:5.8px;margin-top:4px}.cde9-card small{display:block;font-size:4.2px;color:#707a72;margin-top:4px}.cde9-card em{position:absolute;right:5px;top:4px;font-style:normal;font-size:4px;color:#4f715a;font-weight:900}
+.cde9-launch{margin:0 9px 8px;border-radius:11px;background:#17231b;color:#edf3ed;padding:8px;display:grid;grid-template-columns:1fr auto;gap:7px;align-items:center}.cde9-launch b{font-size:6px;display:block}.cde9-launch small{font-size:4.3px;color:#9caf9f}.cde9-launch button{border:0;border-radius:8px;background:#f1e6b5;color:#253129;padding:8px 10px;font-size:5px;font-weight:900}.cde9-launch button:disabled{opacity:.4}
+.cde9-footer{display:grid;grid-template-columns:1fr auto;gap:5px;align-items:center;background:#ebe6d8;padding:8px 9px}.cde9-footer small{font-size:4.4px;color:#6e7870}.cde9-footer button{border:0;border-radius:8px;background:#4f725a;color:white;padding:8px 9px;font-size:4.9px;font-weight:900}
+@media(max-width:390px){.cde9-stage{grid-template-columns:54px 1fr 54px}.cde9-face{font-size:48px}}
+</style>
+<script id="vg-cde-pass09-js">
+(function(){
+"use strict";
+const KEY="vetgods_cde_pass09";
+let W={selected:0,location:"CLINIC",credits:0,progress:{},eventDone:{},survival:{},missionStep:0,missionActive:false,rescues:0,turn:1,last:"Prepare all systems, then launch the planet rescue."};
+try{W=Object.assign(W,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(_){}
+for(let k of ["progress","eventDone","survival"])if(!W[k]||typeof W[k]!=="object")W[k]={};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(W))}catch(_){}};
+const clamp=v=>Math.max(0,Math.min(100,Math.round(v)));
+function model(){try{return JSON.parse(localStorage.getItem("vetgods_mobile_sanctuary_pass05")||"{}")}catch(_){return{pets:[]}}}
+function put(m){try{localStorage.setItem("vetgods_mobile_sanctuary_pass05",JSON.stringify(m))}catch(_){}}
+function face(s){s=String(s||"").toLowerCase();if(s.includes("owl"))return"🦉";if(s.includes("wolf"))return"🐺";if(s.includes("cat"))return"🐈";if(s.includes("fox"))return"🦊";if(s.includes("snake"))return"🐍";if(s.includes("bird"))return"🦅";return"🐕"}
+function cur(){let m=model(),ps=Array.isArray(m.pets)?m.pets:[];if(!ps.length)return null;W.selected=Math.max(0,Math.min(W.selected,ps.length-1));return{m,ps,p:ps[W.selected]}}
+const rooms=[
+["CLINIC","🏥","Clinic","CARE|CLINIC",["🩺","Exam"],["🛏️","Cot"],25,[["bond","♡","SETTLE"],["water","💧","SUPPORT"],["rest","☾","RECOVER"]],["Nervous intake","The resident pauses at the threshold.",["Wait quietly","comfort"],["Walk together","trust"]]],
+["HABITAT","🌲","Habitat","HABITAT",["🧸","Play"],["🏡","Den"],20,[["enrich","✦","EXPLORE"],["bond","♡","BOND"],["rest","☾","SETTLE"]],["Habitat sound","Something moves beyond the den.",["Investigate","trust"],["Stay sheltered","comfort"]]],
+["NUTRITION","🍲","Nutrition","NUTRITION",["🥣","Prep"],["💧","Water"],20,[["food","🍲","PREPARE"],["water","💧","HYDRATE"],["bond","♡","OBSERVE"]],["Meal choice","The resident studies the fictional meal.",["Offer meal","food"],["Wait calmly","comfort"]]],
+["RESEARCH","🔬","Research","RESEARCH",["🔬","Study"],["📚","Archive"],25,[["bond","♡","OBSERVE"],["enrich","✦","ACTIVITY"],["rest","☾","LOG"]],["Unknown trace","A fictional trace appears.",["Scan it","trust"],["Log location","comfort"]]],
+["MORPH","🧬","Morph Lab","MORPH",["🧬","Genome"],["🔹","Vault"],30,[["bond","♡","SYNC"],["enrich","✦","TEST"],["rest","☾","LOCK"]],["Climate test","The adaptation rig requests a setting.",["Test mobility","energy"],["Keep stable","comfort"]]],
+["EXPEDITION","🚀","Expedition","MISSION|EXPEDITION",["🧭","Gate"],["🎒","Pack"],35,[["food","🍲","PACK FOOD"],["water","💧","PACK WATER"],["rest","☾","READY"]],["Rescue signal","A beacon marks an animal rescue zone.",["Mark route","trust"],["Check supplies","energy"]]]
+];
+const needs=[["water","💧","Water"],["food","🥣","Food"],["shelter","🏕️","Shelter"],["climate","🛡️","Climate"],["care","🧰","Care"],["scanner","📡","Scanner"],["rest","🛏️","Rest"],["trust","♡","Bond"]];
+const mission=[["🛰️","LOCATE","Triangulate the rescue signal."],["🛬","LAND","Move into the safe landing zone."],["🐾","RESCUE","Reach the stranded animal."],["🚀","RETURN","Bring the rescue back to sanctuary."]];
+function room(k){return rooms.find(r=>r[0]===k)||rooms[0]}function done(k){let a=W.progress[k];return Array.isArray(a)?a:[]}function unlocked(i){return i===0||done(rooms[i-1][0]).length>=3}
+function ready(){return needs.filter(n=>W.survival[n[0]]).length}
+function reward(R){let map={CLINIC:["care","rest"],HABITAT:["shelter"],NUTRITION:["food","water"],RESEARCH:["scanner"],MORPH:["climate"],EXPEDITION:["trust"]};(map[R[0]]||[]).forEach(k=>W.survival[k]=true)}
+function act(k,label,index){let x=cur();if(!x)return;let p=x.p;if(k==="food"){p.hunger=clamp((p.hunger??35)-16);p.energy=clamp((p.energy??65)+4)}if(k==="water"){p.thirst=clamp((p.thirst??30)-18);p.health=clamp((p.health??72)+2)}if(k==="bond"){p.comfort=clamp((p.comfort??60)+10);p.trust=clamp((p.trust??50)+7)}if(k==="enrich"){p.trust=clamp((p.trust??50)+5);p.comfort=clamp((p.comfort??60)+5)}if(k==="rest")p.energy=clamp((p.energy??65)+15);let a=done(W.location),R=room(W.location),was=a.length>=3;if(index===a.length)a.push(index);W.progress[W.location]=a;if(!was&&a.length>=3){W.credits+=R[6];reward(R);W.last=R[2]+" complete · planet preparation updated."}else W.last="Turn "+W.turn+" · "+label+".";W.turn++;put(x.m);save();draw()}
+function choice(stat,label){let x=cur();if(!x)return;let p=x.p;if(stat==="comfort")p.comfort=clamp((p.comfort??60)+6);if(stat==="trust")p.trust=clamp((p.trust??50)+6);if(stat==="food")p.hunger=clamp((p.hunger??35)-6);if(stat==="energy")p.energy=clamp((p.energy??65)+6);W.eventDone[W.location]=true;W.last="Encounter · "+label+".";put(x.m);save();draw()}
+function missionAct(){if(ready()<8||done("EXPEDITION").length<3)return;if(!W.missionActive){W.missionActive=true;W.missionStep=0;W.last="Planet rescue launched.";save();draw();return}W.missionStep++;if(W.missionStep>=mission.length){W.missionActive=false;W.missionStep=0;W.rescues++;W.credits+=100;W.last="Rescue complete · animal returned safely to the fictional sanctuary · +100 credits."}else W.last=mission[W.missionStep][1]+" phase reached.";save();draw()}
+function deep(term){document.body.classList.add("vgmc-advanced");document.documentElement.classList.remove("vgmc-lock");let rx=new RegExp(term,"i"),els=[...document.querySelectorAll("button,a,h1,h2,h3,h4")].filter(e=>!e.closest("#vg-mobile-console"));let hit=els.find(e=>rx.test((e.textContent||"").trim()));if(hit){try{if(hit.matches("button,a"))hit.click();hit.scrollIntoView({behavior:"smooth",block:"start"})}catch(_){}}}
+function draw(){let view=document.querySelector('#vg-mobile-console [data-view="console"]');if(!view)return;let x=cur();if(!x){view.innerHTML='<div class="cde9">No resident available.</div>';return}let p=x.p,R=room(W.location),a=done(W.location),show=a.length>=1&&!W.eventDone[W.location],E=R[8],rdy=ready(),can=rdy===8&&done("EXPEDITION").length>=3,ms=mission[W.missionStep];
+view.innerHTML=`<div class="cde9"><div class="cde9-head"><div><b>VET GODS</b><small>C+D+E · PASS 09/10 · PLANET RESCUE LOOP</small></div><div class="cde9-bank">¢ ${W.credits} · RESCUES ${W.rescues}</div></div><div class="cde9-route">${rooms.map((r,i)=>`<button class="cde9-node ${W.location===r[0]?"on":""} ${done(r[0]).length>=3?"done":""} ${!unlocked(i)?"lock":""}" data-cde9-place="${r[0]}" ${!unlocked(i)?"disabled":""}><span>${!unlocked(i)?"🔒":r[1]}</span><b>${r[2]}</b></button>`).join("")}</div>
+<section class="cde9-main"><div class="cde9-stage"><div class="cde9-prop"><div><span>${R[4][0]}</span><b>${R[4][1]}</b></div></div><div class="cde9-pet"><div class="cde9-face">${face(p.species)}</div><h1>${p.name}</h1><small>${R[2]} · ${p.species||"Resident"}</small></div><div class="cde9-prop"><div><span>${R[5][0]}</span><b>${R[5][1]}</b></div></div></div>
+${W.location==="EXPEDITION"?`<div class="cde9-mission"><div class="cde9-mtop"><b>🚀 PLANET RESCUE</b><small>${W.missionActive?"MISSION ACTIVE":"STANDBY"}</small></div><h3>${W.missionActive?ms[0]+" "+ms[1]:"Rescue Deployment"}</h3><p>${W.missionActive?ms[2]:"Finish the six preparation rooms and all eight survival requirements before deployment."}</p><div class="cde9-msteps">${mission.map((m,i)=>`<div class="cde9-step ${W.missionActive&&i<W.missionStep?"done":""} ${W.missionActive&&i===W.missionStep?"on":""}"><span>${m[0]}</span><b>${m[1]}</b></div>`).join("")}</div></div>`:""}
+<div class="cde9-survival"><div class="cde9-survivalrow"><b>🌎 SURVIVAL READINESS</b><small>${rdy}/8 READY</small></div><div class="cde9-needs">${needs.map(n=>`<div class="cde9-need ${W.survival[n[0]]?"ready":""}"><span>${W.survival[n[0]]?"✓":n[1]}</span><b>${n[2]}</b></div>`).join("")}</div></div>
+${show?`<div class="cde9-enc"><h3>${E[0]}</h3><p>${E[1]}</p><div class="cde9-choice"><button data-cde9-choice="${E[2][1]}" data-label="${E[2][0]}">${E[2][0]}</button><button data-cde9-choice="${E[3][1]}" data-label="${E[3][0]}">${E[3][0]}</button></div></div>`:""}
+<div class="cde9-progress"><div class="cde9-prow"><b>${R[1]} ${R[2].toUpperCase()} DECK</b><small>${a.length}/3</small></div><div class="cde9-track"><div class="cde9-fill" style="width:${Math.min(100,a.length/3*100)}%"></div></div></div>
+<div class="cde9-hand">${R[7].map((c,i)=>`<button class="cde9-card ${a.includes(i)?"done":i===a.length?"next":""}" data-cde9-act="${c[0]}" data-index="${i}" data-label="${c[2]}" ${show||a.includes(i)||i>a.length?"disabled":""}>${i===a.length?'<em>PLAY</em>':a.includes(i)?'<em>DONE</em>':""}<span>${c[1]}</span><strong>${c[2]}</strong><small>Step ${i+1} of 3</small></button>`).join("")}</div>
+${W.location==="EXPEDITION"?`<div class="cde9-launch"><div><b>${can?(W.missionActive?"MISSION CONTROL":"READY TO DEPLOY"):"DEPLOYMENT LOCKED"}</b><small>${can?"All survival systems are ready.":"Complete preparation: "+rdy+"/8 survival systems ready."}</small></div><button data-cde9-mission ${!can?"disabled":""}>${W.missionActive?(W.missionStep===3?"COMPLETE RETURN":"NEXT PHASE"):"LAUNCH RESCUE"}</button></div>`:""}
+<div class="cde9-footer"><small>${W.last}</small><button data-cde9-deep="${R[3]}">ADVANCED ${R[2].toUpperCase()}</button></div></section></div>`}
+document.addEventListener("click",e=>{let a=e.target.closest("[data-cde9-act]");if(a){act(a.dataset.cde9Act,a.dataset.label,Number(a.dataset.index));return}let c=e.target.closest("[data-cde9-choice]");if(c){choice(c.dataset.cde9Choice,c.dataset.label);return}let p=e.target.closest("[data-cde9-place]");if(p){W.location=p.dataset.cde9Place;save();draw();return}if(e.target.closest("[data-cde9-mission]")){missionAct();return}let d=e.target.closest("[data-cde9-deep]");if(d){deep(d.dataset.cde9Deep);return}},true);
+window.VGCDEPass09=draw;
+})();
+</script>
+
+<style id="vg-cde-pass10-css">
+/* PASS 10 — operator identity: entered once, reused on mission reports, awards and certificates */
+.cde10-idbtn{border:1px solid #53665a;background:#17231b;color:#eef4ee;border-radius:10px;padding:7px 9px;font:700 5px system-ui}
+#cde10Identity{position:fixed;inset:0;z-index:2147483000;background:rgba(7,12,9,.86);display:none;align-items:center;justify-content:center;padding:18px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+#cde10Identity.open{display:flex}.cde10-box{width:min(430px,100%);background:#f5f0df;color:#1f2a24;border-radius:18px;padding:15px;border:1px solid #cfc7b2}.cde10-box h2{font-size:16px;margin:0 0 4px}.cde10-box p{font-size:10px;color:#68736b;margin:0 0 12px;line-height:1.4}.cde10-fields{display:grid;grid-template-columns:1fr 1fr;gap:7px}.cde10-fields label{font-size:9px;font-weight:800}.cde10-fields input{width:100%;box-sizing:border-box;margin-top:4px;padding:10px;border:1px solid #bbb5a5;border-radius:9px;background:#fffdf6;color:#1e2924;font-size:13px}.cde10-actions{display:flex;gap:6px;justify-content:flex-end;margin-top:11px}.cde10-actions button{border:0;border-radius:9px;padding:9px 12px;font-size:9px;font-weight:900}.cde10-save{background:#4f725a;color:white}.cde10-cancel{background:#ded8c8;color:#29322d}
+.cde10-cert{margin:8px 9px;border:1px solid #b8a56a;border-radius:12px;background:#fff8dc;color:#252b26;padding:10px}.cde10-certtop{display:flex;justify-content:space-between;align-items:center}.cde10-certtop b{font-size:6.5px;letter-spacing:.08em}.cde10-certtop small{font-size:4.3px;color:#766a45}.cde10-cert h3{text-align:center;font-size:11px;margin:8px 0 3px}.cde10-cert p{text-align:center;font-size:5px;line-height:1.5;color:#68614c;margin:2px 0}.cde10-sign{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px}.cde10-sign div{border-top:1px solid #7f7559;padding-top:4px;text-align:center}.cde10-sign b{font-size:5.5px;display:block}.cde10-sign small{font-size:4px;color:#766e58}.cde10-reporter{margin-top:8px;border-top:1px dashed #c6b98e;padding-top:6px;text-align:center;font-size:4.8px;color:#665e48}
+@media(max-width:390px){.cde10-fields{grid-template-columns:1fr}}
+</style>
+
+<div id="cde10Identity" aria-hidden="true">
+ <div class="cde10-box">
+  <h2>Operator Identity</h2>
+  <p>Enter the first and last name you want the game to use. This name is saved locally on this device and is reused as the reporting operator on mission awards and certificates.</p>
+  <div class="cde10-fields">
+   <label>FIRST NAME<input id="cde10First" autocomplete="given-name" maxlength="40" placeholder="First name"></label>
+   <label>LAST NAME<input id="cde10Last" autocomplete="family-name" maxlength="40" placeholder="Last name"></label>
+  </div>
+  <div class="cde10-actions"><button class="cde10-cancel" id="cde10Cancel">CANCEL</button><button class="cde10-save" id="cde10Save">SAVE & USE NAME</button></div>
+ </div>
+</div>
+
+<script id="vg-cde-pass10-js">
+(function(){
+"use strict";
+const KEY="vetgods_operator_identity_v1";
+function getID(){try{let x=JSON.parse(localStorage.getItem(KEY)||"{}");return{first:String(x.first||"").trim(),last:String(x.last||"").trim()}}catch(_){return{first:"",last:""}}}
+function full(){let x=getID();return (x.first+" "+x.last).trim()}
+function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function openID(){let x=getID(),m=document.getElementById("cde10Identity");if(!m)return;document.getElementById("cde10First").value=x.first;document.getElementById("cde10Last").value=x.last;m.classList.add("open");m.setAttribute("aria-hidden","false");setTimeout(()=>document.getElementById("cde10First").focus(),20)}
+function closeID(){let m=document.getElementById("cde10Identity");if(m){m.classList.remove("open");m.setAttribute("aria-hidden","true")}}
+function saveID(){let first=document.getElementById("cde10First").value.trim(),last=document.getElementById("cde10Last").value.trim();if(!first||!last){alert("Please enter both a first and last name.");return}try{localStorage.setItem(KEY,JSON.stringify({first,last}))}catch(_){}closeID();decorate()}
+function certHTML(name,rescues){
+ let who=name||"Reporting Operator";
+ return `<div class="cde10-cert" data-cde10-cert><div class="cde10-certtop"><b>🎓 VET GODS FIELD CERTIFICATE</b><small>PASS 10/10</small></div><h3>Planetary Animal Rescue Service</h3><p>This fictional game certificate records completion of sanctuary preparation and field rescue operations.</p><div class="cde10-sign"><div><b>${esc(who)}</b><small>REPORTING OPERATOR</small></div><div><b>Dr. K. Nix</b><small>FICTIONAL PROGRAM AUTHORIZATION</small></div></div><div class="cde10-reporter">Reported by: <b>${esc(who)}</b> · Recorded rescues: <b>${Number(rescues||0)}</b></div></div>`;
+}
+function findRescues(){
+ try{let x=JSON.parse(localStorage.getItem("vetgods_cde_pass09")||"{}");return Number(x.rescues||0)}catch(_){return 0}
+}
+function decorate(){
+ let name=full(),view=document.querySelector('#vg-mobile-console [data-view="console"]');if(!view)return;
+ let head=view.querySelector(".cde9-head,.cde8-head,.cde7-head,.cde6-head,.cde5-head,.cde4-head");
+ if(head&&!head.querySelector("[data-cde10-id]")){let b=document.createElement("button");b.className="cde10-idbtn";b.dataset.cde10Id="1";b.textContent=name?("👤 "+name):"👤 SET NAME";head.appendChild(b)}
+ else if(head){let b=head.querySelector("[data-cde10-id]");if(b)b.textContent=name?("👤 "+name):"👤 SET NAME"}
+ let footer=view.querySelector(".cde9-footer,.cde8-footer,.cde7-footer,.cde6-footer,.cde5-actions,.cde4-footer");
+ if(footer&&!view.querySelector("[data-cde10-cert]"))footer.insertAdjacentHTML("beforebegin",certHTML(name,findRescues()));
+ else {let old=view.querySelector("[data-cde10-cert]");if(old)old.outerHTML=certHTML(name,findRescues())}
+}
+document.addEventListener("click",e=>{if(e.target.closest("[data-cde10-id]")){openID();return}if(e.target.id==="cde10Save"){saveID();return}if(e.target.id==="cde10Cancel"){closeID();return}if(e.target.id==="cde10Identity"){closeID()}},true);
+const mo=new MutationObserver(()=>{clearTimeout(window.__cde10t);window.__cde10t=setTimeout(decorate,20)});
+function start(){let root=document.getElementById("vg-mobile-console");if(root)mo.observe(root,{childList:true,subtree:true});decorate();if(!full())setTimeout(openID,250)}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start);else start();
+window.VetGodsOperator={get:getID,name:full,edit:openID};
+})();
+</script>
+
+<style id="vg-text-console-slim-css">
+/* TEXT CONSOLE MODE — collapse the ship's graphic-heavy console language into compact terminal/readout blocks.
+   Core controls remain clickable; advanced game systems remain in the file. */
+html.vg-text-console-mode{
+ --vg-tc-bg:#07100c;--vg-tc-panel:#0b1711;--vg-tc-line:#294335;--vg-tc-text:#d9e8dd;--vg-tc-dim:#809487;--vg-tc-hot:#b9e4c6;
+}
+html.vg-text-console-mode #main .room-console,
+html.vg-text-console-mode #main .casino-console,
+html.vg-text-console-mode #main .socket-station,
+html.vg-text-console-mode #main .ac-console,
+html.vg-text-console-mode #main .crafting-console,
+html.vg-text-console-mode #main [class*="console" i]:not(.cde9-main):not(.cde8-main):not(.cde7-main):not(.cde6-main):not(.cde5-main):not(.cde4-scene){
+ background:var(--vg-tc-panel)!important;
+ background-image:none!important;
+ border:1px solid var(--vg-tc-line)!important;
+ border-radius:8px!important;
+ box-shadow:none!important;
+ text-shadow:none!important;
+ padding:7px!important;
+ min-height:0!important;
+ filter:none!important;
+}
+html.vg-text-console-mode #main [class*="console" i] *,
+html.vg-text-console-mode #main .room-console *,
+html.vg-text-console-mode #main .casino-console *,
+html.vg-text-console-mode #main .socket-station *{
+ box-shadow:none!important;text-shadow:none!important;filter:none!important;
+}
+html.vg-text-console-mode #main [class*="dial" i],
+html.vg-text-console-mode #main [class*="meter" i],
+html.vg-text-console-mode #main [class*="gauge" i],
+html.vg-text-console-mode #main [class*="light" i],
+html.vg-text-console-mode #main [class*="led" i]{
+ aspect-ratio:auto!important;
+ min-height:0!important;height:auto!important;
+ border-radius:5px!important;
+ background:#0d1b14!important;
+ border:1px solid #263e31!important;
+ padding:4px 5px!important;
+ display:flex!important;align-items:center!important;justify-content:space-between!important;gap:5px!important;
+ font:600 8px/1.25 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+}
+html.vg-text-console-mode #main [class*="dial" i]::before,
+html.vg-text-console-mode #main [class*="meter" i]::before,
+html.vg-text-console-mode #main [class*="gauge" i]::before{content:"›";color:#76a886;margin-right:3px}
+html.vg-text-console-mode #main [class*="console" i] button,
+html.vg-text-console-mode #main .room-console button,
+html.vg-text-console-mode #main .socket-station button{
+ min-height:28px!important;height:auto!important;
+ border-radius:5px!important;
+ padding:5px 7px!important;
+ background:#102219!important;
+ border:1px solid #355341!important;
+ color:var(--vg-tc-text)!important;
+ font:700 8px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+}
+html.vg-text-console-mode #main [class*="console" i] h1,
+html.vg-text-console-mode #main [class*="console" i] h2,
+html.vg-text-console-mode #main [class*="console" i] h3,
+html.vg-text-console-mode #main [class*="console" i] h4{
+ margin:2px 0 5px!important;font:800 9px/1.25 ui-monospace,SFMono-Regular,Consolas,monospace!important;
+ color:var(--vg-tc-hot)!important;letter-spacing:.05em!important;
+}
+html.vg-text-console-mode #main [class*="console" i] p,
+html.vg-text-console-mode #main [class*="console" i] small{
+ font-family:ui-monospace,SFMono-Regular,Consolas,monospace!important;color:var(--vg-tc-dim)!important;
+}
+html.vg-text-console-mode #main .stageConsole,
+html.vg-text-console-mode #main .luxConsoleGrid,
+html.vg-text-console-mode #main .li-console,
+html.vg-text-console-mode #main .ax-console,
+html.vg-text-console-mode #main .ric-console,
+html.vg-text-console-mode #main .vw-labconsole{
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:3px!important;
+}
+html.vg-text-console-mode #main canvas,
+html.vg-text-console-mode #main .radar,
+html.vg-text-console-mode #main [class*="radar" i],
+html.vg-text-console-mode #main [class*="scope" i]{
+ display:none!important;
+}
+.vg-tc-toggle{
+ position:fixed;right:9px;top:9px;z-index:2147482500;border:1px solid #3b5a46;border-radius:8px;
+ background:#0b1711;color:#dce9df;padding:7px 9px;font:800 8px ui-monospace,SFMono-Regular,Consolas,monospace;
+ box-shadow:none;
+}
+html:not(.vg-text-console-mode) .vg-tc-toggle{background:#14241b}
+@media(max-width:600px){
+ html.vg-text-console-mode #main .stageConsole,
+ html.vg-text-console-mode #main .luxConsoleGrid,
+ html.vg-text-console-mode #main .li-console,
+ html.vg-text-console-mode #main .ax-console,
+ html.vg-text-console-mode #main .ric-console,
+ html.vg-text-console-mode #main .vw-labconsole{grid-template-columns:1fr!important}
+}
+</style>
+<button type="button" class="vg-tc-toggle" id="vgTextConsoleToggle">TEXT CONSOLES: ON</button>
+<script id="vg-text-console-slim-js">
+(function(){
+"use strict";
+const KEY="vetgods_text_console_mode";
+let on=true;try{let v=localStorage.getItem(KEY);if(v!==null)on=v!=="0"}catch(_){}
+function apply(){
+ document.documentElement.classList.toggle("vg-text-console-mode",on);
+ let b=document.getElementById("vgTextConsoleToggle");if(b)b.textContent="TEXT CONSOLES: "+(on?"ON":"OFF");
+}
+document.addEventListener("click",function(e){
+ let b=e.target.closest("#vgTextConsoleToggle");if(!b)return;
+ on=!on;try{localStorage.setItem(KEY,on?"1":"0")}catch(_){}apply();
+},true);
+apply();
+window.VetGodsTextConsoles={set:function(v){on=!!v;try{localStorage.setItem(KEY,on?"1":"0")}catch(_){}apply()},get:function(){return on}};
+})();
+</script>
 </body>
 </html>
