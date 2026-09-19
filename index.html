@@ -13412,4 +13412,735 @@ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",
 window.VetGodsDosBackupButton={open:openDosBackup,install};
 })();
 </script>
+<script id="vg-final-wrap-p1-master-data-bus">
+(function(){
+"use strict";
+const KEY="vetgods_master_program_bus_v1";
+function read(){try{return JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){return {}}}
+function active(){try{return window.VetGodsActivePatientP3?.restore?.()||null}catch(e){return null}}
+function player(){return window.VetGodsPlayerNameLockP4?.resolve?.()||state?.rewardSystem?.playerName||state?.certName||"PLAYER"}
+function animals(){return Array.isArray(state?.animals)?state.animals:[]}
+function sync(area,event,extra){let a=active(),x=read();x.updated=Date.now();x.player=player();x.area=area||x.area||"HOME";x.event=event||"SYNC";x.animalCount=animals().length;x.activePatient=a?{id:String(a.permanentId||a.id||a.name||""),name:a.name||"",species:a.species||"",health:a.health,pain:a.pain,hydration:a.hydration,oxygen:a.oxygen??a.oxygenation,nutrition:a.nutrition,trust:a.trust,stress:a.stress,comfort:a.comfort,diagnosticsComplete:!!a.diagnosticsComplete,treatmentComplete:!!a.treatmentComplete,recoveryComplete:!!a.recoveryComplete,rehabComplete:!!a.rehabComplete,destination:a.destination||a.disposition||""}:null;x.lastByArea=x.lastByArea||{};x.lastByArea[x.area]={time:Date.now(),event:x.event,extra:extra||null};if(/COMPLETE|SAVE|FILED/.test(x.event)){x.completedAreas=x.completedAreas||{};x.completedAreas[x.area]=Date.now()}try{localStorage.setItem(KEY,JSON.stringify(x));save()}catch(e){}return x}
+function wrap(objName,fnName,area){let o=window[objName];if(!o||typeof o[fnName]!=="function"||o[fnName]._bus)return;let old=o[fnName];let f=function(){sync(area,"ENTER");let r=old.apply(this,arguments);setTimeout(()=>sync(area,"SYNC"),0);return r};f._bus=true;o[fnName]=f}
+function install(){wrap("VetGodsFinalDosP5","home","HOME");wrap("VetGodsDosFormsP3","clinic","CLINIC");wrap("VetGodsDosFormsP3","myAnimals","MY ANIMALS");wrap("VetGodsDosFormsP3","morph","MORPH");wrap("VetGodsDosFormsP3","credentials","CREDENTIALS");let d=window.VetGodsDepartments;if(d&&typeof d.page==="function"&&!d.page._bus){let old=d.page;let f=function(k){let a=String(k||"RECORDS").toUpperCase();sync(a,"ENTER");let r=old.apply(this,arguments);setTimeout(()=>sync(a,"SYNC"),0);return r};f._bus=true;d.page=f}document.addEventListener("click",e=>{let b=e.target.closest("button");if(!b)return;let t=(b.textContent||"").trim().toUpperCase();if(!/(SAVE|COMPLETE|STAMP|FILE|DISCHARGE|SEND HOME|ADOPT|KEEP|FINALIZE|CEMENT|ISSUE|FINISH|RETURN|BACK|DOS MAIN)/.test(t))return;setTimeout(()=>{let x=read();sync(x.area||"HOME",/(COMPLETE|STAMP|FINALIZE|CEMENT|FINISH|DISCHARGE|SEND HOME)/.test(t)?"COMPLETE":/(FILE|SAVE|ISSUE|ADOPT|KEEP)/.test(t)?"SAVE":"RETURN",{button:t.slice(0,80)})},60)},true);sync("HOME","BOOT")}
+setTimeout(install,1600);window.addEventListener("beforeunload",()=>sync(read().area||"HOME","CLOSE"));window.VetGodsMasterDataBusP1={read,sync};
+})();
+</script>
+<style id="vg-final-wrap-p2-css">
+.vgWrapReturnP2{margin:10px 7px;padding:8px;border-top:3px double #111;background:#e5e1d5}
+.vgWrapReturnP2 button{background:#111!important;color:#fff!important;border:1px solid #111!important;padding:8px 10px!important;font:900 9px "Courier New",monospace!important}
+.vgWrapReceiptP2{margin-top:6px;padding:6px;border:1px solid #999;background:#faf8ef;font:9px "Courier New",monospace}
+</style>
+<script id="vg-final-wrap-p2-save-return">
+(function(){
+"use strict";
+function area(){
+ try{return window.VetGodsMasterDataBusP1?.read?.().area||"PROGRAM"}catch(e){return "PROGRAM"}
+}
+function patient(){
+ try{return window.VetGodsActivePatientP3?.restore?.()||null}catch(e){return null}
+}
+function saveReturn(){
+ let a=area(),p=patient();
+ try{window.VetGodsMasterDataBusP1?.snapshot?.(a,"FILED",{patient:p?.name||"",returnTo:"MAIN PROGRAM"})}catch(e){}
+ try{window.VetGodsPatientContinuityP3?.sync?.()}catch(e){}
+ try{window.VetGodsMissionLoopP8?.sync?.()}catch(e){}
+ try{window.VetGodsCustomPetMyAnimalsFix?.repairExisting?.()}catch(e){}
+ try{save()}catch(e){}
+ if(window.VetGodsFinalDosP5?.home)return window.VetGodsFinalDosP5.home();
+ if(window.VetGodsDosProgramP2?.render)return window.VetGodsDosProgramP2.render("MAIN");
+}
+function inject(){
+ let sheet=document.querySelector(".vgPaperSheet");
+ if(!sheet||sheet.querySelector(".vgWrapReturnP2"))return;
+ let a=area(),p=patient(),box=document.createElement("div");box.className="vgWrapReturnP2";
+ box.innerHTML='<button type="button" class="vgSaveReturnP2">SAVE & RETURN TO MAIN PROGRAM</button>'+
+ '<div class="vgWrapReceiptP2"><b>RETURN RECEIPT:</b> '+a+
+ (p?' · PATIENT '+String(p.name||"ACTIVE").replace(/[&<>"]/g,""):'')+
+ ' · section data will be filed into the master program before return.</div>';
+ let foot=sheet.querySelector(".psFooter");
+ if(foot)foot.insertAdjacentElement("beforebegin",box);else sheet.appendChild(box);
+ box.querySelector(".vgSaveReturnP2").onclick=saveReturn
+}
+function wrap(obj,name){
+ if(!obj||typeof obj[name]!=="function"||obj[name]._wrapP2)return;
+ let old=obj[name],fn=function(){let r=old.apply(this,arguments);setTimeout(inject,0);return r};
+ fn._wrapP2=true;obj[name]=fn
+}
+function install(){
+ wrap(window.VetGodsDepartments,"page");
+ wrap(window.VetGodsDosFormsP3,"clinic");
+ wrap(window.VetGodsDosFormsP3,"myAnimals");
+ wrap(window.VetGodsDosFormsP3,"morph");
+ wrap(window.VetGodsDosFormsP3,"credentials");
+ wrap(window.VetGodsPaperIndexP2,"render");
+ inject()
+}
+setTimeout(install,1700);
+document.addEventListener("click",()=>setTimeout(inject,50));
+window.VetGodsSaveReturnP2={saveReturn,inject};
+})();
+</script>
+
+<style id="vg-final-wrap-p3-css">
+#vgMainReturnBoardP3{max-width:1060px;margin:8px auto;background:#eeeade;color:#111;border:2px solid #fff;box-shadow:6px 6px #111;padding:10px;box-sizing:border-box;font:10px "Courier New",monospace}
+#vgMainReturnBoardP3 .rbHead{display:flex;justify-content:space-between;gap:8px;border-bottom:3px double #111;padding-bottom:6px}
+#vgMainReturnBoardP3 .rbGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:7px}
+#vgMainReturnBoardP3 .rbBox{background:#faf8ef;border:1px solid #999;padding:7px;min-height:42px}
+#vgMainReturnBoardP3 .rbBox small{display:block;font-size:7px;font-weight:900;color:#555}
+#vgMainReturnBoardP3 .rbWide{grid-column:span 2}
+#vgMainReturnBoardP3 .ok{color:#126d31;font-weight:900}
+#vgMainReturnBoardP3 button{background:#111;color:#fff;border:1px solid #111;padding:6px 8px;font:900 8px "Courier New",monospace;margin:4px 3px 0 0}
+@media(max-width:720px){#vgMainReturnBoardP3 .rbGrid{grid-template-columns:repeat(2,1fr)}#vgMainReturnBoardP3 .rbWide{grid-column:span 2}}
+</style>
+<script id="vg-final-wrap-p3-main-return-board">
+(function(){
+"use strict";
+function bus(){try{return window.VetGodsMasterDataBusP1?.read?.()||{}}catch(e){return {}}}
+function animals(){return Array.isArray(state?.animals)?state.animals:[]}
+function active(){try{return window.VetGodsActivePatientP3?.restore?.()||null}catch(e){return null}}
+function missions(){try{return window.VetGodsMissionLoopP8?.read?.()||{}}catch(e){return {}}}
+function certs(){try{return window.VetGodsMasterRecordsP9?.master?.().certificates||[]}catch(e){return []}}
+function morphs(){return animals().filter(a=>a&&a.morphRecord)}
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function render(){
+ let old=document.querySelector("#vgMainReturnBoardP3");if(old)old.remove();
+ let shell=document.querySelector("#vgDosShellP1")||document.querySelector("#vgInstrumentRailP4")||document.querySelector("#main");
+ if(!shell)return;
+ let b=bus(),a=active(),list=animals(),ms=missions(),done=Object.keys(b.completedAreas||{}),morph=morphs(),cs=certs();
+ let d=document.createElement("div");d.id="vgMainReturnBoardP3";
+ d.innerHTML='<div class="rbHead"><div><b>MAIN PROGRAM // RETURNED DATA BOARD</b><br><small>Everything filed in a department returns here.</small></div>'+
+ '<div class="ok">MASTER LINK ONLINE</div></div><div class="rbGrid">'+
+ '<div class="rbBox"><small>LAST RETURN</small>'+esc(b.area||"HOME")+'<br>'+esc(b.event||"READY")+'</div>'+
+ '<div class="rbBox"><small>ACTIVE PATIENT</small>'+esc(a?.name||"NONE")+'<br>'+esc(a?.species||"")+'</div>'+
+ '<div class="rbBox"><small>MY ANIMALS</small>'+list.length+' PERMANENT</div>'+
+ '<div class="rbBox"><small>MORPH CREATURES</small>'+morph.length+' SAVED</div>'+
+ '<div class="rbBox"><small>MISSION</small>'+esc(ms.active?.status||"READY")+' · STEP '+Number(ms.active?.stage||0)+'</div>'+
+ '<div class="rbBox"><small>CREDENTIALS</small>'+cs.length+' ISSUED</div>'+
+ '<div class="rbBox rbWide"><small>PATIENT STATUS</small>'+
+ (a?'HEALTH '+(a.health??"—")+' · PAIN '+(a.pain??"—")+' · HYDRATION '+(a.hydration??"—")+' · O₂ '+(a.oxygen??a.oxygenation??"—")+
+ ' · NUTRITION '+(a.nutrition??"—"):'NO ACTIVE PATIENT')+'</div>'+
+ '<div class="rbBox rbWide"><small>FILES RETURNED / COMPLETED</small>'+(done.length?esc(done.join(" · ")):"No completed section receipt yet.")+'</div>'+
+ '</div><div><button id="rbAnimalsP3">MY ANIMALS</button><button id="rbClinicP3">PATIENT CHART</button><button id="rbFilesP3">DEPARTMENT FILES</button>'+
+ '<button id="rbMissionP3">MISSION</button><button id="rbRecordsP3">CENTRAL RECORDS</button></div>';
+ shell.insertAdjacentElement("afterend",d);
+ d.querySelector("#rbAnimalsP3").onclick=()=>window.VetGodsDosFormsP3?.myAnimals?.();
+ d.querySelector("#rbClinicP3").onclick=()=>window.VetGodsDosFormsP3?.clinic?.();
+ d.querySelector("#rbFilesP3").onclick=()=>window.VetGodsPaperIndexP2?.render?.();
+ d.querySelector("#rbMissionP3").onclick=()=>window.VetGodsDepartments?.page?.("MISSION");
+ d.querySelector("#rbRecordsP3").onclick=()=>window.VetGodsDepartments?.page?.("RECORDS")
+}
+function wrapHome(obj,name){
+ if(!obj||typeof obj[name]!=="function"||obj[name]._returnBoardP3)return;
+ let old=obj[name],fn=function(){let r=old.apply(this,arguments);setTimeout(render,30);return r};
+ fn._returnBoardP3=true;obj[name]=fn
+}
+function install(){
+ wrapHome(window.VetGodsFinalDosP5,"home");
+ if(window.VetGodsDosProgramP2&&typeof window.VetGodsDosProgramP2.render==="function"&&!window.VetGodsDosProgramP2.render._returnBoardP3){
+   let old=window.VetGodsDosProgramP2.render;
+   let fn=function(mode){let r=old.apply(this,arguments);if(String(mode||"").toUpperCase()==="MAIN")setTimeout(render,30);return r};
+   fn._returnBoardP3=true;window.VetGodsDosProgramP2.render=fn
+ }
+ setTimeout(render,50)
+}
+setTimeout(install,1800);
+window.VetGodsMainReturnBoardP3={render};
+})();
+</script>
+
+<style id="vg-final-wrap-p4-css">
+.vgHandoffP4{margin:8px 7px;background:#faf8ef;border:1px solid #888;padding:8px;font:9px "Courier New",monospace}
+.vgHandoffP4 h4{margin:0 0 6px;font:700 13px Georgia,serif}
+.vgHandoffP4 .hrow{border-top:1px dotted #aaa;padding:5px 0}
+.vgHandoffP4 .hrow:first-of-type{border-top:0}
+.vgHandoffP4 .src{font-weight:900}
+</style>
+<script id="vg-final-wrap-p4-cross-department">
+(function(){
+"use strict";
+function active(){try{return window.VetGodsActivePatientP3?.restore?.()||null}catch(e){return null}}
+function pid(a){return String(a?.permanentId||a?.id||a?.name||"NONE")}
+function json(k,d={}){try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d))}catch(e){return d}}
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function area(){try{return window.VetGodsMasterDataBusP1?.read?.().area||""}catch(e){return ""}}
+function vals(o){return Object.values(o||{}).filter(v=>typeof v==="string"&&v.trim()).slice(0,5)}
+function handoffs(dest){
+ let a=active();if(!a)return [];
+ let id=pid(a),clinical=json("vetgods_clinical_chart_p4_v1",{})[id]||{},life=json("vetgods_animal_life_folder_p5_v1",{})[id]||{};
+ let ops=json("vetgods_hospital_operations_p6_v1",{}),research=a.researchFiles||{},mission=json("vetgods_mission_loop_p8_v1",{active:null});
+ let out=[];
+ function add(src,obj){let v=vals(obj?.fields||obj);if(v.length)out.push({src,text:v.join(" · ")})}
+ if(dest==="SURGERY"){add("DIAGNOSTIC",clinical.DIAGNOSTIC);add("PHARMACY",clinical.PHARMACY)}
+ if(dest==="PHARMACY"){add("DIAGNOSTIC",clinical.DIAGNOSTIC);add("SURGERY",clinical.SURGERY)}
+ if(dest==="RECOVERY"){add("SURGERY",clinical.SURGERY);add("PHARMACY",clinical.PHARMACY);add("NUTRITION",clinical.NUTRITION)}
+ if(dest==="REHAB"){add("RECOVERY",clinical.RECOVERY);add("BEHAVIOR",life.BEHAVIOR)}
+ if(dest==="SANCTUARY"){add("BEHAVIOR",life.BEHAVIOR);add("HABITAT",life.HABITAT);add("RECOVERY",clinical.RECOVERY)}
+ if(dest==="HABITAT"){add("BEHAVIOR",life.BEHAVIOR);add("SANCTUARY",life.SANCTUARY)}
+ if(dest==="NURSERY"){add("NUTRITION",clinical.NUTRITION);add("BEHAVIOR",life.BEHAVIOR)}
+ if(dest==="CLINIC"||dest==="DIAGNOSTIC"){
+   if(mission.active?.fields)out.push({src:"MISSION / DISPATCH",text:vals(mission.active.fields).join(" · ")})
+   add("FACILITIES",ops.FACILITIES);add("STAFF",ops.STAFF)
+ }
+ if(dest==="MISSION"){add("DISPATCH",ops.DISPATCH);add("OPS",ops.OPS)}
+ if(dest==="RESEARCH"||dest==="SPECIAL ARCHIVES"||dest==="PARANORMAL"){
+   Object.entries(research).forEach(([k,v])=>add(k,v))
+   if(a.morphRecord)out.push({src:"MORPH",text:"Permanent Morph record attached to "+(a.name||"active animal")})
+ }
+ if(dest==="RECORDS"){
+   ["DIAGNOSTIC","SURGERY","PHARMACY","NUTRITION","RECOVERY","REHAB"].forEach(k=>add(k,clinical[k]));
+   ["NURSERY","BEHAVIOR","HABITAT","SANCTUARY"].forEach(k=>add(k,life[k]))
+ }
+ return out.slice(0,10)
+}
+function inject(dest){
+ let sheet=document.querySelector(".vgPaperSheet");if(!sheet||sheet.querySelector(".vgHandoffP4"))return;
+ let h=handoffs(dest||area());if(!h.length)return;
+ let d=document.createElement("div");d.className="vgHandoffP4";
+ d.innerHTML='<h4>RECEIVED FROM OTHER PROGRAM SECTIONS</h4>'+
+ h.map(x=>'<div class="hrow"><span class="src">'+esc(x.src)+' →</span> '+esc(x.text)+'</div>').join("");
+ let first=sheet.querySelector(".psSection");if(first)first.insertAdjacentElement("afterend",d);else sheet.appendChild(d)
+}
+function install(){
+ let dep=window.VetGodsDepartments;
+ if(dep&&typeof dep.page==="function"&&!dep.page._handoffP4){
+   let old=dep.page,fn=function(k){let r=old.apply(this,arguments);setTimeout(()=>inject(String(k||"").toUpperCase()),20);return r};
+   fn._handoffP4=true;dep.page=fn
+ }
+ if(window.VetGodsDosFormsP3?.clinic&&!window.VetGodsDosFormsP3.clinic._handoffP4){
+   let old=window.VetGodsDosFormsP3.clinic,fn=function(){let r=old.apply(this,arguments);setTimeout(()=>inject("CLINIC"),20);return r};
+   fn._handoffP4=true;window.VetGodsDosFormsP3.clinic=fn
+ }
+}
+setTimeout(install,1900);
+window.VetGodsCrossDepartmentP4={handoffs,inject};
+})();
+</script>
+
+<style id="vg-final-wrap-p5-css">
+#vgFinalCaseP5{max-width:1060px;margin:8px auto 90px;background:#eeeade;color:#111;border:2px solid #fff;box-shadow:6px 6px #111;padding:10px;box-sizing:border-box;font:10px "Courier New",monospace}
+#vgFinalCaseP5 .head{display:flex;justify-content:space-between;gap:8px;border-bottom:3px double #111;padding-bottom:6px}
+#vgFinalCaseP5 .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:7px}
+#vgFinalCaseP5 .box{background:#faf8ef;border:1px solid #999;padding:7px}
+#vgFinalCaseP5 .box small{display:block;font-size:7px;font-weight:900;color:#555}
+#vgFinalCaseP5 .wide{grid-column:span 2}
+#vgFinalCaseP5 button{background:#111;color:#fff;border:1px solid #111;padding:7px 9px;font:900 8px "Courier New",monospace;margin:5px 3px 0 0}
+#vgFinalCaseP5 .green{color:#126d31;font-weight:900}
+@media(max-width:720px){#vgFinalCaseP5 .grid{grid-template-columns:repeat(2,1fr)}#vgFinalCaseP5 .wide{grid-column:span 2}}
+</style>
+<script id="vg-final-wrap-p5-closure">
+(function(){
+"use strict";
+const KEY="vetgods_final_case_closure_p5_v1";
+function bus(){try{return window.VetGodsMasterDataBusP1?.read?.()||{}}catch(e){return {}}}
+function active(){try{return window.VetGodsActivePatientP3?.restore?.()||null}catch(e){return null}}
+function animals(){return Array.isArray(state?.animals)?state.animals:[]}
+function player(){return window.VetGodsPlayerNameLockP4?.resolve?.()||state?.rewardSystem?.playerName||state?.certName||"PLAYER"}
+function mission(){try{return window.VetGodsMissionLoopP8?.read?.()||{}}catch(e){return {}}}
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function read(){try{return JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){return {}}}
+function write(x){try{localStorage.setItem(KEY,JSON.stringify(x));save()}catch(e){}}
+function consolidate(reason){
+ let b=bus(),a=active(),ms=mission(),list=animals(),x=read();
+ x.version=1;x.updated=Date.now();x.reason=reason||"SYNC";x.player=player();
+ x.animalCount=list.length;x.activePatient=a?{
+  id:String(a.permanentId||a.id||a.name||""),name:a.name||"",species:a.species||"",
+  health:a.health,pain:a.pain,hydration:a.hydration,oxygen:a.oxygen??a.oxygenation,
+  nutrition:a.nutrition,trust:a.trust,stress:a.stress,comfort:a.comfort,
+  diagnosticsComplete:!!a.diagnosticsComplete,treatmentComplete:!!a.treatmentComplete,
+  recoveryComplete:!!a.recoveryComplete,rehabComplete:!!a.rehabComplete,
+  destination:a.destination||a.disposition||""
+ }:null;
+ x.lastArea=b.area||"HOME";x.completedAreas=b.completedAreas||{};
+ x.mission=ms.active?{id:ms.active.id,status:ms.active.status,stage:ms.active.stage,fields:ms.active.fields||{}}:null;
+ x.morphAnimals=list.filter(q=>q&&q.morphRecord).map(q=>({id:q.permanentId||q.id||"",name:q.name||"",species:q.species||""}));
+ x.roster=list.map(q=>({id:q.permanentId||q.id||"",name:q.name||"",species:q.species||"",destination:q.destination||q.disposition||""}));
+ x.history=x.history||[];x.history.unshift({time:Date.now(),reason:x.reason,area:x.lastArea,patient:a?.name||""});x.history=x.history.slice(0,100);
+ write(x);
+ try{window.VetGodsMasterDataBusP1?.snapshot?.(x.lastArea,"FILED",{finalClosure:true,reason:x.reason})}catch(e){}
+ try{window.VetGodsPatientContinuityP3?.sync?.()}catch(e){}
+ try{window.VetGodsMissionLoopP8?.sync?.()}catch(e){}
+ try{window.VetGodsCustomPetMyAnimalsFix?.repairExisting?.()}catch(e){}
+ try{window.VetGodsPlayerNameLockP4?.repair?.()}catch(e){}
+ try{save()}catch(e){}
+ return x
+}
+function render(){
+ let old=document.querySelector("#vgFinalCaseP5");if(old)old.remove();
+ let shell=document.querySelector("#vgMainReturnBoardP3")||document.querySelector("#vgDosShellP1")||document.querySelector("#vgInstrumentRailP4");
+ if(!shell)return;
+ let x=consolidate("MAIN RETURN"),a=active(),done=Object.keys(x.completedAreas||{}),ms=x.mission;
+ let d=document.createElement("div");d.id="vgFinalCaseP5";
+ d.innerHTML='<div class="head"><div><b>VET GODS // CONSOLIDATED PROGRAM RECORD</b><br><small>FINAL 5/5 · all section returns terminate here.</small></div>'+
+ '<div class="green">PROGRAM LINK COMPLETE</div></div><div class="grid">'+
+ '<div class="box"><small>PLAYER</small>'+esc(x.player)+'</div>'+
+ '<div class="box"><small>PERMANENT ANIMALS</small>'+x.animalCount+'</div>'+
+ '<div class="box"><small>ACTIVE PATIENT</small>'+esc(a?.name||"NONE")+'</div>'+
+ '<div class="box"><small>LAST FILED AREA</small>'+esc(x.lastArea||"HOME")+'</div>'+
+ '<div class="box wide"><small>CASE STATUS</small>'+(a?
+ 'HEALTH '+(a.health??"—")+' · PAIN '+(a.pain??"—")+' · HYDRATION '+(a.hydration??"—")+' · O₂ '+(a.oxygen??a.oxygenation??"—")+
+ ' · RECOVERY '+(a.recoveryComplete?"COMPLETE":"OPEN"):'NO ACTIVE CASE')+'</div>'+
+ '<div class="box"><small>MISSION</small>'+esc(ms?.status||"READY")+' · STEP '+Number(ms?.stage||0)+'</div>'+
+ '<div class="box"><small>MORPH RECORDS</small>'+x.morphAnimals.length+'</div>'+
+ '<div class="box wide"><small>FILED / COMPLETED PROGRAM AREAS</small>'+(done.length?esc(done.join(" · ")):"No stamped sections yet.")+'</div>'+
+ '<div class="box wide"><small>DESTINATION / DISPOSITION</small>'+esc(a?.destination||a?.disposition||"OPEN CASE")+'</div>'+
+ '</div><div><button id="fcAnimals">MY ANIMALS</button><button id="fcClinic">PATIENT CHART</button><button id="fcDepartments">DEPARTMENT FILES</button>'+
+ '<button id="fcMission">MISSION</button><button id="fcRecords">CENTRAL RECORDS</button><button id="fcSave">CONSOLIDATE & SAVE NOW</button></div>';
+ shell.insertAdjacentElement("afterend",d);
+ d.querySelector("#fcAnimals").onclick=()=>window.VetGodsDosFormsP3?.myAnimals?.();
+ d.querySelector("#fcClinic").onclick=()=>window.VetGodsDosFormsP3?.clinic?.();
+ d.querySelector("#fcDepartments").onclick=()=>window.VetGodsPaperIndexP2?.render?.();
+ d.querySelector("#fcMission").onclick=()=>window.VetGodsDepartments?.page?.("MISSION");
+ d.querySelector("#fcRecords").onclick=()=>window.VetGodsDepartments?.page?.("RECORDS");
+ d.querySelector("#fcSave").onclick=()=>{consolidate("MANUAL FINAL SAVE");render()}
+}
+function finishAndHome(){
+ consolidate("SECTION FINISHED");
+ if(window.VetGodsFinalDosP5?.home)return window.VetGodsFinalDosP5.home();
+ if(window.VetGodsDosProgramP2?.render)return window.VetGodsDosProgramP2.render("MAIN")
+}
+function install(){
+ /* Phase 2's explicit return now terminates through final consolidation. */
+ if(window.VetGodsSaveReturnP2)window.VetGodsSaveReturnP2.saveReturn=finishAndHome;
+
+ let f=window.VetGodsFinalDosP5;
+ if(f&&typeof f.home==="function"&&!f.home._closureP5){
+  let old=f.home,fn=function(){consolidate("HOME");let r=old.apply(this,arguments);setTimeout(render,50);return r};
+  fn._closureP5=true;f.home=fn
+ }
+ let dp=window.VetGodsDosProgramP2;
+ if(dp&&typeof dp.render==="function"&&!dp.render._closureP5){
+  let old=dp.render,fn=function(mode){let r=old.apply(this,arguments);if(String(mode||"").toUpperCase()==="MAIN"){consolidate("DOS MAIN");setTimeout(render,50)}return r};
+  fn._closureP5=true;dp.render=fn
+ }
+
+ /* Save final state on lifecycle boundaries without forcing navigation. */
+ document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")consolidate("BACKGROUND")});
+ window.addEventListener("beforeunload",()=>consolidate("CLOSE"));
+ setTimeout(()=>{consolidate("FINAL WRAP BOOT");render()},100)
+}
+setTimeout(install,2000);
+window.VetGodsFinalClosureP5={consolidate,render,finishAndHome,read};
+})();
+</script>
+
+<style id="vg-awards-p1-css">
+#vgAwardsP1{max-width:1060px;margin:8px auto 90px;background:#eeeade;color:#111;border:2px solid #fff;box-shadow:7px 7px #111;padding:12px;box-sizing:border-box;font:10px "Courier New",monospace}
+#vgAwardsP1 .tabs{display:flex;gap:4px;overflow:auto;border-bottom:3px double #111;padding-bottom:7px}
+#vgAwardsP1 button{background:#111;color:#fff;border:1px solid #111;padding:7px 9px;font:900 8px "Courier New",monospace;margin:3px}
+#vgAwardsP1 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+#vgAwardsP1 .award{background:#faf8ef;border:1px solid #999;padding:9px;min-height:110px}
+#vgAwardsP1 .badge{width:48px;height:48px;border:4px double #111;border-radius:50%;display:grid;place-items:center;font:bold 15px Georgia,serif;float:right;margin-left:7px}
+#vgAwardsP1 .rank{font-size:8px;font-weight:900}
+#vgAwardsP1 input{width:100%;box-sizing:border-box;padding:7px;background:#fff;color:#111;border:1px solid #777}
+#vgAwardToastP1{position:fixed;top:8px;right:8px;z-index:2147483001;background:#050606;color:#20e060;border:1px solid #20e060;padding:9px;font:900 9px "Courier New",monospace;display:none;max-width:270px}
+@media(max-width:720px){#vgAwardsP1 .grid{grid-template-columns:1fr}}
+</style>
+<script id="vg-awards-p1-js">
+(function(){
+"use strict";
+const KEY="vetgods_awards_center_v1";
+const awards=[
+["VG-001","Veterinary Command Initiate","BADGE","Command"],
+["VG-002","Clinical Intake Specialist","BADGE","Clinic"],
+["VG-003","Diagnostic Systems Operator","BADGE","Diagnostics"],
+["VG-004","Advanced Imaging Fellow","CERTIFICATE","Diagnostics"],
+["VG-005","Laboratory Case Analyst","CERTIFICATE","Diagnostics"],
+["VG-006","Surgical Theater Operator","BADGE","Surgery"],
+["VG-007","Surgical Command Fellowship","CERTIFICATE","Surgery"],
+["VG-008","Pharmacy Logistics Officer","BADGE","Pharmacy"],
+["VG-009","Pain Management Program Fellow","CERTIFICATE","Pharmacy"],
+["VG-010","Oxygen Support Specialist","BADGE","Recovery"],
+["VG-011","Hydration Stabilization Specialist","BADGE","Recovery"],
+["VG-012","Recovery Ward Commander","CERTIFICATE","Recovery"],
+["VG-013","Rehabilitation Systems Fellow","CERTIFICATE","Rehab"],
+["VG-014","Mobility Recovery Badge","BADGE","Rehab"],
+["VG-015","Animal Nutrition Officer","BADGE","Nutrition"],
+["VG-016","Advanced Nutrition Fellowship","CERTIFICATE","Nutrition"],
+["VG-017","Behavior & Enrichment Specialist","BADGE","Behavior"],
+["VG-018","Sanctuary Welfare Fellow","CERTIFICATE","Sanctuary"],
+["VG-019","Habitat Systems Officer","BADGE","Habitat"],
+["VG-020","Nursery Development Specialist","BADGE","Nursery"],
+["VG-021","Rescue Dispatch Commander","CERTIFICATE","Dispatch"],
+["VG-022","Field Mission Operator","BADGE","Mission"],
+["VG-023","Expedition Rescue Fellow","CERTIFICATE","Mission"],
+["VG-024","Permanent Records Officer","BADGE","Records"],
+["VG-025","Clinical Records Fellowship","CERTIFICATE","Records"],
+["VG-026","Hospital Operations Commander","CERTIFICATE","Ops"],
+["VG-027","Facilities Systems Officer","BADGE","Facilities"],
+["VG-028","Clinical Staff Leadership Fellow","CERTIFICATE","Staff"],
+["VG-029","Research Systems Operator","BADGE","Research"],
+["VG-030","Advanced Research Fellowship","CERTIFICATE","Research"],
+["VG-031","Morph Research Specialist","BADGE","Morph"],
+["VG-032","Morph Sanctuary Fellowship","CERTIFICATE","Morph"],
+["VG-033","Special Archives Custodian","BADGE","Archives"],
+["VG-034","Anomaly Archive Fellowship","CERTIFICATE","Paranormal"],
+["VG-035","Neurobehavioral Systems Badge","BADGE","Neuro"],
+["VG-036","Neuropsych Program Fellowship","CERTIFICATE","Neuro"],
+["VG-037","Companion Stewardship Badge","BADGE","My Animals"],
+["VG-038","Multispecies Care Fellowship","CERTIFICATE","My Animals"],
+["VG-039","Emergency Stabilization Badge","BADGE","Clinic"],
+["VG-040","Patient Monitoring Fellowship","CERTIFICATE","Clinic"],
+["VG-041","Transport Coordination Badge","BADGE","Dispatch"],
+["VG-042","Adoption & Placement Fellowship","CERTIFICATE","Sanctuary"],
+["VG-043","Veterinary Mission Logistics Badge","BADGE","Mission"],
+["VG-044","Hospital Readiness Fellowship","CERTIFICATE","Ops"],
+["VG-045","Treatment Planning Badge","BADGE","Clinic"],
+["VG-046","Post-Operative Care Fellowship","CERTIFICATE","Recovery"],
+["VG-047","Species Habitat Fellowship","CERTIFICATE","Habitat"],
+["VG-048","Enrichment Systems Badge","BADGE","Behavior"],
+["VG-049","Rescue Documentation Fellowship","CERTIFICATE","Records"],
+["VG-050","Apex Intervention Officer","BADGE","Command"],
+["VG-051","Apex Intervention Fellowship","CERTIFICATE","Command"],
+["VG-052","Grand Veterinary Command Badge","BADGE","Command"],
+["VG-053","Grand Fellowship of Vet Gods Command","CERTIFICATE","Command"],
+["VG-054","Master Animal Recovery Medal","BADGE","Command"],
+["VG-055","Supreme Program Completion Commission","CERTIFICATE","Command"]
+];
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function player(){return window.VetGodsPlayerNameLockP4?.resolve?.()||state?.rewardSystem?.playerName||state?.certName||"PLAYER"}
+function read(){try{return JSON.parse(localStorage.getItem(KEY)||'{"issued":[]}')}catch(e){return {issued:[]}}}
+function write(x){try{localStorage.setItem(KEY,JSON.stringify(x));save()}catch(e){}}
+function toast(t){let d=document.querySelector("#vgAwardToastP1");if(!d){d=document.createElement("div");d.id="vgAwardToastP1";document.body.appendChild(d)}d.textContent=t;d.style.display="block";setTimeout(()=>d.style.display="none",1800)}
+function award(id,name){
+ let item=awards.find(x=>x[0]===id);if(!item)return;
+ let x=read(),who=(name||player()).trim()||"PLAYER";
+ let rec={id:"AWARD-"+Date.now()+"-"+id,code:id,title:item[1],type:item[2],category:item[3],player:who,time:Date.now()};
+ x.issued=x.issued||[];x.issued.unshift(rec);write(x);
+ try{state.certName=who;if(state.rewardSystem)state.rewardSystem.playerName=who;save()}catch(e){}
+ try{window.VetGodsMasterDataBusP1?.snapshot?.("CREDENTIALS","SAVE",{award:item[1],type:item[2]})}catch(e){}
+ toast(item[2]+" AWARDED: "+item[1]);render("ALL")
+}
+function render(filter){
+ let m=document.querySelector("#main");if(!m)return;
+ let x=read(),who=player(),list=filter==="BADGE"?awards.filter(a=>a[2]==="BADGE"):filter==="CERTIFICATE"?awards.filter(a=>a[2]==="CERTIFICATE"):awards;
+ m.innerHTML='<div id="vgAwardsP1"><div class="tabs"><b>VET GODS // BADGES & CERTIFICATIONS</b>'+
+ '<button data-af="ALL">ALL 55</button><button data-af="BADGE">BADGES</button><button data-af="CERTIFICATE">CERTIFICATIONS</button>'+
+ '<button id="awardWalletP1">MY AWARDS ('+(x.issued||[]).length+')</button><button id="awardHomeP1">DOS MAIN</button></div>'+
+ '<div style="padding:8px 0"><b>AWARD TO PLAYER</b><input id="awardNameP1" value="'+esc(who)+'"></div>'+
+ '<div class="grid">'+list.map(a=>'<div class="award"><div class="badge">'+(a[2]==="BADGE"?"★":"VG")+'</div><div class="rank">'+a[0]+' // '+a[2]+'</div>'+
+ '<h3>'+esc(a[1])+'</h3><small>'+esc(a[3])+' PROGRAM</small><br><button data-award="'+a[0]+'">AWARD TO ME</button></div>').join("")+'</div></div>';
+ m.querySelectorAll("[data-af]").forEach(b=>b.onclick=()=>render(b.dataset.af));
+ m.querySelectorAll("[data-award]").forEach(b=>b.onclick=()=>award(b.dataset.award,document.querySelector("#awardNameP1").value));
+ document.querySelector("#awardWalletP1").onclick=wallet;
+ document.querySelector("#awardHomeP1").onclick=()=>window.VetGodsDosProgramP2?.render?.("MAIN")
+}
+function wallet(){
+ let m=document.querySelector("#main"),x=read();if(!m)return;
+ m.innerHTML='<div id="vgAwardsP1"><div class="tabs"><b>MY BADGES & CERTIFICATIONS</b><button id="walletBackP1">AWARD CENTER</button><button id="walletHomeP1">DOS MAIN</button></div>'+
+ '<div class="grid">'+((x.issued||[]).length?(x.issued||[]).map(c=>'<div class="award"><div class="badge">'+(c.type==="BADGE"?"★":"VG")+'</div><div class="rank">'+esc(c.code)+' // '+esc(c.type)+'</div>'+
+ '<h3>'+esc(c.title)+'</h3><b>'+esc(c.player)+'</b><br><small>'+new Date(c.time).toLocaleString()+'</small></div>').join(""):'<div class="award">No awards issued yet.</div>')+'</div></div>';
+ document.querySelector("#walletBackP1").onclick=()=>render("ALL");
+ document.querySelector("#walletHomeP1").onclick=()=>window.VetGodsDosProgramP2?.render?.("MAIN")
+}
+function install(){
+ /* explicit entry only — never auto-render credentials */
+ if(window.VetGodsDosFormsP3)window.VetGodsDosFormsP3.credentials=()=>render("ALL");
+ window.VetGodsAwardsP1={render,wallet,award,read,awards}
+}
+setTimeout(install,1800);
+})();
+</script>
+
+<style id="vg-awards-p2-css">
+.vgDeptAwardsP2{margin:9px 7px;padding:8px;background:#faf8ef;border:2px double #777;font:9px "Courier New",monospace}
+.vgDeptAwardsP2 h4{margin:0 0 6px;font:700 13px Georgia,serif}
+.vgDeptAwardsP2 .chips{display:flex;gap:5px;overflow:auto;padding-bottom:4px}
+.vgDeptAwardsP2 .chip{min-width:180px;border:1px solid #999;background:#fff;padding:7px}
+.vgDeptAwardsP2 button{background:#111!important;color:#fff!important;border:1px solid #111!important;padding:6px 8px!important;font:900 8px "Courier New",monospace!important;margin-top:5px}
+.vgDeptAwardsP2 .issued{color:#126d31;font-weight:900}
+</style>
+<script id="vg-awards-p2-department-js">
+(function(){
+"use strict";
+const map={
+ "CLINIC":["VG-002","VG-039","VG-040","VG-045"],
+ "DIAGNOSTIC":["VG-003","VG-004","VG-005"],
+ "SURGERY":["VG-006","VG-007"],
+ "PHARMACY":["VG-008","VG-009"],
+ "RECOVERY":["VG-010","VG-011","VG-012","VG-046"],
+ "REHAB":["VG-013","VG-014"],
+ "NUTRITION":["VG-015","VG-016"],
+ "BEHAVIOR":["VG-017","VG-048"],
+ "SANCTUARY":["VG-018","VG-042"],
+ "HABITAT":["VG-019","VG-047"],
+ "NURSERY":["VG-020"],
+ "DISPATCH":["VG-021","VG-041"],
+ "MISSION":["VG-022","VG-023","VG-043"],
+ "RECORDS":["VG-024","VG-025","VG-049"],
+ "OPS":["VG-026","VG-044"],
+ "FACILITIES":["VG-027"],
+ "STAFF":["VG-028"],
+ "EMPLOYEES":["VG-028"],
+ "RESEARCH":["VG-029","VG-030"],
+ "MORPH":["VG-031","VG-032"],
+ "SPECIAL ARCHIVES":["VG-033"],
+ "PARANORMAL":["VG-034"],
+ "NEURO":["VG-035","VG-036"],
+ "MY ANIMALS":["VG-037","VG-038"],
+ "HOME":["VG-001","VG-050","VG-051","VG-052","VG-053","VG-054","VG-055"]
+};
+function all(){return window.VetGodsAwardsP1?.awards||[]}
+function issued(code){try{return (window.VetGodsAwardsP1?.read?.().issued||[]).some(x=>x.code===code)}catch(e){return false}}
+function inject(area){
+ let sheet=document.querySelector(".vgPaperSheet");if(!sheet||sheet.querySelector(".vgDeptAwardsP2"))return;
+ let codes=map[String(area||"").toUpperCase()]||[];if(!codes.length)return;
+ let items=codes.map(c=>all().find(a=>a[0]===c)).filter(Boolean);
+ let d=document.createElement("div");d.className="vgDeptAwardsP2";
+ d.innerHTML='<h4>AWARDS AVAILABLE IN THIS SECTION</h4><div class="chips">'+items.map(a=>
+ '<div class="chip"><b>'+a[0]+' // '+a[2]+'</b><br>'+a[1]+'<br>'+
+ (issued(a[0])?'<span class="issued">ALREADY IN MY AWARDS</span><br>':'')+
+ '<button data-local-award="'+a[0]+'">AWARD TO ME HERE</button></div>').join("")+
+ '</div><button id="openAwardsP2">OPEN FULL AWARD CENTER</button>';
+ let foot=sheet.querySelector(".psFooter");if(foot)foot.insertAdjacentElement("beforebegin",d);else sheet.appendChild(d);
+ d.querySelectorAll("[data-local-award]").forEach(b=>b.onclick=()=>{
+   window.VetGodsAwardsP1?.award?.(b.dataset.localAward,
+     window.VetGodsPlayerNameLockP4?.resolve?.()||state?.rewardSystem?.playerName||state?.certName||"PLAYER")
+ });
+ d.querySelector("#openAwardsP2").onclick=()=>window.VetGodsAwardsP1?.render?.("ALL")
+}
+function wrap(obj,name,area){
+ if(!obj||typeof obj[name]!=="function"||obj[name]._awardP2)return;
+ let old=obj[name],fn=function(){let r=old.apply(this,arguments);setTimeout(()=>inject(area),30);return r};
+ fn._awardP2=true;obj[name]=fn
+}
+function install(){
+ let dep=window.VetGodsDepartments;
+ if(dep&&typeof dep.page==="function"&&!dep.page._awardP2){
+   let old=dep.page,fn=function(k){let r=old.apply(this,arguments);setTimeout(()=>inject(String(k||"").toUpperCase()),30);return r};
+   fn._awardP2=true;dep.page=fn
+ }
+ wrap(window.VetGodsDosFormsP3,"clinic","CLINIC");
+ wrap(window.VetGodsDosFormsP3,"myAnimals","MY ANIMALS");
+ wrap(window.VetGodsDosFormsP3,"morph","MORPH");
+}
+setTimeout(install,1900);
+window.VetGodsDepartmentAwardsP2={map,inject};
+})();
+</script>
+
+<style id="vg-awards-p3-css">
+#vgAwardDetailP3{max-width:1060px;margin:8px auto 90px;background:#eeeade;color:#111;border:2px solid #fff;box-shadow:7px 7px #111;padding:12px;box-sizing:border-box;font:10px "Courier New",monospace}
+#vgAwardDetailP3 button{background:#111;color:#fff;border:1px solid #111;padding:7px 9px;font:900 8px "Courier New",monospace;margin:4px}
+.vgBadgeDisplayP3{max-width:700px;margin:15px auto;background:#faf8ef;border:5px double #111;padding:25px;text-align:center}
+.vgBadgeDisplayP3 .medal{width:135px;height:135px;margin:10px auto;border:8px double #111;border-radius:50%;display:grid;place-items:center;font:900 30px Georgia,serif;box-shadow:0 0 0 6px #faf8ef,0 0 0 8px #111}
+.vgBadgeDisplayP3 .ribbon{width:100px;height:45px;margin:-4px auto 10px;border:3px solid #111;border-top:0;display:grid;place-items:center;font-weight:900}
+.vgCertDisplayP3{max-width:850px;margin:15px auto;background:#fff;border:8px double #111;padding:34px;text-align:center;font-family:Georgia,serif;box-sizing:border-box}
+.vgCertDisplayP3 h1{font-size:30px;margin:12px}.vgCertDisplayP3 .who{font-size:28px;border-bottom:1px solid #111;display:inline-block;padding:5px 40px;margin:12px}
+.vgCertDisplayP3 .seal{width:95px;height:95px;border:5px double #111;border-radius:50%;display:grid;place-items:center;margin:15px auto;font:900 11px "Courier New",monospace}
+.vgAwardMetaP3{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;max-width:850px;margin:8px auto}
+.vgAwardMetaP3 div{background:#faf8ef;border:1px solid #999;padding:7px}
+@media(max-width:720px){.vgAwardMetaP3{grid-template-columns:1fr}.vgCertDisplayP3{padding:18px}.vgCertDisplayP3 h1{font-size:22px}}
+@media print{
+ body *{visibility:hidden!important}
+ .vgPrintTargetP3,.vgPrintTargetP3 *{visibility:visible!important}
+ .vgPrintTargetP3{position:absolute!important;left:0!important;top:0!important;width:100%!important;max-width:none!important;margin:0!important;box-shadow:none!important;box-sizing:border-box!important}
+}
+</style>
+<script id="vg-awards-p3-js">
+(function(){
+"use strict";
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function db(){try{return window.VetGodsAwardsP1?.read?.()||{issued:[]}}catch(e){return {issued:[]}}}
+function deptSeal(c){return String(c.category||"VET GODS").toUpperCase()+"\nDIVISION"}
+function serial(c){return c.serial||("VG-"+String(c.code||"AWARD").replace("VG-","")+"-"+String(c.time||Date.now()).slice(-6))}
+function signatures(c){
+ let cat=String(c.category||"Command");
+ return ["Dr. K. Nix · Grand Veterinary Command",cat+" Division · Program Authority"]
+}
+function detail(c){
+ let m=document.querySelector("#main");if(!m||!c)return;
+ let sig=signatures(c),ser=serial(c),isBadge=c.type==="BADGE";
+ m.innerHTML='<div id="vgAwardDetailP3"><div><b>VET GODS // INDIVIDUAL AWARD RECORD</b></div>'+
+ (isBadge?
+ '<div class="vgBadgeDisplayP3 vgPrintTargetP3"><small>VET GODS APEX INTERVENTION COMMAND</small><div class="medal">★<br>VG</div><div class="ribbon">'+esc(c.code)+'</div>'+
+ '<h1>'+esc(c.title)+'</h1><h2>'+esc(c.player)+'</h2><p>Official fictional program badge of the '+esc(c.category)+' division.</p>'+
+ '<b>'+esc(deptSeal(c))+'</b><br><small>'+esc(ser)+' · '+new Date(c.time).toLocaleDateString()+'</small></div>':
+ '<div class="vgCertDisplayP3 vgPrintTargetP3"><small>VET GODS // APEX INTERVENTION COMMAND CENTER</small><h1>'+esc(c.title)+'</h1>'+
+ '<p>This certificate, commission, or fellowship is issued to</p><div class="who">'+esc(c.player)+'</div>'+
+ '<p>in recognition of completion and participation within the fictional <b>'+esc(c.category)+'</b> program of VET GODS.</p>'+
+ '<div class="seal">VET GODS<br>'+esc(String(c.category).toUpperCase())+'<br>SEAL</div>'+
+ '<div style="display:flex;justify-content:space-around;gap:20px;margin-top:25px"><div>____________________<br>'+esc(sig[0])+'</div><div>____________________<br>'+esc(sig[1])+'</div></div>'+
+ '<p><small>'+esc(ser)+' · ISSUED '+new Date(c.time).toLocaleString()+'</small></p></div>')+
+ '<div class="vgAwardMetaP3"><div><b>AWARD CODE</b><br>'+esc(c.code)+'</div><div><b>SERIAL NUMBER</b><br>'+esc(ser)+'</div>'+
+ '<div><b>DIVISION</b><br>'+esc(c.category)+'</div><div><b>ISSUED</b><br>'+new Date(c.time).toLocaleString()+'</div></div>'+
+ '<div style="text-align:center"><button id="awardPrintP3">PRINT THIS '+(isBadge?"BADGE":"CERTIFICATE")+'</button><button id="awardWalletP3">MY AWARDS</button>'+
+ '<button id="awardCenterP3">AWARD CENTER</button><button id="awardHomeP3">DOS MAIN</button></div></div>';
+ document.querySelector("#awardPrintP3").onclick=()=>window.print();
+ document.querySelector("#awardWalletP3").onclick=wallet;
+ document.querySelector("#awardCenterP3").onclick=()=>window.VetGodsAwardsP1?.render?.("ALL");
+ document.querySelector("#awardHomeP3").onclick=()=>window.VetGodsDosProgramP2?.render?.("MAIN")
+}
+function wallet(){
+ let m=document.querySelector("#main"),x=db();if(!m)return;
+ let issued=x.issued||[];
+ m.innerHTML='<div id="vgAwardDetailP3"><div><b>MY BADGES, CERTIFICATES, COMMISSIONS & FELLOWSHIPS</b></div>'+
+ '<div class="vgAwardMetaP3">'+(issued.length?issued.map((c,i)=>'<div><b>'+esc(c.code)+' // '+esc(c.type)+'</b><br>'+esc(c.title)+'<br>'+
+ '<small>'+esc(c.player)+' · '+new Date(c.time).toLocaleDateString()+'</small><br><button data-open-award="'+i+'">OPEN / PRINT</button></div>').join(""):'<div>No awards issued yet.</div>')+
+ '</div><div style="text-align:center"><button id="walletCenterP3">AWARD CENTER</button><button id="walletHomeP3">DOS MAIN</button></div></div>';
+ m.querySelectorAll("[data-open-award]").forEach(b=>b.onclick=()=>detail(issued[Number(b.dataset.openAward)]));
+ document.querySelector("#walletCenterP3").onclick=()=>window.VetGodsAwardsP1?.render?.("ALL");
+ document.querySelector("#walletHomeP3").onclick=()=>window.VetGodsDosProgramP2?.render?.("MAIN")
+}
+function install(){
+ if(!window.VetGodsAwardsP1)return;
+ window.VetGodsAwardsP1.wallet=wallet;
+ window.VetGodsAwardsP3={detail,wallet,serial};
+ /* Existing MY AWARDS buttons are delegated to the richer wallet. */
+ document.addEventListener("click",e=>{
+   let b=e.target.closest("button");if(!b)return;
+   if((b.textContent||"").trim().toUpperCase().startsWith("MY AWARDS")){e.preventDefault();e.stopImmediatePropagation();wallet()}
+ },true)
+}
+setTimeout(install,1900);
+})();
+</script>
+
+<style id="vg-awards-p4-css">
+#vgAwardsCommandP4{max-width:1060px;margin:8px auto 90px;background:#eeeade;color:#111;border:2px solid #fff;box-shadow:7px 7px #111;padding:12px;box-sizing:border-box;font:10px "Courier New",monospace}
+#vgAwardsCommandP4 .top{border-bottom:3px double #111;padding-bottom:7px}
+#vgAwardsCommandP4 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:8px 0}
+#vgAwardsCommandP4 .stat,#vgAwardsCommandP4 .dept{background:#faf8ef;border:1px solid #999;padding:8px}
+#vgAwardsCommandP4 .stat small{display:block;font-size:7px;font-weight:900;color:#555}
+#vgAwardsCommandP4 .rankbar{height:14px;border:1px solid #111;background:#fff;margin:5px 0}
+#vgAwardsCommandP4 .rankfill{height:100%;background:#111}
+#vgAwardsCommandP4 .walls{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+#vgAwardsCommandP4 .medals{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}
+#vgAwardsCommandP4 .mini{width:34px;height:34px;border:3px double #111;border-radius:50%;display:grid;place-items:center;font-weight:900;background:#fff}
+#vgAwardsCommandP4 .locked{opacity:.28}
+#vgAwardsCommandP4 button{background:#111;color:#fff;border:1px solid #111;padding:7px 9px;font:900 8px "Courier New",monospace;margin:4px}
+#vgAwardQuickP4{position:fixed;right:8px;bottom:43px;z-index:2147482998;background:#050606;color:#eee;border:1px solid #eee;padding:7px 9px;font:900 8px "Courier New",monospace}
+@media(max-width:720px){#vgAwardsCommandP4 .stats{grid-template-columns:repeat(2,1fr)}#vgAwardsCommandP4 .walls{grid-template-columns:1fr}}
+</style>
+<script id="vg-awards-p4-js">
+(function(){
+"use strict";
+const ranks=[
+ [0,"PROGRAM INITIATE"],[3,"CARE SPECIALIST"],[8,"CLINICAL OFFICER"],[15,"SENIOR VETERINARY OPERATOR"],
+ [25,"DIVISION COMMANDER"],[35,"APEX FELLOWSHIP OFFICER"],[45,"GRAND VETERINARY COMMAND"],[55,"VET GODS MASTER COMMAND"]
+];
+function awards(){return window.VetGodsAwardsP1?.awards||[]}
+function issued(){try{return window.VetGodsAwardsP1?.read?.().issued||[]}catch(e){return []}}
+function unique(){let seen=new Set();return issued().filter(x=>!seen.has(x.code)&&seen.add(x.code))}
+function rank(n){let r=ranks[0];for(let x of ranks)if(n>=x[0])r=x;return r}
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function command(){
+ let m=document.querySelector("#main");if(!m)return;
+ let got=unique(),defs=awards(),n=got.length,r=rank(n),next=ranks.find(x=>x[0]>n),pct=next?Math.min(100,Math.round((n-r[0])/(next[0]-r[0])*100)):100;
+ let cats=[...new Set(defs.map(a=>a[3]))];
+ m.innerHTML='<div id="vgAwardsCommandP4"><div class="top"><small>VET GODS // AWARDS COMMAND</small><h2>BADGE WALLS, RANKS & MASTER COLLECTION</h2>'+
+ '<b>CURRENT RANK: '+esc(r[1])+'</b><div class="rankbar"><div class="rankfill" style="width:'+pct+'%"></div></div>'+
+ '<small>'+(next?(next[0]-n)+' unique awards until '+esc(next[1]):'MASTER COLLECTION RANK ACHIEVED')+'</small></div>'+
+ '<div class="stats"><div class="stat"><small>UNIQUE AWARDS</small>'+n+' / '+defs.length+'</div>'+
+ '<div class="stat"><small>BADGES</small>'+got.filter(x=>x.type==="BADGE").length+'</div>'+
+ '<div class="stat"><small>CERTIFICATIONS</small>'+got.filter(x=>x.type==="CERTIFICATE").length+'</div>'+
+ '<div class="stat"><small>DIVISIONS REPRESENTED</small>'+new Set(got.map(x=>x.category)).size+'</div></div>'+
+ '<div class="walls">'+cats.map(cat=>{let ds=defs.filter(a=>a[3]===cat),have=new Set(got.map(x=>x.code));return '<div class="dept"><b>'+esc(String(cat).toUpperCase())+' BADGE WALL</b><br><small>'+
+ ds.filter(a=>have.has(a[0])).length+' / '+ds.length+' collected</small><div class="medals">'+ds.map(a=>'<div class="mini '+(have.has(a[0])?'':'locked')+'" title="'+esc(a[1])+'">'+(a[2]==="BADGE"?"★":"C")+'</div>').join("")+
+ '</div><button data-wall-award="'+esc(cat)+'">OPEN '+esc(String(cat).toUpperCase())+' AWARDS</button></div>'}).join("")+'</div>'+
+ '<div style="text-align:center;margin-top:8px"><button id="p4AwardCenter">FULL 55 AWARD CENTER</button><button id="p4Wallet">MY PRINTABLE AWARDS</button><button id="p4Home">DOS MAIN</button></div></div>';
+ m.querySelectorAll("[data-wall-award]").forEach(b=>b.onclick=()=>category(b.dataset.wallAward));
+ document.querySelector("#p4AwardCenter").onclick=()=>window.VetGodsAwardsP1?.render?.("ALL");
+ document.querySelector("#p4Wallet").onclick=()=>window.VetGodsAwardsP3?.wallet?.();
+ document.querySelector("#p4Home").onclick=()=>window.VetGodsDosProgramP2?.render?.("MAIN")
+}
+function category(cat){
+ let m=document.querySelector("#main");if(!m)return;
+ let list=awards().filter(a=>a[3]===cat),have=new Set(unique().map(x=>x.code));
+ m.innerHTML='<div id="vgAwardsCommandP4"><div class="top"><small>DIVISION BADGE WALL</small><h2>'+esc(String(cat).toUpperCase())+' AWARDS</h2></div>'+
+ '<div class="walls">'+list.map(a=>'<div class="dept"><div class="mini '+(have.has(a[0])?'':'locked')+'">'+(a[2]==="BADGE"?"★":"C")+'</div><b>'+esc(a[0])+' // '+esc(a[1])+'</b>'+
+ '<br><small>'+esc(a[2])+'</small><br><button data-p4give="'+a[0]+'">AWARD TO ME</button></div>').join("")+'</div>'+
+ '<div style="text-align:center"><button id="p4BackCommand">BACK TO AWARDS COMMAND</button></div></div>';
+ m.querySelectorAll("[data-p4give]").forEach(b=>b.onclick=()=>window.VetGodsAwardsP1?.award?.(b.dataset.p4give,
+   window.VetGodsPlayerNameLockP4?.resolve?.()||state?.rewardSystem?.playerName||state?.certName||"PLAYER"));
+ document.querySelector("#p4BackCommand").onclick=command
+}
+function quick(){
+ if(document.querySelector("#vgAwardQuickP4"))return;
+ let b=document.createElement("button");b.id="vgAwardQuickP4";b.type="button";b.textContent="AWARDS / RANK";
+ b.onclick=command;document.body.appendChild(b)
+}
+function install(){
+ quick();
+ window.VetGodsAwardsP4={command,category,rank,unique};
+ /* Put a real awards-command route onto the DOS home without auto-opening it. */
+ let home=window.VetGodsFinalDosP5;
+ if(home&&typeof home.home==="function"&&!home.home._awardP4){
+   let old=home.home,fn=function(){let r=old.apply(this,arguments);setTimeout(quick,0);return r};
+   fn._awardP4=true;home.home=fn
+ }
+}
+setTimeout(install,1900);
+})();
+</script>
+
+<style id="vg-awards-p5-css">
+#vgAwardsFinalP5{max-width:1060px;margin:8px auto 90px;background:#eeeade;color:#111;border:2px solid #fff;box-shadow:7px 7px #111;padding:12px;box-sizing:border-box;font:10px "Courier New",monospace}
+#vgAwardsFinalP5 .head{border-bottom:3px double #111;padding-bottom:7px}
+#vgAwardsFinalP5 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+#vgAwardsFinalP5 .card{background:#faf8ef;border:1px solid #999;padding:9px}
+#vgAwardsFinalP5 .seal{width:55px;height:55px;border:5px double #111;border-radius:50%;display:grid;place-items:center;float:right;font:900 12px Georgia,serif}
+#vgAwardsFinalP5 button{background:#111;color:#fff;border:1px solid #111;padding:7px 9px;font:900 8px "Courier New",monospace;margin:4px}
+#vgAwardsFinalP5 .master{border:5px double #111;background:#fff;padding:16px;margin:10px 0;text-align:center}
+#vgAwardsFinalP5 .progress{height:16px;border:1px solid #111;background:#fff}.vgAwardsP5Fill{height:100%;background:#111}
+#vgAwardsFinalP5 .green{color:#126d31;font-weight:900}
+#vgAwardsFinalP5 .tabs{display:flex;gap:4px;overflow:auto;padding:6px 0}
+@media(max-width:720px){#vgAwardsFinalP5 .grid{grid-template-columns:1fr}}
+</style>
+<script id="vg-awards-p5-final-js">
+(function(){
+"use strict";
+const LOG="vetgods_awards_final_log_p5";
+function defs(){return window.VetGodsAwardsP1?.awards||[]}
+function issued(){try{return window.VetGodsAwardsP1?.read?.().issued||[]}catch(e){return []}}
+function unique(){let z=new Set();return issued().filter(x=>!z.has(x.code)&&z.add(x.code))}
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function player(){return window.VetGodsPlayerNameLockP4?.resolve?.()||state?.rewardSystem?.playerName||state?.certName||"PLAYER"}
+function log(action,data){
+ let x=[];try{x=JSON.parse(localStorage.getItem(LOG)||"[]")}catch(e){}
+ x.unshift({time:Date.now(),action,data:data||{}});x=x.slice(0,250);
+ try{localStorage.setItem(LOG,JSON.stringify(x))}catch(e){}
+}
+function giveAll(){
+ let have=new Set(unique().map(x=>x.code)),missing=defs().filter(x=>!have.has(x[0]));
+ for(let a of missing)window.VetGodsAwardsP1?.award?.(a[0],player());
+ log("MASTER AWARD ALL",{count:missing.length});setTimeout(finalDesk,100)
+}
+function finalDesk(){
+ let m=document.querySelector("#main");if(!m)return;
+ let got=unique(),all=defs(),n=got.length,pct=Math.round(n/Math.max(1,all.length)*100),cats=[...new Set(all.map(x=>x[3]))];
+ let rank=window.VetGodsAwardsP4?.rank?.(n)?.[1]||"PROGRAM INITIATE";
+ m.innerHTML='<div id="vgAwardsFinalP5"><div class="head"><small>VET GODS // GRAND AWARDS ADMINISTRATION</small><h2>BADGES, CERTIFICATIONS, COMMISSIONS & FELLOWSHIPS</h2>'+
+ '<b>'+esc(player())+'</b> · <span class="green">'+esc(rank)+'</span></div>'+
+ '<div class="master"><h2>MASTER AWARD RECORD</h2><b>'+n+' / '+all.length+' UNIQUE AWARDS ISSUED</b>'+
+ '<div class="progress"><div class="vgAwardsP5Fill" style="width:'+pct+'%"></div></div><small>'+pct+'% OF GRAND COLLECTION</small><br>'+
+ '<button id="p5GiveAll">AWARD ALL REMAINING TO ME</button><button id="p5PrintWallet">PRINT / OPEN MY AWARDS</button></div>'+
+ '<div class="tabs"><button id="p5Center">55 AWARD CENTER</button><button id="p5Ranks">RANKS & BADGE WALLS</button><button id="p5Wallet">MY AWARDS</button><button id="p5Home">DOS MAIN</button></div>'+
+ '<div class="grid">'+cats.map(cat=>{let ds=all.filter(x=>x[3]===cat),have=new Set(got.map(x=>x.code)),count=ds.filter(x=>have.has(x[0])).length;return '<div class="card"><div class="seal">'+count+'/'+ds.length+'</div>'+
+ '<b>'+esc(String(cat).toUpperCase())+' DIVISION</b><br><small>'+count+' awards issued</small><br>'+
+ '<button data-p5cat="'+esc(cat)+'">OPEN / AWARD</button></div>'}).join("")+'</div></div>';
+ document.querySelector("#p5GiveAll").onclick=giveAll;
+ document.querySelector("#p5PrintWallet").onclick=()=>window.VetGodsAwardsP3?.wallet?.();
+ document.querySelector("#p5Center").onclick=()=>window.VetGodsAwardsP1?.render?.("ALL");
+ document.querySelector("#p5Ranks").onclick=()=>window.VetGodsAwardsP4?.command?.();
+ document.querySelector("#p5Wallet").onclick=()=>window.VetGodsAwardsP3?.wallet?.();
+ document.querySelector("#p5Home").onclick=()=>window.VetGodsDosProgramP2?.render?.("MAIN");
+ m.querySelectorAll("[data-p5cat]").forEach(b=>b.onclick=()=>window.VetGodsAwardsP4?.category?.(b.dataset.p5cat))
+}
+function install(){
+ window.VetGodsAwardsFinalP5={finalDesk,giveAll,log};
+ /* Certifications now opens the final awards administration, never a legacy vault. */
+ if(window.VetGodsDosFormsP3)window.VetGodsDosFormsP3.credentials=finalDesk;
+ /* Existing floating award access goes to final administration. */
+ let q=document.querySelector("#vgAwardQuickP4");if(q)q.onclick=finalDesk;
+ /* Add awards to the persistent DOS backup control area without auto-opening. */
+ if(!document.querySelector("#vgAwardsFinalButtonP5")){
+   let b=document.createElement("button");b.id="vgAwardsFinalButtonP5";b.type="button";b.textContent="BADGES / CERTS";
+   b.style.cssText="position:fixed;right:8px;bottom:76px;z-index:2147482998;background:#050606;color:#eee;border:1px solid #eee;padding:7px 9px;font:900 8px 'Courier New',monospace";
+   b.onclick=finalDesk;document.body.appendChild(b)
+ }
+}
+setTimeout(install,2100);
+})();
+</script>
 </body></html>
