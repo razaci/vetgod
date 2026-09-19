@@ -9137,4 +9137,1090 @@ setTimeout(restore,800);
 window.VetGodsPersistentIdentity={restore,set:function(first,last){let n={first:text(first),last:text(last)};if(!n.first)return false;writeID(n);apply(n);return true},get:readID};
 })();
 </script>
+
+<style id="vg-buttondown-p1-css">
+#vgSaveHealth{position:fixed;right:10px;bottom:86px;z-index:506;background:#111;color:#eee;border:1px solid #777;padding:7px 9px;font:900 8px "Courier New",monospace}
+</style>
+<script id="vg-buttondown-p1-animal-save-foundation">
+(function(){
+"use strict";
+const ROSTER_KEY="vetgods_canonical_animals_v1";
+const ROSTER_BACKUP="vetgods_canonical_animals_v1_backup";
+const STATE_KEY="vetGodsDosFresh1", STATE_BACKUP="vetGodsDosFresh1_backup";
+
+function uid(){
+ try{return crypto.randomUUID()}catch(e){return "VG-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,9)}
+}
+function normalize(a){
+ a=a||{};
+ if(a.id===undefined||a.id===null||a.id===""||typeof a.id==="number") a.id=a.permanentId||uid();
+ a.permanentId=String(a.id);
+ a.name=String(a.name||"Unnamed Animal");
+ a.species=String(a.species||"Animal");
+ a.history=Array.isArray(a.history)?a.history:[];
+ a.savedAnimal=true;
+ a.savedAt=Number(a.savedAt||Date.now());
+ return a;
+}
+function unique(list){
+ const seen=new Set(),out=[];
+ (list||[]).forEach(a=>{
+   a=normalize(a);
+   let k=String(a.permanentId);
+   if(seen.has(k))return;
+   seen.add(k);out.push(a);
+ });
+ return out;
+}
+function read(k){try{let x=JSON.parse(localStorage.getItem(k)||"null");return Array.isArray(x)?x:null}catch(e){return null}}
+function writeRoster(){
+ try{
+  state.animals=unique(state.animals);
+  let raw=JSON.stringify(state.animals);
+  localStorage.setItem(ROSTER_KEY,raw);
+  localStorage.setItem(ROSTER_BACKUP,raw);
+  return true;
+ }catch(e){return false}
+}
+function mergePersistentRoster(){
+ let disk=read(ROSTER_KEY)||read(ROSTER_BACKUP)||[];
+ let current=Array.isArray(state.animals)?state.animals:[];
+ let map=new Map();
+ [...disk,...current].forEach(a=>{
+   a=normalize(a);
+   let k=a.permanentId;
+   if(map.has(k))Object.assign(map.get(k),a);
+   else map.set(k,a);
+ });
+ state.animals=[...map.values()];
+ if(!state.animals.length && typeof defaults==="function")state.animals=unique(defaults().animals||[]);
+ /* active must ALWAYS be an array index, never an animal id. */
+ let n=Number(state.active);
+ if(!Number.isInteger(n)||n<0||n>=state.animals.length)state.active=0;
+ writeRoster();
+ try{
+   let raw=JSON.stringify(state);
+   localStorage.setItem(STATE_KEY,raw);localStorage.setItem(STATE_BACKUP,raw);
+ }catch(e){}
+}
+function saveAnimal(a){
+ if(!a)return null;
+ a=normalize(a);
+ let i=state.animals.findIndex(x=>String(x.permanentId||x.id)===a.permanentId);
+ if(i<0){state.animals.push(a);i=state.animals.length-1}
+ else state.animals[i]=a;
+ state.active=i;
+ writeRoster();
+ try{save()}catch(e){}
+ return a;
+}
+function selectedByIndex(i){
+ i=Number(i);
+ if(!Number.isInteger(i)||!state.animals[i])return null;
+ state.active=i;saveAnimal(state.animals[i]);return state.animals[i]
+}
+function selectedById(id){
+ let i=state.animals.findIndex(a=>String(a.permanentId||a.id)===String(id));
+ return i>=0?selectedByIndex(i):null
+}
+
+/* Wrap every normal save: canonical roster is written whenever the game saves. */
+const coreSave=window.save;
+window.save=function(){
+ try{
+   state.animals=unique(state.animals);
+   writeRoster();
+ }catch(e){}
+ return coreSave.apply(this,arguments)
+};
+
+/* My Animals must mean ALL SAVED ANIMALS, not only animals that happen to have history. */
+function allSaved(){return (state.animals||[]).map((a,i)=>({a:normalize(a),i}))}
+if(window.VetGodsMyAnimals1){
+ const oldRender=window.VetGodsMyAnimals1.render;
+ window.VetGodsMyAnimals1.render=function(){
+   /* Existing renderer reads state.animals. Mark every saved animal as a valid record. */
+   state.animals.forEach(a=>{
+     normalize(a);
+     a.savedAnimal=true;
+     if(!a.caseId)a.caseId="SAVED-"+a.permanentId.slice(-8).toUpperCase();
+     a.history=Array.isArray(a.history)?a.history:[];
+     if(!a.history.length)a.history.push("SAVED ANIMAL RECORD · READY FOR CARE");
+   });
+   try{save()}catch(e){}
+   return oldRender.apply(this,arguments)
+ }
+}
+
+/* Replace the basic Animals directory with a canonical saved roster. */
+const oldAnimals=window.animals;
+window.animals=function(){
+ mergePersistentRoster();
+ page="animals";nav();
+ const rows=allSaved();
+ document.querySelector("#main").innerHTML=
+ '<div class="path">C:\\VETGODS\\MY_ANIMALS&gt; CANONICAL SAVED ROSTER</div>'+
+ '<div class="head">MY ANIMALS — '+rows.length+' SAVED RECORDS</div>'+
+ '<div class="notice">Every animal shown here is stored in the permanent animal roster. Selecting one uses the same record everywhere in the game.</div>'+
+ '<div class="residents">'+rows.map(x=>'<button class="resident" data-vg-saved-animal="'+x.i+'">['+String(x.i+1).padStart(2,"0")+'] '+(x.a.icon||"🐾")+' '+esc(x.a.name)+'<small>'+esc(x.a.species)+' · '+esc(x.a.stage||"SAVED")+' · ID '+esc(x.a.permanentId.slice(-8))+'</small></button>').join("")+'</div>';
+ document.querySelectorAll("[data-vg-saved-animal]").forEach(b=>b.onclick=()=>{
+   let a=selectedByIndex(b.dataset.vgSavedAnimal);
+   if(!a)return;
+   if(window.VetGodsSimpleChartP1?.render)return window.VetGodsSimpleChartP1.render();
+   open("care");
+ });
+};
+
+/* Fix old code paths that accidentally put an animal ID into state.active. */
+document.addEventListener("click",function(){
+ setTimeout(function(){
+   if(typeof state.active==="string" || !Number.isInteger(Number(state.active))){
+     let id=state.active,idx=state.animals.findIndex(a=>String(a.id)===String(id)||String(a.permanentId)===String(id));
+     state.active=idx>=0?idx:0;try{save()}catch(e){}
+   }
+ },0);
+},true);
+
+/* Last-chance persistence when browser/tab closes. */
+function flush(){try{writeRoster();coreSave()}catch(e){}}
+window.addEventListener("beforeunload",flush);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")flush()});
+
+/* Visible save-health indicator, deliberately tiny. */
+function badge(){
+ if(document.querySelector("#vgSaveHealth"))return;
+ let b=document.createElement("button");b.id="vgSaveHealth";
+ b.onclick=()=>{mergePersistentRoster();b.textContent="ANIMALS SAVED · "+state.animals.length;setTimeout(()=>b.textContent="SAVE OK · "+state.animals.length+" ANIMALS",1200)};
+ document.body.appendChild(b);
+ b.textContent="SAVE OK · "+state.animals.length+" ANIMALS";
+}
+mergePersistentRoster();badge();
+window.VetGodsAnimalSaveFoundation={
+ saveAnimal,selectIndex:selectedByIndex,selectId:selectedById,flush,merge:mergePersistentRoster,
+ roster:()=>state.animals
+};
+})();
+</script>
+
+<style id="vg-buttondown-p2-css">
+#vgMyAnimalsP2{max-width:980px;margin:10px auto 90px;font:12px "Courier New",monospace}
+#vgMyAnimalsP2 .ma-head{border:1px solid #777;background:#111;color:#eee;padding:10px;margin-bottom:8px}
+#vgMyAnimalsP2 .ma-head h2{margin:0 0 4px;font-size:16px}
+#vgMyAnimalsP2 .ma-list{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+#vgMyAnimalsP2 .ma-animal{background:#f2f0e8;color:#111;border:1px solid #777;padding:10px;text-align:left;font:900 11px "Courier New",monospace}
+#vgMyAnimalsP2 .ma-animal small{display:block;margin-top:5px;font-weight:400;color:#555}
+#vgMyAnimalsP2 .ma-animal.active{outline:3px solid #6d806c}
+#vgAnimalDetailP2{max-width:920px;margin:10px auto 90px;background:#f2f0e8;color:#171717;border:1px solid #777;padding:14px;box-shadow:0 8px 28px #000;font:12px "Courier New",monospace}
+#vgAnimalDetailP2 .ad-head{display:flex;justify-content:space-between;gap:10px;border-bottom:3px double #222;padding-bottom:8px;margin-bottom:10px}
+#vgAnimalDetailP2 h2{margin:0;font-size:18px}
+#vgAnimalDetailP2 .ad-grid{display:grid;grid-template-columns:repeat(2,1fr);border:1px solid #999}
+#vgAnimalDetailP2 .ad-row{padding:7px;border-bottom:1px dotted #aaa}
+#vgAnimalDetailP2 .ad-row b{display:block;font-size:9px;color:#555}
+#vgAnimalDetailP2 .ad-vitals{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:9px 0}
+#vgAnimalDetailP2 .ad-stat{background:#fff;border:1px solid #999;padding:7px;text-align:center}
+#vgAnimalDetailP2 .ad-stat strong{display:block;font-size:14px}
+#vgAnimalDetailP2 .ad-history{background:#fff;border:1px solid #999;max-height:220px;overflow:auto;padding:7px}
+#vgAnimalDetailP2 .ad-history div{padding:4px;border-bottom:1px dotted #bbb}
+#vgAnimalDetailP2 .ad-actions{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}
+#vgAnimalDetailP2 .ad-actions button{padding:10px 12px;border:1px solid #222;background:#111;color:#fff;font:900 10px "Courier New",monospace}
+#vgAnimalDetailP2 .ad-actions .secondary{background:#eee;color:#111}
+@media(max-width:600px){#vgMyAnimalsP2 .ma-list{grid-template-columns:1fr}#vgAnimalDetailP2 .ad-grid{grid-template-columns:1fr}#vgAnimalDetailP2 .ad-vitals{grid-template-columns:repeat(2,1fr)}#vgAnimalDetailP2 .ad-head{display:block}}
+</style>
+
+<script id="vg-buttondown-p2-my-animals">
+(function(){
+"use strict";
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function roster(){
+ try{window.VetGodsAnimalSaveFoundation?.merge?.()}catch(e){}
+ return Array.isArray(state.animals)?state.animals:[]
+}
+function setActive(i){
+ i=Number(i);if(!Number.isInteger(i)||!roster()[i])return null;
+ let a=window.VetGodsAnimalSaveFoundation?.selectIndex?.(i)||roster()[i];
+ state.active=i;try{save()}catch(e){};return a
+}
+function stat(k,v){return '<div class="ad-stat">'+k+'<strong>'+Math.round(Number(v)||0)+'%</strong></div>'}
+function row(k,v){return '<div class="ad-row"><b>'+k+'</b>'+esc(v||"—")+'</div>'}
+function render(){
+ let list=roster();
+ page="animals";try{nav()}catch(e){}
+ document.body.classList.remove("vgSimpleChartActive");
+ let main=document.querySelector("#main");if(!main)return;
+ main.innerHTML='<div id="vgMyAnimalsP2"><div class="ma-head"><h2>MY ANIMALS — SAVED ROSTER</h2>'+
+ '<div>'+list.length+' permanent animal record'+(list.length===1?"":"s")+'. Click one animal to open only that animal.</div></div>'+
+ '<div class="ma-list">'+(list.length?list.map((a,i)=>'<button class="ma-animal '+(i===Number(state.active)?"active":"")+'" data-ma-index="'+i+'">'+
+ (a.icon||"🐾")+' '+esc(a.name)+'<small>'+esc(a.species)+' · '+esc(a.stage||"SAVED")+' · '+(a.caseClosed?"CASE CLOSED":"AVAILABLE")+
+ '<br>ID '+esc(a.permanentId||a.id)+'</small></button>').join(""):'<div class="notice">No saved animals yet. Create/admit an animal and it will appear here.</div>')+'</div></div>';
+ main.querySelectorAll("[data-ma-index]").forEach(b=>b.onclick=()=>detail(Number(b.dataset.maIndex)))
+}
+function detail(i){
+ let a=setActive(i);if(!a)return render();
+ let main=document.querySelector("#main");if(!main)return;
+ let c=state.simpleChart?.[a.id??i]||{}, hist=Array.isArray(a.history)?a.history:[];
+ main.innerHTML='<div id="vgAnimalDetailP2">'+
+ '<div class="ad-head"><div><small>VET GODS // SAVED ANIMAL RECORD</small><h2>'+(a.icon||"🐾")+' '+esc(a.name)+'</h2></div><b>'+esc(a.species)+'<br>ID '+esc(a.permanentId||a.id)+'</b></div>'+
+ '<div class="ad-vitals">'+stat("HEALTH",a.health)+stat("OXYGEN",a.oxygen)+stat("HYDRATION",a.hydration)+stat("PAIN",a.pain)+stat("COMFORT",a.comfort)+'</div>'+
+ '<div class="ad-grid">'+
+ row("NAME",a.name)+row("SPECIES",a.species)+row("CASE",a.caseId)+row("CURRENT STAGE",a.stage)+
+ row("REASON FOR VISIT",a.presentingConcern||c.concern)+row("PRIORITY",a.triagePriority||c.priority)+
+ row("EXAM",a.examComplete?"COMPLETE":"NOT COMPLETE")+row("DIAGNOSTICS",a.diagnosticsComplete?"COMPLETE":"NOT COMPLETE")+
+ row("STABILIZATION",a.stabilizationComplete?"COMPLETE":"NOT COMPLETE")+row("TREATMENT",a.treatmentComplete?"COMPLETE":"NOT COMPLETE")+
+ row("RECOVERY",a.recoveryComplete?"COMPLETE":"NOT COMPLETE")+row("DISPOSITION",a.disposition||"ACTIVE / UNSET")+
+ '</div>'+
+ '<h3>ANIMAL HISTORY</h3><div class="ad-history">'+(hist.length?hist.map(x=>'<div>'+esc(x)+'</div>').join(""):'<div>Saved animal record. No clinical history yet.</div>')+'</div>'+
+ '<div class="ad-actions"><button class="secondary" id="adBack">← MY ANIMALS</button><button id="adResume">OPEN / RESUME THIS ANIMAL</button><button id="adFolder">MEDICAL FOLDER</button></div>'+
+ '</div>';
+ document.querySelector("#adBack").onclick=render;
+ document.querySelector("#adResume").onclick=()=>{setActive(i);window.VetGodsFinalFlowP10?.resume?.()};
+ document.querySelector("#adFolder").onclick=()=>{setActive(i);window.VetGodsMedicalFolderP8?.render?.()}
+}
+/* Make every Animals/My Animals entry use this dependable roster. */
+window.animals=render;
+const oldOpen=window.open;
+window.open=function(k){
+ if(k==="animals"||k==="myanimals"||k==="my-animals"){render();return}
+ return oldOpen.apply(this,arguments)
+};
+if(window.VetGodsMyAnimals1)window.VetGodsMyAnimals1.render=render;
+window.VetGodsMyAnimalsP2={render,detail,setActive};
+})();
+</script>
+
+<style id="vg-buttondown-p3-css">
+#vgActivePatientLock{
+ position:fixed;left:10px;bottom:48px;z-index:507;max-width:210px;
+ background:#111;color:#eee;border:1px solid #777;padding:7px 9px;
+ font:900 8px "Courier New",monospace;text-align:left
+}
+#vgActivePatientLock strong{display:block;font-size:10px}
+</style>
+
+<script id="vg-buttondown-p3-active-patient-lock">
+(function(){
+"use strict";
+const ACTIVE_KEY="vetgods_active_patient_id_v1";
+
+function roster(){return Array.isArray(state.animals)?state.animals:[]}
+function pid(a){return a?String(a.permanentId||a.id||""):""}
+function byId(id){return roster().findIndex(a=>pid(a)===String(id))}
+function current(){
+ let i=Number(state.active);
+ return Number.isInteger(i)&&i>=0&&i<roster().length?roster()[i]:null
+}
+function remember(a){
+ if(!a)return false;
+ let id=pid(a);if(!id)return false;
+ try{localStorage.setItem(ACTIVE_KEY,id)}catch(e){}
+ return true
+}
+function lockIndex(i){
+ i=Number(i);
+ if(!Number.isInteger(i)||!roster()[i])return null;
+ state.active=i;
+ let a=roster()[i];
+ remember(a);
+ try{window.VetGodsAnimalSaveFoundation?.saveAnimal?.(a)}catch(e){}
+ try{save()}catch(e){}
+ updateBadge();
+ return a
+}
+function lockId(id){
+ let i=byId(id);
+ return i>=0?lockIndex(i):null
+}
+function restore(){
+ try{window.VetGodsAnimalSaveFoundation?.merge?.()}catch(e){}
+ let wanted="";
+ try{wanted=localStorage.getItem(ACTIVE_KEY)||""}catch(e){}
+ if(wanted){
+   let i=byId(wanted);
+   if(i>=0){state.active=i;updateBadge();return roster()[i]}
+ }
+ let a=current();
+ if(a){remember(a);updateBadge();return a}
+ if(roster().length){state.active=0;remember(roster()[0]);updateBadge();return roster()[0]}
+ state.active=-1;updateBadge();return null
+}
+function updateBadge(){
+ let b=document.querySelector("#vgActivePatientLock");if(!b)return;
+ let a=current();
+ b.innerHTML=a?'<strong>ACTIVE: '+safe(a.name)+'</strong>'+safe(a.species)+' · '+safe(pid(a).slice(-8)):'<strong>NO ACTIVE PATIENT</strong>Select from My Animals';
+}
+function safe(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function badge(){
+ if(document.querySelector("#vgActivePatientLock"))return updateBadge();
+ let b=document.createElement("button");b.id="vgActivePatientLock";b.onclick=()=>window.VetGodsMyAnimalsP2?.render?.();document.body.appendChild(b);updateBadge()
+}
+
+/* Phase 2 selector now always goes through the persistent patient lock. */
+if(window.VetGodsMyAnimalsP2){
+ window.VetGodsMyAnimalsP2.setActive=lockIndex;
+}
+
+/* Protect against legacy code replacing state.active with an ID or invalid index. */
+function repair(){
+ let v=state.active;
+ if(typeof v==="string" && v){
+   let i=byId(v);
+   if(i>=0)state.active=i;
+ }
+ let a=current();
+ if(!a)return restore();
+ let remembered="";
+ try{remembered=localStorage.getItem(ACTIVE_KEY)||""}catch(e){}
+ if(remembered && pid(a)!==remembered){
+   let i=byId(remembered);
+   if(i>=0)state.active=i;
+ }
+ a=current();if(a)remember(a);
+ updateBadge();
+ return a
+}
+
+/* Resume must use the locked permanent ID, never whichever index a legacy page left behind. */
+const oldResume=window.VetGodsFinalFlowP10?.resume;
+if(window.VetGodsFinalFlowP10){
+ window.VetGodsFinalFlowP10.resume=function(){
+   let a=restore();
+   if(!a)return window.VetGodsMyAnimalsP2?.render?.();
+   let n=window.VetGodsFinalFlowP10.stageOf(a);
+   return window.VetGodsFinalFlowP10.routeToStage(n)
+ }
+}
+
+/* Persist the locked patient before leaving/reloading and repair after ordinary navigation. */
+window.addEventListener("beforeunload",()=>{let a=current();if(a)remember(a);try{save()}catch(e){}});
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden"){let a=current();if(a)remember(a);try{save()}catch(e){}}});
+document.addEventListener("click",()=>setTimeout(repair,60),true);
+
+restore();badge();
+setTimeout(()=>{restore();badge()},500);
+setTimeout(repair,1500);
+
+window.VetGodsActivePatientP3={lockIndex,lockId,restore,repair,current,id:()=>pid(current())};
+})();
+</script>
+
+<style id="vg-buttondown-p4-css">
+#vgRouteLockP4{position:fixed;left:10px;bottom:86px;z-index:508;background:#111;color:#eee;border:1px solid #777;padding:7px 9px;font:900 8px "Courier New",monospace;max-width:240px}
+#vgRouteLockP4 strong{display:block;font-size:9px}
+</style>
+<script id="vg-buttondown-p4-medical-route-lock">
+(function(){
+"use strict";
+const ROUTE_KEY="vetgods_medical_route_v1";
+const names=["PATIENT","EXAM","DIAGNOSTICS","STABILIZE","TREATMENT","RECOVERY","DISPOSITION","CLOSED"];
+
+function A(){return window.VetGodsActivePatientP3?.restore?.()||null}
+function id(a){return String(a?.permanentId||a?.id||"")}
+function natural(a){
+ if(!a)return 1;
+ if(a.caseClosed)return 8;
+ if(a.recoveryComplete||a.dispositionReady)return 7;
+ if(a.treatmentComplete||a.recoveryReady)return 6;
+ if(a.stabilizationComplete)return 5;
+ if(a.diagnosticsComplete)return 4;
+ if(a.examComplete||a.examined)return 3;
+ if(a.simpleChartIntakeComplete||a.intakeComplete)return 2;
+ return 1
+}
+function read(){
+ try{return JSON.parse(localStorage.getItem(ROUTE_KEY)||"null")}catch(e){return null}
+}
+function write(step){
+ let a=A();if(!a)return;
+ step=Math.max(1,Math.min(8,Number(step)||natural(a)));
+ try{localStorage.setItem(ROUTE_KEY,JSON.stringify({id:id(a),step,at:Date.now()}))}catch(e){}
+ badge(step)
+}
+function step(){
+ let a=A();if(!a)return 1;
+ let n=natural(a),r=read();
+ /* Completed clinical state is authoritative. Never route backward behind completed work. */
+ if(r&&r.id===id(a))n=Math.max(n,Number(r.step)||1);
+ if(n>8)n=8;return n
+}
+function go(n){
+ let a=A();if(!a)return window.VetGodsMyAnimalsP2?.render?.();
+ n=Math.max(natural(a),Math.max(1,Math.min(8,Number(n)||1)));
+ write(n);
+ if(n===1)return window.VetGodsSimpleChartP1?.render?.();
+ if(n===2)return window.VetGodsSimpleExamP2?.render?.();
+ if(n===3)return window.VetGodsSimpleDiagnosticsP3?.render?.();
+ if(n===4)return window.VetGodsSimpleStabilizationP4?.render?.();
+ if(n===5)return window.VetGodsSimpleTreatmentP5?.render?.();
+ if(n===6)return window.VetGodsSimpleRecoveryP6?.render?.();
+ if(n===7)return window.VetGodsSimpleDispositionP7?.render?.();
+ return window.VetGodsMedicalFolderP8?.render?.()
+}
+function resume(){return go(step())}
+function badge(n){
+ let b=document.querySelector("#vgRouteLockP4");if(!b)return;
+ let a=window.VetGodsActivePatientP3?.current?.(),x=n||step();
+ b.innerHTML=a?'<strong>MEDICAL ROUTE '+Math.min(x,7)+'/7</strong>'+names[x-1]+' · '+String(a.name||""):'<strong>MEDICAL ROUTE</strong>NO PATIENT'
+}
+function addBadge(){
+ if(document.querySelector("#vgRouteLockP4"))return badge();
+ let b=document.createElement("button");b.id="vgRouteLockP4";b.onclick=resume;document.body.appendChild(b);badge()
+}
+
+/* Wrap each sheet completion so route state is saved at the exact handoff. */
+function wrap(obj,key,next){
+ let o=window[obj];if(!o||typeof o[key]!=="function"||o[key]._p4)return;
+ let fn=o[key];
+ let w=function(){
+   let before=A(),beforeId=id(before);
+   let r=fn.apply(this,arguments);
+   setTimeout(function(){
+     let after=A();
+     if(after&&id(after)===beforeId){
+       let n=natural(after);
+       if(n>=next)write(n);
+     }
+   },0);
+   return r
+ };
+ w._p4=true;o[key]=w
+}
+wrap("VetGodsSimpleExamP2","complete",3);
+wrap("VetGodsSimpleDiagnosticsP3","complete",4);
+wrap("VetGodsSimpleStabilizationP4","complete",5);
+wrap("VetGodsSimpleTreatmentP5","complete",6);
+wrap("VetGodsSimpleRecoveryP6","complete",7);
+wrap("VetGodsSimpleDispositionP7","complete",8);
+
+/* Intake completion is special because saveChart returns boolean. */
+if(window.VetGodsSimpleChartP1?.saveChart && !window.VetGodsSimpleChartP1.saveChart._p4){
+ let fn=window.VetGodsSimpleChartP1.saveChart;
+ let w=function(){let r=fn.apply(this,arguments);if(r)write(2);return r};w._p4=true;window.VetGodsSimpleChartP1.saveChart=w
+}
+
+/* Override required clinical entry points only. Optional game areas remain untouched. */
+const p=window.program;
+window.program=function(k){
+ if(k==="care"||k==="diagnostics"||k==="stabilize"||k==="treatment"||k==="recovery"||k==="disposition")return resume();
+ return p.apply(this,arguments)
+};
+if(window.VetGodsFinalFlowP10)window.VetGodsFinalFlowP10.resume=resume;
+
+/* On reload, route record follows the locked animal, not the previous animal. */
+function sync(){
+ let a=A();if(!a)return badge(1);
+ let r=read(),n=natural(a);
+ if(!r||r.id!==id(a))write(n);
+ else if(Number(r.step)<n)write(n);
+ else badge(Number(r.step))
+}
+window.addEventListener("beforeunload",sync);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")sync()});
+setTimeout(()=>{addBadge();sync()},500);
+setTimeout(sync,1500);
+window.VetGodsMedicalRouteP4={resume,go,step,natural,sync};
+})();
+</script>
+
+<style id="vg-buttondown-p5-css">
+#vgStateP5{position:fixed;right:10px;bottom:124px;z-index:509;background:#111;color:#eee;border:1px solid #777;padding:7px 9px;font:900 8px "Courier New",monospace;max-width:225px}
+#vgStateP5 strong{display:block;font-size:9px}
+</style>
+<script id="vg-buttondown-p5-state-persistence">
+(function(){
+"use strict";
+const SNAP="vetgods_patient_state_snapshots_v1";
+const SNAP_BAK="vetgods_patient_state_snapshots_v1_backup";
+const fields=["health","oxygen","hydration","pain","nutrition","food","comfort","stress","trust","mobility"];
+
+function A(){return window.VetGodsActivePatientP3?.restore?.()||null}
+function id(a){return String(a?.permanentId||a?.id||"")}
+function read(k){try{return JSON.parse(localStorage.getItem(k)||"{}")||{}}catch(e){return {}}}
+function numeric(v,d){v=Number(v);return Number.isFinite(v)?v:d}
+function normalize(a){
+ if(!a)return;
+ a.health=numeric(a.health,60);
+ a.oxygen=numeric(a.oxygen,90);
+ a.hydration=numeric(a.hydration,55);
+ a.pain=numeric(a.pain,35);
+ a.nutrition=numeric(a.nutrition,numeric(a.food,50));
+ a.food=numeric(a.food,a.nutrition);
+ a.comfort=numeric(a.comfort,50);
+ a.stress=numeric(a.stress,35);
+ a.trust=numeric(a.trust,40);
+ a.mobility=numeric(a.mobility,55);
+ fields.forEach(k=>a[k]=Math.max(0,Math.min(100,numeric(a[k],0))));
+ a.simpleStabilization=a.simpleStabilization||{};
+ a.simpleTreatment=a.simpleTreatment||{};
+ a.simpleRecovery=a.simpleRecovery||{};
+ a.treatment=a.treatment||{};
+ a.recovery=a.recovery||{};
+ a.history=Array.isArray(a.history)?a.history:[]
+}
+function snapshot(a){
+ if(!a)return null;normalize(a);
+ let o={id:id(a),at:Date.now(),stage:a.stage};
+ fields.forEach(k=>o[k]=a[k]);
+ o.stabilizationComplete=!!a.stabilizationComplete;
+ o.treatmentComplete=!!a.treatmentComplete;
+ o.recoveryComplete=!!a.recoveryComplete;
+ o.simpleStabilization=JSON.parse(JSON.stringify(a.simpleStabilization));
+ o.simpleTreatment=JSON.parse(JSON.stringify(a.simpleTreatment));
+ o.simpleRecovery=JSON.parse(JSON.stringify(a.simpleRecovery));
+ o.treatment=JSON.parse(JSON.stringify(a.treatment));
+ o.recovery=JSON.parse(JSON.stringify(a.recovery));
+ return o
+}
+function persist(){
+ let a=A();if(!a)return false;normalize(a);
+ let map=read(SNAP),b=read(SNAP_BAK),x=snapshot(a);
+ map[x.id]=x;b[x.id]=x;
+ try{
+  localStorage.setItem(SNAP,JSON.stringify(map));
+  localStorage.setItem(SNAP_BAK,JSON.stringify(b));
+  window.VetGodsAnimalSaveFoundation?.saveAnimal?.(a);
+  save();
+  badge();
+  return true
+ }catch(e){return false}
+}
+function restore(){
+ let a=A();if(!a)return null;normalize(a);
+ let map=read(SNAP),bak=read(SNAP_BAK),x=map[id(a)]||bak[id(a)];
+ if(!x){persist();return a}
+ /* Snapshot only restores if it is at least as new as the animal record. */
+ if(Number(x.at||0)>=Number(a.patientStateSavedAt||0)){
+   fields.forEach(k=>{if(x[k]!==undefined)a[k]=x[k]});
+   ["stabilizationComplete","treatmentComplete","recoveryComplete"].forEach(k=>{if(x[k]!==undefined)a[k]=x[k]});
+   ["simpleStabilization","simpleTreatment","simpleRecovery","treatment","recovery"].forEach(k=>{if(x[k])a[k]=x[k]});
+   if(x.stage)a.stage=x.stage;
+ }
+ a.patientStateSavedAt=Date.now();
+ try{window.VetGodsAnimalSaveFoundation?.saveAnimal?.(a);save()}catch(e){}
+ badge();return a
+}
+function record(label,before){
+ let a=A();if(!a)return;
+ normalize(a);
+ let changes=[];
+ fields.forEach(k=>{
+   let old=before?.[k],now=a[k];
+   if(old!==undefined && Number(old)!==Number(now))changes.push(k.toUpperCase()+" "+Math.round(old)+"→"+Math.round(now))
+ });
+ if(changes.length){
+   a.history.unshift(new Date().toLocaleTimeString()+" · "+label+": "+changes.join(" · "));
+ }
+ a.patientStateSavedAt=Date.now();persist()
+}
+function capture(){let a=A();if(!a)return {};normalize(a);let o={};fields.forEach(k=>o[k]=a[k]);return o}
+function wrap(obj,key,label){
+ let o=window[obj];if(!o||typeof o[key]!=="function"||o[key]._p5)return;
+ let fn=o[key];
+ let w=function(){
+   let before=capture(),r=fn.apply(this,arguments);
+   setTimeout(()=>record(label,before),0);
+   return r
+ };
+ w._p5=true;o[key]=w
+}
+/* Every clinical action that changes patient condition gets an immediate persistent snapshot. */
+wrap("VetGodsSimpleStabilizationP4","action","STABILIZATION");
+wrap("VetGodsSimpleStabilizationP4","complete","STABILIZATION COMPLETE");
+wrap("VetGodsSimpleTreatmentP5","perform","PRIMARY TREATMENT");
+wrap("VetGodsSimpleTreatmentP5","reassess","TREATMENT REASSESSMENT");
+wrap("VetGodsSimpleTreatmentP5","complete","TREATMENT COMPLETE");
+wrap("VetGodsSimpleRecoveryP6","action","RECOVERY CARE");
+wrap("VetGodsSimpleRecoveryP6","reassess","RECOVERY REASSESSMENT");
+wrap("VetGodsSimpleRecoveryP6","complete","RECOVERY COMPLETE");
+
+/* Catch legacy/optional controls too: if they mutate the active patient's values, persist afterward. */
+document.addEventListener("click",function(){
+ let before=capture(),beforeId=id(A());
+ setTimeout(function(){
+   let a=A();if(!a||id(a)!==beforeId)return;
+   let changed=fields.some(k=>Number(before[k])!==Number(a[k]));
+   if(changed)record("PATIENT UPDATE",before)
+ },50)
+},true);
+
+function badge(){
+ let b=document.querySelector("#vgStateP5");if(!b)return;
+ let a=A();
+ b.innerHTML=a?'<strong>PATIENT STATE SAVED</strong>H '+Math.round(a.health)+' · O₂ '+Math.round(a.oxygen)+' · H₂O '+Math.round(a.hydration)+' · PAIN '+Math.round(a.pain):'<strong>NO PATIENT STATE</strong>'
+}
+function addBadge(){
+ if(document.querySelector("#vgStateP5"))return badge();
+ let b=document.createElement("button");b.id="vgStateP5";b.onclick=()=>{persist();b.textContent="STATE SAVED NOW";setTimeout(badge,900)};document.body.appendChild(b);badge()
+}
+window.addEventListener("beforeunload",persist);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")persist()});
+setTimeout(()=>{restore();addBadge()},600);
+setTimeout(restore,1600);
+window.VetGodsPatientStateP5={persist,restore,snapshot,record,capture,normalize};
+})();
+</script>
+
+<style id="vg-buttondown-p6-css">
+#vgDestinationP6{position:fixed;right:10px;bottom:162px;z-index:510;background:#111;color:#eee;border:1px solid #777;padding:7px 9px;font:900 8px "Courier New",monospace;max-width:235px}
+#vgDestinationP6 strong{display:block;font-size:9px}
+</style>
+
+<script id="vg-buttondown-p6-disposition-movement">
+(function(){
+"use strict";
+const DEST_KEY="vetgods_destinations_v1";
+const DEST_BAK="vetgods_destinations_v1_backup";
+const TYPES=["HOME","PETS","ADOPTION","SANCTUARY"];
+
+function A(){return window.VetGodsActivePatientP3?.current?.()||null}
+function id(a){return String(a?.permanentId||a?.id||"")}
+function read(k){try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}}
+function empty(){return {HOME:[],PETS:[],ADOPTION:[],SANCTUARY:[]}}
+function load(){
+ let d=read(DEST_KEY)||read(DEST_BAK)||empty();
+ TYPES.forEach(k=>{if(!Array.isArray(d[k]))d[k]=[]});
+ return d
+}
+function saveDest(d){
+ try{
+  localStorage.setItem(DEST_KEY,JSON.stringify(d));
+  localStorage.setItem(DEST_BAK,JSON.stringify(d));
+  return true
+ }catch(e){return false}
+}
+function summary(a){
+ return {
+  id:id(a),name:a.name,species:a.species,icon:a.icon||"🐾",
+  stage:a.stage,caseId:a.caseId,disposition:a.disposition,
+  movedAt:Date.now(),caseClosed:!!a.caseClosed
+ }
+}
+function removeEverywhere(d,animalId){
+ TYPES.forEach(k=>d[k]=d[k].filter(x=>String(x.id)!==String(animalId)))
+}
+function place(a,dest){
+ if(!a||!TYPES.includes(dest))return false;
+ let d=load(),animalId=id(a);removeEverywhere(d,animalId);
+ d[dest].push(summary(a));
+ saveDest(d);
+
+ a.disposition=dest;
+ a.destination=dest;
+ a.destinationSavedAt=Date.now();
+ a.caseClosed=true;
+ a.activeCase=false;
+ a.inMyPets=dest==="PETS";
+ a.adoptionReady=dest==="ADOPTION";
+ a.inSanctuary=dest==="SANCTUARY";
+ a.sentHome=dest==="HOME";
+
+ /* Keep destination collections as references to the same canonical animal identity. */
+ state.pets=Array.isArray(state.pets)?state.pets:[];
+ state.adoptions=Array.isArray(state.adoptions)?state.adoptions:[];
+ state.sanctuary=Array.isArray(state.sanctuary)?state.sanctuary:[];
+ const strip=(arr)=>arr.filter(x=>String(x?.permanentId||x?.id)!==animalId);
+ state.pets=strip(state.pets);state.adoptions=strip(state.adoptions);state.sanctuary=strip(state.sanctuary);
+ if(dest==="PETS")state.pets.push(a);
+ if(dest==="ADOPTION")state.adoptions.push(a);
+ if(dest==="SANCTUARY")state.sanctuary.push(a);
+
+ a.history=Array.isArray(a.history)?a.history:[];
+ if(!a.history.some(x=>String(x).includes("PERSISTENT DESTINATION: "+dest)))
+   a.history.unshift(new Date().toLocaleTimeString()+" · PERSISTENT DESTINATION: "+dest);
+
+ try{
+  window.VetGodsAnimalSaveFoundation?.saveAnimal?.(a);
+  window.VetGodsPatientStateP5?.persist?.();
+  save();
+ }catch(e){}
+ badge();
+ return true
+}
+function restoreCollections(){
+ let d=load(),animals=Array.isArray(state.animals)?state.animals:[];
+ const get=(dest)=>d[dest].map(r=>animals.find(a=>id(a)===String(r.id))).filter(Boolean);
+ state.pets=get("PETS");
+ state.adoptions=get("ADOPTION");
+ state.sanctuary=get("SANCTUARY");
+ /* Re-apply flags from durable destination map. */
+ TYPES.forEach(dest=>d[dest].forEach(r=>{
+   let a=animals.find(x=>id(x)===String(r.id));if(!a)return;
+   a.destination=dest;a.disposition=dest;a.caseClosed=true;a.activeCase=false;
+   a.inMyPets=dest==="PETS";a.adoptionReady=dest==="ADOPTION";a.inSanctuary=dest==="SANCTUARY";a.sentHome=dest==="HOME";
+ }));
+ try{save()}catch(e){}
+ badge();return d
+}
+function destinationFor(a){
+ if(!a)return "";
+ let d=load(),animalId=id(a);
+ return TYPES.find(k=>d[k].some(x=>String(x.id)===animalId))||a.destination||a.disposition||""
+}
+
+/* Replace final disposition completion with a durable move after original validation/closure. */
+if(window.VetGodsSimpleDispositionP7?.complete && !window.VetGodsSimpleDispositionP7.complete._p6){
+ let fn=window.VetGodsSimpleDispositionP7.complete;
+ let w=function(){
+   let a=A(),choice=a?.simpleDisposition?.choice||"";
+   let r=fn.apply(this,arguments);
+   setTimeout(function(){
+     let same=A();
+     /* Original completion may reset active selection; use canonical ID to recover exact animal. */
+     let target=same&&id(same)===id(a)?same:(state.animals||[]).find(x=>id(x)===id(a));
+     if(target&&target.caseClosed&&TYPES.includes(choice))place(target,choice)
+   },0);
+   return r
+ };
+ w._p6=true;window.VetGodsSimpleDispositionP7.complete=w
+}
+
+/* Destination badge is also a quick integrity check. */
+function badge(){
+ let b=document.querySelector("#vgDestinationP6");if(!b)return;
+ let a=A(),dest=destinationFor(a);
+ b.innerHTML=a?'<strong>DESTINATION '+(dest||"ACTIVE")+'</strong>'+String(a.name||""):'<strong>DESTINATION RECORDS SAVED</strong>'
+}
+function addBadge(){
+ if(document.querySelector("#vgDestinationP6"))return badge();
+ let b=document.createElement("button");b.id="vgDestinationP6";b.onclick=()=>{restoreCollections();b.textContent="DESTINATIONS VERIFIED";setTimeout(badge,900)};document.body.appendChild(b);badge()
+}
+
+restoreCollections();
+setTimeout(()=>{restoreCollections();addBadge()},650);
+window.addEventListener("beforeunload",restoreCollections);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")restoreCollections()});
+window.VetGodsDispositionMovementP6={place,restore:restoreCollections,load,destinationFor};
+})();
+</script>
+
+<style id="vg-buttondown-p7-css">
+#vgCollectionP7{max-width:960px;margin:10px auto 90px;font:12px "Courier New",monospace}
+#vgCollectionP7 .cp-head{background:#111;color:#eee;border:1px solid #777;padding:10px}
+#vgCollectionP7 .cp-head h2{margin:0 0 5px;font-size:17px}
+#vgCollectionP7 .cp-tabs{display:flex;gap:6px;margin:8px 0}
+#vgCollectionP7 .cp-tabs button,#vgCollectionP7 .cp-card,#vgCollectionP7 .cp-actions button{font:900 10px "Courier New",monospace;border:1px solid #777}
+#vgCollectionP7 .cp-tabs button{padding:9px;background:#eee;color:#111}
+#vgCollectionP7 .cp-tabs button.on{background:#111;color:#fff}
+#vgCollectionP7 .cp-list{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+#vgCollectionP7 .cp-card{padding:11px;background:#f2f0e8;color:#111;text-align:left}
+#vgCollectionP7 .cp-card small{display:block;margin-top:5px;font-weight:400;color:#555}
+#vgCollectionP7 .cp-empty{padding:16px;background:#f2f0e8;color:#111;border:1px solid #777}
+#vgCollectionP7 .cp-detail{background:#f2f0e8;color:#111;border:1px solid #777;padding:14px}
+#vgCollectionP7 .cp-vitals{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:9px 0}
+#vgCollectionP7 .cp-stat{background:#fff;border:1px solid #999;padding:7px;text-align:center}
+#vgCollectionP7 .cp-stat strong{display:block;font-size:14px}
+#vgCollectionP7 .cp-info{display:grid;grid-template-columns:repeat(2,1fr);border:1px solid #999}
+#vgCollectionP7 .cp-row{padding:7px;border-bottom:1px dotted #aaa}
+#vgCollectionP7 .cp-row b{display:block;font-size:9px;color:#555}
+#vgCollectionP7 .cp-history{background:#fff;border:1px solid #999;padding:7px;max-height:220px;overflow:auto}
+#vgCollectionP7 .cp-history div{padding:4px;border-bottom:1px dotted #bbb}
+#vgCollectionP7 .cp-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+#vgCollectionP7 .cp-actions button{padding:10px 12px;background:#111;color:#fff}
+@media(max-width:600px){#vgCollectionP7 .cp-list,#vgCollectionP7 .cp-info{grid-template-columns:1fr}#vgCollectionP7 .cp-vitals{grid-template-columns:repeat(2,1fr)}}
+</style>
+
+<script id="vg-buttondown-p7-pets-sanctuary">
+(function(){
+"use strict";
+let view="PETS";
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function id(a){return String(a?.permanentId||a?.id||"")}
+function data(){
+ try{window.VetGodsDispositionMovementP6?.restore?.()}catch(e){}
+ let d=window.VetGodsDispositionMovementP6?.load?.()||{PETS:[],SANCTUARY:[]};
+ let animals=Array.isArray(state.animals)?state.animals:[];
+ function resolve(k){
+   return (d[k]||[]).map(r=>animals.find(a=>id(a)===String(r.id))).filter(Boolean)
+ }
+ return {PETS:resolve("PETS"),SANCTUARY:resolve("SANCTUARY")}
+}
+function setActive(a){
+ let i=(state.animals||[]).findIndex(x=>id(x)===id(a));
+ if(i<0)return null;
+ return window.VetGodsActivePatientP3?.lockIndex?.(i)||a
+}
+function stat(k,v){return '<div class="cp-stat">'+k+'<strong>'+Math.round(Number(v)||0)+'%</strong></div>'}
+function row(k,v){return '<div class="cp-row"><b>'+k+'</b>'+esc(v||"—")+'</div>'}
+function render(which){
+ view=which||view;
+ let d=data(),list=d[view]||[],main=document.querySelector("#main");if(!main)return;
+ document.body.classList.remove("vgSimpleChartActive");
+ main.innerHTML='<div id="vgCollectionP7"><div class="cp-head"><h2>'+(view==="PETS"?"MY PETS":"MORPH SANCTUARY")+'</h2>'+
+ '<div>'+list.length+' persistent animal'+(list.length===1?"":"s")+'. These entries are rebuilt from permanent animal IDs after reload.</div></div>'+
+ '<div class="cp-tabs"><button class="'+(view==="PETS"?"on":"")+'" data-cptab="PETS">MY PETS ('+d.PETS.length+')</button>'+
+ '<button class="'+(view==="SANCTUARY"?"on":"")+'" data-cptab="SANCTUARY">SANCTUARY ('+d.SANCTUARY.length+')</button></div>'+
+ (list.length?'<div class="cp-list">'+list.map(a=>'<button class="cp-card" data-cpid="'+esc(id(a))+'">'+(a.icon||"🐾")+' '+esc(a.name)+
+ '<small>'+esc(a.species)+' · '+esc(a.stage||a.disposition||"SAVED")+'<br>ID '+esc(id(a))+'</small></button>').join("")+'</div>':
+ '<div class="cp-empty">No animals are currently assigned here. Animals sent here at Disposition will remain here after reload.</div>')+
+ '</div>';
+ main.querySelectorAll("[data-cptab]").forEach(b=>b.onclick=()=>render(b.dataset.cptab));
+ main.querySelectorAll("[data-cpid]").forEach(b=>b.onclick=()=>detail(b.dataset.cpid))
+}
+function detail(animalId){
+ let all=state.animals||[],a=all.find(x=>id(x)===String(animalId));if(!a)return render();
+ setActive(a);
+ let main=document.querySelector("#main"),hist=Array.isArray(a.history)?a.history:[];
+ main.innerHTML='<div id="vgCollectionP7"><div class="cp-detail">'+
+ '<small>VET GODS // '+(view==="PETS"?"MY PETS":"SANCTUARY")+' RESIDENT</small><h2>'+(a.icon||"🐾")+' '+esc(a.name)+'</h2>'+
+ '<div class="cp-vitals">'+stat("HEALTH",a.health)+stat("OXYGEN",a.oxygen)+stat("HYDRATION",a.hydration)+stat("PAIN",a.pain)+stat("COMFORT",a.comfort)+'</div>'+
+ '<div class="cp-info">'+row("SPECIES",a.species)+row("PERMANENT ID",id(a))+row("CURRENT LOCATION",a.destination||a.disposition)+row("CASE",a.caseId)+
+ row("STATUS",a.caseClosed?"CLINICAL CASE CLOSED":"ACTIVE")+row("LAST STAGE",a.stage)+'</div>'+
+ '<h3>HISTORY / RECORD</h3><div class="cp-history">'+(hist.length?hist.map(x=>'<div>'+esc(x)+'</div>').join(""):'<div>No history recorded.</div>')+'</div>'+
+ '<div class="cp-actions"><button id="cpBack">← BACK TO '+(view==="PETS"?"MY PETS":"SANCTUARY")+'</button>'+
+ '<button id="cpFolder">MEDICAL FOLDER</button><button id="cpAnimals">ALL MY ANIMALS</button></div></div></div>';
+ document.querySelector("#cpBack").onclick=()=>render(view);
+ document.querySelector("#cpFolder").onclick=()=>{setActive(a);window.VetGodsMedicalFolderP8?.render?.()};
+ document.querySelector("#cpAnimals").onclick=()=>window.VetGodsMyAnimalsP2?.render?.()
+}
+
+/* Unify the most common legacy navigation names without touching the deeper optional morph game. */
+const oldOpen=window.open;
+window.open=function(k){
+ if(k==="pets"||k==="mypets"||k==="my-pets"){render("PETS");return}
+ if(k==="sanctuary"||k==="morph-sanctuary"){render("SANCTUARY");return}
+ return oldOpen.apply(this,arguments)
+};
+window.VetGodsPersistentCollectionsP7={render,detail,data};
+})();
+</script>
+
+<style id="vg-buttondown-p8-css">
+#vgRecordsP8{position:fixed;right:10px;bottom:200px;z-index:511;background:#111;color:#eee;border:1px solid #777;padding:7px 9px;font:900 8px "Courier New",monospace;max-width:235px}
+#vgRecordsP8 strong{display:block;font-size:9px}
+</style>
+<script id="vg-buttondown-p8-permanent-records">
+(function(){
+"use strict";
+const KEY="vetgods_permanent_records_v1", BAK="vetgods_permanent_records_v1_backup";
+function clone(v){try{return JSON.parse(JSON.stringify(v))}catch(e){return v}}
+function id(a){return String(a?.permanentId||a?.id||"")}
+function read(k){try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}}
+function base(){return {version:1,savedAt:0,player:{},animals:{},completedCases:[],morphRecords:{}}}
+function identity(){
+ let p=state.playerProfile||{},o=state.operator||{},r=state.rewardSystem||{};
+ return {
+  first:p.firstName||state.player?.firstName||o.first||"",
+  last:p.lastName||state.player?.lastName||o.last||"",
+  display:r.playerName||state.certName||[p.firstName,p.lastName].filter(Boolean).join(" ")
+ }
+}
+function morphOf(a){
+ return clone(a.morphRecord||a.morph||a.morphState||a.transformation||a.transformations||a.dnaMorph||null)
+}
+function animalRecord(a){
+ return {
+  id:id(a),name:a.name,species:a.species,icon:a.icon,caseId:a.caseId,stage:a.stage,
+  presentingConcern:a.presentingConcern,triagePriority:a.triagePriority,
+  health:a.health,oxygen:a.oxygen,hydration:a.hydration,pain:a.pain,nutrition:a.nutrition,
+  food:a.food,comfort:a.comfort,stress:a.stress,trust:a.trust,mobility:a.mobility,
+  examComplete:!!a.examComplete,diagnosticsComplete:!!a.diagnosticsComplete,
+  stabilizationComplete:!!a.stabilizationComplete,treatmentComplete:!!a.treatmentComplete,
+  recoveryComplete:!!a.recoveryComplete,caseClosed:!!a.caseClosed,
+  disposition:a.disposition,destination:a.destination,
+  simpleExam:clone(a.simpleExam),diagnostics:clone(a.diagnostics),
+  simpleStabilization:clone(a.simpleStabilization),simpleTreatment:clone(a.simpleTreatment),
+  simpleRecovery:clone(a.simpleRecovery),simpleDisposition:clone(a.simpleDisposition),
+  treatment:clone(a.treatment),recovery:clone(a.recovery),
+  history:clone(a.history||[]),morph:morphOf(a),savedAt:Date.now()
+ }
+}
+function saveRecords(){
+ let d=read(KEY)||read(BAK)||base();
+ d.player=identity();d.savedAt=Date.now();d.completedCases=clone(state.completedCases||d.completedCases||[]);
+ d.animals=d.animals||{};d.morphRecords=d.morphRecords||{};
+ (state.animals||[]).forEach(a=>{
+   let k=id(a);if(!k)return;
+   d.animals[k]=animalRecord(a);
+   let m=morphOf(a);if(m)d.morphRecords[k]=m;
+ });
+ try{
+  let raw=JSON.stringify(d);localStorage.setItem(KEY,raw);localStorage.setItem(BAK,raw);
+  badge();return true
+ }catch(e){return false}
+}
+function restoreRecords(){
+ let d=read(KEY)||read(BAK);if(!d)return saveRecords();
+ /* Restore player identity only when missing from current state. */
+ if(d.player?.first && !(state.playerProfile?.firstName)){
+   state.playerProfile=state.playerProfile||{};state.playerProfile.firstName=d.player.first;state.playerProfile.lastName=d.player.last||"";
+ }
+ let animals=state.animals||[];
+ Object.entries(d.animals||{}).forEach(([k,r])=>{
+   let a=animals.find(x=>id(x)===k);if(!a)return;
+   /* Restore durable record structures if current copy is missing them. */
+   ["history","simpleExam","diagnostics","simpleStabilization","simpleTreatment","simpleRecovery","simpleDisposition","treatment","recovery"].forEach(f=>{
+     if((a[f]===undefined||a[f]===null||(Array.isArray(a[f])&&!a[f].length))&&r[f]!==undefined)a[f]=clone(r[f])
+   });
+   ["examComplete","diagnosticsComplete","stabilizationComplete","treatmentComplete","recoveryComplete","caseClosed"].forEach(f=>{
+     if(r[f]===true)a[f]=true
+   });
+   ["disposition","destination","caseId","presentingConcern","triagePriority"].forEach(f=>{if(!a[f]&&r[f])a[f]=r[f]});
+   if(!morphOf(a)&&d.morphRecords?.[k])a.morphRecord=clone(d.morphRecords[k]);
+ });
+ if((!state.completedCases||!state.completedCases.length)&&Array.isArray(d.completedCases))state.completedCases=clone(d.completedCases);
+ try{save()}catch(e){}
+ badge();return d
+}
+function badge(){
+ let b=document.querySelector("#vgRecordsP8");if(!b)return;
+ let d=read(KEY)||read(BAK)||base(),n=Object.keys(d.animals||{}).length,c=(d.completedCases||[]).length;
+ b.innerHTML='<strong>PERMANENT RECORDS SAVED</strong>'+n+' animals · '+c+' closed cases'
+}
+function addBadge(){
+ if(document.querySelector("#vgRecordsP8"))return badge();
+ let b=document.createElement("button");b.id="vgRecordsP8";b.onclick=()=>{saveRecords();b.textContent="RECORD ARCHIVE SAVED";setTimeout(badge,900)};document.body.appendChild(b);badge()
+}
+/* Save archive after any meaningful UI action, plus lifecycle events. */
+document.addEventListener("click",()=>setTimeout(saveRecords,120),true);
+window.addEventListener("beforeunload",saveRecords);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")saveRecords()});
+restoreRecords();
+setTimeout(()=>{restoreRecords();saveRecords();addBadge()},700);
+window.VetGodsPermanentRecordsP8={save:saveRecords,restore:restoreRecords,read:()=>read(KEY)||read(BAK)};
+})();
+</script>
+
+<style id="vg-buttondown-p9-css">
+#vgSimpleNavP9{position:fixed;top:6px;left:50%;transform:translateX(-50%);z-index:9000;display:flex;gap:4px;max-width:calc(100vw - 12px);overflow-x:auto;padding:4px;background:#090b0d;border:1px solid #555;box-shadow:0 3px 12px #000}
+#vgSimpleNavP9 button{white-space:nowrap;padding:7px 9px;border:1px solid #666;background:#171a1d;color:#eee;font:900 8px "Courier New",monospace}
+#vgSimpleNavP9 button.current{background:#e9e7dc;color:#111}
+body{padding-top:45px!important}
+/* Hide obsolete helper/debug overlays created during earlier flow rebuilds. */
+#vgFinalFlowBadge,#vgRouteLockP4,#vgStateP5,#vgDestinationP6,#vgRecordsP8,#vgSaveHealth,#vgActivePatientLock{display:none!important}
+@media(max-width:600px){#vgSimpleNavP9{left:6px;right:6px;transform:none}body{padding-top:47px!important}}
+</style>
+
+<script id="vg-buttondown-p9-navigation-cleanup">
+(function(){
+"use strict";
+function A(){return window.VetGodsActivePatientP3?.restore?.()||null}
+function currentPatient(){
+ let a=A();
+ if(!a)return window.VetGodsMyAnimalsP2?.render?.();
+ return window.VetGodsMedicalRouteP4?.resume?.()||window.VetGodsFinalFlowP10?.resume?.()
+}
+function home(){
+ document.body.classList.remove("vgSimpleChartActive");
+ /* Keep the original game/dashboard available rather than deleting it. */
+ try{return window.open("home")}catch(e){}
+ try{return program("home")}catch(e){}
+}
+function route(k){
+ if(k==="ANIMALS")return window.VetGodsMyAnimalsP2?.render?.();
+ if(k==="PATIENT")return currentPatient();
+ if(k==="PETS")return window.VetGodsPersistentCollectionsP7?.render?.("PETS");
+ if(k==="SANCTUARY")return window.VetGodsPersistentCollectionsP7?.render?.("SANCTUARY");
+ if(k==="FOLDER"){
+   if(!A())return window.VetGodsMyAnimalsP2?.render?.();
+   return window.VetGodsMedicalFolderP8?.render?.()
+ }
+ if(k==="GAME")return home()
+}
+function mount(){
+ let old=document.querySelector("#vgSimpleNavP9");if(old)old.remove();
+ let n=document.createElement("nav");n.id="vgSimpleNavP9";
+ let items=[["GAME","MAIN GAME"],["ANIMALS","MY ANIMALS"],["PATIENT","CURRENT PATIENT"],["FOLDER","MEDICAL FOLDER"],["PETS","MY PETS"],["SANCTUARY","SANCTUARY"]];
+ n.innerHTML=items.map(x=>'<button data-p9="'+x[0]+'">'+x[1]+'</button>').join("");
+ document.body.appendChild(n);
+ n.querySelectorAll("[data-p9]").forEach(b=>b.onclick=()=>route(b.dataset.p9))
+}
+function cleanup(){
+ /* Remove known rebuild/helper text nodes without deleting real game panels. */
+ document.querySelectorAll("[id*='yellowGuide' i],[class*='yellowGuide' i],[id*='yellowTip' i],[class*='yellowTip' i],.vgFirstGameRoute,[data-first-game-route]").forEach(x=>x.remove());
+ /* Do not allow old temporary floating controls to pile up again. */
+ ["vgFinalFlowBadge","vgRouteLockP4","vgStateP5","vgDestinationP6","vgRecordsP8","vgSaveHealth","vgActivePatientLock"].forEach(id=>{
+   let x=document.getElementById(id);if(x)x.style.display="none"
+ })
+}
+function persist(){
+ try{window.VetGodsAnimalSaveFoundation?.flush?.()}catch(e){}
+ try{window.VetGodsPatientStateP5?.persist?.()}catch(e){}
+ try{window.VetGodsPermanentRecordsP8?.save?.()}catch(e){}
+}
+mount();cleanup();persist();
+document.addEventListener("click",()=>setTimeout(cleanup,50),true);
+window.addEventListener("beforeunload",persist);
+window.VetGodsNavigationP9={route,mount,cleanup,currentPatient};
+})();
+</script>
+
+<style id="vg-buttondown-p10-css">
+#vgFinalAuditP10{max-width:920px;margin:10px auto 90px;background:#f2f0e8;color:#111;border:1px solid #777;padding:14px;font:12px "Courier New",monospace}
+#vgFinalAuditP10 h2{margin:0 0 8px}
+#vgFinalAuditP10 .fa-row{display:grid;grid-template-columns:32px 1fr auto;gap:8px;padding:7px;border-bottom:1px dotted #999;align-items:center}
+#vgFinalAuditP10 .fa-ok{font-weight:900}
+#vgFinalAuditP10 .fa-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+#vgFinalAuditP10 button{padding:10px 12px;border:1px solid #222;background:#111;color:#fff;font:900 10px "Courier New",monospace}
+</style>
+
+<script id="vg-buttondown-p10-final-integration">
+(function(){
+"use strict";
+const FINAL_KEY="vetgods_final_integrity_v1";
+function id(a){return String(a?.permanentId||a?.id||"")}
+function A(){return window.VetGodsActivePatientP3?.restore?.()||null}
+function persistAll(){
+ try{window.VetGodsAnimalSaveFoundation?.flush?.()}catch(e){}
+ try{window.VetGodsPatientStateP5?.persist?.()}catch(e){}
+ try{window.VetGodsDispositionMovementP6?.restore?.()}catch(e){}
+ try{window.VetGodsPermanentRecordsP8?.save?.()}catch(e){}
+ let a=A(),data={
+   at:Date.now(),activeId:id(a),animals:(state.animals||[]).length,
+   player:state.rewardSystem?.playerName||state.certName||"",
+   completed:(state.completedCases||[]).length
+ };
+ try{localStorage.setItem(FINAL_KEY,JSON.stringify(data))}catch(e){}
+ return data
+}
+function audit(){
+ let animals=Array.isArray(state.animals)?state.animals:[],a=A();
+ let dest=window.VetGodsDispositionMovementP6?.load?.()||{};
+ let rec=window.VetGodsPermanentRecordsP8?.read?.()||{};
+ let checks=[
+  ["SAVE CORE",!!window.VetGodsAnimalSaveFoundation,"Canonical animal save foundation loaded"],
+  ["ANIMAL ROSTER",Array.isArray(animals),"My Animals uses saved roster · "+animals.length+" animals"],
+  ["UNIQUE IDS",animals.every(x=>id(x)) && new Set(animals.map(id)).size===animals.length,"Every animal has one permanent unique ID"],
+  ["ACTIVE PATIENT",!animals.length||!!a,"Selected animal can be restored by permanent ID"],
+  ["MEDICAL ROUTE",!!window.VetGodsMedicalRouteP4,"Seven-sheet clinical route loaded"],
+  ["PATIENT STATE",!!window.VetGodsPatientStateP5,"Vitals/treatment state persistence loaded"],
+  ["DESTINATIONS",!!window.VetGodsDispositionMovementP6 && !!dest,"Home/Pets/Adoption/Sanctuary map loaded"],
+  ["PETS + SANCTUARY",!!window.VetGodsPersistentCollectionsP7,"Persistent resident rosters loaded"],
+  ["PERMANENT RECORD",!!window.VetGodsPermanentRecordsP8 && !!rec,"Medical/history archive + backup loaded"],
+  ["NAVIGATION",!!window.VetGodsNavigationP9,"Single compact navigation loaded"]
+ ];
+ return checks
+}
+function repair(){
+ try{window.VetGodsAnimalSaveFoundation?.merge?.()}catch(e){}
+ try{window.VetGodsActivePatientP3?.repair?.()}catch(e){}
+ try{window.VetGodsDispositionMovementP6?.restore?.()}catch(e){}
+ try{window.VetGodsPermanentRecordsP8?.restore?.()}catch(e){}
+ persistAll();
+ return audit()
+}
+function renderAudit(){
+ let checks=repair(),main=document.querySelector("#main");if(!main)return;
+ document.body.classList.remove("vgSimpleChartActive");
+ main.innerHTML='<div id="vgFinalAuditP10"><small>VET GODS // FINAL BUTTON-DOWN</small><h2>CORE GAME INTEGRITY</h2>'+
+ checks.map((x,i)=>'<div class="fa-row"><b>'+String(i+1).padStart(2,"0")+'</b><span><strong>'+x[0]+'</strong><br>'+x[2]+'</span><span class="fa-ok">'+(x[1]?"PASS":"CHECK")+'</span></div>').join("")+
+ '<div class="fa-actions"><button id="faAnimals">MY ANIMALS</button><button id="faPatient">CURRENT PATIENT</button><button id="faPets">MY PETS</button><button id="faSanctuary">SANCTUARY</button></div></div>';
+ document.querySelector("#faAnimals").onclick=()=>window.VetGodsMyAnimalsP2?.render?.();
+ document.querySelector("#faPatient").onclick=()=>window.VetGodsMedicalRouteP4?.resume?.();
+ document.querySelector("#faPets").onclick=()=>window.VetGodsPersistentCollectionsP7?.render?.("PETS");
+ document.querySelector("#faSanctuary").onclick=()=>window.VetGodsPersistentCollectionsP7?.render?.("SANCTUARY")
+}
+
+/* Final lifecycle: repair first, then persist. Never clear storage. */
+repair();
+setTimeout(repair,500);
+setTimeout(persistAll,1500);
+window.addEventListener("beforeunload",persistAll);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")persistAll()});
+
+/* Make the main navigation self-heal before every important route. */
+if(window.VetGodsNavigationP9?.route){
+ let fn=window.VetGodsNavigationP9.route;
+ window.VetGodsNavigationP9.route=function(k){repair();return fn.call(this,k)}
+}
+window.VetGodsFinalIntegrationP10={audit,repair,persist:persistAll,renderAudit};
+})();
+</script>
 </body></html>
