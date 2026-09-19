@@ -7293,8 +7293,17 @@ function run(){
 }
 function mount(){
  document.querySelector("#vgBrainBtn")?.remove();document.querySelector("#vgBrain")?.remove();
- let d=load(),b=document.createElement("button");b.id="vgBrainBtn";b.textContent="🟨 GUIDE";b.onclick=()=>{let q=load();q.open=!q.open;saveBrain(q);mount()};document.body.appendChild(b);
- if(!d.open)return;
+ let d=load(),b=document.createElement("button");b.id="vgBrainBtn";
+ b.textContent=d.open?"YELLOW: ON":"GUIDE";
+ b.className=d.open?"vgGuideOn":"vgGuideOff";
+ b.onclick=()=>{let q=load();q.open=!q.open;saveBrain(q);mount()};
+ document.body.appendChild(b);
+ if(!d.open){
+   document.querySelector("#vgBrain")?.remove();
+   document.documentElement.classList.add("vgYellowOff");
+   return;
+ }
+ document.documentElement.classList.remove("vgYellowOff");
  let a=A(),w=document.createElement("div");w.id="vgBrain";
  w.innerHTML='<div class="vgBH">YELLOW GUIDE // PHASE 1 OF 3 // VERIFIED BRAIN</div><div class="vgBB"><b>'+d.msg+'</b>'+
  'PATIENT: '+(a?.name||"NONE")+' // STEP '+(d.step+1)+' OF '+stages.length+'<br>CURRENT: '+stages[d.step]+
@@ -7416,6 +7425,105 @@ window.VetGodsPlayerIdentity={
   },
   get:readPermanent
 };
+})();
+</script>
+
+<style id="vg-bottom-button-layout-fix">
+/* One compact dock per corner. Persistent controls can no longer occupy
+   the same fixed coordinates and pile on top of one another. */
+#vgBottomLeftDock,#vgBottomRightDock{
+ position:fixed!important;bottom:8px!important;z-index:2147483647!important;
+ display:flex!important;gap:5px!important;align-items:flex-end!important;
+ max-width:calc(50vw - 12px)!important;pointer-events:none!important
+}
+#vgBottomLeftDock{left:8px!important;flex-direction:row!important}
+#vgBottomRightDock{right:8px!important;flex-direction:row-reverse!important}
+#vgBottomLeftDock>*,#vgBottomRightDock>*{
+ position:static!important;left:auto!important;right:auto!important;bottom:auto!important;top:auto!important;
+ margin:0!important;pointer-events:auto!important;max-width:150px!important;
+ white-space:normal!important;line-height:1.15!important
+}
+@media(max-width:520px){
+ #vgBottomLeftDock,#vgBottomRightDock{max-width:calc(50vw - 7px)!important;gap:3px!important;bottom:5px!important}
+ #vgBottomLeftDock{left:5px!important} #vgBottomRightDock{right:5px!important}
+ #vgBottomLeftDock>*,#vgBottomRightDock>*{max-width:105px!important;padding:6px!important;font-size:7px!important}
+}
+</style>
+<script id="vg-bottom-button-layout-fix-js">
+(function(){
+"use strict";
+const LEFT=["vgClearSave"];
+const RIGHT=["vgBrainBtn","vgYellowOneBtn","vgMasterFlowBtn","vgHardGuideBtn","vgYA2Toggle","vgY3Resume"];
+function dock(id){
+ let d=document.getElementById(id);
+ if(!d){d=document.createElement("div");d.id=id;document.body.appendChild(d)}
+ return d;
+}
+function arrange(){
+ let l=dock("vgBottomLeftDock"),r=dock("vgBottomRightDock");
+ LEFT.forEach(id=>{let x=document.getElementById(id);if(x&&x.parentElement!==l)l.appendChild(x)});
+ RIGHT.forEach(id=>{let x=document.getElementById(id);if(x&&x.parentElement!==r)r.appendChild(x)});
+ /* Catch any other fixed bottom-corner button added by older modules. */
+ [...document.querySelectorAll("body > button")].forEach(x=>{
+   if(x.closest("#vgBottomLeftDock,#vgBottomRightDock"))return;
+   let cs=getComputedStyle(x);
+   if(cs.position!=="fixed")return;
+   let b=parseFloat(cs.bottom);if(!Number.isFinite(b)||b>80)return;
+   let L=parseFloat(cs.left),R=parseFloat(cs.right);
+   if(Number.isFinite(L)&&L<80)l.appendChild(x);
+   else if(Number.isFinite(R)&&R<80)r.appendChild(x);
+ });
+}
+setTimeout(arrange,900);
+setInterval(arrange,1200);
+window.VetGodsArrangeBottomButtons=arrange;
+})();
+</script>
+
+<style id="vg-yellow-true-off-css">
+/* TRUE OFF: hide every yellow guide artifact, highlight, panel, legacy guide
+   control and yellow instructional overlay. Keep only a small neutral GUIDE
+   button so the player can turn the feature back on. */
+.vgYellowOff #vgBrain,
+.vgYellowOff #vgYellowOne,
+.vgYellowOff #vgMasterFlow,
+.vgYellowOff #vgHardGuidePanel,
+.vgYellowOff #vgYA1,
+.vgYellowOff #vgYA2Mini,
+.vgYellowOff #vgY3,
+.vgYellowOff #vgVerifiedYellow2,
+.vgYellowOff #vgSimpleYellowGuide,
+.vgYellowOff #vgStabRescue,
+.vgYellowOff .vgP2Target,
+.vgYellowOff .vgP4Treatment,
+.vgYellowOff [class*="yellow-guide"],
+.vgYellowOff [class*="yellowGuide"]{display:none!important;outline:none!important;box-shadow:none!important;animation:none!important}
+#vgBrainBtn.vgGuideOff{
+ background:#111!important;color:#aaa!important;border:1px solid #555!important;
+ padding:5px 7px!important;font-size:7px!important;box-shadow:none!important
+}
+#vgBrainBtn.vgGuideOn{background:#ffe600!important;color:#000!important}
+</style>
+<script id="vg-yellow-true-off-cleaner">
+(function(){
+"use strict";
+function sync(){
+ try{
+   let q=JSON.parse(localStorage.getItem("vetgods_yellow_brain_phase1_v1")||"{}");
+   let off=q.open===false;
+   document.documentElement.classList.toggle("vgYellowOff",off);
+   if(off){
+     ["vgBrain","vgYellowOne","vgMasterFlow","vgHardGuidePanel","vgYA1","vgYA2Mini","vgY3",
+      "vgVerifiedYellow2","vgSimpleYellowGuide","vgStabRescue"].forEach(id=>document.getElementById(id)?.remove());
+     document.querySelectorAll(".vgP2Target,.vgP4Treatment").forEach(x=>{
+       x.classList.remove("vgP2Target","vgP4Treatment");
+     });
+   }
+ }catch(e){}
+}
+setTimeout(sync,500);
+setInterval(sync,700);
+window.VetGodsYellowTrueOff=sync;
 })();
 </script>
 </body></html>
