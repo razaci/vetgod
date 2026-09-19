@@ -7526,4 +7526,35 @@ setInterval(sync,700);
 window.VetGodsYellowTrueOff=sync;
 })();
 </script>
+
+<style id="vg-yellow-off-route-fix-css">
+.vgYellowOff #vgFirstRunRoute,
+.vgYellowOff #vgFRGo,
+.vgYellowOff .vgFRHead,
+.vgYellowOff .vgFRSteps,
+.vgYellowOff .vgFRCommand{display:none!important}
+</style>
+<script id="vg-yellow-off-route-fix-js">
+(function(){
+"use strict";
+function enforceYellowOff(){
+  let off=false;
+  try{
+    let q=JSON.parse(localStorage.getItem("vetgods_yellow_brain_phase1_v1")||"{}");
+    off=q.open===false;
+  }catch(e){}
+  document.documentElement.classList.toggle("vgYellowOff",off);
+  if(off){
+    document.querySelector("#vgBrain")?.remove();
+    document.querySelector("#vgFirstRunRoute")?.remove();
+    document.querySelectorAll(".vgP2Target,.vgP4Treatment").forEach(x=>{
+      x.classList.remove("vgP2Target","vgP4Treatment");
+    });
+  }
+}
+setTimeout(enforceYellowOff,250);
+setInterval(enforceYellowOff,500);
+window.VetGodsYellowOffEnforcer=enforceYellowOff;
+})();
+</script>
 </body></html>
