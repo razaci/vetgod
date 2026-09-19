@@ -16294,4 +16294,40 @@ function install(){
 setTimeout(install,4400);
 })();
 </script>
+
+<style id="vg-remove-document-footer-controls">
+/* User-requested cleanup: no repeated BACK/HOME controls at the bottom of every document.
+   The real DOS top menu and command prompt remain available for navigation. */
+#vgProgramFooterR5{display:none!important}
+</style>
+<script id="vg-remove-document-footer-controls-script">
+(function(){
+"use strict";
+function removeFooter(){
+ document.querySelectorAll("#vgProgramFooterR5").forEach(n=>n.remove());
+}
+function install(){
+ removeFooter();
+ const main=document.querySelector("#main");
+ if(main){
+   const obs=new MutationObserver(removeFooter);
+   obs.observe(main,{childList:true});
+ }
+ /* Prevent Phase 5 decoration from leaving a bottom footer behind after future page changes. */
+ const pw=window.VetGodsProgramWindowR5;
+ if(pw?.decorate&&!pw.decorate._noFooter){
+   const old=pw.decorate;
+   const fn=function(){
+     const r=old.apply(this,arguments);
+     removeFooter();
+     return r;
+   };
+   fn._noFooter=true;
+   pw.decorate=fn;
+ }
+ window.VetGodsNoDocumentFooter={removeFooter};
+}
+setTimeout(install,4500);
+})();
+</script>
 </body></html>
