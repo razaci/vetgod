@@ -17350,4 +17350,707 @@ setTimeout(install,20600);
 })();
 </script>
 
+
+<style id="vg-awards-phase1-css">
+#vgAwards1{font-family:"Courier New",monospace;color:#eefbff;background:radial-gradient(circle at 50% 0,#173a47,#030b10 52%,#000);min-height:100%;padding:8px}
+.aw1hero{border:1px solid #84e7ff;background:linear-gradient(180deg,#0d3340,#02090d);padding:14px;box-shadow:inset 0 0 42px #0a4050}
+.aw1hero .ey{font-size:9px;letter-spacing:2px;color:#91edff}.aw1hero h1{margin:4px 0;color:#fff;font-size:clamp(24px,5vw,42px)}.aw1hero p{font-size:9px;color:#9bc2cd;line-height:1.55}
+.aw1phase{display:grid;grid-template-columns:repeat(10,minmax(88px,1fr));overflow:auto;border:1px solid #315f70;margin:8px 0}.aw1phase div{padding:7px;text-align:center;border-right:1px solid #315f70;font-size:7px;color:#658d99}.aw1phase .on{background:#d8f8ff;color:#00141b;font-weight:900}
+.aw1layout{display:grid;grid-template-columns:.75fr 1.25fr;gap:8px}.aw1panel{border:1px solid #315f70;background:#020a0e}.aw1panel h2{margin:0;padding:7px;background:#d5f7ff;color:#00141b;font-size:10px}.aw1body{padding:8px}
+.aw1list{max-height:610px;overflow:auto;border:1px solid #315f70}.aw1row{display:grid;grid-template-columns:44px 1fr auto;gap:7px;align-items:center;padding:8px;border-bottom:1px dotted #294d5b;cursor:pointer}.aw1row:hover,.aw1row.on{background:#d6f7ff;color:#00141b}.aw1row .ico{font-size:30px}.aw1row b{color:#fff;font-size:9px}.aw1row:hover b,.aw1row.on b{color:#00141b}.aw1row small{display:block;font-size:7px;color:#769ca8}.aw1row em{font-size:7px;font-style:normal}
+.aw1summary{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #315f70;margin-bottom:8px}.aw1sum{padding:7px;border-right:1px dotted #315f70}.aw1sum small{display:block;color:#769ca8;font-size:7px}.aw1sum b{font-size:15px;color:#fff}
+.aw1card{border:1px solid #4b8395;background:linear-gradient(145deg,#071b23,#02090d);padding:12px;position:relative;overflow:hidden}.aw1card:before{content:"VET GODS";position:absolute;right:-8px;bottom:-18px;font-size:52px;font-weight:900;color:#0b2630;transform:rotate(-9deg)}
+.aw1portrait{font-size:72px;text-align:center;filter:drop-shadow(0 0 14px #89eaff)}.aw1name{text-align:center;color:#fff;font-size:20px;font-weight:900}.aw1species{text-align:center;color:#87b6c4;font-size:8px;margin-bottom:9px}
+.aw1grid{display:grid;grid-template-columns:repeat(2,1fr);border:1px solid #315f70;position:relative;z-index:2}.aw1cell{padding:7px;border-right:1px dotted #315f70;border-bottom:1px dotted #315f70}.aw1cell small{display:block;color:#7198a5;font-size:7px}.aw1cell b{color:#fff;font-size:9px}
+.aw1earned{margin-top:8px;border:1px solid #315f70}.aw1badge{display:grid;grid-template-columns:35px 1fr auto;gap:6px;padding:7px;align-items:center;border-bottom:1px dotted #294d5b;font-size:8px}.aw1badge .med{font-size:23px}.aw1badge b{color:#fff}.aw1badge small{display:block;color:#769ca8;font-size:7px}.aw1badge.lock{opacity:.42}
+.aw1actions{display:grid;grid-template-columns:repeat(3,1fr);margin-top:8px}.aw1actions button,.aw1nav button{border:0;border-right:1px dotted #315f70;border-bottom:1px dotted #315f70;background:#020b10;color:#e4fbff;padding:9px;text-align:left;font:700 8px "Courier New",monospace;cursor:pointer}.aw1actions button:hover,.aw1nav button:hover{background:#d6f7ff;color:#00141b}.aw1actions button:disabled{opacity:.3}
+.aw1log{max-height:150px;overflow:auto;border:1px solid #315f70;margin-top:8px}.aw1log div{padding:5px 7px;border-bottom:1px dotted #294d5b;font-size:7px}.aw1nav{display:grid;grid-template-columns:repeat(3,1fr);margin-top:8px}
+@media(max-width:760px){.aw1layout{grid-template-columns:1fr}.aw1summary{grid-template-columns:repeat(2,1fr)}.aw1grid,.aw1actions{grid-template-columns:1fr}.aw1nav{grid-template-columns:1fr}.aw1list{max-height:310px}}
+</style>
+<script id="vg-awards-phase1-js">
+(function(){"use strict";
+const KEY="vetGodsAwardsPhase1";
+const AWARDS=[
+ {id:"survivor",icon:"🏅",name:"Recovery Citation",test:a=>["RECOVERY","DISCHARGE","CLOSED","SANCTUARY"].some(x=>String(a.stage||a.disposition||a.homeStatus).toUpperCase().includes(x)),why:"Complete a major recovery/disposition milestone."},
+ {id:"sanctuary",icon:"🌿",name:"Sanctuary Resident Medal",test:a=>a.homeStatus==="SANCTUARY RESIDENT"||a.adoptable,why:"Become a sanctuary resident."},
+ {id:"morph",icon:"🧬",name:"Authorized Morph Research Seal",test:a=>!!a.morphLocked||a.stage==="MORPH COMPLETE"||!!a.morph,why:"Complete/lock an authorized fictional morph configuration."},
+ {id:"bond",icon:"💠",name:"Companion Bond Citation",test:a=>(a.petStats?.bond||0)>=75||(+a.trust||0)>=75,why:"Reach 75+ bond or trust."},
+ {id:"crew",icon:"🚀",name:"Living Ship Service Ribbon",test:a=>{try{return !!JSON.parse(localStorage.getItem("vetGodsPhase18")||"{}").residents?.[a.id]}catch(e){return false}},why:"Receive a resident crew assignment."},
+ {id:"nutrition",icon:"🥣",name:"Galley Care Citation",test:a=>(+a.nutrition||0)>=75,why:"Reach 75+ simulated nutrition."}
+];
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function all(){try{return state.animals||[]}catch(e){return[]}}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{selected:null,issued:{},logs:[]}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x));try{save()}catch(e){}}
+function ensure(){let x=get(),ls=all();if(x.selected==null&&ls.length)x.selected=ls[0].id;put(x);return x}
+function A(id){return all().find(a=>String(a.id)===String(id))}
+function earned(a){return AWARDS.filter(w=>w.test(a))}
+function select(id){let x=ensure();x.selected=+id;try{state.active=state.animals.findIndex(a=>String(a.id)===String(id));save()}catch(e){}put(x);render()}
+function issue(id){
+ let x=ensure(),a=A(x.selected),w=AWARDS.find(z=>z.id===id);if(!a||!w||!w.test(a))return;
+ x.issued[a.id]=x.issued[a.id]||{};
+ if(!x.issued[a.id][id]){let num="VG-"+String(a.id).padStart(4,"0")+"-"+id.toUpperCase()+"-"+Date.now().toString().slice(-6);x.issued[a.id][id]={date:new Date().toLocaleDateString(),number:num};x.logs.unshift(new Date().toLocaleTimeString()+" · ISSUED · "+w.name+" → "+a.name+" · "+num);a.awards=a.awards||[];if(!a.awards.includes(w.name))a.awards.push(w.name);try{save()}catch(e){}}
+ put(x);render()
+}
+function render(){
+ let m=document.querySelector("#main"),x=ensure(),ls=all(),a=A(x.selected)||ls[0];if(!m)return;page="awards1";try{nav()}catch(e){}
+ let ea=a?earned(a):[],issued=a?(x.issued[a.id]||{}):{},totalIssued=Object.values(x.issued).reduce((n,o)=>n+Object.keys(o||{}).length,0);
+ m.innerHTML='<div id="vgAwards1"><header class="aw1hero"><div class="ey">VET GODS AWARDS & RECORDS INSTITUTE // AWARD PHASE 01 OF 10</div><h1>AWARDS COMMAND CENTER</h1><p>This is now a primary progression system. Every animal can be inspected for earned, locked and formally issued awards. Later award phases will build printing, signatures, artwork, lifetime records and the Hall of Awards on top of this registry.</p></header>'+
+ '<div class="aw1phase">'+["COMMAND","ACHIEVEMENTS","BUILDER","ART STUDIO","SIGNATURES","PORTRAITS","LEVELS","LIFETIME","HALL","PRINT"].map((z,i)=>'<div class="'+(i===0?"on":"")+'">'+String(i+1).padStart(2,"0")+'<br>'+z+'</div>').join("")+'</div>'+
+ '<div class="aw1summary"><div class="aw1sum"><small>ANIMALS</small><b>'+ls.length+'</b></div><div class="aw1sum"><small>ELIGIBLE AWARDS</small><b>'+ls.reduce((n,z)=>n+earned(z).length,0)+'</b></div><div class="aw1sum"><small>FORMALLY ISSUED</small><b>'+totalIssued+'</b></div><div class="aw1sum"><small>SELECTED</small><b>'+E(a?.name||"NONE")+'</b></div></div>'+
+ '<div class="aw1layout"><section class="aw1panel"><h2>ANIMAL AWARD DIRECTORY</h2><div class="aw1body"><div class="aw1list">'+(ls.length?ls.map(z=>'<div class="aw1row '+(a&&String(a.id)===String(z.id)?"on":"")+'" data-aw1animal="'+z.id+'"><div class="ico">'+E(z.icon||"🐾")+'</div><div><b>'+E(z.name)+'</b><small>'+E(z.species||"Unknown species")+' · '+E(z.stage||z.homeStatus||"ACTIVE")+'</small></div><em>'+earned(z).length+' EARNED</em></div>').join(""):'<div class="aw1row">NO ANIMALS AVAILABLE.</div>')+'</div></div></section>'+
+ '<section class="aw1panel"><h2>SELECTED ANIMAL AWARD RECORD</h2><div class="aw1body">'+(a?'<div class="aw1card"><div class="aw1portrait">'+E(a.icon||"🐾")+'</div><div class="aw1name">'+E(a.name)+'</div><div class="aw1species">'+E(a.species||"UNKNOWN")+' // CASE '+E(a.id)+'</div><div class="aw1grid"><div class="aw1cell"><small>CARE STATUS</small><b>'+E(a.stage||a.disposition||"ACTIVE")+'</b></div><div class="aw1cell"><small>HOME STATUS</small><b>'+E(a.homeStatus||"UNASSIGNED")+'</b></div><div class="aw1cell"><small>BOND / TRUST</small><b>'+Math.round(a.petStats?.bond||a.trust||0)+'%</b></div><div class="aw1cell"><small>FINAL MORPH</small><b>'+E(a.morph||"ORIGINAL FORM")+'</b></div></div></div>'+
+ '<div class="aw1earned">'+AWARDS.map(w=>{let ok=w.test(a),iss=issued[w.id];return '<div class="aw1badge '+(ok?"":"lock")+'"><div class="med">'+w.icon+'</div><div><b>'+E(w.name)+'</b><small>'+(ok?"EARNED":"LOCKED")+' · '+E(w.why)+(iss?"<br>ISSUED "+E(iss.date)+" · "+E(iss.number):"")+'</small></div><button data-aw1issue="'+w.id+'" '+(!ok||iss?"disabled":"")+'>'+(iss?"ISSUED":ok?"ISSUE":"LOCKED")+'</button></div>'}).join("")+'</div>':'<div>NO ANIMAL SELECTED.</div>')+
+ '<div class="aw1actions"><button id="aw1refresh">REFRESH ELIGIBILITY</button><button id="aw1animalpage">OPEN ANIMAL RECORD</button><button id="aw1printpreview" disabled>PRINT CENTER — PHASE 10</button></div>'+
+ '<h2 style="margin-top:8px">AWARD REGISTRY LOG</h2><div class="aw1log">'+(x.logs.length?x.logs.slice(0,35).map(z=>'<div>&gt; '+E(z)+'</div>').join(""):'<div>AWARDS REGISTRY INITIALIZED.</div>')+'</div>'+
+ '<div class="aw1nav"><button id="aw1nav20">← NAVIGATION / PHASE 20</button><button id="aw1san">SANCTUARY</button><button id="aw1care">CLINIC</button></div></div></section></div></div>';
+ m.querySelectorAll("[data-aw1animal]").forEach(e=>e.onclick=()=>select(e.dataset.aw1animal));m.querySelectorAll("[data-aw1issue]").forEach(e=>e.onclick=()=>issue(e.dataset.aw1issue));
+ m.querySelector("#aw1refresh").onclick=render;m.querySelector("#aw1animalpage").onclick=()=>{try{animals()}catch(e){open("animals")}};
+ m.querySelector("#aw1nav20").onclick=()=>window.VetGodsPhase20Nav?.render?.();m.querySelector("#aw1san").onclick=()=>{try{animals()}catch(e){open("animals")}};m.querySelector("#aw1care").onclick=()=>open("care");
+}
+function install(){
+ window.VetGodsAwardsPhase1={render,issue,read:ensure};
+ let p20=window.VetGodsPhase20Nav;if(p20&&!p20.__aw1){let r=p20.render;p20.render=function(){r();setTimeout(()=>{let host=document.querySelector("#vgP20 .p20nav");if(host&&!document.querySelector("#aw1launch")){let b=document.createElement("button");b.id="aw1launch";b.textContent="🏆 AWARDS & RECORDS INSTITUTE →";b.onclick=render;host.appendChild(b)}},0)};p20.__aw1=true}
+ /* Make Awards a main destination without disturbing existing top navigation. */
+ setTimeout(()=>{let navHost=document.querySelector("#nav");if(navHost&&!document.querySelector("#vgAwardsMainButton")){let b=document.createElement("button");b.id="vgAwardsMainButton";b.textContent="🏆 Awards";b.onclick=render;navHost.appendChild(b)}},22000);
+}
+setTimeout(install,21800);
+})();
+</script>
+
+
+<style id="vg-awards-phase2-css">
+#vgAwards2{font-family:"Courier New",monospace;color:#eefbff;background:radial-gradient(circle at 50% 0,#193c48,#030b10 52%,#000);min-height:100%;padding:8px}
+.aw2hero{border:1px solid #87e8ff;background:linear-gradient(180deg,#0e3541,#02090d);padding:14px;box-shadow:inset 0 0 44px #0a4050}
+.aw2hero .ey{font-size:9px;letter-spacing:2px;color:#93eeff}.aw2hero h1{margin:4px 0;color:#fff;font-size:clamp(24px,5vw,42px)}.aw2hero p{font-size:9px;color:#9dc4cf;line-height:1.55}
+.aw2phase{display:grid;grid-template-columns:repeat(10,minmax(88px,1fr));overflow:auto;border:1px solid #315f70;margin:8px 0}.aw2phase div{padding:7px;text-align:center;border-right:1px solid #315f70;font-size:7px;color:#658d99}.aw2phase .done{color:#a9edff}.aw2phase .on{background:#d9f8ff;color:#00141b;font-weight:900}
+.aw2layout{display:grid;grid-template-columns:.72fr 1.28fr;gap:8px}.aw2panel{border:1px solid #315f70;background:#020a0e}.aw2panel h2{margin:0;padding:7px;background:#d7f8ff;color:#00141b;font-size:10px}.aw2body{padding:8px}
+.aw2list{max-height:670px;overflow:auto;border:1px solid #315f70}.aw2row{display:grid;grid-template-columns:42px 1fr auto;gap:7px;align-items:center;padding:8px;border-bottom:1px dotted #294d5b;cursor:pointer}.aw2row:hover,.aw2row.on{background:#d8f8ff;color:#00141b}.aw2row .ico{font-size:29px}.aw2row b{color:#fff;font-size:9px}.aw2row:hover b,.aw2row.on b{color:#00141b}.aw2row small{display:block;font-size:7px;color:#769ca8}.aw2row em{font-size:7px;font-style:normal}
+.aw2summary{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid #315f70;margin-bottom:8px}.aw2sum{padding:7px;border-right:1px dotted #315f70}.aw2sum small{display:block;color:#769ca8;font-size:7px}.aw2sum b{font-size:14px;color:#fff}
+.aw2profile{display:grid;grid-template-columns:75px 1fr;border:1px solid #315f70;align-items:center}.aw2portrait{font-size:58px;text-align:center}.aw2profile b{color:#fff;font-size:15px}.aw2profile small{display:block;color:#769ca8;font-size:7px;line-height:1.5}
+.aw2cats{display:grid;grid-template-columns:repeat(5,1fr);margin-top:8px;border:1px solid #315f70}.aw2cat{padding:6px;text-align:center;border-right:1px dotted #315f70;font-size:7px}.aw2cat b{display:block;color:#fff;font-size:11px}
+.aw2awards{border:1px solid #315f70;margin-top:8px;max-height:460px;overflow:auto}.aw2award{display:grid;grid-template-columns:40px 1fr 78px;gap:7px;align-items:center;padding:8px;border-bottom:1px dotted #294d5b}.aw2award.lock{opacity:.43}.aw2award .med{font-size:27px}.aw2award b{color:#fff;font-size:9px}.aw2award small{display:block;color:#769ca8;font-size:7px;line-height:1.4}.aw2award button{background:#03131a;border:1px solid #3c7688;color:#e3fbff;padding:6px;font:700 7px "Courier New";cursor:pointer}.aw2award button:hover{background:#d8f8ff;color:#00141b}.aw2award button:disabled{opacity:.35}
+.aw2progress{height:6px;border:1px solid #426f7e;margin-top:4px}.aw2progress i{display:block;height:100%;background:#d8f8ff}
+.aw2actions,.aw2nav{display:grid;grid-template-columns:repeat(3,1fr);margin-top:8px}.aw2actions button,.aw2nav button{border:0;border-right:1px dotted #315f70;border-bottom:1px dotted #315f70;background:#020b10;color:#e4fbff;padding:9px;text-align:left;font:700 8px "Courier New";cursor:pointer}.aw2actions button:hover,.aw2nav button:hover{background:#d8f8ff;color:#00141b}
+.aw2log{max-height:160px;overflow:auto;border:1px solid #315f70;margin-top:8px}.aw2log div{padding:5px 7px;border-bottom:1px dotted #294d5b;font-size:7px}
+@media(max-width:760px){.aw2layout{grid-template-columns:1fr}.aw2summary,.aw2cats{grid-template-columns:repeat(2,1fr)}.aw2actions,.aw2nav{grid-template-columns:1fr}.aw2award{grid-template-columns:36px 1fr 68px}.aw2list{max-height:300px}}
+</style>
+<script id="vg-awards-phase2-js">
+(function(){"use strict";
+const KEY="vetGodsAwardsPhase2";
+const CAT={CARE:"CLINICAL / RECOVERY",HOME:"SANCTUARY",MORPH:"MORPH RESEARCH",SHIP:"SHIP / CREW",EXPLORE:"MISSIONS / EXPLORATION"};
+function safe(k){try{return JSON.parse(localStorage.getItem(k)||"{}")}catch(e){return{}}}
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function all(){try{return state.animals||[]}catch(e){return[]}}
+function A(id){return all().find(a=>String(a.id)===String(id))}
+function crew(a){return safe("vetGodsPhase18").residents?.[a.id]||{}}
+function nav20(){return safe("vetGodsPhase20")}
+function life(a){return safe("vetGodsPhase17").residents?.[a.id]||{}}
+function food(){return safe("vetGodsPhase19")}
+const RULES=[
+ {id:"intake",cat:"CARE",icon:"📋",name:"Case Intake Citation",test:a=>!!a.name&&!!a.species,progress:a=>100,req:"Create a complete animal case."},
+ {id:"diagnostic",cat:"CARE",icon:"🔬",name:"Diagnostic Service Medal",test:a=>(a.diagnostics?.length||a.evidence?.length||0)>=2||String(a.stage||"").match(/DIAG|TREAT|RECOV|DISCH|CLOSED/i),progress:a=>Math.min(100,(a.diagnostics?.length||a.evidence?.length||0)*50),req:"Complete diagnostic work."},
+ {id:"stabilize",cat:"CARE",icon:"🩺",name:"Stabilization Ribbon",test:a=>(+a.oxygen||0)>=90||(a.actions||[]).some?.(x=>String(x).match(/oxygen|fluid|pain/i))||String(a.stage||"").match(/TREAT|RECOV|DISCH|CLOSED/i),progress:a=>Math.min(100,+a.oxygen||0),req:"Reach a stabilized care state."},
+ {id:"recovery",cat:"CARE",icon:"🏅",name:"Recovery Citation",test:a=>String(a.stage||a.disposition||"").match(/RECOV|DISCH|CLOSED/i),progress:a=>String(a.stage||"").match(/RECOV|DISCH|CLOSED/i)?100:45,req:"Reach recovery/discharge."},
+ {id:"painfree",cat:"CARE",icon:"💙",name:"Comfort Care Distinction",test:a=>(+a.pain===0)&&!!a.name,progress:a=>Math.max(0,100-(+a.pain||0)*10),req:"Bring simulated pain to 0."},
+ {id:"sanctuary",cat:"HOME",icon:"🌿",name:"Sanctuary Resident Medal",test:a=>a.homeStatus==="SANCTUARY RESIDENT"||a.adoptable,progress:a=>(a.homeStatus==="SANCTUARY RESIDENT"||a.adoptable)?100:20,req:"Enter sanctuary/adoption residency."},
+ {id:"bond75",cat:"HOME",icon:"💠",name:"Companion Bond Citation",test:a=>(a.petStats?.bond||a.trust||0)>=75,progress:a=>Math.min(100,a.petStats?.bond||a.trust||0),req:"Reach 75 bond/trust."},
+ {id:"bond95",cat:"HOME",icon:"💎",name:"Exceptional Bond Star",test:a=>(a.petStats?.bond||a.trust||0)>=95,progress:a=>Math.min(100,(a.petStats?.bond||a.trust||0)/.95),req:"Reach 95 bond/trust."},
+ {id:"morph",cat:"MORPH",icon:"🧬",name:"Authorized Morph Research Seal",test:a=>!!a.morphLocked||a.stage==="MORPH COMPLETE"||!!a.morph,progress:a=>(a.morphLocked||a.morph)?100:25,req:"Complete a fictional morph configuration."},
+ {id:"morphlock",cat:"MORPH",icon:"🔒",name:"Permanent Form Certification",test:a=>!!a.morphLocked,progress:a=>a.morphLocked?100:40,req:"Cement/lock the final morph form."},
+ {id:"crew",cat:"SHIP",icon:"🚀",name:"Living Ship Service Ribbon",test:a=>!!crew(a).job,progress:a=>crew(a).job?100:20,req:"Receive a ship crew role."},
+ {id:"crew3",cat:"SHIP",icon:"🎖️",name:"Senior Crew Service Medal",test:a=>(crew(a).level||0)>=3,progress:a=>Math.min(100,(crew(a).level||0)/3*100),req:"Reach crew job level 3."},
+ {id:"emergency",cat:"SHIP",icon:"🚨",name:"Emergency Response Citation",test:a=>(crew(a).helps||0)>=1,progress:a=>Math.min(100,(crew(a).helps||0)*100),req:"Assist with an onboard emergency."},
+ {id:"social",cat:"SHIP",icon:"🤝",name:"Resident Fellowship Ribbon",test:a=>(life(a).social||0)>=75,progress:a=>Math.min(100,life(a).social||0),req:"Reach 75 social standing."},
+ {id:"nutrition",cat:"SHIP",icon:"🥣",name:"Galley Care Citation",test:a=>(+a.nutrition||0)>=75,progress:a=>Math.min(100,+a.nutrition||0),req:"Reach 75 simulated nutrition."},
+ {id:"missionready",cat:"EXPLORE",icon:"🧭",name:"Mission Ready Citation",test:a=>String(life(a).activity||crew(a).duty||"").match(/MISSION/i),progress:a=>String(life(a).activity||crew(a).duty||"").match(/MISSION/i)?100:30,req:"Become mission-ready."},
+ {id:"explorer",cat:"EXPLORE",icon:"🌌",name:"Deep Range Explorer Medal",test:a=>(nav20().rescues||0)>=1,progress:a=>Math.min(100,(nav20().rescues||0)*100),req:"Complete a deep-range rescue/discovery."},
+ {id:"explorer3",cat:"EXPLORE",icon:"⭐",name:"Three Worlds Expedition Star",test:a=>(nav20().rescues||0)>=3,progress:a=>Math.min(100,(nav20().rescues||0)/3*100),req:"Complete 3 deep-range discoveries."},
+ {id:"range",cat:"EXPLORE",icon:"🛰️",name:"Outer Range Pathfinder Seal",test:a=>(nav20().range||0)>=70,progress:a=>Math.min(100,(nav20().range||0)/70*100),req:"Expand ship range to 70+."},
+ {id:"legacy",cat:"EXPLORE",icon:"👑",name:"VET GODS Legacy Laureate",test:a=>RULES.filter(r=>r.id!=="legacy"&&r.test(a)).length>=10,progress:a=>Math.min(100,RULES.filter(r=>r.id!=="legacy"&&r.test(a)).length*10),req:"Earn 10 other achievement classes."}
+];
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{selected:null,issued:{},logs:[]}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x));try{save()}catch(e){}}
+function ensure(){let x=get(),ls=all();if(x.selected==null&&ls.length)x.selected=ls[0].id;put(x);return x}
+function earned(a){return RULES.filter(r=>{try{return r.test(a)}catch(e){return false}})}
+function select(id){let x=ensure();x.selected=+id;try{state.active=state.animals.findIndex(a=>String(a.id)===String(id));save()}catch(e){}put(x);render()}
+function issue(id){
+ let x=ensure(),a=A(x.selected),r=RULES.find(z=>z.id===id);if(!a||!r||!r.test(a))return;
+ x.issued[a.id]=x.issued[a.id]||{};
+ if(!x.issued[a.id][id]){let num="VG-A2-"+String(a.id).padStart(4,"0")+"-"+id.toUpperCase()+"-"+Date.now().toString().slice(-5);x.issued[a.id][id]={date:new Date().toLocaleDateString(),number:num};x.logs.unshift(new Date().toLocaleTimeString()+" · "+a.name+" · "+r.name+" · "+num);a.awards=a.awards||[];if(!a.awards.includes(r.name))a.awards.push(r.name);try{save()}catch(e){}}
+ put(x);render()
+}
+function issueAll(){
+ let x=ensure(),a=A(x.selected);if(!a)return;earned(a).forEach(r=>{x.issued[a.id]=x.issued[a.id]||{};if(!x.issued[a.id][r.id]){let num="VG-A2-"+String(a.id).padStart(4,"0")+"-"+r.id.toUpperCase()+"-"+Math.random().toString(36).slice(2,7).toUpperCase();x.issued[a.id][r.id]={date:new Date().toLocaleDateString(),number:num};a.awards=a.awards||[];if(!a.awards.includes(r.name))a.awards.push(r.name)}});x.logs.unshift(new Date().toLocaleTimeString()+" · BULK ISSUE · all currently earned awards → "+a.name);try{save()}catch(e){}put(x);render()
+}
+function render(){
+ let m=document.querySelector("#main"),x=ensure(),ls=all(),a=A(x.selected)||ls[0];if(!m)return;page="awards2";try{nav()}catch(e){}
+ let ea=a?earned(a):[],issued=a?(x.issued[a.id]||{}):{},counts={};Object.keys(CAT).forEach(c=>counts[c]=a?RULES.filter(r=>r.cat===c&&r.test(a)).length:0);
+ let totalIssued=Object.values(x.issued).reduce((n,o)=>n+Object.keys(o||{}).length,0);
+ m.innerHTML='<div id="vgAwards2"><header class="aw2hero"><div class="ey">VET GODS AWARDS & RECORDS INSTITUTE // AWARD PHASE 02 OF 10</div><h1>ACHIEVEMENT ENGINE</h1><p>Twenty achievement classes now inspect the animal and connected ship systems. Awards can come from care, recovery, sanctuary life, morph research, crew service, relationships, emergencies and exploration.</p></header>'+
+ '<div class="aw2phase">'+["COMMAND","ACHIEVEMENTS","BUILDER","ART STUDIO","SIGNATURES","PORTRAITS","LEVELS","LIFETIME","HALL","PRINT"].map((z,i)=>'<div class="'+(i<1?"done":i===1?"on":"")+'">'+String(i+1).padStart(2,"0")+'<br>'+z+'</div>').join("")+'</div>'+
+ '<div class="aw2summary"><div class="aw2sum"><small>ANIMALS</small><b>'+ls.length+'</b></div><div class="aw2sum"><small>RULE CLASSES</small><b>'+RULES.length+'</b></div><div class="aw2sum"><small>SELECTED EARNED</small><b>'+ea.length+'</b></div><div class="aw2sum"><small>SELECTED LOCKED</small><b>'+(RULES.length-ea.length)+'</b></div><div class="aw2sum"><small>TOTAL ISSUED</small><b>'+totalIssued+'</b></div></div>'+
+ '<div class="aw2layout"><section class="aw2panel"><h2>ANIMAL ACHIEVEMENT DIRECTORY</h2><div class="aw2body"><div class="aw2list">'+(ls.length?ls.map(z=>'<div class="aw2row '+(a&&String(a.id)===String(z.id)?"on":"")+'" data-aw2animal="'+z.id+'"><div class="ico">'+E(z.icon||"🐾")+'</div><div><b>'+E(z.name)+'</b><small>'+E(z.species||"UNKNOWN")+' · '+E(z.stage||z.homeStatus||"ACTIVE")+'</small></div><em>'+earned(z).length+'/'+RULES.length+'</em></div>').join(""):'<div class="aw2row">NO ANIMALS AVAILABLE.</div>')+'</div><div class="aw2nav"><button id="aw2phase1">← AWARD PHASE 1</button><button id="aw2san">SANCTUARY</button><button id="aw2nav20">NAVIGATION</button></div></div></section>'+
+ '<section class="aw2panel"><h2>ACHIEVEMENT ANALYSIS</h2><div class="aw2body">'+(a?'<div class="aw2profile"><div class="aw2portrait">'+E(a.icon||"🐾")+'</div><div><b>'+E(a.name)+'</b><small>'+E(a.species||"UNKNOWN")+' // CASE '+E(a.id)+'<br>'+ea.length+' OF '+RULES.length+' ACHIEVEMENT CLASSES CURRENTLY EARNED</small></div></div>'+
+ '<div class="aw2cats">'+Object.keys(CAT).map(c=>'<div class="aw2cat"><b>'+counts[c]+'/'+RULES.filter(r=>r.cat===c).length+'</b>'+CAT[c]+'</div>').join("")+'</div>'+
+ '<div class="aw2awards">'+RULES.map(r=>{let ok=false;try{ok=r.test(a)}catch(e){}let p=0;try{p=Math.round(r.progress(a))}catch(e){}p=Math.max(0,Math.min(100,p));let iss=issued[r.id];return '<div class="aw2award '+(ok?"":"lock")+'"><div class="med">'+r.icon+'</div><div><b>'+E(r.name)+'</b><small>'+E(CAT[r.cat])+' · '+(ok?"EARNED":"LOCKED")+'<br>'+E(r.req)+(iss?"<br>ISSUED "+E(iss.date)+" · "+E(iss.number):"")+'</small><div class="aw2progress"><i style="width:'+p+'%"></i></div></div><button data-aw2issue="'+r.id+'" '+(!ok||iss?"disabled":"")+'>'+(iss?"ISSUED":ok?"ISSUE":"LOCKED")+'</button></div>'}).join("")+'</div>':'NO ANIMAL SELECTED.')+
+ '<div class="aw2actions"><button id="aw2refresh">RECALCULATE ALL</button><button id="aw2all">ISSUE ALL EARNED</button><button id="aw2builder" disabled>AWARD BUILDER — PHASE 3</button></div>'+
+ '<h2 style="margin-top:8px">ACHIEVEMENT ENGINE LOG</h2><div class="aw2log">'+(x.logs.length?x.logs.slice(0,40).map(z=>'<div>&gt; '+E(z)+'</div>').join(""):'<div>ACHIEVEMENT ENGINE ONLINE.</div>')+'</div></div></section></div></div>';
+ m.querySelectorAll("[data-aw2animal]").forEach(e=>e.onclick=()=>select(e.dataset.aw2animal));m.querySelectorAll("[data-aw2issue]").forEach(e=>e.onclick=()=>issue(e.dataset.aw2issue));
+ m.querySelector("#aw2refresh").onclick=render;m.querySelector("#aw2all").onclick=issueAll;m.querySelector("#aw2phase1").onclick=()=>window.VetGodsAwardsPhase1?.render?.();m.querySelector("#aw2san").onclick=()=>{try{animals()}catch(e){open("animals")}};m.querySelector("#aw2nav20").onclick=()=>window.VetGodsPhase20Nav?.render?.();
+}
+function install(){
+ window.VetGodsAwardsPhase2={render,issue,issueAll,read:ensure,rules:RULES};
+ let p1=window.VetGodsAwardsPhase1;if(p1&&!p1.__aw2){let r=p1.render;p1.render=function(){r();setTimeout(()=>{let host=document.querySelector("#vgAwards1 .aw1nav");if(host&&!document.querySelector("#aw2launch")){let b=document.createElement("button");b.id="aw2launch";b.textContent="ACHIEVEMENT ENGINE →";b.onclick=render;host.appendChild(b)}},0)};p1.__aw2=true}
+}
+setTimeout(install,23000);
+})();
+</script>
+
+
+<style id="vg-awards-phase3-css">
+#vgAwards3{font-family:"Courier New",monospace;color:#eefbff;background:radial-gradient(circle at 50% 0,#193d49,#030b10 52%,#000);min-height:100%;padding:8px}
+.aw3hero{border:1px solid #8beaff;background:linear-gradient(180deg,#0e3542,#02090d);padding:14px;box-shadow:inset 0 0 44px #0a4050}.aw3hero .ey{font-size:9px;letter-spacing:2px;color:#95efff}.aw3hero h1{margin:4px 0;color:#fff;font-size:clamp(24px,5vw,42px)}.aw3hero p{font-size:9px;color:#9fc5cf;line-height:1.55}
+.aw3phase{display:grid;grid-template-columns:repeat(10,minmax(88px,1fr));overflow:auto;border:1px solid #315f70;margin:8px 0}.aw3phase div{padding:7px;text-align:center;border-right:1px solid #315f70;font-size:7px;color:#658d99}.aw3phase .done{color:#a9edff}.aw3phase .on{background:#dbf9ff;color:#00141b;font-weight:900}
+.aw3layout{display:grid;grid-template-columns:.75fr 1.25fr;gap:8px}.aw3panel{border:1px solid #315f70;background:#020a0e}.aw3panel h2{margin:0;padding:7px;background:#daf8ff;color:#00141b;font-size:10px}.aw3body{padding:8px}
+.aw3controls label{display:block;color:#7fa6b1;font-size:7px;margin:7px 0 3px}.aw3controls select,.aw3controls input,.aw3controls textarea{box-sizing:border-box;width:100%;background:#04131a;color:#effcff;border:1px solid #397386;padding:7px;font:8px "Courier New"}.aw3controls textarea{min-height:72px;resize:vertical}.aw3twocol{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.aw3awards{max-height:220px;overflow:auto;border:1px solid #315f70}.aw3award{display:grid;grid-template-columns:32px 1fr;gap:5px;padding:6px;border-bottom:1px dotted #294d5b;cursor:pointer}.aw3award:hover,.aw3award.on{background:#daf8ff;color:#00141b}.aw3award .med{font-size:22px}.aw3award b{color:#fff;font-size:8px}.aw3award:hover b,.aw3award.on b{color:#00141b}.aw3award small{display:block;color:#769ca8;font-size:6px}
+.aw3certwrap{padding:12px;background:#07151b;border:1px solid #315f70;overflow:auto}.aw3cert{width:min(100%,760px);aspect-ratio:11/8.5;margin:auto;box-sizing:border-box;background:#f7f4e8;color:#172027;border:10px double #172b34;padding:28px;position:relative;text-align:center;box-shadow:0 0 24px #000}.aw3cert:before{content:"";position:absolute;inset:10px;border:1px solid #65767c;pointer-events:none}.aw3cert .inst{font:700 11px Georgia,serif;letter-spacing:3px}.aw3cert .type{font:700 clamp(18px,4vw,34px) Georgia,serif;margin:14px 0 5px}.aw3cert .present{font:italic 12px Georgia,serif}.aw3cert .animal{font:700 clamp(28px,6vw,52px) Georgia,serif;margin:9px 0;border-bottom:1px solid #65767c;display:inline-block;padding:0 22px 4px}.aw3cert .species{font:10px Georgia,serif}.aw3cert .award{font:700 clamp(15px,3vw,25px) Georgia,serif;margin:14px 0 5px}.aw3cert .body{max-width:600px;margin:8px auto;font:12px/1.55 Georgia,serif}.aw3cert .honor{font:italic 11px Georgia,serif;margin:8px}.aw3seal{width:74px;height:74px;border:5px double #172b34;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:10px auto 4px;font:700 9px Georgia,serif;transform:rotate(-7deg)}.aw3meta{display:flex;justify-content:space-between;gap:10px;margin-top:10px;font:9px Georgia,serif;text-align:left}.aw3water{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%) rotate(-18deg);font:900 65px Georgia,serif;color:rgba(30,55,65,.05);white-space:nowrap}
+.aw3actions,.aw3nav{display:grid;grid-template-columns:repeat(3,1fr);margin-top:8px}.aw3actions button,.aw3nav button{border:0;border-right:1px dotted #315f70;border-bottom:1px dotted #315f70;background:#020b10;color:#e4fbff;padding:9px;text-align:left;font:700 8px "Courier New";cursor:pointer}.aw3actions button:hover,.aw3nav button:hover{background:#daf8ff;color:#00141b}.aw3actions button:disabled{opacity:.3}
+.aw3saved{border:1px solid #315f70;margin-top:8px;max-height:140px;overflow:auto}.aw3saved div{padding:5px 7px;border-bottom:1px dotted #294d5b;font-size:7px}
+@media(max-width:760px){.aw3layout{grid-template-columns:1fr}.aw3twocol,.aw3actions,.aw3nav{grid-template-columns:1fr}.aw3cert{min-width:650px}.aw3certwrap{overflow-x:auto}}
+</style>
+<script id="vg-awards-phase3-js">
+(function(){"use strict";
+const KEY="vetGodsAwardsPhase3";
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function all(){try{return state.animals||[]}catch(e){return[]}}
+function rules(){return window.VetGodsAwardsPhase2?.rules||[]}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{animal:null,award:null,title:"Certificate of Distinguished Achievement",honor:"In recognition of exceptional service, recovery, growth, and courage.",body:"This certificate formally recognizes the accomplishments recorded within the VET GODS simulation and honors this resident's completed achievement.",institution:"VET GODS AWARDS & RECORDS INSTITUTE",seal:"VET GODS • AUTHORIZED",records:[]}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+function eligible(a){return rules().filter(r=>{try{return r.test(a)}catch(e){return false}})}
+function ensure(){let x=get(),ls=all();if(x.animal==null&&ls.length)x.animal=ls[0].id;let a=ls.find(z=>String(z.id)===String(x.animal));let er=a?eligible(a):[];if((!x.award||!er.some(r=>r.id===x.award))&&er.length)x.award=er[0].id;put(x);return x}
+function rail(){return '<div class="aw3phase">'+["COMMAND","ACHIEVEMENTS","BUILDER","ART STUDIO","SIGNATURES","PORTRAITS","LEVELS","LIFETIME","HALL","PRINT"].map((z,i)=>'<div class="'+(i<2?"done":i===2?"on":"")+'">'+String(i+1).padStart(2,"0")+'<br>'+z+'</div>').join("")+'</div>'}
+function syncForm(x){
+ let q=s=>document.querySelector(s);x.title=q("#aw3title")?.value||x.title;x.honor=q("#aw3honor")?.value||x.honor;x.body=q("#aw3bodytext")?.value||x.body;x.institution=q("#aw3institution")?.value||x.institution;x.seal=q("#aw3sealtext")?.value||x.seal;put(x)
+}
+function chooseAnimal(id){let x=ensure();x.animal=+id;x.award=null;put(x);render()}
+function chooseAward(id){let x=ensure();x.award=id;put(x);render()}
+function saveRecord(){
+ let x=ensure();syncForm(x);let a=all().find(z=>String(z.id)===String(x.animal)),r=rules().find(z=>z.id===x.award);if(!a||!r)return;
+ let rec={id:"CERT-"+Date.now(),animalId:a.id,animal:a.name,species:a.species,awardId:r.id,award:r.name,title:x.title,honor:x.honor,body:x.body,institution:x.institution,seal:x.seal,date:new Date().toLocaleDateString(),caseId:a.id};
+ x.records.unshift(rec);put(x);render()
+}
+function render(){
+ let m=document.querySelector("#main"),x=ensure(),ls=all(),a=ls.find(z=>String(z.id)===String(x.animal))||ls[0],er=a?eligible(a):[],r=rules().find(z=>z.id===x.award)||er[0];if(!m)return;page="awards3";try{nav()}catch(e){}
+ let certNo="DRAFT-"+String(a?.id||0).padStart(4,"0")+"-"+String(r?.id||"AWARD").toUpperCase();
+ m.innerHTML='<div id="vgAwards3"><header class="aw3hero"><div class="ey">VET GODS AWARDS & RECORDS INSTITUTE // AWARD PHASE 03 OF 10</div><h1>CERTIFICATE BUILDER</h1><p>Select an animal and one of its earned achievements, customize the certificate language, and preserve finished certificate records. The live preview is preparing the data that later phases will style and print.</p></header>'+rail()+
+ '<div class="aw3layout"><section class="aw3panel"><h2>CERTIFICATE CONTROL CONSOLE</h2><div class="aw3body aw3controls"><label>ANIMAL</label><select id="aw3animal">'+ls.map(z=>'<option value="'+z.id+'" '+(a&&String(a.id)===String(z.id)?"selected":"")+'>'+E(z.name)+' — '+E(z.species||"Unknown")+'</option>').join("")+'</select>'+
+ '<label>EARNED ACHIEVEMENT</label><div class="aw3awards">'+(er.length?er.map(z=>'<div class="aw3award '+(r&&z.id===r.id?"on":"")+'" data-aw3award="'+z.id+'"><div class="med">'+z.icon+'</div><div><b>'+E(z.name)+'</b><small>'+E(z.req)+'</small></div></div>').join(""):'<div class="aw3award">NO EARNED ACHIEVEMENTS YET.</div>')+'</div>'+
+ '<label>CERTIFICATE TITLE</label><input id="aw3title" value="'+E(x.title)+'"><label>INSTITUTION</label><input id="aw3institution" value="'+E(x.institution)+'"><label>AWARD STATEMENT</label><textarea id="aw3bodytext">'+E(x.body)+'</textarea><label>HONOR / DEDICATION</label><textarea id="aw3honor">'+E(x.honor)+'</textarea><label>SEAL TEXT</label><input id="aw3sealtext" value="'+E(x.seal)+'">'+
+ '<div class="aw3actions"><button id="aw3preview">UPDATE LIVE PREVIEW</button><button id="aw3save">SAVE CERTIFICATE RECORD</button><button disabled>ART STUDIO — PHASE 4</button></div>'+
+ '<h2 style="margin-top:8px">SAVED CERTIFICATE RECORDS</h2><div class="aw3saved">'+(x.records.length?x.records.slice(0,30).map(z=>'<div>&gt; '+E(z.date)+' · '+E(z.animal)+' · '+E(z.award)+' · '+E(z.id)+'</div>').join(""):'<div>NO CERTIFICATE RECORDS SAVED YET.</div>')+'</div>'+
+ '<div class="aw3nav"><button id="aw3phase2">← ACHIEVEMENT ENGINE</button><button id="aw3phase1">COMMAND CENTER</button><button id="aw3animalrec">ANIMAL RECORD</button></div></div></section>'+
+ '<section class="aw3panel"><h2>LIVE CERTIFICATE PREVIEW</h2><div class="aw3body"><div class="aw3certwrap"><div class="aw3cert"><div class="aw3water">VET GODS</div><div class="inst">'+E(x.institution)+'</div><div class="type">'+E(x.title)+'</div><div class="present">is hereby presented to</div><div class="animal">'+E(a?.name||"NO ANIMAL")+'</div><div class="species">'+E(a?.species||"UNKNOWN SPECIES")+' · CASE '+E(a?.id||"—")+'</div><div class="award">'+E(r?.icon||"🏆")+' '+E(r?.name||"SELECT AN ACHIEVEMENT")+'</div><div class="body">'+E(x.body)+'</div><div class="honor">'+E(x.honor)+'</div><div class="aw3seal">'+E(x.seal)+'</div><div class="aw3meta"><div>ISSUE DATE<br><b>'+new Date().toLocaleDateString()+'</b></div><div>CERTIFICATE RECORD<br><b>'+E(certNo)+'</b></div></div></div></div>'+
+ '<div class="aw3actions"><button id="aw3save2">LOCK THIS DRAFT INTO RECORDS</button><button disabled>SIGNATURES — PHASE 5</button><button disabled>PRINT — PHASE 10</button></div></div></section></div></div>';
+ let q=s=>m.querySelector(s);q("#aw3animal").onchange=e=>chooseAnimal(e.target.value);m.querySelectorAll("[data-aw3award]").forEach(e=>e.onclick=()=>chooseAward(e.dataset.aw3award));
+ q("#aw3preview").onclick=()=>{syncForm(x);render()};q("#aw3save").onclick=saveRecord;q("#aw3save2").onclick=saveRecord;
+ q("#aw3phase2").onclick=()=>window.VetGodsAwardsPhase2?.render?.();q("#aw3phase1").onclick=()=>window.VetGodsAwardsPhase1?.render?.();q("#aw3animalrec").onclick=()=>{try{animals()}catch(e){open("animals")}};
+}
+function install(){
+ window.VetGodsAwardsPhase3={render,read:ensure,saveRecord};
+ let p2=window.VetGodsAwardsPhase2;if(p2&&!p2.__aw3){let r=p2.render;p2.render=function(){r();setTimeout(()=>{let host=document.querySelector("#vgAwards2 .aw2actions");if(host&&!document.querySelector("#aw3launch")){let b=document.createElement("button");b.id="aw3launch";b.textContent="OPEN CERTIFICATE BUILDER →";b.onclick=render;host.appendChild(b)}},0)};p2.__aw3=true}
+}
+setTimeout(install,24200);
+})();
+</script>
+
+
+<style id="vg-awards-phase4-css">
+#vgAwards4{font-family:"Courier New",monospace;color:#eefbff;background:radial-gradient(circle at 50% 0,#1b3e49,#030b10 52%,#000);min-height:100%;padding:8px}
+.aw4hero{border:1px solid #8deaff;background:linear-gradient(180deg,#0e3542,#02090d);padding:14px;box-shadow:inset 0 0 46px #0a4050}.aw4hero .ey{font-size:9px;letter-spacing:2px;color:#97efff}.aw4hero h1{margin:4px 0;color:#fff;font-size:clamp(24px,5vw,42px)}.aw4hero p{font-size:9px;color:#9fc5cf;line-height:1.55}
+.aw4phase{display:grid;grid-template-columns:repeat(10,minmax(88px,1fr));overflow:auto;border:1px solid #315f70;margin:8px 0}.aw4phase div{padding:7px;text-align:center;border-right:1px solid #315f70;font-size:7px;color:#658d99}.aw4phase .done{color:#a9edff}.aw4phase .on{background:#ddf9ff;color:#00141b;font-weight:900}
+.aw4layout{display:grid;grid-template-columns:.72fr 1.28fr;gap:8px}.aw4panel{border:1px solid #315f70;background:#020a0e}.aw4panel h2{margin:0;padding:7px;background:#dcf9ff;color:#00141b;font-size:10px}.aw4body{padding:8px}
+.aw4styles{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.aw4style{border:1px solid #315f70;background:#04131a;padding:8px;cursor:pointer;min-height:68px}.aw4style:hover,.aw4style.on{background:#dcf9ff;color:#00141b}.aw4style b{display:block;color:#fff;font-size:9px}.aw4style:hover b,.aw4style.on b{color:#00141b}.aw4style small{display:block;color:#769ca8;font-size:7px;line-height:1.4}.aw4swatch{font-size:23px;float:right}
+.aw4controls label{display:block;color:#7fa6b1;font-size:7px;margin:7px 0 3px}.aw4controls select,.aw4controls input{box-sizing:border-box;width:100%;background:#04131a;color:#effcff;border:1px solid #397386;padding:7px;font:8px "Courier New"}.aw4twocol{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.aw4certwrap{padding:12px;background:#07151b;border:1px solid #315f70;overflow:auto}.aw4cert{--ink:#18242a;--accent:#304e5a;--paper:#f7f4e8;width:min(100%,760px);aspect-ratio:11/8.5;margin:auto;box-sizing:border-box;background:var(--paper);color:var(--ink);border:12px double var(--accent);padding:28px;position:relative;text-align:center;box-shadow:0 0 28px #000;overflow:hidden}.aw4cert:before{content:"";position:absolute;inset:9px;border:2px solid var(--accent);pointer-events:none}.aw4cert:after{content:"◆  ◆  ◆";position:absolute;left:0;right:0;top:12px;color:var(--accent);font-size:10px;letter-spacing:16px}.aw4cert .corner{position:absolute;font-size:28px;color:var(--accent);z-index:1}.aw4cert .c1{left:17px;top:14px}.aw4cert .c2{right:17px;top:14px;transform:scaleX(-1)}.aw4cert .c3{left:17px;bottom:14px;transform:scaleY(-1)}.aw4cert .c4{right:17px;bottom:14px;transform:scale(-1)}
+.aw4cert .water{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%) rotate(-18deg);font:900 66px Georgia,serif;color:color-mix(in srgb,var(--accent) 8%,transparent);white-space:nowrap}.aw4cert .inst{font:700 11px Georgia,serif;letter-spacing:3px;position:relative;z-index:2}.aw4cert .type{font:700 clamp(18px,4vw,34px) Georgia,serif;margin:15px 0 5px;position:relative;z-index:2}.aw4cert .present{font:italic 12px Georgia,serif}.aw4cert .animal{font:700 clamp(28px,6vw,52px) Georgia,serif;margin:9px 0;border-bottom:1px solid var(--accent);display:inline-block;padding:0 22px 4px}.aw4cert .species{font:10px Georgia,serif}.aw4cert .award{font:700 clamp(15px,3vw,25px) Georgia,serif;margin:14px 0 5px;color:var(--accent)}.aw4cert .body{max-width:600px;margin:8px auto;font:12px/1.55 Georgia,serif}.aw4cert .honor{font:italic 11px Georgia,serif;margin:8px}.aw4seal{width:78px;height:78px;border:6px double var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:9px auto 3px;font:700 9px Georgia,serif;transform:rotate(-7deg);box-shadow:inset 0 0 0 3px var(--paper),inset 0 0 0 4px var(--accent)}.aw4meta{display:flex;justify-content:space-between;gap:10px;margin-top:9px;font:9px Georgia,serif;text-align:left}
+.aw4cert.medical{--paper:#f4fbfa;--ink:#10292e;--accent:#176274}.aw4cert.sanctuary{--paper:#f4f0dc;--ink:#243025;--accent:#526b3d}.aw4cert.morph{--paper:#eef0f7;--ink:#171d32;--accent:#554d87;background-image:radial-gradient(circle at 50% 50%,rgba(85,77,135,.08),transparent 45%)}.aw4cert.fleet{--paper:#e8edf0;--ink:#0e1c25;--accent:#263f50;background-image:linear-gradient(135deg,rgba(38,63,80,.07) 25%,transparent 25%,transparent 75%,rgba(38,63,80,.07) 75%)}.aw4cert.explorer{--paper:#f1ead8;--ink:#292218;--accent:#79633b;background-image:radial-gradient(circle at 15% 20%,rgba(121,99,59,.1) 1px,transparent 2px)}.aw4cert.legacy{--paper:#f7f0da;--ink:#2b2110;--accent:#8b681d;border-width:15px;box-shadow:0 0 35px rgba(255,226,130,.25)}.aw4cert.command{--paper:#eaf6f8;--ink:#0d2229;--accent:#1d6678}.aw4cert.dark{--paper:#111b20;--ink:#ecfbff;--accent:#7edff3;box-shadow:0 0 35px rgba(126,223,243,.2)}
+.aw4actions,.aw4nav{display:grid;grid-template-columns:repeat(3,1fr);margin-top:8px}.aw4actions button,.aw4nav button{border:0;border-right:1px dotted #315f70;border-bottom:1px dotted #315f70;background:#020b10;color:#e4fbff;padding:9px;text-align:left;font:700 8px "Courier New";cursor:pointer}.aw4actions button:hover,.aw4nav button:hover{background:#dcf9ff;color:#00141b}.aw4actions button:disabled{opacity:.3}
+.aw4saved{border:1px solid #315f70;margin-top:8px;max-height:150px;overflow:auto}.aw4saved div{padding:5px 7px;border-bottom:1px dotted #294d5b;font-size:7px}
+@media(max-width:760px){.aw4layout{grid-template-columns:1fr}.aw4styles,.aw4twocol,.aw4actions,.aw4nav{grid-template-columns:1fr}.aw4cert{min-width:650px}.aw4certwrap{overflow-x:auto}}
+</style>
+<script id="vg-awards-phase4-js">
+(function(){"use strict";
+const KEY="vetGodsAwardsPhase4";
+const THEMES=[
+{id:"medical",icon:"⚕",name:"VETERINARY MEDICAL",desc:"Clean clinical parchment with medical-blue engraving."},
+{id:"sanctuary",icon:"🌿",name:"SANCTUARY HONOR",desc:"Natural archival styling for resident and recovery awards."},
+{id:"morph",icon:"🧬",name:"MORPH RESEARCH",desc:"Cool research-laboratory certificate with genome character."},
+{id:"fleet",icon:"🚀",name:"FLEET COMMAND",desc:"Formal ship-service document with technical geometry."},
+{id:"explorer",icon:"🧭",name:"DEEP RANGE EXPLORER",desc:"Expedition parchment for missions and discoveries."},
+{id:"legacy",icon:"👑",name:"LEGACY MASTERWORK",desc:"Heavy ceremonial border for major lifetime honors."},
+{id:"command",icon:"✦",name:"VET GODS COMMAND",desc:"Institutional command certificate for general awards."},
+{id:"dark",icon:"◈",name:"ORBITAL NIGHT",desc:"Dark futuristic display certificate for screen presentation."}
+];
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function base(){return window.VetGodsAwardsPhase3?.read?.()||{}}
+function all(){try{return state.animals||[]}catch(e){return[]}}
+function rules(){return window.VetGodsAwardsPhase2?.rules||[]}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{theme:"medical",ornament:"✦",sealShape:"round",records:[]}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+function selectTheme(id){let x=get();x.theme=id;put(x);render()}
+function saveArt(){
+ let x=get(),b=base(),a=all().find(z=>String(z.id)===String(b.animal)),r=rules().find(z=>z.id===b.award);if(!a||!r)return;
+ x.records.unshift({id:"ART-"+Date.now(),animal:a.name,animalId:a.id,award:r.name,awardId:r.id,theme:x.theme,ornament:x.ornament,date:new Date().toLocaleDateString()});put(x);render()
+}
+function render(){
+ let m=document.querySelector("#main"),x=get(),b=base(),a=all().find(z=>String(z.id)===String(b.animal))||all()[0],r=rules().find(z=>z.id===b.award),theme=THEMES.find(t=>t.id===x.theme)||THEMES[0];if(!m)return;page="awards4";try{nav()}catch(e){}
+ m.innerHTML='<div id="vgAwards4"><header class="aw4hero"><div class="ey">VET GODS AWARDS & RECORDS INSTITUTE // AWARD PHASE 04 OF 10</div><h1>CERTIFICATE ART STUDIO</h1><p>The certificate is now a designed object. Choose a visual family for medical, sanctuary, morph, fleet, exploration, command or lifetime honors while preserving the animal and award data from the Certificate Builder.</p></header>'+
+ '<div class="aw4phase">'+["COMMAND","ACHIEVEMENTS","BUILDER","ART STUDIO","SIGNATURES","PORTRAITS","LEVELS","LIFETIME","HALL","PRINT"].map((z,i)=>'<div class="'+(i<3?"done":i===3?"on":"")+'">'+String(i+1).padStart(2,"0")+'<br>'+z+'</div>').join("")+'</div>'+
+ '<div class="aw4layout"><section class="aw4panel"><h2>DESIGN LIBRARY</h2><div class="aw4body aw4controls"><div class="aw4styles">'+THEMES.map(t=>'<div class="aw4style '+(x.theme===t.id?"on":"")+'" data-aw4theme="'+t.id+'"><span class="aw4swatch">'+t.icon+'</span><b>'+E(t.name)+'</b><small>'+E(t.desc)+'</small></div>').join("")+'</div>'+
+ '<div class="aw4twocol"><div><label>CORNER ORNAMENT</label><select id="aw4orn"><option>✦</option><option>◆</option><option>❖</option><option>⚕</option><option>✧</option><option>◈</option></select></div><div><label>CURRENT STYLE</label><input value="'+E(theme.name)+'" disabled></div></div>'+
+ '<div class="aw4actions"><button id="aw4apply">APPLY ORNAMENT</button><button id="aw4save">SAVE ART VERSION</button><button disabled>SIGNATURE SYSTEM — PHASE 5</button></div>'+
+ '<h2 style="margin-top:8px">ART VERSION ARCHIVE</h2><div class="aw4saved">'+(x.records.length?x.records.slice(0,30).map(z=>'<div>&gt; '+E(z.date)+' · '+E(z.animal)+' · '+E(z.award)+' · '+E(z.theme.toUpperCase())+'</div>').join(""):'<div>NO ART VERSIONS SAVED.</div>')+'</div>'+
+ '<div class="aw4nav"><button id="aw4builder">← CERTIFICATE BUILDER</button><button id="aw4engine">ACHIEVEMENT ENGINE</button><button id="aw4command">AWARDS COMMAND</button></div></div></section>'+
+ '<section class="aw4panel"><h2>FULL CERTIFICATE ART PREVIEW</h2><div class="aw4body"><div class="aw4certwrap"><div class="aw4cert '+E(x.theme)+'"><span class="corner c1">'+E(x.ornament)+'</span><span class="corner c2">'+E(x.ornament)+'</span><span class="corner c3">'+E(x.ornament)+'</span><span class="corner c4">'+E(x.ornament)+'</span><div class="water">VET GODS</div><div class="inst">'+E(b.institution||"VET GODS AWARDS & RECORDS INSTITUTE")+'</div><div class="type">'+E(b.title||"Certificate of Distinguished Achievement")+'</div><div class="present">is hereby presented to</div><div class="animal">'+E(a?.name||"NO ANIMAL")+'</div><div class="species">'+E(a?.species||"UNKNOWN SPECIES")+' · CASE '+E(a?.id||"—")+'</div><div class="award">'+E(r?.icon||"🏆")+' '+E(r?.name||"SELECT AN ACHIEVEMENT")+'</div><div class="body">'+E(b.body||"This certificate recognizes the accomplishments recorded within the VET GODS simulation.")+'</div><div class="honor">'+E(b.honor||"")+'</div><div class="aw4seal">'+E(b.seal||"VET GODS • AUTHORIZED")+'</div><div class="aw4meta"><div>ISSUE DATE<br><b>'+new Date().toLocaleDateString()+'</b></div><div>DESIGN FAMILY<br><b>'+E(theme.name)+'</b></div></div></div></div>'+
+ '<div class="aw4actions"><button id="aw4save2">SAVE THIS VISUAL VERSION</button><button disabled>ADD TWO SIGNATURES — PHASE 5</button><button disabled>PRINT CENTER — PHASE 10</button></div></div></section></div></div>';
+ m.querySelectorAll("[data-aw4theme]").forEach(e=>e.onclick=()=>selectTheme(e.dataset.aw4theme));
+ let q=s=>m.querySelector(s);q("#aw4orn").value=x.ornament;q("#aw4apply").onclick=()=>{x.ornament=q("#aw4orn").value;put(x);render()};q("#aw4save").onclick=saveArt;q("#aw4save2").onclick=saveArt;
+ q("#aw4builder").onclick=()=>window.VetGodsAwardsPhase3?.render?.();q("#aw4engine").onclick=()=>window.VetGodsAwardsPhase2?.render?.();q("#aw4command").onclick=()=>window.VetGodsAwardsPhase1?.render?.();
+}
+function install(){
+ window.VetGodsAwardsPhase4={render,read:get,themes:THEMES};
+ let p3=window.VetGodsAwardsPhase3;if(p3&&!p3.__aw4){let r=p3.render;p3.render=function(){r();setTimeout(()=>{let host=document.querySelector("#vgAwards3 .aw3actions");if(host&&!document.querySelector("#aw4launch")){let b=document.createElement("button");b.id="aw4launch";b.textContent="OPEN CERTIFICATE ART STUDIO →";b.onclick=render;host.appendChild(b)}},0)};p3.__aw4=true}
+}
+setTimeout(install,25400);
+})();
+</script>
+
+
+<style id="vg-awards-phase5-css">
+#vgAwards5{font-family:"Courier New",monospace;color:#eefbff;background:radial-gradient(circle at 50% 0,#1b3e49,#030b10 52%,#000);min-height:100%;padding:8px}
+.aw5hero{border:1px solid #91ecff;background:linear-gradient(180deg,#0f3743,#02090d);padding:14px;box-shadow:inset 0 0 48px #0a4050}.aw5hero .ey{font-size:9px;letter-spacing:2px;color:#99f0ff}.aw5hero h1{margin:4px 0;color:#fff;font-size:clamp(24px,5vw,42px)}.aw5hero p{font-size:9px;color:#9fc5cf;line-height:1.55}
+.aw5phase{display:grid;grid-template-columns:repeat(10,minmax(88px,1fr));overflow:auto;border:1px solid #315f70;margin:8px 0}.aw5phase div{padding:7px;text-align:center;border-right:1px solid #315f70;font-size:7px;color:#658d99}.aw5phase .done{color:#a9edff}.aw5phase .on{background:#def9ff;color:#00141b;font-weight:900}
+.aw5layout{display:grid;grid-template-columns:.72fr 1.28fr;gap:8px}.aw5panel{border:1px solid #315f70;background:#020a0e}.aw5panel h2{margin:0;padding:7px;background:#ddf9ff;color:#00141b;font-size:10px}.aw5body{padding:8px}
+.aw5controls label{display:block;color:#80a7b2;font-size:7px;margin:7px 0 3px}.aw5controls input,.aw5controls select{box-sizing:border-box;width:100%;background:#04131a;color:#effcff;border:1px solid #397386;padding:7px;font:8px "Courier New"}.aw5twocol{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.aw5sigbox{border:1px solid #315f70;padding:8px;margin-bottom:8px;background:#031017}.aw5sigbox h3{margin:0 0 5px;color:#fff;font-size:9px}.aw5status{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #315f70;margin-bottom:8px}.aw5stat{padding:7px;border-right:1px dotted #315f70}.aw5stat small{display:block;color:#769ca8;font-size:7px}.aw5stat b{color:#fff;font-size:10px}
+.aw5certwrap{padding:12px;background:#07151b;border:1px solid #315f70;overflow:auto}.aw5cert{--paper:#f7f4e8;--ink:#18242a;--accent:#304e5a;width:min(100%,780px);aspect-ratio:11/8.5;margin:auto;box-sizing:border-box;background:var(--paper);color:var(--ink);border:14px double var(--accent);padding:25px 34px;position:relative;text-align:center;box-shadow:0 0 30px #000;overflow:hidden}.aw5cert:before{content:"";position:absolute;inset:9px;border:2px solid var(--accent);pointer-events:none}.aw5cert.medical{--paper:#f4fbfa;--ink:#10292e;--accent:#176274}.aw5cert.sanctuary{--paper:#f4f0dc;--ink:#243025;--accent:#526b3d}.aw5cert.morph{--paper:#eef0f7;--ink:#171d32;--accent:#554d87}.aw5cert.fleet{--paper:#e8edf0;--ink:#0e1c25;--accent:#263f50}.aw5cert.explorer{--paper:#f1ead8;--ink:#292218;--accent:#79633b}.aw5cert.legacy{--paper:#f7f0da;--ink:#2b2110;--accent:#8b681d}.aw5cert.command{--paper:#eaf6f8;--ink:#0d2229;--accent:#1d6678}.aw5cert.dark{--paper:#111b20;--ink:#ecfbff;--accent:#7edff3}
+.aw5water{position:absolute;left:50%;top:47%;transform:translate(-50%,-50%) rotate(-18deg);font:900 68px Georgia,serif;color:color-mix(in srgb,var(--accent) 8%,transparent);white-space:nowrap}.aw5inst{font:700 11px Georgia,serif;letter-spacing:3px;position:relative}.aw5type{font:700 clamp(18px,4vw,32px) Georgia,serif;margin:11px 0 4px}.aw5present{font:italic 11px Georgia,serif}.aw5animal{font:700 clamp(27px,5vw,48px) Georgia,serif;margin:6px 0;border-bottom:1px solid var(--accent);display:inline-block;padding:0 22px 3px}.aw5species{font:9px Georgia,serif}.aw5award{font:700 clamp(14px,3vw,23px) Georgia,serif;margin:10px 0 4px;color:var(--accent)}.aw5bodytxt{max-width:600px;margin:5px auto;font:11px/1.4 Georgia,serif}.aw5seal{width:68px;height:68px;border:5px double var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:5px auto;font:700 8px Georgia,serif;transform:rotate(-7deg)}
+.aw5signatures{display:grid;grid-template-columns:1fr 1fr;gap:42px;margin-top:8px;position:relative;z-index:2}.aw5signature{padding-top:12px}.aw5script{font:italic 19px "Brush Script MT","Segoe Script",cursive;min-height:26px}.aw5line{border-top:1px solid var(--ink);padding-top:3px;font:700 9px Georgia,serif}.aw5role{font:7px Georgia,serif}.aw5auth{display:flex;justify-content:space-between;gap:8px;margin-top:8px;font:7px Georgia,serif;text-align:left;border-top:1px solid var(--accent);padding-top:5px}.aw5stamp{display:inline-block;border:2px solid var(--accent);padding:3px 7px;font-weight:700;transform:rotate(-2deg)}
+.aw5actions,.aw5nav{display:grid;grid-template-columns:repeat(3,1fr);margin-top:8px}.aw5actions button,.aw5nav button{border:0;border-right:1px dotted #315f70;border-bottom:1px dotted #315f70;background:#020b10;color:#e4fbff;padding:9px;text-align:left;font:700 8px "Courier New";cursor:pointer}.aw5actions button:hover,.aw5nav button:hover{background:#ddf9ff;color:#00141b}.aw5actions button:disabled{opacity:.3}.aw5log{border:1px solid #315f70;margin-top:8px;max-height:140px;overflow:auto}.aw5log div{padding:5px 7px;border-bottom:1px dotted #294d5b;font-size:7px}
+@media(max-width:760px){.aw5layout{grid-template-columns:1fr}.aw5twocol,.aw5actions,.aw5nav{grid-template-columns:1fr}.aw5status{grid-template-columns:repeat(2,1fr)}.aw5cert{min-width:690px}.aw5certwrap{overflow-x:auto}}
+</style>
+<script id="vg-awards-phase5-js">
+(function(){"use strict";
+const KEY="vetGodsAwardsPhase5";
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function b3(){return window.VetGodsAwardsPhase3?.read?.()||{}}
+function art(){return window.VetGodsAwardsPhase4?.read?.()||{theme:"medical"}}
+function all(){try{return state.animals||[]}catch(e){return[]}}
+function rules(){return window.VetGodsAwardsPhase2?.rules||[]}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{sig1:"Chief Veterinary Officer",role1:"Clinical & Sanctuary Authority",sig2:"Command Records Officer",role2:"Awards & Expedition Registry",authority:"VET GODS ORBITAL INSTITUTE",stamp:"DUAL AUTHORIZATION VERIFIED",records:[]}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+function readForm(x){let q=s=>document.querySelector(s);["sig1","role1","sig2","role2","authority","stamp"].forEach(k=>{let el=q("#aw5"+k);if(el)x[k]=el.value});put(x)}
+function saveAuth(){
+ let x=get();readForm(x);let b=b3(),a=all().find(z=>String(z.id)===String(b.animal)),r=rules().find(z=>z.id===b.award);if(!a||!r)return;
+ let rec={id:"AUTH-"+Date.now(),animal:a.name,animalId:a.id,award:r.name,sig1:x.sig1,role1:x.role1,sig2:x.sig2,role2:x.role2,authority:x.authority,stamp:x.stamp,date:new Date().toLocaleDateString(),verified:true};
+ x.records.unshift(rec);put(x);render()
+}
+function render(){
+ let m=document.querySelector("#main"),x=get(),b=b3(),ar=art(),a=all().find(z=>String(z.id)===String(b.animal))||all()[0],r=rules().find(z=>z.id===b.award);if(!m)return;page="awards5";try{nav()}catch(e){}
+ let cert="VG-"+String(a?.id||0).padStart(4,"0")+"-"+String(r?.id||"AWARD").toUpperCase()+"-"+new Date().getFullYear();
+ m.innerHTML='<div id="vgAwards5"><header class="aw5hero"><div class="ey">VET GODS AWARDS & RECORDS INSTITUTE // AWARD PHASE 05 OF 10</div><h1>DUAL-SIGNATURE AUTHORIZATION</h1><p>Every formal award can now carry two independent signature blocks, signer titles, institutional authority, an authorization stamp, issue date and certificate identifier. These are fictional in-game credentials and records.</p></header>'+
+ '<div class="aw5phase">'+["COMMAND","ACHIEVEMENTS","BUILDER","ART STUDIO","SIGNATURES","PORTRAITS","LEVELS","LIFETIME","HALL","PRINT"].map((z,i)=>'<div class="'+(i<4?"done":i===4?"on":"")+'">'+String(i+1).padStart(2,"0")+'<br>'+z+'</div>').join("")+'</div>'+
+ '<div class="aw5status"><div class="aw5stat"><small>RECIPIENT</small><b>'+E(a?.name||"NONE")+'</b></div><div class="aw5stat"><small>AWARD</small><b>'+E(r?.name||"NONE")+'</b></div><div class="aw5stat"><small>ART FAMILY</small><b>'+E((ar.theme||"medical").toUpperCase())+'</b></div><div class="aw5stat"><small>CERTIFICATE ID</small><b>'+E(cert)+'</b></div></div>'+
+ '<div class="aw5layout"><section class="aw5panel"><h2>SIGNATURE & AUTHORITY CONSOLE</h2><div class="aw5body aw5controls"><div class="aw5sigbox"><h3>SIGNATURE ONE</h3><label>SIGNER / OFFICE</label><input id="aw5sig1" value="'+E(x.sig1)+'"><label>TITLE / AUTHORITY</label><input id="aw5role1" value="'+E(x.role1)+'"></div>'+
+ '<div class="aw5sigbox"><h3>SIGNATURE TWO</h3><label>SIGNER / OFFICE</label><input id="aw5sig2" value="'+E(x.sig2)+'"><label>TITLE / AUTHORITY</label><input id="aw5role2" value="'+E(x.role2)+'"></div>'+
+ '<div class="aw5twocol"><div><label>ISSUING AUTHORITY</label><input id="aw5authority" value="'+E(x.authority)+'"></div><div><label>AUTHORIZATION STAMP</label><input id="aw5stamp" value="'+E(x.stamp)+'"></div></div>'+
+ '<div class="aw5actions"><button id="aw5update">UPDATE CERTIFICATE</button><button id="aw5save">SEAL DUAL-SIGNED RECORD</button><button disabled>PORTRAIT SYSTEM — PHASE 6</button></div>'+
+ '<h2 style="margin-top:8px">AUTHORIZATION ARCHIVE</h2><div class="aw5log">'+(x.records.length?x.records.slice(0,30).map(z=>'<div>&gt; '+E(z.date)+' · '+E(z.animal)+' · '+E(z.award)+' · '+E(z.id)+'</div>').join(""):'<div>NO DUAL-SIGNED RECORDS SEALED.</div>')+'</div>'+
+ '<div class="aw5nav"><button id="aw5art">← ART STUDIO</button><button id="aw5builder">CERTIFICATE BUILDER</button><button id="aw5engine">ACHIEVEMENTS</button></div></div></section>'+
+ '<section class="aw5panel"><h2>AUTHORIZED CERTIFICATE PREVIEW</h2><div class="aw5body"><div class="aw5certwrap"><div class="aw5cert '+E(ar.theme||"medical")+'"><div class="aw5water">VET GODS</div><div class="aw5inst">'+E(b.institution||"VET GODS AWARDS & RECORDS INSTITUTE")+'</div><div class="aw5type">'+E(b.title||"Certificate of Distinguished Achievement")+'</div><div class="aw5present">is hereby presented to</div><div class="aw5animal">'+E(a?.name||"NO ANIMAL")+'</div><div class="aw5species">'+E(a?.species||"UNKNOWN SPECIES")+' · CASE '+E(a?.id||"—")+'</div><div class="aw5award">'+E(r?.icon||"🏆")+' '+E(r?.name||"SELECT AN ACHIEVEMENT")+'</div><div class="aw5bodytxt">'+E(b.body||"This certificate recognizes the accomplishments recorded within the VET GODS simulation.")+'</div><div class="aw5seal">'+E(b.seal||"VET GODS • AUTHORIZED")+'</div>'+
+ '<div class="aw5signatures"><div class="aw5signature"><div class="aw5script">'+E(x.sig1)+'</div><div class="aw5line">'+E(x.sig1)+'</div><div class="aw5role">'+E(x.role1)+'</div></div><div class="aw5signature"><div class="aw5script">'+E(x.sig2)+'</div><div class="aw5line">'+E(x.sig2)+'</div><div class="aw5role">'+E(x.role2)+'</div></div></div>'+
+ '<div class="aw5auth"><div>ISSUED: <b>'+new Date().toLocaleDateString()+'</b><br>CERTIFICATE: <b>'+E(cert)+'</b></div><div><span class="aw5stamp">'+E(x.stamp)+'</span><br>'+E(x.authority)+'</div></div></div></div>'+
+ '<div class="aw5actions"><button id="aw5seal2">SEAL THIS TWO-SIGNATURE AWARD</button><button disabled>ANIMAL PORTRAIT — PHASE 6</button><button disabled>PRINT CENTER — PHASE 10</button></div></div></section></div></div>';
+ let q=s=>m.querySelector(s);q("#aw5update").onclick=()=>{readForm(x);render()};q("#aw5save").onclick=saveAuth;q("#aw5seal2").onclick=saveAuth;
+ q("#aw5art").onclick=()=>window.VetGodsAwardsPhase4?.render?.();q("#aw5builder").onclick=()=>window.VetGodsAwardsPhase3?.render?.();q("#aw5engine").onclick=()=>window.VetGodsAwardsPhase2?.render?.();
+}
+function install(){
+ window.VetGodsAwardsPhase5={render,read:get,saveAuth};
+ let p4=window.VetGodsAwardsPhase4;if(p4&&!p4.__aw5){let r=p4.render;p4.render=function(){r();setTimeout(()=>{let host=document.querySelector("#vgAwards4 .aw4actions");if(host&&!document.querySelector("#aw5launch")){let b=document.createElement("button");b.id="aw5launch";b.textContent="ADD TWO SIGNATURES →";b.onclick=render;host.appendChild(b)}},0)};p4.__aw5=true}
+}
+setTimeout(install,26600);
+})();
+</script>
+
+
+<style id="vg-awards-phase6-css">
+#vgAwards6{font-family:"Courier New",monospace;color:#eefbff;background:radial-gradient(circle at 50% 0,#1b404b,#030b10 52%,#000);min-height:100%;padding:8px}
+.aw6hero{border:1px solid #95edff;background:linear-gradient(180deg,#103844,#02090d);padding:14px;box-shadow:inset 0 0 48px #0a4050}.aw6hero .ey{font-size:9px;letter-spacing:2px;color:#9cf1ff}.aw6hero h1{margin:4px 0;color:#fff;font-size:clamp(24px,5vw,42px)}.aw6hero p{font-size:9px;color:#a0c6d0;line-height:1.55}
+.aw6phase{display:grid;grid-template-columns:repeat(10,minmax(88px,1fr));overflow:auto;border:1px solid #315f70;margin:8px 0}.aw6phase div{padding:7px;text-align:center;border-right:1px solid #315f70;font-size:7px;color:#658d99}.aw6phase .done{color:#a9edff}.aw6phase .on{background:#e0faff;color:#00141b;font-weight:900}
+.aw6layout{display:grid;grid-template-columns:.7fr 1.3fr;gap:8px}.aw6panel{border:1px solid #315f70;background:#020a0e}.aw6panel h2{margin:0;padding:7px;background:#dffaff;color:#00141b;font-size:10px}.aw6body{padding:8px}
+.aw6modes{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.aw6mode{border:1px solid #315f70;padding:8px;background:#04131a;cursor:pointer;text-align:center}.aw6mode:hover,.aw6mode.on{background:#dffaff;color:#00141b}.aw6mode b{display:block;color:#fff;font-size:8px}.aw6mode:hover b,.aw6mode.on b{color:#00141b}.aw6mode span{font-size:28px;display:block;margin-bottom:3px}.aw6mode small{font-size:6px;color:#769ca8}
+.aw6portraitbox{border:1px solid #315f70;margin-top:8px;padding:10px;background:radial-gradient(circle,#0c2933,#02090d);text-align:center}.aw6portrait{font-size:90px;line-height:1.1;filter:drop-shadow(0 0 16px #91eaff)}.aw6portrait.dual{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:68px}.aw6portrait.dual div{border:1px solid #315f70;padding:8px}.aw6portrait small{display:block;font-size:7px;color:#9cc5cf;margin-top:4px}
+.aw6controls label{display:block;color:#80a7b2;font-size:7px;margin:7px 0 3px}.aw6controls input,.aw6controls select{box-sizing:border-box;width:100%;background:#04131a;color:#effcff;border:1px solid #397386;padding:7px;font:8px "Courier New"}
+.aw6certwrap{padding:12px;background:#07151b;border:1px solid #315f70;overflow:auto}.aw6cert{--paper:#f7f4e8;--ink:#18242a;--accent:#304e5a;width:min(100%,800px);aspect-ratio:11/8.5;margin:auto;box-sizing:border-box;background:var(--paper);color:var(--ink);border:14px double var(--accent);padding:22px 34px;position:relative;text-align:center;box-shadow:0 0 30px #000;overflow:hidden}.aw6cert:before{content:"";position:absolute;inset:9px;border:2px solid var(--accent);pointer-events:none}.aw6cert.medical{--paper:#f4fbfa;--ink:#10292e;--accent:#176274}.aw6cert.sanctuary{--paper:#f4f0dc;--ink:#243025;--accent:#526b3d}.aw6cert.morph{--paper:#eef0f7;--ink:#171d32;--accent:#554d87}.aw6cert.fleet{--paper:#e8edf0;--ink:#0e1c25;--accent:#263f50}.aw6cert.explorer{--paper:#f1ead8;--ink:#292218;--accent:#79633b}.aw6cert.legacy{--paper:#f7f0da;--ink:#2b2110;--accent:#8b681d}.aw6cert.command{--paper:#eaf6f8;--ink:#0d2229;--accent:#1d6678}.aw6cert.dark{--paper:#111b20;--ink:#ecfbff;--accent:#7edff3}
+.aw6water{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-18deg);font:900 68px Georgia,serif;color:color-mix(in srgb,var(--accent) 7%,transparent);white-space:nowrap}.aw6inst{font:700 10px Georgia,serif;letter-spacing:3px}.aw6type{font:700 clamp(17px,4vw,30px) Georgia,serif;margin:7px 0 2px}.aw6animalrow{display:grid;grid-template-columns:120px 1fr 120px;align-items:center;gap:8px;margin:4px 0}.aw6photo{height:105px;border:3px double var(--accent);display:flex;align-items:center;justify-content:center;font-size:66px;background:color-mix(in srgb,var(--paper) 80%,var(--accent) 20%);overflow:hidden}.aw6photo img{width:100%;height:100%;object-fit:cover}.aw6photo small{display:block;font-size:6px}.aw6center .present{font:italic 10px Georgia,serif}.aw6center .animal{font:700 clamp(24px,5vw,43px) Georgia,serif;border-bottom:1px solid var(--accent);padding-bottom:2px}.aw6center .species{font:8px Georgia,serif}.aw6award{font:700 clamp(13px,3vw,21px) Georgia,serif;margin:7px 0 3px;color:var(--accent)}.aw6bodytxt{max-width:580px;margin:3px auto;font:10px/1.35 Georgia,serif}.aw6seal{width:58px;height:58px;border:5px double var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:3px auto;font:700 7px Georgia,serif}
+.aw6sigs{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:4px}.aw6script{font:italic 16px "Brush Script MT","Segoe Script",cursive}.aw6line{border-top:1px solid var(--ink);font:700 8px Georgia,serif;padding-top:2px}.aw6role{font:6px Georgia,serif}.aw6meta{display:flex;justify-content:space-between;border-top:1px solid var(--accent);margin-top:4px;padding-top:3px;font:6px Georgia,serif;text-align:left}
+.aw6actions,.aw6nav{display:grid;grid-template-columns:repeat(3,1fr);margin-top:8px}.aw6actions button,.aw6nav button{border:0;border-right:1px dotted #315f70;border-bottom:1px dotted #315f70;background:#020b10;color:#e4fbff;padding:9px;text-align:left;font:700 8px "Courier New";cursor:pointer}.aw6actions button:hover,.aw6nav button:hover{background:#dffaff;color:#00141b}.aw6actions button:disabled{opacity:.3}.aw6archive{border:1px solid #315f70;margin-top:8px;max-height:130px;overflow:auto}.aw6archive div{padding:5px 7px;border-bottom:1px dotted #294d5b;font-size:7px}
+@media(max-width:760px){.aw6layout{grid-template-columns:1fr}.aw6modes,.aw6actions,.aw6nav{grid-template-columns:1fr}.aw6cert{min-width:710px}.aw6certwrap{overflow-x:auto}}
+</style>
+<script id="vg-awards-phase6-js">
+(function(){"use strict";
+const KEY="vetGodsAwardsPhase6";
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function B(){return window.VetGodsAwardsPhase3?.read?.()||{}}
+function Art(){return window.VetGodsAwardsPhase4?.read?.()||{theme:"medical"}}
+function Sig(){return window.VetGodsAwardsPhase5?.read?.()||{}}
+function rules(){return window.VetGodsAwardsPhase2?.rules||[]}
+function animals(){try{return state.animals||[]}catch(e){return[]}}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{mode:"original",caption:"OFFICIAL RESIDENT PORTRAIT",records:[]}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+function pick(mode){let x=get();x.mode=mode;put(x);render()}
+function originalVisual(a){
+ if(a?.portrait&&String(a.portrait).startsWith("data:image"))return '<img src="'+a.portrait+'">';
+ if(a?.image&&String(a.image).startsWith("data:image"))return '<img src="'+a.image+'">';
+ return E(a?.icon||"🐾")
+}
+function morphVisual(a){
+ let morph=String(a?.morph||a?.finalMorph||"").trim();
+ if(a?.morphPortrait&&String(a.morphPortrait).startsWith("data:image"))return '<img src="'+a.morphPortrait+'">';
+ return morph?'<div style="font-size:48px">'+E(a?.icon||"🧬")+'<small>'+E(morph)+'</small></div>':'<div style="font-size:48px">🧬<small>FINAL MORPH RECORD</small></div>'
+}
+function portrait(a,mode){
+ if(mode==="both")return '<div class="aw6portrait dual"><div>'+originalVisual(a)+'<small>ORIGINAL FORM</small></div><div>'+morphVisual(a)+'<small>FINAL FORM</small></div></div>';
+ return '<div class="aw6portrait">'+(mode==="morph"?morphVisual(a):originalVisual(a))+'<small>'+(mode==="morph"?"FINAL MORPH":"ORIGINAL FORM")+'</small></div>'
+}
+function photo(a,mode){
+ if(mode==="morph")return morphVisual(a);
+ return originalVisual(a)
+}
+function savePortrait(){
+ let x=get(),b=B(),a=animals().find(z=>String(z.id)===String(b.animal)),r=rules().find(z=>z.id===b.award);if(!a||!r)return;
+ let q=document.querySelector("#aw6caption");if(q)x.caption=q.value;
+ x.records.unshift({id:"PORTRAIT-"+Date.now(),animal:a.name,animalId:a.id,award:r.name,mode:x.mode,caption:x.caption,date:new Date().toLocaleDateString()});put(x);render()
+}
+function render(){
+ let m=document.querySelector("#main"),x=get(),b=B(),ar=Art(),s=Sig(),a=animals().find(z=>String(z.id)===String(b.animal))||animals()[0],r=rules().find(z=>z.id===b.award);if(!m)return;page="awards6";try{nav()}catch(e){}
+ let cert="VG-"+String(a?.id||0).padStart(4,"0")+"-"+String(r?.id||"AWARD").toUpperCase()+"-"+new Date().getFullYear();
+ let left=x.mode==="morph"?morphVisual(a):originalVisual(a), right=x.mode==="both"?morphVisual(a):'<div style="font-size:36px">🏆</div>';
+ m.innerHTML='<div id="vgAwards6"><header class="aw6hero"><div class="ey">VET GODS AWARDS & RECORDS INSTITUTE // AWARD PHASE 06 OF 10</div><h1>ANIMAL PORTRAIT & FINAL-FORM RECORD</h1><p>The award now visually belongs to the animal. Choose its original appearance, final morph record, or a side-by-side before/final presentation. The selection persists as part of the certificate record.</p></header>'+
+ '<div class="aw6phase">'+["COMMAND","ACHIEVEMENTS","BUILDER","ART STUDIO","SIGNATURES","PORTRAITS","LEVELS","LIFETIME","HALL","PRINT"].map((z,i)=>'<div class="'+(i<5?"done":i===5?"on":"")+'">'+String(i+1).padStart(2,"0")+'<br>'+z+'</div>').join("")+'</div>'+
+ '<div class="aw6layout"><section class="aw6panel"><h2>PORTRAIT CONTROL</h2><div class="aw6body aw6controls"><div class="aw6modes"><div class="aw6mode '+(x.mode==="original"?"on":"")+'" data-aw6mode="original"><span>🐾</span><b>ORIGINAL FORM</b><small>Resident/case appearance</small></div><div class="aw6mode '+(x.mode==="morph"?"on":"")+'" data-aw6mode="morph"><span>🧬</span><b>FINAL MORPH</b><small>Locked research form</small></div><div class="aw6mode '+(x.mode==="both"?"on":"")+'" data-aw6mode="both"><span>◫</span><b>ORIGINAL + FINAL</b><small>Side-by-side historical record</small></div></div>'+
+ '<div class="aw6portraitbox">'+portrait(a,x.mode)+'</div><label>PORTRAIT CAPTION</label><input id="aw6caption" value="'+E(x.caption)+'">'+
+ '<div class="aw6actions"><button id="aw6update">UPDATE PORTRAIT</button><button id="aw6save">SAVE PORTRAIT RECORD</button><button disabled>AWARD LEVELS — PHASE 7</button></div>'+
+ '<h2 style="margin-top:8px">PORTRAIT ARCHIVE</h2><div class="aw6archive">'+(x.records.length?x.records.slice(0,30).map(z=>'<div>&gt; '+E(z.date)+' · '+E(z.animal)+' · '+E(z.mode.toUpperCase())+' · '+E(z.id)+'</div>').join(""):'<div>NO PORTRAIT RECORDS SAVED.</div>')+'</div>'+
+ '<div class="aw6nav"><button id="aw6sig">← TWO SIGNATURES</button><button id="aw6art">ART STUDIO</button><button id="aw6builder">CERTIFICATE BUILDER</button></div></div></section>'+
+ '<section class="aw6panel"><h2>PORTRAIT CERTIFICATE PREVIEW</h2><div class="aw6body"><div class="aw6certwrap"><div class="aw6cert '+E(ar.theme||"medical")+'"><div class="aw6water">VET GODS</div><div class="aw6inst">'+E(b.institution||"VET GODS AWARDS & RECORDS INSTITUTE")+'</div><div class="aw6type">'+E(b.title||"Certificate of Distinguished Achievement")+'</div><div class="aw6animalrow"><div class="aw6photo">'+left+'</div><div class="aw6center"><div class="present">is hereby presented to</div><div class="animal">'+E(a?.name||"NO ANIMAL")+'</div><div class="species">'+E(a?.species||"UNKNOWN SPECIES")+' · CASE '+E(a?.id||"—")+'<br>'+E(x.caption)+'</div></div><div class="aw6photo">'+right+'</div></div>'+
+ '<div class="aw6award">'+E(r?.icon||"🏆")+' '+E(r?.name||"SELECT AN ACHIEVEMENT")+'</div><div class="aw6bodytxt">'+E(b.body||"This certificate recognizes the accomplishments recorded within the VET GODS simulation.")+'</div><div class="aw6seal">'+E(b.seal||"VET GODS • AUTHORIZED")+'</div>'+
+ '<div class="aw6sigs"><div><div class="aw6script">'+E(s.sig1||"Chief Veterinary Officer")+'</div><div class="aw6line">'+E(s.sig1||"Chief Veterinary Officer")+'</div><div class="aw6role">'+E(s.role1||"Clinical & Sanctuary Authority")+'</div></div><div><div class="aw6script">'+E(s.sig2||"Command Records Officer")+'</div><div class="aw6line">'+E(s.sig2||"Command Records Officer")+'</div><div class="aw6role">'+E(s.role2||"Awards & Expedition Registry")+'</div></div></div>'+
+ '<div class="aw6meta"><div>ISSUED '+new Date().toLocaleDateString()+' · '+E(cert)+'</div><div>'+E(s.stamp||"DUAL AUTHORIZATION VERIFIED")+'</div></div></div></div>'+
+ '<div class="aw6actions"><button id="aw6save2">LOCK PORTRAIT INTO AWARD RECORD</button><button disabled>MEDAL LEVELS — PHASE 7</button><button disabled>PRINT CENTER — PHASE 10</button></div></div></section></div></div>';
+ m.querySelectorAll("[data-aw6mode]").forEach(e=>e.onclick=()=>pick(e.dataset.aw6mode));let q=s=>m.querySelector(s);q("#aw6update").onclick=()=>{x.caption=q("#aw6caption").value;put(x);render()};q("#aw6save").onclick=savePortrait;q("#aw6save2").onclick=savePortrait;
+ q("#aw6sig").onclick=()=>window.VetGodsAwardsPhase5?.render?.();q("#aw6art").onclick=()=>window.VetGodsAwardsPhase4?.render?.();q("#aw6builder").onclick=()=>window.VetGodsAwardsPhase3?.render?.();
+}
+function install(){
+ window.VetGodsAwardsPhase6={render,read:get,savePortrait};
+ let p5=window.VetGodsAwardsPhase5;if(p5&&!p5.__aw6){let r=p5.render;p5.render=function(){r();setTimeout(()=>{let host=document.querySelector("#vgAwards5 .aw5actions");if(host&&!document.querySelector("#aw6launch")){let b=document.createElement("button");b.id="aw6launch";b.textContent="ADD ANIMAL PORTRAIT →";b.onclick=render;host.appendChild(b)}},0)};p5.__aw6=true}
+}
+setTimeout(install,27800);
+})();
+</script>
+
+
+<style id="vg-awards-phase7-css">
+#vgAwards7{font-family:"Courier New",monospace;color:#eefbff;background:radial-gradient(circle at 50% 0,#1d424d,#030b10 52%,#000);min-height:100%;padding:8px}
+.aw7hero{border:1px solid #98eeff;background:linear-gradient(180deg,#103a46,#02090d);padding:14px;box-shadow:inset 0 0 50px #0a4050}.aw7hero .ey{font-size:9px;letter-spacing:2px;color:#9df2ff}.aw7hero h1{margin:4px 0;color:#fff;font-size:clamp(24px,5vw,42px)}.aw7hero p{font-size:9px;color:#a1c7d1;line-height:1.55}
+.aw7phase{display:grid;grid-template-columns:repeat(10,minmax(88px,1fr));overflow:auto;border:1px solid #315f70;margin:8px 0}.aw7phase div{padding:7px;text-align:center;border-right:1px solid #315f70;font-size:7px;color:#658d99}.aw7phase .done{color:#a9edff}.aw7phase .on{background:#e1faff;color:#00141b;font-weight:900}
+.aw7layout{display:grid;grid-template-columns:.72fr 1.28fr;gap:8px}.aw7panel{border:1px solid #315f70;background:#020a0e}.aw7panel h2{margin:0;padding:7px;background:#e0faff;color:#00141b;font-size:10px}.aw7body{padding:8px}
+.aw7levels{display:grid;grid-template-columns:1fr;gap:6px}.aw7level{display:grid;grid-template-columns:50px 1fr 62px;gap:8px;align-items:center;border:1px solid #315f70;background:#04131a;padding:8px}.aw7level.current{box-shadow:inset 0 0 20px #174657;border-color:#9cefff}.aw7level.lock{opacity:.42}.aw7med{font-size:34px;text-align:center}.aw7level b{color:#fff;font-size:9px}.aw7level small{display:block;color:#789faa;font-size:7px;line-height:1.4}.aw7level strong{font-size:8px;text-align:right}.aw7bar{height:6px;border:1px solid #426f7e;margin-top:4px}.aw7bar i{display:block;height:100%;background:#dffaff}
+.aw7stats{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #315f70;margin-bottom:8px}.aw7stat{padding:7px;border-right:1px dotted #315f70}.aw7stat small{display:block;color:#769ca8;font-size:7px}.aw7stat b{color:#fff;font-size:13px}
+.aw7certwrap{padding:12px;background:#07151b;border:1px solid #315f70;overflow:auto}.aw7cert{--paper:#f7f4e8;--ink:#18242a;--accent:#304e5a;width:min(100%,800px);aspect-ratio:11/8.5;margin:auto;box-sizing:border-box;background:var(--paper);color:var(--ink);border:14px double var(--accent);padding:21px 34px;position:relative;text-align:center;box-shadow:0 0 30px #000;overflow:hidden}.aw7cert:before{content:"";position:absolute;inset:9px;border:2px solid var(--accent);pointer-events:none}.aw7cert.medical{--paper:#f4fbfa;--ink:#10292e;--accent:#176274}.aw7cert.sanctuary{--paper:#f4f0dc;--ink:#243025;--accent:#526b3d}.aw7cert.morph{--paper:#eef0f7;--ink:#171d32;--accent:#554d87}.aw7cert.fleet{--paper:#e8edf0;--ink:#0e1c25;--accent:#263f50}.aw7cert.explorer{--paper:#f1ead8;--ink:#292218;--accent:#79633b}.aw7cert.legacy{--paper:#f7f0da;--ink:#2b2110;--accent:#8b681d}.aw7cert.command{--paper:#eaf6f8;--ink:#0d2229;--accent:#1d6678}.aw7cert.dark{--paper:#111b20;--ink:#ecfbff;--accent:#7edff3}
+.aw7rank{position:absolute;right:18px;top:18px;width:86px;height:86px;border:6px double var(--accent);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(7deg);font:700 8px Georgia,serif;background:var(--paper)}.aw7rank span{font-size:28px}.aw7water{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-18deg);font:900 68px Georgia,serif;color:color-mix(in srgb,var(--accent) 7%,transparent);white-space:nowrap}.aw7inst{font:700 10px Georgia,serif;letter-spacing:3px}.aw7type{font:700 clamp(17px,4vw,30px) Georgia,serif;margin:7px 0 2px}.aw7animal{font:700 clamp(27px,5vw,46px) Georgia,serif;margin:6px 0;border-bottom:1px solid var(--accent);display:inline-block;padding:0 20px 2px}.aw7species{font:8px Georgia,serif}.aw7award{font:700 clamp(13px,3vw,21px) Georgia,serif;margin:8px 0 3px;color:var(--accent)}.aw7tiername{font:700 15px Georgia,serif;letter-spacing:2px;margin:4px}.aw7bodytxt{max-width:570px;margin:3px auto;font:10px/1.35 Georgia,serif}.aw7seal{width:58px;height:58px;border:5px double var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:3px auto;font:700 7px Georgia,serif}.aw7sigs{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:4px}.aw7script{font:italic 16px "Brush Script MT","Segoe Script",cursive}.aw7line{border-top:1px solid var(--ink);font:700 8px Georgia,serif;padding-top:2px}.aw7role{font:6px Georgia,serif}.aw7ribbons{display:flex;justify-content:center;gap:5px;margin:4px}.aw7ribbons span{border:1px solid var(--accent);padding:2px 7px;font:700 7px Georgia,serif}
+.aw7actions,.aw7nav{display:grid;grid-template-columns:repeat(3,1fr);margin-top:8px}.aw7actions button,.aw7nav button{border:0;border-right:1px dotted #315f70;border-bottom:1px dotted #315f70;background:#020b10;color:#e4fbff;padding:9px;text-align:left;font:700 8px "Courier New";cursor:pointer}.aw7actions button:hover,.aw7nav button:hover{background:#e0faff;color:#00141b}.aw7actions button:disabled{opacity:.3}.aw7archive{border:1px solid #315f70;margin-top:8px;max-height:140px;overflow:auto}.aw7archive div{padding:5px 7px;border-bottom:1px dotted #294d5b;font-size:7px}
+@media(max-width:760px){.aw7layout{grid-template-columns:1fr}.aw7stats{grid-template-columns:repeat(2,1fr)}.aw7actions,.aw7nav{grid-template-columns:1fr}.aw7cert{min-width:710px}.aw7certwrap{overflow-x:auto}}
+</style>
+<script id="vg-awards-phase7-js">
+(function(){"use strict";
+const KEY="vetGodsAwardsPhase7";
+const LEVELS=[
+{id:"bronze",icon:"🥉",name:"BRONZE",need:1,desc:"First documented achievement."},
+{id:"silver",icon:"🥈",name:"SILVER",need:4,desc:"Four achievement classes completed."},
+{id:"gold",icon:"🥇",name:"GOLD",need:8,desc:"Eight achievement classes completed."},
+{id:"platinum",icon:"💠",name:"PLATINUM",need:12,desc:"Twelve achievement classes completed."},
+{id:"master",icon:"👑",name:"VET GODS MASTER",need:16,desc:"Sixteen achievement classes completed."}
+];
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function B(){return window.VetGodsAwardsPhase3?.read?.()||{}}
+function Art(){return window.VetGodsAwardsPhase4?.read?.()||{theme:"medical"}}
+function Sig(){return window.VetGodsAwardsPhase5?.read?.()||{}}
+function Portrait(){return window.VetGodsAwardsPhase6?.read?.()||{mode:"original"}}
+function rules(){return window.VetGodsAwardsPhase2?.rules||[]}
+function animals(){try{return state.animals||[]}catch(e){return[]}}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{records:[],claimed:{}}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+function earned(a){return rules().filter(r=>{try{return r.test(a)}catch(e){return false}}).length}
+function levelFor(n){let got=LEVELS[0];LEVELS.forEach(l=>{if(n>=l.need)got=l});return n<1?{id:"unranked",icon:"○",name:"UNRANKED",need:0,desc:"Earn first achievement."}:got}
+function nextFor(n){return LEVELS.find(l=>n<l.need)||null}
+function claim(){
+ let x=get(),b=B(),a=animals().find(z=>String(z.id)===String(b.animal));if(!a)return;let n=earned(a),lv=levelFor(n);if(lv.id==="unranked")return;
+ x.claimed[a.id]=x.claimed[a.id]||[];if(!x.claimed[a.id].includes(lv.id)){x.claimed[a.id].push(lv.id);x.records.unshift({id:"RANK-"+Date.now(),animal:a.name,animalId:a.id,level:lv.name,icon:lv.icon,earned:n,date:new Date().toLocaleDateString()})}put(x);render()
+}
+function render(){
+ let m=document.querySelector("#main"),x=get(),b=B(),ar=Art(),s=Sig(),p=Portrait(),a=animals().find(z=>String(z.id)===String(b.animal))||animals()[0],r=rules().find(z=>z.id===b.award);if(!m)return;page="awards7";try{nav()}catch(e){}
+ let n=a?earned(a):0,lv=levelFor(n),nx=nextFor(n),claimed=x.claimed[a?.id]||[],pct=nx?Math.min(100,Math.round(n/nx.need*100)):100,cert="VG-"+String(a?.id||0).padStart(4,"0")+"-"+lv.id.toUpperCase()+"-"+new Date().getFullYear();
+ m.innerHTML='<div id="vgAwards7"><header class="aw7hero"><div class="ey">VET GODS AWARDS & RECORDS INSTITUTE // AWARD PHASE 07 OF 10</div><h1>MEDAL LEVELS & ADVANCEMENT</h1><p>Achievements now feed a real rank ladder: Bronze, Silver, Gold, Platinum and VET GODS Master. Rank is calculated from completed achievement classes, can be formally claimed, and appears directly on the animal certificate.</p></header>'+
+ '<div class="aw7phase">'+["COMMAND","ACHIEVEMENTS","BUILDER","ART STUDIO","SIGNATURES","PORTRAITS","LEVELS","LIFETIME","HALL","PRINT"].map((z,i)=>'<div class="'+(i<6?"done":i===6?"on":"")+'">'+String(i+1).padStart(2,"0")+'<br>'+z+'</div>').join("")+'</div>'+
+ '<div class="aw7stats"><div class="aw7stat"><small>ANIMAL</small><b>'+E(a?.name||"NONE")+'</b></div><div class="aw7stat"><small>ACHIEVEMENTS</small><b>'+n+'/'+rules().length+'</b></div><div class="aw7stat"><small>CURRENT LEVEL</small><b>'+lv.icon+' '+E(lv.name)+'</b></div><div class="aw7stat"><small>NEXT LEVEL</small><b>'+E(nx?nx.name:"MAXIMUM")+'</b></div></div>'+
+ '<div class="aw7layout"><section class="aw7panel"><h2>ADVANCEMENT LADDER</h2><div class="aw7body"><div class="aw7levels">'+LEVELS.map(l=>{let ok=n>=l.need,cur=lv.id===l.id,pr=Math.min(100,Math.round(n/l.need*100));return '<div class="aw7level '+(cur?"current ":"")+(ok?"":"lock")+'"><div class="aw7med">'+l.icon+'</div><div><b>'+E(l.name)+'</b><small>'+E(l.desc)+' · Requirement: '+l.need+' achievements</small><div class="aw7bar"><i style="width:'+pr+'%"></i></div></div><strong>'+(claimed.includes(l.id)?"RECORDED":ok?"EARNED":"LOCKED")+'</strong></div>'}).join("")+'</div>'+
+ '<div class="aw7actions"><button id="aw7claim">CLAIM CURRENT LEVEL</button><button id="aw7refresh">RECALCULATE RANK</button><button disabled>LIFETIME RECORD — PHASE 8</button></div>'+
+ '<h2 style="margin-top:8px">ADVANCEMENT HISTORY</h2><div class="aw7archive">'+(x.records.length?x.records.slice(0,30).map(z=>'<div>&gt; '+E(z.date)+' · '+E(z.animal)+' · '+z.icon+' '+E(z.level)+' · '+z.earned+' ACHIEVEMENTS</div>').join(""):'<div>NO LEVELS FORMALLY RECORDED YET.</div>')+'</div>'+
+ '<div class="aw7nav"><button id="aw7portrait">← PORTRAIT SYSTEM</button><button id="aw7sig">TWO SIGNATURES</button><button id="aw7engine">ACHIEVEMENTS</button></div></div></section>'+
+ '<section class="aw7panel"><h2>RANKED CERTIFICATE PREVIEW</h2><div class="aw7body"><div class="aw7certwrap"><div class="aw7cert '+E(ar.theme||"medical")+'"><div class="aw7water">VET GODS</div><div class="aw7rank"><span>'+lv.icon+'</span>'+E(lv.name)+'</div><div class="aw7inst">'+E(b.institution||"VET GODS AWARDS & RECORDS INSTITUTE")+'</div><div class="aw7type">'+E(b.title||"Certificate of Distinguished Achievement")+'</div><div class="aw7animal">'+E(a?.name||"NO ANIMAL")+'</div><div class="aw7species">'+E(a?.species||"UNKNOWN SPECIES")+' · CASE '+E(a?.id||"—")+' · PORTRAIT MODE '+E((p.mode||"original").toUpperCase())+'</div><div class="aw7award">'+E(r?.icon||"🏆")+' '+E(r?.name||"DISTINGUISHED ACHIEVEMENT")+'</div><div class="aw7tiername">'+lv.icon+' '+E(lv.name)+' LEVEL '+lv.icon+'</div><div class="aw7ribbons">'+LEVELS.filter(z=>n>=z.need).map(z=>'<span>'+z.icon+' '+E(z.name)+'</span>').join("")+'</div><div class="aw7bodytxt">'+E(b.body||"This certificate recognizes the accomplishments recorded within the VET GODS simulation.")+'</div><div class="aw7seal">'+E(b.seal||"VET GODS • AUTHORIZED")+'</div>'+
+ '<div class="aw7sigs"><div><div class="aw7script">'+E(s.sig1||"Chief Veterinary Officer")+'</div><div class="aw7line">'+E(s.sig1||"Chief Veterinary Officer")+'</div><div class="aw7role">'+E(s.role1||"Clinical & Sanctuary Authority")+'</div></div><div><div class="aw7script">'+E(s.sig2||"Command Records Officer")+'</div><div class="aw7line">'+E(s.sig2||"Command Records Officer")+'</div><div class="aw7role">'+E(s.role2||"Awards & Expedition Registry")+'</div></div></div><div style="font:6px Georgia,serif;margin-top:4px">'+E(cert)+' · '+new Date().toLocaleDateString()+'</div></div></div>'+
+ '<div class="aw7actions"><button id="aw7claim2">RECORD '+E(lv.name)+' LEVEL</button><button disabled>BUILD LIFETIME BIOGRAPHY — PHASE 8</button><button disabled>PRINT CENTER — PHASE 10</button></div></div></section></div></div>';
+ let q=s=>m.querySelector(s);q("#aw7claim").onclick=claim;q("#aw7claim2").onclick=claim;q("#aw7refresh").onclick=render;q("#aw7portrait").onclick=()=>window.VetGodsAwardsPhase6?.render?.();q("#aw7sig").onclick=()=>window.VetGodsAwardsPhase5?.render?.();q("#aw7engine").onclick=()=>window.VetGodsAwardsPhase2?.render?.();
+}
+function install(){
+ window.VetGodsAwardsPhase7={render,read:get,levels:LEVELS,earned,levelFor};
+ let p6=window.VetGodsAwardsPhase6;if(p6&&!p6.__aw7){let r=p6.render;p6.render=function(){r();setTimeout(()=>{let host=document.querySelector("#vgAwards6 .aw6actions");if(host&&!document.querySelector("#aw7launch")){let b=document.createElement("button");b.id="aw7launch";b.textContent="OPEN MEDAL LEVELS →";b.onclick=render;host.appendChild(b)}},0)};p6.__aw7=true}
+}
+setTimeout(install,29000);
+})();
+</script>
+
+
+<style id="vg-awards-phase8-css">
+#vgAwards8{font-family:"Courier New",monospace;color:#eefbff;background:radial-gradient(circle at 50% 0,#1e4450,#030b10 52%,#000);min-height:100%;padding:8px}
+.aw8hero{border:1px solid #9aeeff;background:linear-gradient(180deg,#103b47,#02090d);padding:14px;box-shadow:inset 0 0 52px #0a4050}.aw8hero .ey{font-size:9px;letter-spacing:2px;color:#a0f2ff}.aw8hero h1{margin:4px 0;color:#fff;font-size:clamp(24px,5vw,42px)}.aw8hero p{font-size:9px;color:#a2c8d2;line-height:1.55}
+.aw8phase{display:grid;grid-template-columns:repeat(10,minmax(88px,1fr));overflow:auto;border:1px solid #315f70;margin:8px 0}.aw8phase div{padding:7px;text-align:center;border-right:1px solid #315f70;font-size:7px;color:#658d99}.aw8phase .done{color:#a9edff}.aw8phase .on{background:#e3faff;color:#00141b;font-weight:900}
+.aw8layout{display:grid;grid-template-columns:.7fr 1.3fr;gap:8px}.aw8panel{border:1px solid #315f70;background:#020a0e}.aw8panel h2{margin:0;padding:7px;background:#e2faff;color:#00141b;font-size:10px}.aw8body{padding:8px}
+.aw8animals{max-height:260px;overflow:auto;border:1px solid #315f70}.aw8animal{display:grid;grid-template-columns:38px 1fr auto;gap:7px;align-items:center;padding:7px;border-bottom:1px dotted #294d5b;cursor:pointer}.aw8animal:hover,.aw8animal.on{background:#e2faff;color:#00141b}.aw8animal span{font-size:25px}.aw8animal b{color:#fff;font-size:8px}.aw8animal:hover b,.aw8animal.on b{color:#00141b}.aw8animal small{display:block;color:#789faa;font-size:6px}
+.aw8summary{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #315f70;margin-bottom:8px}.aw8sum{padding:7px;border-right:1px dotted #315f70}.aw8sum small{display:block;color:#769ca8;font-size:7px}.aw8sum b{color:#fff;font-size:12px}
+.aw8book{background:#f5f1e5;color:#17242a;border:10px double #304e5a;box-shadow:0 0 30px #000;max-width:820px;margin:auto;padding:28px;position:relative}.aw8book:before{content:"VET GODS ARCHIVE";position:absolute;right:20px;top:22px;font:900 30px Georgia,serif;color:rgba(30,60,70,.06);transform:rotate(8deg)}.aw8cover{text-align:center;border-bottom:3px double #304e5a;padding-bottom:14px}.aw8cover .portrait{font-size:70px}.aw8cover h1{font:700 32px Georgia,serif;margin:4px}.aw8cover .sub{font:10px Georgia,serif;letter-spacing:2px}.aw8chapter{margin-top:15px;border-top:1px solid #73858b;padding-top:9px}.aw8chapter h3{font:700 14px Georgia,serif;margin:0 0 6px;color:#274650}.aw8grid{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}.aw8fact{border:1px solid #9ca9ad;padding:6px;font:9px Georgia,serif}.aw8fact small{display:block;font-size:7px;color:#65777c}.aw8story{font:11px/1.5 Georgia,serif}.aw8timeline{border-left:3px solid #536e78;margin-left:8px;padding-left:13px}.aw8event{margin:7px 0;font:9px/1.4 Georgia,serif}.aw8event b{display:block;color:#274650}.aw8medals{display:flex;flex-wrap:wrap;gap:5px}.aw8medal{border:1px solid #657b83;padding:5px 8px;font:8px Georgia,serif;background:#fffdf5}.aw8signoff{display:grid;grid-template-columns:1fr 1fr;gap:35px;margin-top:18px}.aw8sig{text-align:center;font:8px Georgia,serif}.aw8script{font:italic 18px "Brush Script MT","Segoe Script",cursive;border-bottom:1px solid #17242a;padding-bottom:2px}
+.aw8controls label{display:block;color:#80a7b2;font-size:7px;margin:7px 0 3px}.aw8controls textarea{box-sizing:border-box;width:100%;min-height:75px;background:#04131a;color:#effcff;border:1px solid #397386;padding:7px;font:8px "Courier New";resize:vertical}
+.aw8actions,.aw8nav{display:grid;grid-template-columns:repeat(3,1fr);margin-top:8px}.aw8actions button,.aw8nav button{border:0;border-right:1px dotted #315f70;border-bottom:1px dotted #315f70;background:#020b10;color:#e4fbff;padding:9px;text-align:left;font:700 8px "Courier New";cursor:pointer}.aw8actions button:hover,.aw8nav button:hover{background:#e2faff;color:#00141b}.aw8actions button:disabled{opacity:.3}.aw8archive{border:1px solid #315f70;margin-top:8px;max-height:140px;overflow:auto}.aw8archive div{padding:5px 7px;border-bottom:1px dotted #294d5b;font-size:7px}
+@media(max-width:760px){.aw8layout{grid-template-columns:1fr}.aw8summary{grid-template-columns:repeat(2,1fr)}.aw8grid,.aw8actions,.aw8nav{grid-template-columns:1fr}.aw8book{min-width:650px}.aw8bookwrap{overflow-x:auto}}
+</style>
+<script id="vg-awards-phase8-js">
+(function(){"use strict";
+const KEY="vetGodsAwardsPhase8";
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function animals(){try{return state.animals||[]}catch(e){return[]}}
+function rules(){return window.VetGodsAwardsPhase2?.rules||[]}
+function B(){return window.VetGodsAwardsPhase3?.read?.()||{}}
+function S(){return window.VetGodsAwardsPhase5?.read?.()||{}}
+function P7(){return window.VetGodsAwardsPhase7}
+function safe(k){try{return JSON.parse(localStorage.getItem(k)||"{}")}catch(e){return{}}}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{selected:null,notes:{},records:[]}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+function ensure(){let x=get(),ls=animals(),b=B();if(x.selected==null)x.selected=b.animal??ls[0]?.id??null;put(x);return x}
+function earned(a){return rules().filter(r=>{try{return r.test(a)}catch(e){return false}})}
+function rank(a){let n=earned(a).length;return P7?.levelFor?.(n)||{icon:"○",name:"UNRANKED"}}
+function select(id){let x=ensure();x.selected=+id;put(x);render()}
+function history(a){
+ let ev=[];
+ if(a?.backstory)ev.push(["INTAKE STORY",a.backstory]);
+ ev.push(["CASE OPENED","Resident case "+(a?.id??"—")+" entered the VET GODS archive."]);
+ if(a?.stage)ev.push(["CARE STATUS",String(a.stage)]);
+ if(a?.disposition)ev.push(["DISPOSITION",String(a.disposition)]);
+ if(a?.homeStatus)ev.push(["RESIDENCY",String(a.homeStatus)]);
+ if(a?.morph||a?.finalMorph)ev.push(["MORPH RECORD",String(a.morph||a.finalMorph)]);
+ let c=safe("vetGodsPhase18").residents?.[a?.id]; if(c?.job)ev.push(["SHIP SERVICE",c.job+(c.level?" · level "+c.level:"")]);
+ let life=safe("vetGodsPhase17").residents?.[a?.id]; if(life?.activity)ev.push(["RESIDENT ACTIVITY",life.activity]);
+ let n=safe("vetGodsPhase20"); if((n.rescues||0)>0)ev.push(["EXPLORATION ERA",(n.rescues||0)+" ship rescue/discovery operations recorded during this resident's archive era."]);
+ return ev;
+}
+function saveRecord(){
+ let x=ensure(),a=animals().find(z=>String(z.id)===String(x.selected));if(!a)return;
+ let q=document.querySelector("#aw8notes");if(q)x.notes[a.id]=q.value;
+ let lv=rank(a),ea=earned(a);
+ x.records.unshift({id:"LIFE-"+Date.now(),animal:a.name,animalId:a.id,rank:lv.name,achievements:ea.map(z=>z.name),date:new Date().toLocaleDateString(),snapshot:{stage:a.stage,homeStatus:a.homeStatus,morph:a.morph||a.finalMorph,trust:a.trust,nutrition:a.nutrition}});
+ put(x);render()
+}
+function render(){
+ let m=document.querySelector("#main"),x=ensure(),ls=animals(),a=ls.find(z=>String(z.id)===String(x.selected))||ls[0],ea=a?earned(a):[],lv=a?rank(a):{icon:"○",name:"UNRANKED"},sig=S(),events=a?history(a):[];if(!m)return;page="awards8";try{nav()}catch(e){}
+ let awards=(a?.awards||[]).concat(ea.map(z=>z.name)).filter((v,i,q)=>q.indexOf(v)===i);
+ let c=safe("vetGodsPhase18").residents?.[a?.id]||{}, life=safe("vetGodsPhase17").residents?.[a?.id]||{};
+ m.innerHTML='<div id="vgAwards8"><header class="aw8hero"><div class="ey">VET GODS AWARDS & RECORDS INSTITUTE // AWARD PHASE 08 OF 10</div><h1>LIFETIME RECORD BOOK</h1><p>Each animal can now receive a consolidated biography-style archive joining care history, sanctuary status, morph record, ship service, achievements, medal rank, relationships and final statistics into one permanent snapshot.</p></header>'+
+ '<div class="aw8phase">'+["COMMAND","ACHIEVEMENTS","BUILDER","ART STUDIO","SIGNATURES","PORTRAITS","LEVELS","LIFETIME","HALL","PRINT"].map((z,i)=>'<div class="'+(i<7?"done":i===7?"on":"")+'">'+String(i+1).padStart(2,"0")+'<br>'+z+'</div>').join("")+'</div>'+
+ '<div class="aw8summary"><div class="aw8sum"><small>RESIDENT</small><b>'+E(a?.name||"NONE")+'</b></div><div class="aw8sum"><small>RANK</small><b>'+lv.icon+' '+E(lv.name)+'</b></div><div class="aw8sum"><small>ACHIEVEMENTS</small><b>'+ea.length+'</b></div><div class="aw8sum"><small>LIFETIME SNAPSHOTS</small><b>'+x.records.filter(z=>String(z.animalId)===String(a?.id)).length+'</b></div></div>'+
+ '<div class="aw8layout"><section class="aw8panel"><h2>RESIDENT ARCHIVE CONTROL</h2><div class="aw8body aw8controls"><div class="aw8animals">'+ls.map(z=>'<div class="aw8animal '+(a&&String(a.id)===String(z.id)?"on":"")+'" data-aw8animal="'+z.id+'"><span>'+E(z.icon||"🐾")+'</span><div><b>'+E(z.name)+'</b><small>'+E(z.species||"UNKNOWN")+' · '+E(z.stage||z.homeStatus||"ACTIVE")+'</small></div><strong>'+earned(z).length+'</strong></div>').join("")+'</div>'+
+ '<label>CURATOR / LEGACY NOTES</label><textarea id="aw8notes">'+E(x.notes[a?.id]||"This lifetime record preserves the resident's major milestones, service and achievements within the fictional VET GODS simulation.")+'</textarea>'+
+ '<div class="aw8actions"><button id="aw8update">UPDATE NOTES</button><button id="aw8save">SEAL LIFETIME SNAPSHOT</button><button disabled>HALL OF AWARDS — PHASE 9</button></div>'+
+ '<h2 style="margin-top:8px">LIFETIME SNAPSHOT ARCHIVE</h2><div class="aw8archive">'+(x.records.length?x.records.slice(0,35).map(z=>'<div>&gt; '+E(z.date)+' · '+E(z.animal)+' · '+E(z.rank)+' · '+z.achievements.length+' ACHIEVEMENTS · '+E(z.id)+'</div>').join(""):'<div>NO LIFETIME SNAPSHOTS SEALED.</div>')+'</div>'+
+ '<div class="aw8nav"><button id="aw8levels">← MEDAL LEVELS</button><button id="aw8portrait">PORTRAITS</button><button id="aw8command">AWARDS COMMAND</button></div></div></section>'+
+ '<section class="aw8panel"><h2>FULL LIFETIME RECORD</h2><div class="aw8body"><div class="aw8bookwrap"><article class="aw8book"><div class="aw8cover"><div class="portrait">'+E(a?.icon||"🐾")+'</div><div class="sub">VET GODS • PERMANENT RESIDENT ARCHIVE</div><h1>'+E(a?.name||"NO ANIMAL")+'</h1><div class="sub">'+E(a?.species||"UNKNOWN SPECIES")+' · CASE '+E(a?.id||"—")+' · '+lv.icon+' '+E(lv.name)+'</div></div>'+
+ '<section class="aw8chapter"><h3>I. Identity & Final Status</h3><div class="aw8grid"><div class="aw8fact"><small>CARE STAGE</small>'+E(a?.stage||"UNRECORDED")+'</div><div class="aw8fact"><small>HOME / DISPOSITION</small>'+E(a?.homeStatus||a?.disposition||"UNRECORDED")+'</div><div class="aw8fact"><small>FINAL MORPH</small>'+E(a?.morph||a?.finalMorph||"ORIGINAL FORM")+'</div><div class="aw8fact"><small>SHIP ROLE</small>'+E(c.job||"NO ASSIGNMENT")+'</div></div></section>'+
+ '<section class="aw8chapter"><h3>II. Care & Resident Statistics</h3><div class="aw8grid"><div class="aw8fact"><small>HEALTH</small>'+E(a?.health??"—")+'</div><div class="aw8fact"><small>PAIN</small>'+E(a?.pain??"—")+'</div><div class="aw8fact"><small>HYDRATION</small>'+E(a?.hydration??"—")+'</div><div class="aw8fact"><small>NUTRITION</small>'+E(a?.nutrition??"—")+'</div><div class="aw8fact"><small>TRUST / BOND</small>'+E(a?.petStats?.bond??a?.trust??"—")+'</div><div class="aw8fact"><small>SOCIAL STANDING</small>'+E(life.social??"—")+'</div></div></section>'+
+ '<section class="aw8chapter"><h3>III. Lifetime Chronicle</h3><div class="aw8timeline">'+events.map(z=>'<div class="aw8event"><b>'+E(z[0])+'</b>'+E(z[1])+'</div>').join("")+'</div></section>'+
+ '<section class="aw8chapter"><h3>IV. Honors & Achievements</h3><div class="aw8medals">'+(awards.length?awards.map(z=>'<div class="aw8medal">🏅 '+E(z)+'</div>').join(""):'<div class="aw8medal">No formal honors recorded yet.</div>')+'</div></section>'+
+ '<section class="aw8chapter"><h3>V. Curator Legacy Note</h3><div class="aw8story">'+E(x.notes[a?.id]||"This lifetime record preserves the resident's major milestones, service and achievements within the fictional VET GODS simulation.")+'</div></section>'+
+ '<div class="aw8signoff"><div class="aw8sig"><div class="aw8script">'+E(sig.sig1||"Chief Veterinary Officer")+'</div>'+E(sig.role1||"Clinical & Sanctuary Authority")+'</div><div class="aw8sig"><div class="aw8script">'+E(sig.sig2||"Command Records Officer")+'</div>'+E(sig.role2||"Awards & Expedition Registry")+'</div></div></article></div>'+
+ '<div class="aw8actions"><button id="aw8save2">SEAL THIS LIFETIME RECORD</button><button disabled>FRAME IN HALL — PHASE 9</button><button disabled>PRINT BOOK — PHASE 10</button></div></div></section></div></div>';
+ m.querySelectorAll("[data-aw8animal]").forEach(e=>e.onclick=()=>select(e.dataset.aw8animal));let q=s=>m.querySelector(s);q("#aw8update").onclick=()=>{x.notes[a.id]=q("#aw8notes").value;put(x);render()};q("#aw8save").onclick=saveRecord;q("#aw8save2").onclick=saveRecord;
+ q("#aw8levels").onclick=()=>window.VetGodsAwardsPhase7?.render?.();q("#aw8portrait").onclick=()=>window.VetGodsAwardsPhase6?.render?.();q("#aw8command").onclick=()=>window.VetGodsAwardsPhase1?.render?.();
+}
+function install(){
+ window.VetGodsAwardsPhase8={render,read:ensure,saveRecord};
+ let p7=window.VetGodsAwardsPhase7;if(p7&&!p7.__aw8){let r=p7.render;p7.render=function(){r();setTimeout(()=>{let host=document.querySelector("#vgAwards7 .aw7actions");if(host&&!document.querySelector("#aw8launch")){let b=document.createElement("button");b.id="aw8launch";b.textContent="BUILD LIFETIME RECORD →";b.onclick=render;host.appendChild(b)}},0)};p7.__aw8=true}
+}
+setTimeout(install,30200);
+})();
+</script>
+
+
+<style id="vg-awards-phase9-css">
+#vgAwards9{font-family:"Courier New",monospace;color:#eefbff;background:radial-gradient(circle at 50% 0,#234955,#030b10 54%,#000);min-height:100%;padding:8px}
+.aw9hero{border:1px solid #9cefff;background:linear-gradient(180deg,#113c49,#02090d);padding:14px;box-shadow:inset 0 0 54px #0a4050}.aw9hero .ey{font-size:9px;letter-spacing:2px;color:#a3f3ff}.aw9hero h1{margin:4px 0;color:#fff;font-size:clamp(24px,5vw,42px)}.aw9hero p{font-size:9px;color:#a5cad4;line-height:1.55}
+.aw9phase{display:grid;grid-template-columns:repeat(10,minmax(88px,1fr));overflow:auto;border:1px solid #315f70;margin:8px 0}.aw9phase div{padding:7px;text-align:center;border-right:1px solid #315f70;font-size:7px;color:#658d99}.aw9phase .done{color:#a9edff}.aw9phase .on{background:#e5fbff;color:#00141b;font-weight:900}
+.aw9stats{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid #315f70;margin-bottom:8px}.aw9stat{padding:7px;border-right:1px dotted #315f70}.aw9stat small{display:block;color:#769ca8;font-size:7px}.aw9stat b{color:#fff;font-size:13px}
+.aw9hall{border:1px solid #315f70;background:linear-gradient(180deg,#06171e,#010609);padding:10px;position:relative;overflow:hidden}.aw9hall:before{content:"VET GODS • HALL OF AWARDS";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-9deg);font-size:clamp(34px,8vw,90px);font-weight:900;color:rgba(110,220,245,.035);white-space:nowrap}
+.aw9gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:10px;position:relative;z-index:2}.aw9frame{background:linear-gradient(135deg,#604a22,#b78b37,#3b2c16);padding:7px;box-shadow:0 8px 18px #000;cursor:pointer;transition:.18s}.aw9frame:hover{transform:translateY(-3px);box-shadow:0 10px 25px #000,0 0 16px #69dff7}.aw9frame.on{outline:3px solid #bff5ff}.aw9mat{background:#e9e2cc;padding:6px}.aw9card{background:#f9f6e9;color:#17242a;border:2px solid #4b626a;min-height:245px;padding:10px;text-align:center;position:relative}.aw9portrait{font-size:55px}.aw9card h3{font:700 18px Georgia,serif;margin:4px}.aw9species{font:8px Georgia,serif}.aw9rank{font:700 10px Georgia,serif;margin:6px}.aw9medals{display:flex;justify-content:center;flex-wrap:wrap;gap:3px;font-size:17px}.aw9card small{font:7px Georgia,serif;display:block;margin-top:6px}.aw9plaque{background:#17130d;color:#f4dc8a;text-align:center;padding:5px;font-size:7px;letter-spacing:1px}
+.aw9detail{display:grid;grid-template-columns:.75fr 1.25fr;gap:8px;margin-top:8px}.aw9panel{border:1px solid #315f70;background:#020a0e}.aw9panel h2{margin:0;padding:7px;background:#e4fbff;color:#00141b;font-size:10px}.aw9body{padding:8px}.aw9big{font-size:85px;text-align:center;filter:drop-shadow(0 0 15px #83e9ff)}.aw9name{text-align:center;font-size:20px;font-weight:900;color:#fff}.aw9sub{text-align:center;color:#7fa8b4;font-size:7px}
+.aw9grid{display:grid;grid-template-columns:repeat(2,1fr);border:1px solid #315f70;margin-top:8px}.aw9cell{padding:7px;border-right:1px dotted #315f70;border-bottom:1px dotted #315f70}.aw9cell small{display:block;color:#769ca8;font-size:7px}.aw9cell b{color:#fff;font-size:9px}.aw9honors{max-height:240px;overflow:auto;border:1px solid #315f70}.aw9honor{padding:7px;border-bottom:1px dotted #294d5b;font-size:8px}.aw9honor b{color:#fff}.aw9honor small{display:block;color:#789faa;font-size:6px}
+.aw9actions,.aw9nav{display:grid;grid-template-columns:repeat(3,1fr);margin-top:8px}.aw9actions button,.aw9nav button{border:0;border-right:1px dotted #315f70;border-bottom:1px dotted #315f70;background:#020b10;color:#e4fbff;padding:9px;text-align:left;font:700 8px "Courier New";cursor:pointer}.aw9actions button:hover,.aw9nav button:hover{background:#e4fbff;color:#00141b}.aw9actions button:disabled{opacity:.3}.aw9log{border:1px solid #315f70;margin-top:8px;max-height:130px;overflow:auto}.aw9log div{padding:5px 7px;border-bottom:1px dotted #294d5b;font-size:7px}
+@media(max-width:760px){.aw9stats{grid-template-columns:repeat(2,1fr)}.aw9detail{grid-template-columns:1fr}.aw9gallery{grid-template-columns:repeat(2,minmax(145px,1fr))}.aw9actions,.aw9nav{grid-template-columns:1fr}}
+@media(max-width:420px){.aw9gallery{grid-template-columns:1fr}}
+</style>
+<script id="vg-awards-phase9-js">
+(function(){"use strict";
+const KEY="vetGodsAwardsPhase9";
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function animals(){try{return state.animals||[]}catch(e){return[]}}
+function rules(){return window.VetGodsAwardsPhase2?.rules||[]}
+function p7(){return window.VetGodsAwardsPhase7}
+function p8(){return window.VetGodsAwardsPhase8?.read?.()||{}}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{selected:null,framed:{},logs:[]}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+function earned(a){return rules().filter(r=>{try{return r.test(a)}catch(e){return false}})}
+function rank(a){return p7()?.levelFor?.(earned(a).length)||{icon:"○",name:"UNRANKED"}}
+function ensure(){let x=get(),ls=animals(),life=p8();if(x.selected==null)x.selected=life.selected??ls[0]?.id??null;put(x);return x}
+function select(id){let x=ensure();x.selected=+id;put(x);render()}
+function frame(){
+ let x=ensure(),a=animals().find(z=>String(z.id)===String(x.selected));if(!a)return;
+ let lv=rank(a),ea=earned(a);x.framed[a.id]={date:new Date().toLocaleDateString(),rank:lv.name,achievements:ea.length};
+ x.logs.unshift(new Date().toLocaleTimeString()+" · FRAMED · "+a.name+" · "+lv.name+" · "+ea.length+" honors");put(x);render()
+}
+function unframe(){
+ let x=ensure(),a=animals().find(z=>String(z.id)===String(x.selected));if(!a)return;delete x.framed[a.id];x.logs.unshift(new Date().toLocaleTimeString()+" · REMOVED FRAME · "+a.name);put(x);render()
+}
+function render(){
+ let m=document.querySelector("#main"),x=ensure(),ls=animals(),a=ls.find(z=>String(z.id)===String(x.selected))||ls[0];if(!m)return;page="awards9";try{nav()}catch(e){}
+ let framed=ls.filter(z=>x.framed[z.id]), shown=framed.length?framed:ls, ea=a?earned(a):[],lv=a?rank(a):{icon:"○",name:"UNRANKED"}, life=p8(), snaps=(life.records||[]).filter(z=>String(z.animalId)===String(a?.id));
+ let totalHonors=ls.reduce((n,z)=>n+earned(z).length,0), masters=ls.filter(z=>rank(z).id==="master").length;
+ m.innerHTML='<div id="vgAwards9"><header class="aw9hero"><div class="ey">VET GODS AWARDS & RECORDS INSTITUTE // AWARD PHASE 09 OF 10</div><h1>HALL OF AWARDS</h1><p>The awards system is now a physical-feeling gallery aboard the ship. Frame residents, browse their plaques, inspect ranks and medals, and jump back into their lifetime archive. When no frames have been formally placed yet, the hall previews all residents.</p></header>'+
+ '<div class="aw9phase">'+["COMMAND","ACHIEVEMENTS","BUILDER","ART STUDIO","SIGNATURES","PORTRAITS","LEVELS","LIFETIME","HALL","PRINT"].map((z,i)=>'<div class="'+(i<8?"done":i===8?"on":"")+'">'+String(i+1).padStart(2,"0")+'<br>'+z+'</div>').join("")+'</div>'+
+ '<div class="aw9stats"><div class="aw9stat"><small>RESIDENTS</small><b>'+ls.length+'</b></div><div class="aw9stat"><small>FRAMED</small><b>'+framed.length+'</b></div><div class="aw9stat"><small>TOTAL EARNED HONORS</small><b>'+totalHonors+'</b></div><div class="aw9stat"><small>MASTER RANK</small><b>'+masters+'</b></div><div class="aw9stat"><small>LIFETIME SNAPSHOTS</small><b>'+(life.records?.length||0)+'</b></div></div>'+
+ '<section class="aw9hall"><div class="aw9gallery">'+shown.map(z=>{let ez=earned(z),rz=rank(z),is=x.framed[z.id];return '<div class="aw9frame '+(a&&String(a.id)===String(z.id)?"on":"")+'" data-aw9animal="'+z.id+'"><div class="aw9mat"><div class="aw9card"><div class="aw9portrait">'+E(z.icon||"🐾")+'</div><h3>'+E(z.name)+'</h3><div class="aw9species">'+E(z.species||"UNKNOWN SPECIES")+' · CASE '+E(z.id)+'</div><div class="aw9rank">'+rz.icon+' '+E(rz.name)+'</div><div class="aw9medals">'+ez.slice(0,8).map(q=>'<span title="'+E(q.name)+'">'+q.icon+'</span>').join("")+'</div><small>'+ez.length+' ACHIEVEMENT CLASSES<br>'+(is?"FORMALLY FRAMED "+E(is.date):"HALL PREVIEW")+'</small></div></div><div class="aw9plaque">VET GODS • PERMANENT HONOR RECORD</div></div>'}).join("")+'</div></section>'+
+ '<div class="aw9detail"><section class="aw9panel"><h2>SELECTED HONOREE</h2><div class="aw9body">'+(a?'<div class="aw9big">'+E(a.icon||"🐾")+'</div><div class="aw9name">'+E(a.name)+'</div><div class="aw9sub">'+E(a.species||"UNKNOWN")+' · CASE '+E(a.id)+'</div><div class="aw9grid"><div class="aw9cell"><small>RANK</small><b>'+lv.icon+' '+E(lv.name)+'</b></div><div class="aw9cell"><small>HONORS</small><b>'+ea.length+'</b></div><div class="aw9cell"><small>CARE STATUS</small><b>'+E(a.stage||a.disposition||"ACTIVE")+'</b></div><div class="aw9cell"><small>LIFETIME RECORDS</small><b>'+snaps.length+'</b></div></div>':'NO HONOREE SELECTED')+
+ '<div class="aw9actions"><button id="aw9frame">'+(x.framed[a?.id]?"REFRAME / UPDATE":"FRAME IN HALL")+'</button><button id="aw9remove">REMOVE FRAME</button><button disabled>PRINT PLAQUE — PHASE 10</button></div>'+
+ '<div class="aw9nav"><button id="aw9life">← LIFETIME RECORD</button><button id="aw9levels">MEDAL LEVELS</button><button id="aw9command">AWARDS COMMAND</button></div></div></section>'+
+ '<section class="aw9panel"><h2>HONORS DISPLAY</h2><div class="aw9body"><div class="aw9honors">'+(ea.length?ea.map(z=>'<div class="aw9honor">'+z.icon+' <b>'+E(z.name)+'</b><small>'+E(z.req)+'</small></div>').join(""):'<div class="aw9honor">NO EARNED HONORS YET.</div>')+'</div><h2 style="margin-top:8px">HALL OPERATIONS LOG</h2><div class="aw9log">'+(x.logs.length?x.logs.slice(0,30).map(z=>'<div>&gt; '+E(z)+'</div>').join(""):'<div>HALL OF AWARDS ONLINE.</div>')+'</div>'+
+ '<div class="aw9actions"><button id="aw9life2">OPEN FULL LIFETIME BOOK</button><button disabled>PRINT ALL AWARDS — PHASE 10</button><button disabled>PRINT HALL RECORD — PHASE 10</button></div></div></section></div></div>';
+ m.querySelectorAll("[data-aw9animal]").forEach(e=>e.onclick=()=>select(e.dataset.aw9animal));let q=s=>m.querySelector(s);q("#aw9frame").onclick=frame;q("#aw9remove").onclick=unframe;
+ q("#aw9life").onclick=q("#aw9life2").onclick=()=>{let z=window.VetGodsAwardsPhase8;if(z){let d=z.read();d.selected=a?.id;localStorage.setItem("vetGodsAwardsPhase8",JSON.stringify(d));z.render()}};
+ q("#aw9levels").onclick=()=>window.VetGodsAwardsPhase7?.render?.();q("#aw9command").onclick=()=>window.VetGodsAwardsPhase1?.render?.();
+}
+function install(){
+ window.VetGodsAwardsPhase9={render,read:ensure,frame};
+ let p8=window.VetGodsAwardsPhase8;if(p8&&!p8.__aw9){let r=p8.render;p8.render=function(){r();setTimeout(()=>{let host=document.querySelector("#vgAwards8 .aw8actions");if(host&&!document.querySelector("#aw9launch")){let b=document.createElement("button");b.id="aw9launch";b.textContent="ENTER HALL OF AWARDS →";b.onclick=render;host.appendChild(b)}},0)};p8.__aw9=true}
+}
+setTimeout(install,31400);
+})();
+</script>
+
+
+<style id="vg-awards-phase10-css">
+#vgAwards10{font-family:"Courier New",monospace;color:#eefbff;background:radial-gradient(circle at 50% 0,#244b57,#030b10 54%,#000);min-height:100%;padding:8px}
+.aw10hero{border:1px solid #a0f0ff;background:linear-gradient(180deg,#123e4b,#02090d);padding:14px;box-shadow:inset 0 0 56px #0a4050}.aw10hero .ey{font-size:9px;letter-spacing:2px;color:#a8f4ff}.aw10hero h1{margin:4px 0;color:#fff;font-size:clamp(24px,5vw,42px)}.aw10hero p{font-size:9px;color:#a7ccd5;line-height:1.55}
+.aw10phase{display:grid;grid-template-columns:repeat(10,minmax(88px,1fr));overflow:auto;border:1px solid #315f70;margin:8px 0}.aw10phase div{padding:7px;text-align:center;border-right:1px solid #315f70;font-size:7px;color:#658d99}.aw10phase .done{color:#a9edff}.aw10phase .on{background:#e7fbff;color:#00141b;font-weight:900}
+.aw10layout{display:grid;grid-template-columns:.7fr 1.3fr;gap:8px}.aw10panel{border:1px solid #315f70;background:#020a0e}.aw10panel h2{margin:0;padding:7px;background:#e6fbff;color:#00141b;font-size:10px}.aw10body{padding:8px}
+.aw10types{display:grid;grid-template-columns:1fr 1fr;gap:6px}.aw10type{border:1px solid #315f70;background:#04131a;padding:9px;cursor:pointer;min-height:72px}.aw10type:hover,.aw10type.on{background:#e6fbff;color:#00141b}.aw10type span{font-size:27px;float:right}.aw10type b{display:block;color:#fff;font-size:9px}.aw10type:hover b,.aw10type.on b{color:#00141b}.aw10type small{display:block;color:#789faa;font-size:6px;line-height:1.4}
+.aw10controls label{display:block;color:#80a7b2;font-size:7px;margin:7px 0 3px}.aw10controls select,.aw10controls input{box-sizing:border-box;width:100%;background:#04131a;color:#effcff;border:1px solid #397386;padding:7px;font:8px "Courier New"}
+.aw10status{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #315f70;margin-bottom:8px}.aw10stat{padding:7px;border-right:1px dotted #315f70}.aw10stat small{display:block;color:#769ca8;font-size:7px}.aw10stat b{color:#fff;font-size:11px}
+.aw10paperwrap{background:#07151b;border:1px solid #315f70;padding:12px;overflow:auto}.aw10paper{width:min(100%,816px);min-height:1056px;margin:auto;background:#fff;color:#17242a;box-sizing:border-box;padding:52px;box-shadow:0 0 30px #000;position:relative}.aw10paper.landscape{width:min(100%,1056px);min-height:816px}
+.aw10cert{border:14px double #31515d;min-height:850px;padding:45px;text-align:center;box-sizing:border-box;position:relative;background:#f7f4e8}.aw10cert .wm{position:absolute;left:50%;top:47%;transform:translate(-50%,-50%) rotate(-20deg);font:900 75px Georgia,serif;color:rgba(30,70,80,.055);white-space:nowrap}.aw10cert .inst{font:700 12px Georgia,serif;letter-spacing:4px}.aw10cert h1{font:700 36px Georgia,serif;margin:28px 0 8px}.aw10cert .animal{font:700 52px Georgia,serif;border-bottom:1px solid #31515d;display:inline-block;padding:0 28px 6px;margin:14px}.aw10cert .species{font:10px Georgia,serif}.aw10cert .award{font:700 24px Georgia,serif;color:#31515d;margin:25px}.aw10cert .rank{font:700 18px Georgia,serif;margin:15px}.aw10cert .body{font:13px/1.65 Georgia,serif;max-width:650px;margin:20px auto}.aw10seal{width:90px;height:90px;border:7px double #31515d;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:20px auto;font:700 9px Georgia,serif}.aw10sigs{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:35px}.aw10script{font:italic 23px "Brush Script MT","Segoe Script",cursive;border-bottom:1px solid #17242a;padding-bottom:4px}.aw10role{font:9px Georgia,serif;margin-top:4px}.aw10foot{display:flex;justify-content:space-between;border-top:1px solid #65777c;margin-top:25px;padding-top:8px;font:8px Georgia,serif;text-align:left}
+.aw10life h1,.aw10hallprint h1{font:700 32px Georgia,serif;text-align:center}.aw10life h2,.aw10hallprint h2{font:700 16px Georgia,serif;border-bottom:1px solid #61767e;padding-bottom:4px}.aw10life p,.aw10hallprint p,.aw10life li{font:11px/1.5 Georgia,serif}.aw10portrait{text-align:center;font-size:85px}.aw10facts{display:grid;grid-template-columns:1fr 1fr;gap:6px}.aw10fact{border:1px solid #9da9ad;padding:7px;font:10px Georgia,serif}.aw10fact small{display:block;font-size:7px;color:#687b81}.aw10hallgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.aw10hallcard{border:5px double #405a64;padding:10px;text-align:center;background:#f8f4e7;font:9px Georgia,serif}.aw10hallcard .pic{font-size:45px}.aw10hallcard b{display:block;font-size:15px}
+.aw10actions,.aw10nav{display:grid;grid-template-columns:repeat(3,1fr);margin-top:8px}.aw10actions button,.aw10nav button{border:0;border-right:1px dotted #315f70;border-bottom:1px dotted #315f70;background:#020b10;color:#e4fbff;padding:10px;text-align:left;font:700 8px "Courier New";cursor:pointer}.aw10actions button:hover,.aw10nav button:hover{background:#e6fbff;color:#00141b}.aw10log{border:1px solid #315f70;margin-top:8px;max-height:130px;overflow:auto}.aw10log div{padding:5px 7px;border-bottom:1px dotted #294d5b;font-size:7px}
+@media(max-width:760px){.aw10layout{grid-template-columns:1fr}.aw10types,.aw10actions,.aw10nav{grid-template-columns:1fr}.aw10status{grid-template-columns:repeat(2,1fr)}.aw10paper{min-width:700px}.aw10paperwrap{overflow-x:auto}}
+@media print{
+ body *{visibility:hidden!important}
+ #vgAwards10 #aw10printarea,#vgAwards10 #aw10printarea *{visibility:visible!important}
+ #vgAwards10 #aw10printarea{position:absolute!important;left:0!important;top:0!important;width:100%!important;background:#fff!important;border:0!important;padding:0!important;margin:0!important;overflow:visible!important}
+ #vgAwards10 .aw10paper{width:100%!important;min-width:0!important;min-height:0!important;box-shadow:none!important;margin:0!important;padding:.28in!important}
+ #vgAwards10 .aw10cert{min-height:9.7in!important}
+ @page{size:letter portrait;margin:.25in}
+}
+</style>
+<script id="vg-awards-phase10-js">
+(function(){"use strict";
+const KEY="vetGodsAwardsPhase10";
+const TYPES=[
+{id:"certificate",icon:"🏆",name:"FORMAL CERTIFICATE",desc:"Letter-size two-signature award certificate."},
+{id:"lifetime",icon:"📖",name:"LIFETIME RECORD",desc:"Print the selected animal's biography and archive summary."},
+{id:"packet",icon:"📚",name:"COMPLETE AWARD PACKET",desc:"Certificate plus lifetime summary and honors list."},
+{id:"hall",icon:"🏛️",name:"HALL OF AWARDS",desc:"Printable gallery record of formally framed residents."}
+];
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function animals(){try{return state.animals||[]}catch(e){return[]}}
+function rules(){return window.VetGodsAwardsPhase2?.rules||[]}
+function B(){return window.VetGodsAwardsPhase3?.read?.()||{}}
+function S(){return window.VetGodsAwardsPhase5?.read?.()||{}}
+function P7(){return window.VetGodsAwardsPhase7}
+function P8(){return window.VetGodsAwardsPhase8?.read?.()||{}}
+function P9(){return window.VetGodsAwardsPhase9?.read?.()||{}}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{type:"certificate",animal:null,logs:[]}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+function earned(a){return rules().filter(r=>{try{return r.test(a)}catch(e){return false}})}
+function rank(a){return P7()?.levelFor?.(earned(a).length)||{icon:"○",name:"UNRANKED"}}
+function ensure(){let x=get(),ls=animals(),b=B();if(x.animal==null)x.animal=b.animal??ls[0]?.id??null;put(x);return x}
+function certificate(a){
+ let b=B(),s=S(),ea=earned(a),r=rules().find(z=>z.id===b.award)||ea[0],lv=rank(a),cert="VG-"+String(a?.id||0).padStart(4,"0")+"-"+String(r?.id||"AWARD").toUpperCase()+"-"+new Date().getFullYear();
+ return '<section class="aw10cert"><div class="wm">VET GODS</div><div class="inst">'+E(b.institution||"VET GODS AWARDS & RECORDS INSTITUTE")+'</div><h1>'+E(b.title||"Certificate of Distinguished Achievement")+'</h1><div style="font:italic 13px Georgia,serif">is hereby presented to</div><div class="animal">'+E(a?.name||"NO ANIMAL")+'</div><div class="species">'+E(a?.species||"UNKNOWN SPECIES")+' · CASE '+E(a?.id||"—")+'</div><div class="award">'+E(r?.icon||"🏆")+' '+E(r?.name||"DISTINGUISHED ACHIEVEMENT")+'</div><div class="rank">'+lv.icon+' '+E(lv.name)+' LEVEL</div><div class="body">'+E(b.body||"This certificate recognizes the accomplishments recorded within the VET GODS simulation.")+'</div><div class="aw10seal">'+E(b.seal||"VET GODS • AUTHORIZED")+'</div><div class="aw10sigs"><div><div class="aw10script">'+E(s.sig1||"Chief Veterinary Officer")+'</div><div class="aw10role">'+E(s.role1||"Clinical & Sanctuary Authority")+'</div></div><div><div class="aw10script">'+E(s.sig2||"Command Records Officer")+'</div><div class="aw10role">'+E(s.role2||"Awards & Expedition Registry")+'</div></div></div><div class="aw10foot"><div>ISSUED '+new Date().toLocaleDateString()+'<br>'+E(cert)+'</div><div>'+E(s.stamp||"DUAL AUTHORIZATION VERIFIED")+'<br>'+E(s.authority||"VET GODS ORBITAL INSTITUTE")+'</div></div></section>'
+}
+function lifetime(a){
+ let ea=earned(a),lv=rank(a),life=P8(),notes=life.notes?.[a?.id]||"Permanent resident record preserved by the VET GODS Awards & Records Institute.";
+ return '<section class="aw10life"><div class="aw10portrait">'+E(a?.icon||"🐾")+'</div><h1>'+E(a?.name||"NO ANIMAL")+' — Lifetime Record</h1><p style="text-align:center">'+E(a?.species||"UNKNOWN SPECIES")+' · Case '+E(a?.id||"—")+' · '+lv.icon+' '+E(lv.name)+'</p><h2>Identity & Status</h2><div class="aw10facts"><div class="aw10fact"><small>CARE STAGE</small>'+E(a?.stage||"UNRECORDED")+'</div><div class="aw10fact"><small>DISPOSITION</small>'+E(a?.homeStatus||a?.disposition||"UNRECORDED")+'</div><div class="aw10fact"><small>FINAL MORPH</small>'+E(a?.morph||a?.finalMorph||"ORIGINAL FORM")+'</div><div class="aw10fact"><small>ACHIEVEMENTS</small>'+ea.length+'</div><div class="aw10fact"><small>HEALTH</small>'+E(a?.health??"—")+'</div><div class="aw10fact"><small>TRUST / BOND</small>'+E(a?.petStats?.bond??a?.trust??"—")+'</div></div><h2>Backstory</h2><p>'+E(a?.backstory||"No intake backstory recorded.")+'</p><h2>Honors</h2><p>'+E(ea.length?ea.map(z=>z.icon+" "+z.name).join(" · "):"No formal honors recorded yet.")+'</p><h2>Curator Legacy Note</h2><p>'+E(notes)+'</p></section>'
+}
+function hall(){
+ let x=P9(),ls=animals(),fr=ls.filter(a=>x.framed?.[a.id]);if(!fr.length)fr=ls;
+ return '<section class="aw10hallprint"><h1>VET GODS — Hall of Awards</h1><p style="text-align:center">Permanent gallery register · '+new Date().toLocaleDateString()+'</p><div class="aw10hallgrid">'+fr.map(a=>{let e=earned(a),l=rank(a);return '<div class="aw10hallcard"><div class="pic">'+E(a.icon||"🐾")+'</div><b>'+E(a.name)+'</b>'+E(a.species||"UNKNOWN")+'<br>'+l.icon+' '+E(l.name)+'<br>'+e.length+' ACHIEVEMENTS</div>'}).join("")+'</div></section>'
+}
+function preview(a,type){
+ if(type==="lifetime")return lifetime(a);
+ if(type==="packet")return certificate(a)+'<div style="page-break-before:always"></div>'+lifetime(a);
+ if(type==="hall")return hall();
+ return certificate(a)
+}
+function printNow(){
+ let x=ensure(),a=animals().find(z=>String(z.id)===String(x.animal));x.logs.unshift(new Date().toLocaleTimeString()+" · PRINT REQUEST · "+x.type.toUpperCase()+" · "+(a?.name||"HALL"));put(x);window.print()
+}
+function render(){
+ let m=document.querySelector("#main"),x=ensure(),ls=animals(),a=ls.find(z=>String(z.id)===String(x.animal))||ls[0],ea=a?earned(a):[],lv=a?rank(a):{icon:"○",name:"UNRANKED"},h=P9(),framed=Object.keys(h.framed||{}).length;if(!m)return;page="awards10";try{nav()}catch(e){}
+ m.innerHTML='<div id="vgAwards10"><header class="aw10hero"><div class="ey">VET GODS AWARDS & RECORDS INSTITUTE // AWARD PHASE 10 OF 10 // SYSTEM COMPLETE</div><h1>PRINT & ARCHIVE CENTER</h1><p>The ten-phase award system terminates here in printable output. Choose a formal certificate, lifetime record, complete animal packet, or Hall of Awards register. Printing hides the game interface and outputs only the selected document.</p></header>'+
+ '<div class="aw10phase">'+["COMMAND","ACHIEVEMENTS","BUILDER","ART STUDIO","SIGNATURES","PORTRAITS","LEVELS","LIFETIME","HALL","PRINT"].map((z,i)=>'<div class="'+(i<9?"done":i===9?"on":"")+'">'+String(i+1).padStart(2,"0")+'<br>'+z+'</div>').join("")+'</div>'+
+ '<div class="aw10status"><div class="aw10stat"><small>ANIMAL</small><b>'+E(a?.name||"NONE")+'</b></div><div class="aw10stat"><small>RANK</small><b>'+lv.icon+' '+E(lv.name)+'</b></div><div class="aw10stat"><small>HONORS</small><b>'+ea.length+'</b></div><div class="aw10stat"><small>HALL FRAMES</small><b>'+framed+'</b></div></div>'+
+ '<div class="aw10layout"><section class="aw10panel"><h2>OUTPUT CONTROL</h2><div class="aw10body aw10controls"><div class="aw10types">'+TYPES.map(t=>'<div class="aw10type '+(x.type===t.id?"on":"")+'" data-aw10type="'+t.id+'"><span>'+t.icon+'</span><b>'+E(t.name)+'</b><small>'+E(t.desc)+'</small></div>').join("")+'</div><label>ANIMAL / RECIPIENT</label><select id="aw10animal">'+ls.map(z=>'<option value="'+z.id+'" '+(a&&String(a.id)===String(z.id)?"selected":"")+'>'+E(z.name)+' — '+E(z.species||"Unknown")+'</option>').join("")+'</select>'+
+ '<div class="aw10actions"><button id="aw10print">🖨 PRINT SELECTED DOCUMENT</button><button id="aw10refresh">REFRESH PREVIEW</button><button id="aw10save">LOG ARCHIVE COPY</button></div>'+
+ '<h2 style="margin-top:8px">PRINT / ARCHIVE LOG</h2><div class="aw10log">'+(x.logs.length?x.logs.slice(0,35).map(z=>'<div>&gt; '+E(z)+'</div>').join(""):'<div>PRINT CENTER ONLINE. NO OUTPUT LOGGED YET.</div>')+'</div>'+
+ '<div class="aw10nav"><button id="aw10hall">← HALL OF AWARDS</button><button id="aw10life">LIFETIME RECORD</button><button id="aw10command">AWARDS COMMAND</button></div></div></section>'+
+ '<section class="aw10panel"><h2>PRINT PREVIEW — '+E(TYPES.find(t=>t.id===x.type)?.name||"DOCUMENT")+'</h2><div class="aw10body"><div id="aw10printarea" class="aw10paperwrap"><div class="aw10paper">'+preview(a,x.type)+'</div></div><div class="aw10actions"><button id="aw10print2">PRINT THIS PREVIEW</button><button id="aw10packet">BUILD COMPLETE AWARD PACKET</button><button id="aw10hallprint">PRINT HALL REGISTER</button></div></div></section></div></div>';
+ m.querySelectorAll("[data-aw10type]").forEach(e=>e.onclick=()=>{x.type=e.dataset.aw10type;put(x);render()});let q=s=>m.querySelector(s);q("#aw10animal").onchange=e=>{x.animal=+e.target.value;put(x);render()};q("#aw10print").onclick=q("#aw10print2").onclick=printNow;q("#aw10refresh").onclick=render;
+ q("#aw10save").onclick=()=>{x.logs.unshift(new Date().toLocaleTimeString()+" · ARCHIVE COPY LOGGED · "+x.type.toUpperCase()+" · "+(a?.name||"HALL"));put(x);render()};
+ q("#aw10packet").onclick=()=>{x.type="packet";put(x);render()};q("#aw10hallprint").onclick=()=>{x.type="hall";put(x);render()};
+ q("#aw10hall").onclick=()=>window.VetGodsAwardsPhase9?.render?.();q("#aw10life").onclick=()=>window.VetGodsAwardsPhase8?.render?.();q("#aw10command").onclick=()=>window.VetGodsAwardsPhase1?.render?.();
+}
+function install(){
+ window.VetGodsAwardsPhase10={render,read:ensure,print:printNow};
+ let p9=window.VetGodsAwardsPhase9;if(p9&&!p9.__aw10){let r=p9.render;p9.render=function(){r();setTimeout(()=>{let hosts=document.querySelectorAll("#vgAwards9 .aw9actions");let host=hosts[hosts.length-1];if(host&&!document.querySelector("#aw10launch")){let b=document.createElement("button");b.id="aw10launch";b.textContent="OPEN PRINT CENTER →";b.onclick=render;host.appendChild(b)}},0)};p9.__aw10=true}
+}
+setTimeout(install,32600);
+})();
+</script>
+
 </body></html>
