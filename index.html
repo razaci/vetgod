@@ -7337,4 +7337,85 @@ setTimeout(mount,800);
 window.VetGodsClearBrowserSave=clearVetGods;
 })();
 </script>
+
+<script id="vg-player-name-persistence-fix">
+(function(){
+"use strict";
+const NAMEKEY="vetgods_player_identity_permanent_v1";
+
+function readPermanent(){
+  try{return JSON.parse(localStorage.getItem(NAMEKEY)||"null")}catch(e){return null}
+}
+function usable(v){return typeof v==="string" && v.trim().length>0}
+function current(){
+  let first=state.playerProfile?.firstName||state.player?.firstName||"";
+  let last=state.playerProfile?.lastName||state.player?.lastName||"";
+  let full=state.rewardSystem?.playerName||state.certName||"";
+  if((!usable(first)||!usable(last))&&usable(full)){
+    let p=full.trim().split(/\s+/);
+    if(!usable(first))first=p.shift()||"";
+    if(!usable(last))last=p.join(" ");
+  }
+  return {first:first.trim(),last:last.trim()};
+}
+function apply(n){
+  if(!n||!usable(n.first))return;
+  state.playerProfile=state.playerProfile||{};
+  state.player=state.player||{};
+  state.rewardSystem=state.rewardSystem||{};
+  state.playerProfile.firstName=n.first;
+  state.playerProfile.lastName=n.last||"";
+  state.player.firstName=n.first;
+  state.player.lastName=n.last||"";
+  let full=(n.first+" "+(n.last||"")).trim();
+  state.rewardSystem.playerName=full;
+  state.certName=full;
+  state.badgeName=full;
+  try{if(typeof save==="function")save()}catch(e){}
+}
+function preserve(){
+  let cur=current(),old=readPermanent();
+  /* A real user-entered name replaces John Smith. John Smith is only fallback. */
+  let curFull=(cur.first+" "+cur.last).trim();
+  if(usable(cur.first) && !/^John Smith$/i.test(curFull)){
+    try{localStorage.setItem(NAMEKEY,JSON.stringify(cur))}catch(e){}
+    apply(cur); return cur;
+  }
+  if(old&&usable(old.first)){apply(old);return old}
+  let fallback={first:"John",last:"Smith"};
+  try{localStorage.setItem(NAMEKEY,JSON.stringify(fallback))}catch(e){}
+  apply(fallback);return fallback;
+}
+
+/* Capture player-name edits wherever the existing game saves them. */
+document.addEventListener("change",function(e){
+  let el=e.target;
+  if(!el||!["INPUT","TEXTAREA"].includes(el.tagName))return;
+  let hint=((el.id||"")+" "+(el.name||"")+" "+(el.placeholder||"")+" "+(el.getAttribute("aria-label")||"")).toLowerCase();
+  if(!/(player|first|last|name|operator)/.test(hint))return;
+  setTimeout(()=>{
+    let cur=current();
+    if(usable(cur.first)){
+      try{localStorage.setItem(NAMEKEY,JSON.stringify(cur))}catch(_){}
+      apply(cur);
+    }
+  },100);
+},true);
+
+/* Restore identity after old game screens/save loaders rewrite state. */
+preserve();
+setTimeout(preserve,300);
+setInterval(preserve,1500);
+
+window.VetGodsPlayerIdentity={
+  preserve,
+  set:function(first,last){
+    let n={first:(first||"").trim(),last:(last||"").trim()};
+    if(!usable(n.first))return false;
+    localStorage.setItem(NAMEKEY,JSON.stringify(n));apply(n);return true;
+  },
+  get:readPermanent
+};
+})();
+</script>
 </body></html>
