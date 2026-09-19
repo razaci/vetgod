@@ -10223,4 +10223,1288 @@ if(window.VetGodsNavigationP9?.route){
 window.VetGodsFinalIntegrationP10={audit,repair,persist:persistAll,renderAudit};
 })();
 </script>
+
+<style id="vg-morph-p1-css">
+#vgMorphP1{max-width:1000px;margin:10px auto 90px;font:12px "Courier New",monospace}
+#vgMorphP1 .ml-head{background:#111;color:#eee;border:1px solid #777;padding:12px}
+#vgMorphP1 .ml-head h2{margin:0 0 5px;font-size:18px}
+#vgMorphP1 .ml-grid{display:grid;grid-template-columns:260px 1fr;gap:9px;margin-top:9px}
+#vgMorphP1 .ml-panel{background:#f1efe7;color:#111;border:1px solid #777;padding:10px}
+#vgMorphP1 .ml-roster{display:grid;gap:5px;max-height:530px;overflow:auto}
+#vgMorphP1 .ml-animal{padding:9px;text-align:left;background:#fff;color:#111;border:1px solid #999;font:900 10px "Courier New",monospace}
+#vgMorphP1 .ml-animal.on{outline:3px solid #6f816e}
+#vgMorphP1 .ml-animal small{display:block;font-weight:400;margin-top:4px}
+#vgMorphP1 .ml-stage{min-height:290px;background:#090c0f;border:1px solid #555;color:#eee;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+#vgMorphP1 .ml-stage:before{content:"MORPH CHAMBER // SOURCE LOCKED";position:absolute;top:8px;left:9px;font-size:8px;color:#9ca}
+#vgMorphP1 .creature{font-size:100px;filter:drop-shadow(0 0 18px rgba(255,255,255,.25));transition:.25s transform}
+#vgMorphP1 .creature:hover{transform:scale(1.04)}
+#vgMorphP1 .ml-readout{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:6px}
+#vgMorphP1 .ml-readout div{background:#fff;border:1px solid #999;padding:7px}
+#vgMorphP1 .ml-readout b{display:block;font-size:8px;color:#555}
+#vgMorphP1 .ml-controls{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+#vgMorphP1 button{font:900 10px "Courier New",monospace}
+#vgMorphP1 .ml-controls button{padding:10px;background:#171a1d;color:#fff;border:1px solid #666}
+#vgMorphP1 .ml-controls button.selected{outline:3px solid #82947f;background:#2c352d}
+#vgMorphP1 .ml-name{display:flex;gap:6px;margin-top:8px}
+#vgMorphP1 .ml-name input{flex:1;padding:11px;border:1px solid #777;font:900 12px "Courier New",monospace}
+#vgMorphP1 .ml-name button{padding:11px 14px;background:#111;color:#fff;border:1px solid #111}
+#vgMorphP1 .ml-log{margin-top:8px;background:#fff;border:1px solid #999;padding:8px;min-height:42px}
+@media(max-width:700px){#vgMorphP1 .ml-grid{grid-template-columns:1fr}#vgMorphP1 .ml-roster{max-height:180px}#vgMorphP1 .ml-controls{grid-template-columns:repeat(2,1fr)}#vgMorphP1 .ml-readout{grid-template-columns:1fr}.creature{font-size:84px!important}}
+</style>
+
+<script id="vg-morph-p1-lab-foundation">
+(function(){
+"use strict";
+let sourceId="", draft={trait:"BASE FORM",visual:"✨",type:"Foundation Morph"};
+const starterTraits=[
+ ["WINGS","🪽","Aerial Trait"],
+ ["HORNS","🦌","Crest Trait"],
+ ["FINS","🐟","Aquatic Trait"],
+ ["FUR","🐯","Pattern Trait"],
+ ["TAIL","🦊","Balance Trait"],
+ ["EYES","🦉","Vision Trait"]
+];
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function pid(a){return String(a?.permanentId||a?.id||"")}
+function animals(){try{window.VetGodsAnimalSaveFoundation?.merge?.()}catch(e){}return state.animals||[]}
+function source(){return animals().find(a=>pid(a)===sourceId)||null}
+function choose(id){
+ sourceId=String(id);
+ let a=source();if(a)window.VetGodsActivePatientP3?.lockId?.(sourceId);
+ render()
+}
+function create(){
+ let src=source(),input=document.querySelector("#mlNewName"),name=(input?.value||"").trim();
+ if(!src)return message("SELECT A SOURCE ANIMAL FIRST.");
+ if(!name)return message("TYPE A NEW CREATURE NAME FIRST.");
+ let now=Date.now(),newAnimal=JSON.parse(JSON.stringify(src));
+ newAnimal.id="MORPH-"+now.toString(36)+"-"+Math.random().toString(36).slice(2,8);
+ newAnimal.permanentId=newAnimal.id;
+ newAnimal.name=name;
+ newAnimal.caseId="MORPH-"+String(now).slice(-8);
+ newAnimal.caseClosed=false;newAnimal.activeCase=false;
+ newAnimal.destination="";newAnimal.disposition="";
+ newAnimal.inMyPets=false;newAnimal.inSanctuary=false;newAnimal.adoptionReady=false;newAnimal.sentHome=false;
+ newAnimal.savedAt=now;
+ newAnimal.morphRecord={
+   createdAt:now,sourceId:pid(src),sourceName:src.name,
+   generation:Number(src.morphRecord?.generation||0)+1,
+   traits:[{name:draft.trait,type:draft.type,visual:draft.visual}],
+   phase:"MORPH LAB FOUNDATION"
+ };
+ newAnimal.history=["CREATED IN MORPH LAB FROM "+src.name+" · TRAIT "+draft.trait];
+ let made=window.VetGodsAnimalSaveFoundation?.saveAnimal?.(newAnimal);
+ try{window.VetGodsPermanentRecordsP8?.save?.();save()}catch(e){}
+ if(made){
+   sourceId=pid(made);
+   message("NEW ANIMAL SAVED: "+made.name+" · It now has its own permanent ID and appears in My Animals.");
+   setTimeout(render,700)
+ }
+}
+function message(t){let x=document.querySelector("#mlLog");if(x)x.textContent=t}
+function render(){
+ let list=animals(),src=source();
+ if(!src&&list.length){sourceId=pid(list[Number(state.active)]||list[0]);src=source()}
+ let main=document.querySelector("#main");if(!main)return;
+ document.body.classList.remove("vgSimpleChartActive");
+ main.innerHTML='<div id="vgMorphP1"><div class="ml-head"><h2>MORPH LAB // PHASE 1 FOUNDATION</h2>'+
+ '<div>Choose one saved animal as the source. Test a morph trait, give the result a new name, then CREATE NEW ANIMAL. The source animal is preserved.</div></div>'+
+ '<div class="ml-grid"><section class="ml-panel"><h3>SAVED SOURCE ANIMALS</h3><div class="ml-roster">'+
+ (list.length?list.map(a=>'<button class="ml-animal '+(pid(a)===sourceId?"on":"")+'" data-mlsource="'+esc(pid(a))+'">'+(a.icon||"🐾")+' '+esc(a.name)+'<small>'+esc(a.species)+' · ID '+esc(pid(a).slice(-8))+'</small></button>').join(""):'<div>No saved animals yet.</div>')+
+ '</div></section><section class="ml-panel"><div class="ml-stage"><div class="creature">'+(src?(src.icon||"🐾"):"❔")+' '+draft.visual+'</div></div>'+
+ '<div class="ml-readout"><div><b>SOURCE</b>'+esc(src?.name||"NONE")+'</div><div><b>DRAFT TRAIT</b>'+esc(draft.trait)+'</div><div><b>GENERATION</b>'+esc(src?Number(src.morphRecord?.generation||0)+1:"—")+'</div></div>'+
+ '<h3>FOUNDATION MORPH CONTROLS</h3><div class="ml-controls">'+starterTraits.map(t=>'<button class="'+(draft.trait===t[0]?"selected":"")+'" data-mltrait="'+t[0]+'" data-vis="'+t[1]+'" data-type="'+t[2]+'">'+t[1]+' '+t[0]+'</button>').join("")+'</div>'+
+ '<div class="ml-name"><input id="mlNewName" maxlength="40" placeholder="NEW CREATURE NAME"><button id="mlCreate">CREATE NEW ANIMAL</button></div>'+
+ '<div class="ml-log" id="mlLog">Source animal remains unchanged. The created animal becomes a separate permanent My Animals record.</div></section></div></div>';
+ main.querySelectorAll("[data-mlsource]").forEach(b=>b.onclick=()=>choose(b.dataset.mlsource));
+ main.querySelectorAll("[data-mltrait]").forEach(b=>b.onclick=()=>{draft={trait:b.dataset.mltrait,visual:b.dataset.vis,type:b.dataset.type};render()});
+ document.querySelector("#mlCreate").onclick=create
+}
+window.VetGodsMorphLabP1={render,choose,create};
+/* Add MORPH LAB to the compact top navigation. */
+setTimeout(function(){
+ let nav=document.querySelector("#vgSimpleNavP9");if(nav&&!nav.querySelector("[data-p9='MORPH']")){
+   let b=document.createElement("button");b.dataset.p9="MORPH";b.textContent="MORPH LAB";b.onclick=render;nav.appendChild(b)
+ }
+},500);
+})();
+</script>
+
+<style id="vg-morph-p2-css">
+#vgMorphP2{max-width:1060px;margin:10px auto 90px;font:12px "Courier New",monospace}
+#vgMorphP2 .m2-head{background:#111;color:#eee;border:1px solid #777;padding:12px}
+#vgMorphP2 .m2-grid{display:grid;grid-template-columns:240px 1fr;gap:9px;margin-top:9px}
+#vgMorphP2 .m2-panel{background:#f1efe7;color:#111;border:1px solid #777;padding:10px}
+#vgMorphP2 .m2-sources{display:grid;gap:5px;max-height:650px;overflow:auto}
+#vgMorphP2 .m2-src{padding:8px;text-align:left;background:#fff;color:#111;border:1px solid #999;font:900 10px "Courier New",monospace}
+#vgMorphP2 .m2-src.on{outline:3px solid #71856f}
+#vgMorphP2 .m2-stage{height:270px;background:#080b0e;border:1px solid #555;color:#eee;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+#vgMorphP2 .m2-stage:before{content:"LIVE MORPH PREVIEW // GENETIC SIMULATION";position:absolute;top:8px;left:9px;font-size:8px;color:#9ca}
+#vgMorphP2 .m2-creature{font-size:88px;letter-spacing:-12px;filter:drop-shadow(0 0 15px rgba(255,255,255,.25))}
+#vgMorphP2 .m2-bank{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:8px;max-height:370px;overflow:auto}
+#vgMorphP2 .m2-trait{padding:8px 4px;background:#171a1d;color:#fff;border:1px solid #666;font:900 9px "Courier New",monospace}
+#vgMorphP2 .m2-trait.on{outline:3px solid #82947f;background:#2c352d}
+#vgMorphP2 .m2-trait span{display:block;font-size:24px;margin-bottom:3px}
+#vgMorphP2 .m2-info{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:7px}
+#vgMorphP2 .m2-info div{background:#fff;border:1px solid #999;padding:7px}
+#vgMorphP2 .m2-info b{display:block;font-size:8px;color:#555}
+#vgMorphP2 .m2-name{display:flex;gap:6px;margin-top:8px}
+#vgMorphP2 .m2-name input{flex:1;padding:11px;border:1px solid #777;font:900 12px "Courier New",monospace}
+#vgMorphP2 .m2-name button{padding:11px 14px;background:#111;color:#fff;border:1px solid #111;font:900 10px "Courier New",monospace}
+#vgMorphP2 .m2-log{margin-top:7px;padding:8px;background:#fff;border:1px solid #999}
+@media(max-width:720px){#vgMorphP2 .m2-grid{grid-template-columns:1fr}#vgMorphP2 .m2-sources{max-height:170px}#vgMorphP2 .m2-bank{grid-template-columns:repeat(3,1fr)}#vgMorphP2 .m2-info{grid-template-columns:repeat(2,1fr)}}
+</style>
+
+<script id="vg-morph-p2-30-sources">
+(function(){
+"use strict";
+const TRAITS=[
+["WOLF","🐺","Body","Cold-adapted frame"],["SNOWY OWL","🦉","Wings","Silent aerial wings"],["TIGER","🐯","Body","Striped power frame"],
+["FALCON","🦅","Wings","High-speed flight"],["DRAGON","🐲","Head","Fictional draconic crest"],["MANTA RAY","🐟","Fins","Broad glide fins"],
+["FOX","🦊","Tail","Brush balance tail"],["LYNX","🐈","Ears","Tufted sensory ears"],["SNOW LEOPARD","🐆","Tail","Long alpine tail"],
+["RAVEN","🐦‍⬛","Wings","Dark feather wings"],["SHARK","🦈","Fins","Hydrodynamic fins"],["DEER","🦌","Horns","Branching antlers"],
+["RAM","🐏","Horns","Curved horn set"],["BAT","🦇","Wings","Membrane wings"],["GECKO","🦎","Skin","Climbing skin"],
+["AXOLOTL","🦎","Gills","External gill crown"],["HORSE","🐎","Legs","Runner legs"],["BEAR","🐻","Body","Heavy guardian frame"],
+["CROCODILE","🐊","Skin","Armored scales"],["LUNA MOTH","🦋","Wings","Broad moth wings"],["COBRA","🐍","Head","Hooded head"],
+["RHINO","🦏","Horn","Nasal horn"],["ELEPHANT","🐘","Head","Trunk sensory head"],["GORILLA","🦍","Arms","Power forelimbs"],
+["KANGAROO","🦘","Legs","Spring hindlegs"],["PEACOCK","🦚","Tail","Display fan"],["OCTOPUS","🐙","Arms","Flexible tentacles"],
+["ORCA","🐋","Body","Marine power body"],["STAG BEETLE","🪲","Armor","Chitin armor"],["FIREFLY","✨","Markings","Bioluminescent markings"]
+];
+let sourceId="",chosen=TRAITS[0];
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function pid(a){return String(a?.permanentId||a?.id||"")}
+function roster(){try{window.VetGodsAnimalSaveFoundation?.merge?.()}catch(e){}return state.animals||[]}
+function source(){return roster().find(a=>pid(a)===sourceId)||null}
+function selectSource(x){sourceId=String(x);let i=roster().findIndex(a=>pid(a)===sourceId);if(i>=0)window.VetGodsActivePatientP3?.lockIndex?.(i);render()}
+function selectTrait(n){chosen=TRAITS[Number(n)]||TRAITS[0];render()}
+function make(){
+ let src=source(),name=(document.querySelector("#m2name")?.value||"").trim();
+ if(!src)return msg("SELECT A SOURCE ANIMAL.");
+ if(!name)return msg("ENTER A NEW CREATURE NAME.");
+ let now=Date.now(),a=JSON.parse(JSON.stringify(src));
+ a.id="MORPH-"+now.toString(36)+"-"+Math.random().toString(36).slice(2,9);a.permanentId=a.id;a.name=name;
+ a.caseId="MORPH-"+String(now).slice(-8);a.caseClosed=false;a.activeCase=false;a.destination="";a.disposition="";
+ a.inMyPets=false;a.inSanctuary=false;a.adoptionReady=false;a.sentHome=false;a.savedAt=now;
+ let inherited=Array.isArray(src.morphRecord?.traits)?JSON.parse(JSON.stringify(src.morphRecord.traits)):[];
+ inherited.push({source:chosen[0],visual:chosen[1],slot:chosen[2],effect:chosen[3]});
+ a.morphRecord={createdAt:now,sourceId:pid(src),sourceName:src.name,generation:Number(src.morphRecord?.generation||0)+1,traits:inherited,phase:"30 SOURCE MORPH BANK"};
+ a.history=["MORPH CREATION: "+name+" FROM "+src.name+" · "+chosen[0]+" "+chosen[2],...(Array.isArray(src.history)?src.history:[])];
+ let made=window.VetGodsAnimalSaveFoundation?.saveAnimal?.(a);
+ try{window.VetGodsPermanentRecordsP8?.save?.();save()}catch(e){}
+ if(made){sourceId=pid(made);msg("SAVED "+made.name+" AS A NEW PERMANENT ANIMAL.");setTimeout(render,650)}
+}
+function msg(t){let e=document.querySelector("#m2log");if(e)e.textContent=t}
+function render(){
+ let list=roster(),src=source();
+ if(!src&&list.length){src=list[Number(state.active)]||list[0];sourceId=pid(src)}
+ let inherited=src?.morphRecord?.traits||[];
+ let main=document.querySelector("#main");if(!main)return;
+ document.body.classList.remove("vgSimpleChartActive");
+ main.innerHTML='<div id="vgMorphP2"><div class="m2-head"><h2>MORPH LAB // 30-SOURCE CREATURE BANK</h2>'+
+ '<div>Choose a saved source animal, choose one of 30 morph sources, preview the change, name the result, and save it as a separate animal.</div></div>'+
+ '<div class="m2-grid"><section class="m2-panel"><h3>SOURCE ANIMAL</h3><div class="m2-sources">'+
+ list.map(a=>'<button class="m2-src '+(pid(a)===sourceId?"on":"")+'" data-m2src="'+esc(pid(a))+'">'+(a.icon||"🐾")+' '+esc(a.name)+'<small> · '+esc(a.species)+' · G'+Number(a.morphRecord?.generation||0)+'</small></button>').join("")+
+ '</div></section><section class="m2-panel"><div class="m2-stage"><div class="m2-creature">'+(src?(src.icon||"🐾"):"❔")+' '+chosen[1]+'</div></div>'+
+ '<div class="m2-info"><div><b>SOURCE</b>'+esc(src?.name||"NONE")+'</div><div><b>MORPH SOURCE</b>'+esc(chosen[0])+'</div><div><b>SLOT</b>'+esc(chosen[2])+'</div><div><b>INHERITED TRAITS</b>'+inherited.length+'</div></div>'+
+ '<div class="m2-bank">'+TRAITS.map((t,i)=>'<button class="m2-trait '+(t===chosen?"on":"")+'" data-m2trait="'+i+'"><span>'+t[1]+'</span>'+t[0]+'<small><br>'+t[2]+'</small></button>').join("")+'</div>'+
+ '<div class="m2-name"><input id="m2name" maxlength="40" placeholder="NAME THIS NEW CREATURE"><button id="m2make">CREATE + SAVE</button></div>'+
+ '<div class="m2-log" id="m2log">'+esc(chosen[3])+' · The original '+esc(src?.name||"animal")+' remains unchanged.</div></section></div></div>';
+ main.querySelectorAll("[data-m2src]").forEach(b=>b.onclick=()=>selectSource(b.dataset.m2src));
+ main.querySelectorAll("[data-m2trait]").forEach(b=>b.onclick=()=>selectTrait(b.dataset.m2trait));
+ document.querySelector("#m2make").onclick=make
+}
+window.VetGodsMorphLabP2={render,make,selectSource,selectTrait,traits:TRAITS};
+/* Upgrade Phase-1 Morph Lab entry to Phase 2. */
+window.VetGodsMorphLabP1.render=render;
+setTimeout(function(){
+ let b=document.querySelector("#vgSimpleNavP9 [data-p9='MORPH']");
+ if(b)b.onclick=render
+},550);
+})();
+</script>
+
+<style id="vg-morph-p3-css">
+#vgMorphP3{max-width:1100px;margin:10px auto 90px;font:12px "Courier New",monospace}
+#vgMorphP3 .m3-head{background:#111;color:#eee;border:1px solid #777;padding:12px}
+#vgMorphP3 .m3-grid{display:grid;grid-template-columns:220px 1fr;gap:9px;margin-top:9px}
+#vgMorphP3 .m3-panel{background:#f1efe7;color:#111;border:1px solid #777;padding:10px}
+#vgMorphP3 .m3-roster{display:grid;gap:5px;max-height:660px;overflow:auto}
+#vgMorphP3 .m3-src{padding:8px;text-align:left;background:#fff;color:#111;border:1px solid #999;font:900 10px "Courier New",monospace}
+#vgMorphP3 .m3-src.on{outline:3px solid #71856f}
+#vgMorphP3 .m3-stage{height:310px;background:radial-gradient(circle at 50% 55%,#243126 0,#0b1010 42%,#050708 78%);border:1px solid #555;position:relative;overflow:hidden;color:#eee}
+#vgMorphP3 .m3-stage:before{content:"MULTI-SLOT MORPH CHAMBER // LIVE ASSEMBLY";position:absolute;top:8px;left:9px;font-size:8px;color:#9ca;z-index:5}
+#vgMorphP3 .m3-base{position:absolute;left:50%;top:50%;transform:translate(-50%,-45%);font-size:112px;filter:drop-shadow(0 0 20px rgba(255,255,255,.2))}
+#vgMorphP3 .m3-layer{position:absolute;font-size:43px;filter:drop-shadow(0 0 7px #000)}
+#vgMorphP3 .slot-Head{left:50%;top:24%;transform:translateX(-50%)} .slot-Body{left:50%;top:49%;transform:translateX(-50%)}
+#vgMorphP3 .slot-Wings{left:50%;top:42%;transform:translateX(-50%);font-size:72px}.slot-Fins{left:50%;top:46%;transform:translateX(-50%);font-size:65px}
+#vgMorphP3 .slot-Legs{left:50%;top:67%;transform:translateX(-50%)} .slot-Tail{right:27%;top:54%}
+#vgMorphP3 .slot-Crest{left:50%;top:14%;transform:translateX(-50%)} .slot-Skin{left:36%;top:47%}
+#vgMorphP3 .slot-Eyes{left:50%;top:31%;transform:translateX(-50%);font-size:29px}.slot-Markings{right:36%;top:45%;font-size:28px}
+#vgMorphP3 .m3-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:7px 0}
+#vgMorphP3 .m3-summary div{background:#fff;border:1px solid #999;padding:7px}.m3-summary b{display:block;font-size:8px;color:#555}
+#vgMorphP3 .m3-slots{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+#vgMorphP3 .m3-slot{border:1px solid #999;background:#fff;padding:7px}
+#vgMorphP3 .m3-slot h4{margin:0 0 5px;font-size:10px}
+#vgMorphP3 .m3-choices{display:flex;gap:3px;flex-wrap:wrap}
+#vgMorphP3 .m3-choices button{padding:6px;background:#171a1d;color:#fff;border:1px solid #666;font:900 8px "Courier New",monospace}
+#vgMorphP3 .m3-choices button.on{outline:2px solid #71856f;background:#344137}
+#vgMorphP3 .m3-name{display:flex;gap:6px;margin-top:8px}
+#vgMorphP3 .m3-name input{flex:1;padding:11px;border:1px solid #777;font:900 12px "Courier New",monospace}
+#vgMorphP3 .m3-name button{padding:11px;background:#111;color:#fff;border:1px solid #111;font:900 10px "Courier New",monospace}
+#vgMorphP3 .m3-log{margin-top:7px;padding:8px;background:#fff;border:1px solid #999}
+@media(max-width:760px){#vgMorphP3 .m3-grid{grid-template-columns:1fr}#vgMorphP3 .m3-roster{max-height:150px}#vgMorphP3 .m3-slots{grid-template-columns:1fr 1fr}#vgMorphP3 .m3-stage{height:280px}}
+</style>
+
+<script id="vg-morph-p3-multislot-builder">
+(function(){
+"use strict";
+const SLOTS={
+ Body:[["WOLF","🐺"],["TIGER","🐯"],["BEAR","🐻"],["ORCA","🐋"]],
+ Head:[["DRAGON","🐲"],["COBRA","🐍"],["ELEPHANT","🐘"],["OWL","🦉"]],
+ Wings:[["OWL","🪽"],["FALCON","🦅"],["BAT","🦇"],["MOTH","🦋"]],
+ Legs:[["HORSE","🐎"],["KANGAROO","🦘"],["GORILLA","🦍"],["GECKO","🦎"]],
+ Tail:[["FOX","🦊"],["SNOW LEOPARD","🐆"],["PEACOCK","🦚"],["CROCODILE","🐊"]],
+ Crest:[["DEER","🦌"],["RAM","🐏"],["RHINO","🦏"],["AXOLOTL","🌿"]],
+ Skin:[["TIGER","🐯"],["CROCODILE","🐊"],["GECKO","🦎"],["BEETLE","🪲"]],
+ Eyes:[["OWL","👁️"],["FALCON","🔭"],["SHARK","🦈"],["FIREFLY","✨"]],
+ Markings:[["FIREFLY","✨"],["RAVEN","🐦‍⬛"],["SNOW","❄️"],["TIGER","〰️"]]
+};
+let sourceId="",build={};
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function pid(a){return String(a?.permanentId||a?.id||"")}
+function roster(){try{window.VetGodsAnimalSaveFoundation?.merge?.()}catch(e){}return state.animals||[]}
+function src(){return roster().find(a=>pid(a)===sourceId)||null}
+function chooseSource(x){sourceId=String(x);let i=roster().findIndex(a=>pid(a)===sourceId);if(i>=0)window.VetGodsActivePatientP3?.lockIndex?.(i);build={};render()}
+function choose(slot,i){build[slot]=SLOTS[slot][Number(i)];render()}
+function clearSlot(slot){delete build[slot];render()}
+function layers(){
+ return Object.entries(build).map(([slot,v])=>'<span class="m3-layer slot-'+slot+'">'+v[1]+'</span>').join("")
+}
+function saveCreature(){
+ let base=src(),name=(document.querySelector("#m3name")?.value||"").trim();
+ if(!base)return log("SELECT A SOURCE ANIMAL.");
+ if(!name)return log("NAME THE NEW CREATURE.");
+ if(!Object.keys(build).length)return log("INSTALL AT LEAST ONE MORPH COMPONENT.");
+ let now=Date.now(),a=JSON.parse(JSON.stringify(base));
+ a.id="MORPH-"+now.toString(36)+"-"+Math.random().toString(36).slice(2,9);a.permanentId=a.id;a.name=name;
+ a.caseId="MORPH-"+String(now).slice(-8);a.caseClosed=false;a.activeCase=false;a.destination="";a.disposition="";
+ a.inMyPets=false;a.inSanctuary=false;a.adoptionReady=false;a.sentHome=false;a.savedAt=now;
+ let prior=Array.isArray(base.morphRecord?.traits)?JSON.parse(JSON.stringify(base.morphRecord.traits)):[];
+ let installed=Object.entries(build).map(([slot,v])=>({slot,source:v[0],visual:v[1]}));
+ a.morphRecord={createdAt:now,sourceId:pid(base),sourceName:base.name,generation:Number(base.morphRecord?.generation||0)+1,
+  traits:[...prior,...installed],build:JSON.parse(JSON.stringify(build)),cemented:false,phase:"MULTI-SLOT BUILDER"};
+ a.history=["MULTI-SLOT MORPH CREATED FROM "+base.name+" · "+installed.map(x=>x.slot+":"+x.source).join(" / "),...(Array.isArray(base.history)?base.history:[])];
+ let made=window.VetGodsAnimalSaveFoundation?.saveAnimal?.(a);
+ try{window.VetGodsPermanentRecordsP8?.save?.();save()}catch(e){}
+ if(made){sourceId=pid(made);build={};log("NEW MULTI-SLOT CREATURE SAVED: "+made.name);setTimeout(render,650)}
+}
+function log(t){let e=document.querySelector("#m3log");if(e)e.textContent=t}
+function render(){
+ let list=roster(),base=src();
+ if(!base&&list.length){base=list[Number(state.active)]||list[0];sourceId=pid(base)}
+ let main=document.querySelector("#main");if(!main)return;
+ document.body.classList.remove("vgSimpleChartActive");
+ let count=Object.keys(build).length;
+ main.innerHTML='<div id="vgMorphP3"><div class="m3-head"><h2>MORPH LAB // MULTI-SLOT CREATURE BUILDER</h2>'+
+ '<div>Build one creature across nine independent morph slots. Empty slots keep the source animal unchanged.</div></div>'+
+ '<div class="m3-grid"><section class="m3-panel"><h3>SOURCE</h3><div class="m3-roster">'+
+ list.map(a=>'<button class="m3-src '+(pid(a)===sourceId?"on":"")+'" data-m3src="'+esc(pid(a))+'">'+(a.icon||"🐾")+' '+esc(a.name)+'<small> · G'+Number(a.morphRecord?.generation||0)+'</small></button>').join("")+
+ '</div></section><section class="m3-panel"><div class="m3-stage"><div class="m3-base">'+(base?(base.icon||"🐾"):"❔")+'</div>'+layers()+'</div>'+
+ '<div class="m3-summary"><div><b>SOURCE</b>'+esc(base?.name||"NONE")+'</div><div><b>INSTALLED SLOTS</b>'+count+' / 9</div><div><b>NEXT GENERATION</b>G'+(base?Number(base.morphRecord?.generation||0)+1:0)+'</div></div>'+
+ '<div class="m3-slots">'+Object.entries(SLOTS).map(([slot,arr])=>'<div class="m3-slot"><h4>'+slot.toUpperCase()+' · '+esc(build[slot]?.[0]||"SOURCE DEFAULT")+'</h4><div class="m3-choices">'+
+ arr.map((v,i)=>'<button class="'+(build[slot]===v?"on":"")+'" data-slot="'+slot+'" data-choice="'+i+'">'+v[1]+' '+v[0]+'</button>').join("")+
+ '<button data-clear="'+slot+'">CLEAR</button></div></div>').join("")+'</div>'+
+ '<div class="m3-name"><input id="m3name" maxlength="40" placeholder="NAME COMPLETED CREATURE"><button id="m3save">CREATE NEW ANIMAL</button></div>'+
+ '<div class="m3-log" id="m3log">Build as much or as little as you want. Saving creates a separate permanent animal; the source remains intact.</div></section></div></div>';
+ main.querySelectorAll("[data-m3src]").forEach(b=>b.onclick=()=>chooseSource(b.dataset.m3src));
+ main.querySelectorAll("[data-slot]").forEach(b=>b.onclick=()=>choose(b.dataset.slot,b.dataset.choice));
+ main.querySelectorAll("[data-clear]").forEach(b=>b.onclick=()=>clearSlot(b.dataset.clear));
+ document.querySelector("#m3save").onclick=saveCreature
+}
+window.VetGodsMorphLabP3={render,saveCreature,chooseSource,slots:SLOTS};
+window.VetGodsMorphLabP2.render=render;window.VetGodsMorphLabP1.render=render;
+setTimeout(()=>{let b=document.querySelector("#vgSimpleNavP9 [data-p9='MORPH']");if(b)b.onclick=render},600);
+})();
+</script>
+
+<style id="vg-morph-p4-css">
+#vgMorphP4{max-width:1080px;margin:10px auto 90px;font:12px "Courier New",monospace}
+#vgMorphP4 .m4-head{background:#111;color:#eee;border:1px solid #777;padding:12px}
+#vgMorphP4 .m4-grid{display:grid;grid-template-columns:230px 1fr;gap:9px;margin-top:9px}
+#vgMorphP4 .m4-panel{background:#f1efe7;color:#111;border:1px solid #777;padding:10px}
+#vgMorphP4 .m4-list{display:grid;gap:5px;max-height:640px;overflow:auto}
+#vgMorphP4 .m4-animal{padding:8px;text-align:left;background:#fff;color:#111;border:1px solid #999;font:900 10px "Courier New",monospace}
+#vgMorphP4 .m4-animal.on{outline:3px solid #71856f}
+#vgMorphP4 .m4-animal small{display:block;font-weight:400;margin-top:3px}
+#vgMorphP4 .m4-stage{height:320px;background:radial-gradient(circle at 50% 55%,#293529,#0b1010 45%,#050708 80%);border:1px solid #555;position:relative;overflow:hidden}
+#vgMorphP4 .m4-stage:before{content:"PERMANENT MORPH RECONSTRUCTION";position:absolute;top:8px;left:9px;color:#9ca;font-size:8px;z-index:9}
+#vgMorphP4 .m4-base{position:absolute;left:50%;top:50%;transform:translate(-50%,-45%);font-size:112px;filter:drop-shadow(0 0 20px rgba(255,255,255,.2))}
+#vgMorphP4 .m4-layer{position:absolute;font-size:43px;filter:drop-shadow(0 0 7px #000)}
+#vgMorphP4 .Body{left:50%;top:49%;transform:translateX(-50%)}#vgMorphP4 .Head{left:50%;top:24%;transform:translateX(-50%)}
+#vgMorphP4 .Wings{left:50%;top:42%;transform:translateX(-50%);font-size:72px}#vgMorphP4 .Legs{left:50%;top:67%;transform:translateX(-50%)}
+#vgMorphP4 .Tail{right:27%;top:54%}#vgMorphP4 .Crest{left:50%;top:14%;transform:translateX(-50%)}
+#vgMorphP4 .Skin{left:36%;top:47%}#vgMorphP4 .Eyes{left:50%;top:31%;transform:translateX(-50%);font-size:29px}
+#vgMorphP4 .Markings{right:36%;top:45%;font-size:28px}
+#vgMorphP4 .m4-record{display:grid;grid-template-columns:repeat(2,1fr);border:1px solid #999;margin-top:8px}
+#vgMorphP4 .m4-row{padding:7px;border-bottom:1px dotted #aaa}.m4-row b{display:block;font-size:8px;color:#555}
+#vgMorphP4 .m4-recipe{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:7px}
+#vgMorphP4 .m4-part{background:#fff;border:1px solid #999;padding:7px}
+#vgMorphP4 .m4-part strong{display:block}
+#vgMorphP4 .m4-final{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+#vgMorphP4 .m4-final input{flex:1;min-width:180px;padding:10px;border:1px solid #777;font:900 11px "Courier New",monospace}
+#vgMorphP4 .m4-final button{padding:10px 12px;background:#111;color:#fff;border:1px solid #111;font:900 10px "Courier New",monospace}
+#vgMorphP4 .m4-final button.cemented{background:#3d4b3d}
+#vgMorphP4 .m4-log{margin-top:7px;background:#fff;border:1px solid #999;padding:8px}
+@media(max-width:720px){#vgMorphP4 .m4-grid{grid-template-columns:1fr}#vgMorphP4 .m4-list{max-height:170px}#vgMorphP4 .m4-record,#vgMorphP4 .m4-recipe{grid-template-columns:1fr}}
+</style>
+
+<script id="vg-morph-p4-cement-finalize">
+(function(){
+"use strict";
+let selectedId="";
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function pid(a){return String(a?.permanentId||a?.id||"")}
+function roster(){try{window.VetGodsAnimalSaveFoundation?.merge?.()}catch(e){}return state.animals||[]}
+function morphs(){return roster().filter(a=>a.morphRecord)}
+function animal(){return roster().find(a=>pid(a)===selectedId)||null}
+function buildOf(a){
+ let b=a?.morphRecord?.build;
+ if(b&&typeof b==="object")return b;
+ let out={};(a?.morphRecord?.traits||[]).forEach(t=>{if(t.slot)out[t.slot]=[t.source||t.name,t.visual||"✨"]});
+ return out
+}
+function choose(id){selectedId=String(id);let i=roster().findIndex(a=>pid(a)===selectedId);if(i>=0)window.VetGodsActivePatientP3?.lockIndex?.(i);render()}
+function layers(a){
+ return Object.entries(buildOf(a)).map(([slot,v])=>'<span class="m4-layer '+esc(slot)+'">'+esc(v?.[1]||"✨")+'</span>').join("")
+}
+function speciesName(a){
+ let b=buildOf(a),names=Object.values(b).map(v=>v?.[0]).filter(Boolean);
+ if(!names.length)return "Morph Hybrid";
+ return names.slice(0,3).join("-")+" Hybrid"
+}
+function cement(){
+ let a=animal();if(!a)return log("SELECT A MORPH CREATURE.");
+ let designation=(document.querySelector("#m4species")?.value||"").trim()||speciesName(a);
+ let now=Date.now(),b=buildOf(a);
+ a.species=designation;
+ a.morphRecord=a.morphRecord||{};
+ a.morphRecord.build=JSON.parse(JSON.stringify(b));
+ a.morphRecord.visualRecipe=Object.entries(b).map(([slot,v])=>({slot,source:v?.[0],visual:v?.[1]}));
+ a.morphRecord.cemented=true;
+ a.morphRecord.cementedAt=now;
+ a.morphRecord.designation=designation;
+ a.morphRecord.recipeVersion=1;
+ a.morphRecord.permanentVisualKey="VG-MORPH-"+pid(a);
+ a.history=Array.isArray(a.history)?a.history:[];
+ a.history.unshift("MORPH CEMENTED · "+designation+" · "+Object.keys(b).length+" INSTALLED SLOTS");
+ try{
+  window.VetGodsAnimalSaveFoundation?.saveAnimal?.(a);
+  window.VetGodsPermanentRecordsP8?.save?.();
+  save();
+ }catch(e){}
+ log("CEMENTED: "+a.name+" is now recorded permanently as "+designation+".");
+ render()
+}
+function duplicateRecipe(){
+ let a=animal();if(!a)return log("SELECT A MORPH CREATURE.");
+ let b=buildOf(a);
+ try{localStorage.setItem("vetgods_last_morph_recipe_v1",JSON.stringify({source:pid(a),build:b,designation:a.morphRecord?.designation||a.species}))}catch(e){}
+ log("RECIPE STORED. It can be reused by later Morph systems.")
+}
+function log(t){let x=document.querySelector("#m4log");if(x)x.textContent=t}
+function render(){
+ let list=morphs();
+ if(!animal()&&list.length)selectedId=pid(list[0]);
+ let a=animal(),b=buildOf(a),recipe=Object.entries(b);
+ let main=document.querySelector("#main");if(!main)return;
+ document.body.classList.remove("vgSimpleChartActive");
+ main.innerHTML='<div id="vgMorphP4"><div class="m4-head"><h2>MORPH LAB // CEMENT + PERMANENT FORM</h2>'+
+ '<div>Open a created morph, reconstruct its saved recipe, assign its creature designation, and cement the form permanently.</div></div>'+
+ '<div class="m4-grid"><section class="m4-panel"><h3>CREATED MORPHS</h3><div class="m4-list">'+
+ (list.length?list.map(x=>'<button class="m4-animal '+(pid(x)===selectedId?"on":"")+'" data-m4id="'+esc(pid(x))+'">'+(x.icon||"🐾")+' '+esc(x.name)+
+ '<small>'+esc(x.morphRecord?.cemented?"CEMENTED":"DRAFT FORM")+' · G'+Number(x.morphRecord?.generation||1)+'<br>'+esc(x.species||"Morph Hybrid")+'</small></button>').join(""):'<div>Create a morph creature first.</div>')+
+ '</div></section><section class="m4-panel"><div class="m4-stage"><div class="m4-base">'+(a?(a.icon||"🐾"):"❔")+'</div>'+layers(a)+'</div>'+
+ '<div class="m4-record"><div class="m4-row"><b>CREATURE</b>'+esc(a?.name||"NONE")+'</div><div class="m4-row"><b>PERMANENT ID</b>'+esc(pid(a)||"—")+'</div>'+
+ '<div class="m4-row"><b>SOURCE ANIMAL</b>'+esc(a?.morphRecord?.sourceName||"—")+'</div><div class="m4-row"><b>GENERATION</b>G'+Number(a?.morphRecord?.generation||0)+'</div>'+
+ '<div class="m4-row"><b>FORM STATUS</b>'+(a?.morphRecord?.cemented?"CEMENTED / LOCKED":"DRAFT / EDITABLE")+'</div><div class="m4-row"><b>DESIGNATION</b>'+esc(a?.morphRecord?.designation||a?.species||speciesName(a))+'</div></div>'+
+ '<h3>PERMANENT VISUAL RECIPE</h3><div class="m4-recipe">'+(recipe.length?recipe.map(([slot,v])=>'<div class="m4-part"><strong>'+esc(slot)+'</strong>'+esc(v?.[1]||"✨")+' '+esc(v?.[0]||"")+'</div>').join(""):'<div class="m4-part">No installed slots recorded.</div>')+'</div>'+
+ '<div class="m4-final"><input id="m4species" value="'+esc(a?.morphRecord?.designation||a?.species||speciesName(a))+'" placeholder="CREATURE / SPECIES DESIGNATION">'+
+ '<button id="m4cement" class="'+(a?.morphRecord?.cemented?"cemented":"")+'">'+(a?.morphRecord?.cemented?"RE-CEMENT RECORD":"CEMENT PERMANENT FORM")+'</button><button id="m4recipe">STORE RECIPE</button></div>'+
+ '<div class="m4-log" id="m4log">'+(a?.morphRecord?.cemented?"This morph is permanently recorded. Reopening it reconstructs the saved slot recipe.":"Cementing stores the exact slot recipe, designation and lineage in the animal record.")+'</div></section></div></div>';
+ main.querySelectorAll("[data-m4id]").forEach(x=>x.onclick=()=>choose(x.dataset.m4id));
+ if(document.querySelector("#m4cement"))document.querySelector("#m4cement").onclick=cement;
+ if(document.querySelector("#m4recipe"))document.querySelector("#m4recipe").onclick=duplicateRecipe
+}
+window.VetGodsMorphFinalizeP4={render,choose,cement,buildOf};
+/* Morph navigation now opens permanent-form manager. Builder remains reachable by reopening Phase 3 object. */
+setTimeout(function(){
+ let nav=document.querySelector("#vgSimpleNavP9");
+ if(nav&&!nav.querySelector("[data-p9='MORPH-FINAL']")){
+  let b=document.createElement("button");b.dataset.p9="MORPH-FINAL";b.textContent="MORPH FORMS";b.onclick=render;nav.appendChild(b)
+ }
+},650);
+})();
+</script>
+
+<style id="vg-morph-p5-css">
+#vgMorphP5{max-width:1080px;margin:10px auto 90px;font:12px "Courier New",monospace}
+#vgMorphP5 .m5-head{background:#111;color:#eee;border:1px solid #777;padding:12px}
+#vgMorphP5 .m5-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px}
+#vgMorphP5 .m5-card{background:#f1efe7;color:#111;border:1px solid #777;padding:10px}
+#vgMorphP5 .m5-card h3{margin:0 0 6px}
+#vgMorphP5 .m5-preview{height:180px;background:radial-gradient(circle,#293529,#080b0e 68%);position:relative;overflow:hidden;border:1px solid #555}
+#vgMorphP5 .m5-base{position:absolute;left:50%;top:50%;transform:translate(-50%,-45%);font-size:75px}
+#vgMorphP5 .m5-layer{position:absolute;font-size:30px}
+#vgMorphP5 .Body{left:50%;top:48%;transform:translateX(-50%)}#vgMorphP5 .Head{left:50%;top:23%;transform:translateX(-50%)}
+#vgMorphP5 .Wings{left:50%;top:40%;transform:translateX(-50%);font-size:50px}#vgMorphP5 .Legs{left:50%;top:66%;transform:translateX(-50%)}
+#vgMorphP5 .Tail{right:25%;top:52%}#vgMorphP5 .Crest{left:50%;top:12%;transform:translateX(-50%)}
+#vgMorphP5 .Skin{left:34%;top:46%}#vgMorphP5 .Eyes{left:50%;top:31%;transform:translateX(-50%);font-size:20px}
+#vgMorphP5 .Markings{right:35%;top:43%;font-size:20px}
+#vgMorphP5 .m5-meta{padding:7px;background:#fff;border:1px solid #999;margin-top:5px}
+#vgMorphP5 .m5-actions{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+#vgMorphP5 button{padding:8px 10px;background:#111;color:#fff;border:1px solid #555;font:900 9px "Courier New",monospace}
+#vgMorphP5 .m5-empty{padding:18px;background:#f1efe7;border:1px solid #777}
+@media(max-width:720px){#vgMorphP5 .m5-grid{grid-template-columns:1fr}}
+</style>
+
+<script id="vg-morph-p5-final-integration">
+(function(){
+"use strict";
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function pid(a){return String(a?.permanentId||a?.id||"")}
+function roster(){try{window.VetGodsAnimalSaveFoundation?.merge?.()}catch(e){}return state.animals||[]}
+function morphs(){return roster().filter(a=>a.morphRecord)}
+function build(a){return window.VetGodsMorphFinalizeP4?.buildOf?.(a)||a?.morphRecord?.build||{}}
+function layers(a){return Object.entries(build(a)).map(([slot,v])=>'<span class="m5-layer '+esc(slot)+'">'+esc(v?.[1]||"✨")+'</span>').join("")}
+function lock(a){let i=roster().findIndex(x=>pid(x)===pid(a));if(i>=0)return window.VetGodsActivePatientP3?.lockIndex?.(i);return a}
+function openMedical(id){let a=roster().find(x=>pid(x)===String(id));if(!a)return;lock(a);window.VetGodsMedicalFolderP8?.render?.()}
+function morphAgain(id){
+ let a=roster().find(x=>pid(x)===String(id));if(!a)return;
+ lock(a);
+ /* Builder starts from this exact creature and inherits its lineage/traits. */
+ if(window.VetGodsMorphLabP3){
+   try{
+    /* selectSource is public and resets only the draft, never the saved animal */
+    window.VetGodsMorphLabP3.chooseSource?.(pid(a));
+   }catch(e){window.VetGodsMorphLabP3.render?.()}
+ }
+}
+function move(id,dest){
+ let a=roster().find(x=>pid(x)===String(id));if(!a)return;
+ lock(a);window.VetGodsDispositionMovementP6?.place?.(a,dest);
+ try{window.VetGodsPermanentRecordsP8?.save?.();save()}catch(e){}
+ render()
+}
+function pets(id){return move(id,"PETS")}
+function sanctuary(id){return move(id,"SANCTUARY")}
+function forms(){return window.VetGodsMorphFinalizeP4?.render?.()}
+function render(){
+ try{window.VetGodsPermanentRecordsP8?.restore?.();window.VetGodsDispositionMovementP6?.restore?.()}catch(e){}
+ let list=morphs(),main=document.querySelector("#main");if(!main)return;
+ document.body.classList.remove("vgSimpleChartActive");
+ main.innerHTML='<div id="vgMorphP5"><div class="m5-head"><h2>MORPH COLLECTION // GENERATIONS</h2>'+
+ '<div>Every created morph is a real saved animal. Reopen its record, continue its lineage, or move the same permanent creature into My Pets or Sanctuary.</div></div>'+
+ (list.length?'<div class="m5-grid">'+list.map(a=>{
+   let m=a.morphRecord||{},parts=Object.keys(build(a)).length;
+   return '<article class="m5-card"><h3>'+(a.icon||"🐾")+' '+esc(a.name)+'</h3>'+
+   '<div class="m5-preview"><div class="m5-base">'+(a.icon||"🐾")+'</div>'+layers(a)+'</div>'+
+   '<div class="m5-meta"><b>'+esc(m.designation||a.species||"Morph Hybrid")+'</b><br>'+
+   'Generation G'+Number(m.generation||1)+' · '+parts+' saved slots · '+(m.cemented?"CEMENTED":"DRAFT")+
+   '<br>Permanent ID: '+esc(pid(a))+'<br>Source: '+esc(m.sourceName||"—")+
+   '<br>Destination: '+esc(a.destination||a.disposition||"MY ANIMALS")+'</div>'+
+   '<div class="m5-actions"><button data-med="'+esc(pid(a))+'">MEDICAL RECORD</button>'+
+   '<button data-again="'+esc(pid(a))+'">MORPH AGAIN</button>'+
+   '<button data-pets="'+esc(pid(a))+'">MY PETS</button>'+
+   '<button data-san="'+esc(pid(a))+'">SANCTUARY</button></div></article>'
+ }).join("")+'</div>':'<div class="m5-empty">No morph creatures yet. Open MORPH LAB and create your first creature.</div>')+
+ '<div class="m5-actions"><button id="m5builder">OPEN MORPH BUILDER</button><button id="m5forms">CEMENT / FORMS</button><button id="m5animals">ALL MY ANIMALS</button></div></div>';
+ main.querySelectorAll("[data-med]").forEach(b=>b.onclick=()=>openMedical(b.dataset.med));
+ main.querySelectorAll("[data-again]").forEach(b=>b.onclick=()=>morphAgain(b.dataset.again));
+ main.querySelectorAll("[data-pets]").forEach(b=>b.onclick=()=>pets(b.dataset.pets));
+ main.querySelectorAll("[data-san]").forEach(b=>b.onclick=()=>sanctuary(b.dataset.san));
+ document.querySelector("#m5builder").onclick=()=>window.VetGodsMorphLabP3?.render?.();
+ document.querySelector("#m5forms").onclick=forms;
+ document.querySelector("#m5animals").onclick=()=>window.VetGodsMyAnimalsP2?.render?.()
+}
+function persist(){
+ try{
+  window.VetGodsAnimalSaveFoundation?.flush?.();
+  window.VetGodsDispositionMovementP6?.restore?.();
+  window.VetGodsPermanentRecordsP8?.save?.();
+  save()
+ }catch(e){}
+}
+persist();
+setTimeout(persist,900);
+window.addEventListener("beforeunload",persist);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")persist()});
+window.VetGodsMorphCollectionP5={render,openMedical,morphAgain,move,persist};
+
+/* Final morph navigation: builder + collection + forms, without replacing the main game routes. */
+setTimeout(function(){
+ let nav=document.querySelector("#vgSimpleNavP9");if(!nav)return;
+ let old=nav.querySelector("[data-p9='MORPH']");if(old){old.textContent="MORPH LAB";old.onclick=()=>window.VetGodsMorphLabP3?.render?.()}
+ if(!nav.querySelector("[data-p9='MORPH-COLLECTION']")){
+   let b=document.createElement("button");b.dataset.p9="MORPH-COLLECTION";b.textContent="MORPH COLLECTION";b.onclick=render;nav.appendChild(b)
+ }
+ let form=nav.querySelector("[data-p9='MORPH-FINAL']");if(form)form.onclick=forms
+},700);
+})();
+</script>
+
+<script id="vg-custom-pet-my-animals-fix">
+(function(){
+"use strict";
+
+function pid(a){ return String(a?.permanentId || a?.id || ""); }
+
+function persistAndShow(a){
+ if(!a) return null;
+
+ /* Make the custom morph an ordinary canonical My Animals resident. */
+ a.isCustomPet = true;
+ a.isMorphCreature = true;
+ a.showInMyAnimals = true;
+ a.savedAt = Date.now();
+
+ state.animals = Array.isArray(state.animals) ? state.animals : [];
+ let i = state.animals.findIndex(x => pid(x) === pid(a));
+ if(i >= 0) state.animals[i] = a;
+ else state.animals.push(a);
+
+ try{ window.VetGodsAnimalSaveFoundation?.saveAnimal?.(a); }catch(e){}
+ try{ window.VetGodsPermanentRecordsP8?.save?.(); }catch(e){}
+ try{ save(); }catch(e){}
+
+ return a;
+}
+
+/* Wrap both custom-pet creation paths. After creation, guarantee the new
+   creature exists in the canonical roster used by My Animals. */
+function wrapCreate(objName, fnName){
+ let obj=window[objName];
+ if(!obj || typeof obj[fnName] !== "function" || obj[fnName]._myAnimalsFix) return;
+
+ let original=obj[fnName];
+ let wrapped=function(){
+   let before=new Set((state.animals||[]).map(pid));
+   let result=original.apply(this,arguments);
+
+   setTimeout(function(){
+     let all=state.animals||[];
+     let newest=[...all].reverse().find(a => !before.has(pid(a)));
+     if(newest && newest.morphRecord){
+       persistAndShow(newest);
+     }
+   },25);
+
+   return result;
+ };
+ wrapped._myAnimalsFix=true;
+ obj[fnName]=wrapped;
+}
+
+wrapCreate("VetGodsMorphLabP1","create");
+wrapCreate("VetGodsMorphLabP2","make");
+wrapCreate("VetGodsMorphLabP3","saveCreature");
+
+/* Repair any custom pets made in earlier versions so they also appear. */
+function repairExisting(){
+ state.animals = Array.isArray(state.animals) ? state.animals : [];
+ state.animals.forEach(a=>{
+   if(a?.morphRecord){
+     a.isCustomPet=true;
+     a.isMorphCreature=true;
+     a.showInMyAnimals=true;
+   }
+ });
+ try{ window.VetGodsAnimalSaveFoundation?.flush?.(); save(); }catch(e){}
+}
+
+/* My Animals always refreshes from the canonical saved roster first. */
+if(window.VetGodsMyAnimalsP2?.render && !window.VetGodsMyAnimalsP2.render._customPetFix){
+ let original=window.VetGodsMyAnimalsP2.render;
+ let wrapped=function(){
+   repairExisting();
+   try{ window.VetGodsAnimalSaveFoundation?.merge?.(); }catch(e){}
+   return original.apply(this,arguments);
+ };
+ wrapped._customPetFix=true;
+ window.VetGodsMyAnimalsP2.render=wrapped;
+}
+
+repairExisting();
+setTimeout(repairExisting,700);
+
+window.VetGodsCustomPetMyAnimalsFix={persistAndShow,repairExisting};
+})();
+</script>
+
+<style id="vg-cert-p1-css">
+#vgCertP1{max-width:1050px;margin:10px auto 90px;font:12px "Courier New",monospace}
+#vgCertP1 .c1-head{background:#111;color:#eee;border:1px solid #777;padding:12px}
+#vgCertP1 .c1-head h2{margin:0 0 5px;font-size:19px}
+#vgCertP1 .c1-grid{display:grid;grid-template-columns:300px 1fr;gap:9px;margin-top:9px}
+#vgCertP1 .c1-panel{background:#f1efe7;color:#111;border:1px solid #777;padding:11px}
+#vgCertP1 label{display:block;font-weight:900;font-size:9px;margin:8px 0 3px}
+#vgCertP1 input{box-sizing:border-box;width:100%;padding:10px;border:1px solid #777;font:900 12px "Courier New",monospace}
+#vgCertP1 button{padding:9px 11px;border:1px solid #333;background:#111;color:#fff;font:900 9px "Courier New",monospace}
+#vgCertP1 .c1-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+#vgCertP1 .c1-cert{background:#f7f1dc;color:#15120d;border:8px double #393329;padding:24px;min-height:430px;text-align:center;position:relative;box-shadow:inset 0 0 0 3px #aaa17d}
+#vgCertP1 .c1-cert:before,#vgCertP1 .c1-cert:after{content:"✦";position:absolute;font-size:28px;top:12px}
+#vgCertP1 .c1-cert:before{left:15px}.c1-cert:after{right:15px}
+#vgCertP1 .c1-kicker{font-size:10px;letter-spacing:2px;font-weight:900}
+#vgCertP1 .c1-title{font-family:Georgia,serif;font-size:27px;line-height:1.05;margin:22px 0 12px}
+#vgCertP1 .c1-name{font-family:Georgia,serif;font-size:31px;font-weight:bold;border-bottom:1px solid #555;padding:5px 12px;display:inline-block;min-width:65%}
+#vgCertP1 .c1-body{max-width:610px;margin:15px auto;line-height:1.6}
+#vgCertP1 .c1-seal{width:92px;height:92px;border:5px double #393329;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:18px auto 8px;font-size:31px;font-weight:bold}
+#vgCertP1 .c1-sigs{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:20px}
+#vgCertP1 .c1-sig{border-top:1px solid #333;padding-top:5px;font-size:9px}
+#vgCertP1 .c1-serial{margin-top:14px;font-size:8px}
+#vgCertP1 .c1-vault{display:grid;gap:5px;margin-top:8px;max-height:240px;overflow:auto}
+#vgCertP1 .c1-vault button{text-align:left;background:#fff;color:#111;border:1px solid #999}
+#vgCertP1 .c1-note{background:#fff;border:1px solid #999;padding:8px;margin-top:8px}
+@media(max-width:760px){#vgCertP1 .c1-grid{grid-template-columns:1fr}#vgCertP1 .c1-title{font-size:21px}#vgCertP1 .c1-name{font-size:24px}.c1-sigs{gap:10px!important}}
+@media print{body>*{display:none!important}#main,#vgCertP1,#vgCertP1 .c1-grid,#vgCertP1 .c1-panel:last-child,#vgCertP1 .c1-cert{display:block!important}#vgCertP1 .c1-panel:first-child,#vgSimpleNavP9{display:none!important}#vgCertP1 .c1-cert{border:8px double #000;box-shadow:none}}
+</style>
+
+<script id="vg-cert-p1-command-center">
+(function(){
+"use strict";
+const KEY="vetgods_credentials_v1", BAK="vetgods_credentials_v1_backup";
+let selected="";
+function read(k){try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}}
+function data(){return read(KEY)||read(BAK)||{playerName:"John Smith",issued:[]}}
+function saveData(d){try{let x=JSON.stringify(d);localStorage.setItem(KEY,x);localStorage.setItem(BAK,x);return true}catch(e){return false}}
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function gameName(){
+ let d=data(),n=(state.rewardSystem?.playerName||state.certName||d.playerName||"John Smith").trim();
+ return n||"John Smith"
+}
+function setName(){
+ let el=document.querySelector("#c1name"),n=(el?.value||"").trim()||"John Smith",d=data();
+ d.playerName=n;saveData(d);
+ state.rewardSystem=state.rewardSystem||{};state.rewardSystem.playerName=n;state.certName=n;
+ try{save();window.VetGodsPermanentRecordsP8?.save?.()}catch(e){}
+ render()
+}
+function serial(){return "VG-"+new Date().getFullYear()+"-"+Math.random().toString(36).slice(2,6).toUpperCase()+"-"+String(Date.now()).slice(-5)}
+function issue(){
+ let d=data(),n=gameName(),now=new Date(),cert={
+  id:"CERT-"+Date.now()+"-"+Math.random().toString(36).slice(2,6),
+  serial:serial(),playerName:n,issuedAt:Date.now(),
+  title:"Founding Commission of Veterinary Command",
+  rank:"Founding Command Credential",
+  description:"Awarded within the fictional Vet Gods game for establishing an operator identity and activating the permanent Awards & Credentials Command Center.",
+  signature1:"Dr. K. Nix · Orbital Veterinary Command",
+  signature2:"A. Vesper · Sanctuary Records Authority"
+ };
+ d.playerName=n;d.issued=d.issued||[];d.issued.unshift(cert);saveData(d);selected=cert.id;render()
+}
+function current(){
+ let d=data();return (d.issued||[]).find(x=>x.id===selected)||(d.issued||[])[0]||null
+}
+function view(id){selected=id;render()}
+function certHTML(c){
+ if(!c)return '<div class="c1-cert"><div class="c1-kicker">VET GODS // CREDENTIAL VAULT</div><div class="c1-title">No Credential Issued Yet</div><div class="c1-body">Save your player name and issue the founding commission to begin the permanent award archive.</div></div>';
+ return '<div class="c1-cert"><div class="c1-kicker">VET GODS · GRAND COMMAND CREDENTIAL AUTHORITY</div>'+
+ '<div class="c1-title">'+esc(c.title)+'</div><div>This fictional in-game credential is hereby conferred upon</div>'+
+ '<div class="c1-name">'+esc(c.playerName)+'</div><div class="c1-body">'+esc(c.description)+'</div>'+
+ '<div><b>'+esc(c.rank)+'</b></div><div class="c1-seal">VG</div><div>OFFICIAL GAME SEAL</div>'+
+ '<div class="c1-sigs"><div class="c1-sig">'+esc(c.signature1)+'</div><div class="c1-sig">'+esc(c.signature2)+'</div></div>'+
+ '<div class="c1-serial">ISSUED '+new Date(c.issuedAt).toLocaleDateString()+' · CERTIFICATE '+esc(c.serial)+'</div></div>'
+}
+function render(){
+ let d=data(),c=current(),main=document.querySelector("#main");if(!main)return;
+ document.body.classList.remove("vgSimpleChartActive");
+ main.innerHTML='<div id="vgCertP1"><div class="c1-head"><h2>AWARDS & CREDENTIALS // COMMAND CENTER</h2>'+
+ '<div>Permanent fictional Vet Gods certificates, commissions, ranks and case honors tied to your saved player identity.</div></div>'+
+ '<div class="c1-grid"><section class="c1-panel"><h3>PLAYER IDENTITY</h3><label>NAME PRINTED ON FUTURE CREDENTIALS</label>'+
+ '<input id="c1name" maxlength="60" value="'+esc(gameName())+'"><div class="c1-actions"><button id="c1save">SAVE PLAYER NAME</button><button id="c1issue">ISSUE FOUNDING COMMISSION</button></div>'+
+ '<div class="c1-note">Issued certificates preserve the name they were originally awarded under. Changing your player name affects future awards.</div>'+
+ '<h3>CREDENTIAL VAULT · '+(d.issued||[]).length+'</h3><div class="c1-vault">'+
+ ((d.issued||[]).length?(d.issued||[]).map(x=>'<button data-cert="'+esc(x.id)+'">'+esc(x.title)+'<br><small>'+esc(x.playerName)+' · '+esc(x.serial)+'</small></button>').join(""):'No credentials issued yet.')+
+ '</div><div class="c1-actions"><button id="c1print">PRINT / SAVE CERTIFICATE</button></div></section><section class="c1-panel">'+certHTML(c)+'</section></div></div>';
+ document.querySelector("#c1save").onclick=setName;document.querySelector("#c1issue").onclick=issue;document.querySelector("#c1print").onclick=()=>window.print();
+ main.querySelectorAll("[data-cert]").forEach(b=>b.onclick=()=>view(b.dataset.cert))
+}
+function persist(){let d=data();if(!d.playerName)d.playerName=gameName();saveData(d)}
+persist();
+window.addEventListener("beforeunload",persist);
+window.VetGodsCredentialsP1={render,issue,setName,data};
+/* Add one clean navigation entry. */
+setTimeout(function(){
+ let nav=document.querySelector("#vgSimpleNavP9");if(!nav)return;
+ if(!nav.querySelector("[data-p9='AWARDS']")){
+  let b=document.createElement("button");b.dataset.p9="AWARDS";b.textContent="AWARDS";b.onclick=render;nav.appendChild(b)
+ }
+},700);
+})();
+</script>
+
+<style id="vg-cert-p2-css">
+#vgCertLibraryP2{max-width:1080px;margin:10px auto 90px;font:12px "Courier New",monospace}
+#vgCertLibraryP2 .c2-head{background:#111;color:#eee;border:1px solid #777;padding:12px}
+#vgCertLibraryP2 .c2-tabs{display:flex;gap:5px;overflow:auto;margin:8px 0;padding-bottom:3px}
+#vgCertLibraryP2 button{font:900 9px "Courier New",monospace}
+#vgCertLibraryP2 .c2-tabs button{white-space:nowrap;padding:8px;background:#171a1d;color:#fff;border:1px solid #666}
+#vgCertLibraryP2 .c2-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+#vgCertLibraryP2 .c2-card{background:#f1efe7;color:#111;border:1px solid #777;padding:10px}
+#vgCertLibraryP2 .c2-card h3{margin:0 0 5px;font-family:Georgia,serif;font-size:16px}
+#vgCertLibraryP2 .c2-rank{font-size:9px;font-weight:900;margin-bottom:5px}
+#vgCertLibraryP2 .c2-card button{margin-top:7px;padding:8px 10px;background:#111;color:#fff;border:1px solid #333}
+#vgCertLibraryP2 .c2-card button.issued{background:#3c493c}
+#vgCertLibraryP2 .c2-count{background:#fff;border:1px solid #999;padding:8px;margin-top:8px}
+@media(max-width:680px){#vgCertLibraryP2 .c2-grid{grid-template-columns:1fr}}
+</style>
+
+<script id="vg-cert-p2-grand-library">
+(function(){
+"use strict";
+const LIB=[
+["VETERINARY","Grand Commission of Multispecies Veterinary Command","Grand Veterinary Command Commissioner"],
+["VETERINARY","Supreme Fellowship in Orbital Animal Medicine","Supreme Orbital Veterinary Fellow"],
+["VETERINARY","High Order of Comparative Creature Medicine","Senior Comparative Medicine Commander"],
+["VETERINARY","Distinguished Commission in Advanced Patient Stewardship","Distinguished Patient Steward"],
+["VETERINARY","Grand Fellowship of the Hundred Species","Hundred Species Command Fellow"],
+
+["DIAGNOSTICS","Supreme Diagnostic Intelligence Directorate Credential","Supreme Diagnostic Intelligence Director"],
+["DIAGNOSTICS","Grand Commission in Multisystem Clinical Investigation","Grand Clinical Investigation Commissioner"],
+["DIAGNOSTICS","Advanced Fellowship in Imaging & Laboratory Interpretation","Advanced Diagnostic Interpretation Fellow"],
+["DIAGNOSTICS","High Order of Physiologic Signal Analysis","Master Physiologic Signal Analyst"],
+["DIAGNOSTICS","Distinguished Credential in Complex Case Reconstruction","Distinguished Case Reconstruction Specialist"],
+
+["EMERGENCY","Grand Trauma Stabilization Command Commission","Grand Stabilization Commander"],
+["EMERGENCY","Supreme Fellowship in Critical Creature Recovery","Supreme Critical Recovery Fellow"],
+["EMERGENCY","High Order of Oxygenation & Perfusion Response","Senior Stabilization Response Officer"],
+["EMERGENCY","Distinguished Commission in Emergency Pain Control","Distinguished Comfort Response Commissioner"],
+["EMERGENCY","Advanced Credential in Multispecies Crisis Intervention","Advanced Crisis Intervention Specialist"],
+
+["RECOVERY","Grand Fellowship of Rehabilitation & Recovery Command","Grand Recovery Command Fellow"],
+["RECOVERY","Supreme Commission in Mobility Restoration","Supreme Mobility Restoration Commissioner"],
+["RECOVERY","High Order of Nutrition, Hydration & Comfort","Senior Recovery Systems Steward"],
+["RECOVERY","Distinguished Credential in Long-Arc Patient Recovery","Distinguished Long-Arc Recovery Specialist"],
+["RECOVERY","Advanced Fellowship in Sanctuary Rehabilitation","Advanced Sanctuary Rehabilitation Fellow"],
+
+["EXOTICS","Grand Commission of Exotic Species Medicine","Grand Exotic Species Commissioner"],
+["EXOTICS","Supreme Fellowship of Avian & Aerial Creature Care","Supreme Aerial Medicine Fellow"],
+["EXOTICS","High Order of Aquatic & Marine Animal Recovery","Senior Marine Recovery Commander"],
+["EXOTICS","Distinguished Arthropod & Invertebrate Care Credential","Distinguished Invertebrate Care Specialist"],
+["EXOTICS","Advanced Fellowship in Megafauna Clinical Operations","Advanced Megafauna Operations Fellow"],
+
+["MORPH","Grand Directorate Commission in Morph Reconstruction","Grand Morph Reconstruction Director"],
+["MORPH","Supreme Fellowship in Multigenerational Creature Design","Supreme Generational Morph Fellow"],
+["MORPH","High Order of Genetic Simulation Architecture","Senior Genetic Simulation Architect"],
+["MORPH","Distinguished Commission in Permanent Form Cementation","Distinguished Form Cementation Commissioner"],
+["MORPH","Advanced Credential in Nine-Slot Morph Engineering","Advanced Morph Systems Engineer"],
+
+["SANCTUARY","Grand Sanctuary Stewardship Command Commission","Grand Sanctuary Command Steward"],
+["SANCTUARY","Supreme Fellowship in Resident Welfare Operations","Supreme Resident Welfare Fellow"],
+["SANCTUARY","High Order of Adoption & Placement Stewardship","Senior Placement Steward"],
+["SANCTUARY","Distinguished Commission of the Wall of Lives","Distinguished Wall of Lives Commissioner"],
+["SANCTUARY","Advanced Fellowship in Companion Continuity","Advanced Companion Continuity Fellow"],
+
+["NUTRITION","Grand Commission in Multispecies Nutritional Systems","Grand Nutritional Systems Commissioner"],
+["NUTRITION","Supreme Fellowship in Recovery Feeding Strategy","Supreme Recovery Nutrition Fellow"],
+["NUTRITION","High Order of Hydration & Metabolic Support","Senior Metabolic Support Steward"],
+["NUTRITION","Distinguished Credential in Clinical Food Preparation","Distinguished Clinical Nutrition Specialist"],
+["NUTRITION","Advanced Fellowship in Exotic Diet Operations","Advanced Exotic Diet Fellow"],
+
+["EXPEDITION","Grand Expeditionary Animal Rescue Command","Grand Expedition Rescue Commander"],
+["EXPEDITION","Supreme Fellowship of Field Recovery Operations","Supreme Field Recovery Fellow"],
+["EXPEDITION","High Order of Remote Creature Retrieval","Senior Retrieval Operations Commander"],
+["EXPEDITION","Distinguished Commission in Mission Animal Protection","Distinguished Mission Protection Commissioner"],
+["EXPEDITION","Advanced Credential in Hazard-Zone Rescue Logistics","Advanced Rescue Logistics Specialist"],
+
+["NAVIGATION","Grand Commission of Orbital Navigation & Life-Support Command","Grand Navigation Command Commissioner"],
+["NAVIGATION","Supreme Fellowship in Veterinary Vessel Operations","Supreme Veterinary Vessel Fellow"],
+["NAVIGATION","High Order of Medical Transport Navigation","Senior Medical Transport Navigator"],
+["NAVIGATION","Distinguished Credential in Sanctuary Fleet Coordination","Distinguished Fleet Coordination Specialist"],
+["NAVIGATION","Advanced Fellowship in Recovery Mission Navigation","Advanced Recovery Mission Navigator"],
+
+["LEGACY","Grand Order of the Hundred Lives","Grand Keeper of the Hundred Lives"],
+["LEGACY","Supreme Commission of the Thousand Acts of Care","Supreme Commissioner of Care"],
+["LEGACY","High Fellowship of Multispecies Service","High Multispecies Service Fellow"],
+["LEGACY","Distinguished Order of Permanent Animal Stewardship","Distinguished Permanent Steward"],
+["LEGACY","Vet Gods Grand Command Commission","Grand Command Commissioner of Vet Gods"]
+].map((x,i)=>({id:"VG-LIB-"+String(i+1).padStart(3,"0"),category:x[0],title:x[1],rank:x[2]}));
+
+let cat="ALL";
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function d(){return window.VetGodsCredentialsP1.data()}
+function issuedFor(libId){return (d().issued||[]).find(x=>x.libraryId===libId)}
+function issue(libId){
+ let item=LIB.find(x=>x.id===libId);if(!item)return;
+ let data=d(),existing=issuedFor(libId);if(existing){render();return}
+ let n=(state.rewardSystem?.playerName||state.certName||data.playerName||"John Smith").trim()||"John Smith",now=Date.now();
+ let c={
+  id:"CERT-"+now+"-"+Math.random().toString(36).slice(2,6),libraryId:item.id,
+  serial:"VG-"+new Date().getFullYear()+"-"+item.id.slice(-3)+"-"+Math.random().toString(36).slice(2,6).toUpperCase(),
+  playerName:n,issuedAt:now,title:item.title,rank:item.rank,
+  description:"A fictional Vet Gods game credential recognizing command-level progression in "+item.category.toLowerCase()+" operations within the Vet Gods simulation.",
+  signature1:"Dr. K. Nix · Grand Veterinary Command",
+  signature2:"A. Vesper · Credential & Sanctuary Authority"
+ };
+ data.issued=data.issued||[];data.issued.unshift(c);
+ try{
+   let raw=JSON.stringify(data);
+   localStorage.setItem("vetgods_credentials_v1",raw);
+   localStorage.setItem("vetgods_credentials_v1_backup",raw)
+ }catch(e){}
+ render()
+}
+function render(){
+ let data=d(),cats=["ALL",...new Set(LIB.map(x=>x.category))],items=cat==="ALL"?LIB:LIB.filter(x=>x.category===cat),main=document.querySelector("#main");if(!main)return;
+ document.body.classList.remove("vgSimpleChartActive");
+ main.innerHTML='<div id="vgCertLibraryP2"><div class="c2-head"><h2>GRAND CREDENTIAL LIBRARY // 55 COMMISSIONS & FELLOWSHIPS</h2>'+
+ '<div>Large-scale fictional Vet Gods ranks spanning medicine, diagnostics, emergency care, recovery, exotics, Morph research, Sanctuary operations and ship command.</div></div>'+
+ '<div class="c2-tabs">'+cats.map(x=>'<button data-cat="'+x+'">'+x+'</button>').join("")+'</div>'+
+ '<div class="c2-count">'+(data.issued||[]).filter(x=>x.libraryId).length+' / '+LIB.length+' library credentials issued · Player: <b>'+esc(data.playerName||"John Smith")+'</b></div>'+
+ '<div class="c2-grid">'+items.map(x=>{let got=issuedFor(x.id);return '<article class="c2-card"><small>'+x.category+' · '+x.id+'</small><h3>'+esc(x.title)+'</h3>'+
+ '<div class="c2-rank">'+esc(x.rank)+'</div><div>Permanent fictional in-game command credential.</div>'+
+ '<button class="'+(got?"issued":"")+'" data-issue="'+x.id+'">'+(got?"ISSUED · "+esc(got.serial):"ISSUE TO PLAYER")+'</button></article>'}).join("")+'</div>'+
+ '<div class="c2-tabs"><button id="c2vault">OPEN CREDENTIAL VAULT</button></div></div>';
+ main.querySelectorAll("[data-cat]").forEach(b=>b.onclick=()=>{cat=b.dataset.cat;render()});
+ main.querySelectorAll("[data-issue]").forEach(b=>b.onclick=()=>issue(b.dataset.issue));
+ document.querySelector("#c2vault").onclick=()=>window.VetGodsCredentialsP1.render()
+}
+window.VetGodsCredentialLibraryP2={render,issue,library:LIB};
+setTimeout(function(){
+ let nav=document.querySelector("#vgSimpleNavP9");if(!nav)return;
+ if(!nav.querySelector("[data-p9='CREDENTIAL-LIBRARY']")){
+  let b=document.createElement("button");b.dataset.p9="CREDENTIAL-LIBRARY";b.textContent="CREDENTIALS";b.onclick=render;nav.appendChild(b)
+ }
+},750);
+})();
+</script>
+
+<style id="vg-cert-p3-css">
+#vgAwardsProgressP3{max-width:1080px;margin:10px auto 90px;font:12px "Courier New",monospace}
+#vgAwardsProgressP3 .p3-head{background:#111;color:#eee;border:1px solid #777;padding:12px}
+#vgAwardsProgressP3 .p3-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:8px 0}
+#vgAwardsProgressP3 .p3-stat{background:#f1efe7;color:#111;border:1px solid #777;padding:9px;text-align:center}
+#vgAwardsProgressP3 .p3-stat strong{display:block;font-size:18px}
+#vgAwardsProgressP3 .p3-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+#vgAwardsProgressP3 .p3-card{background:#f1efe7;color:#111;border:1px solid #777;padding:10px}
+#vgAwardsProgressP3 .p3-card h3{font-family:Georgia,serif;margin:0 0 4px;font-size:15px}
+#vgAwardsProgressP3 .p3-bar{height:10px;background:#ddd;border:1px solid #999;margin:7px 0;overflow:hidden}
+#vgAwardsProgressP3 .p3-fill{height:100%;background:#333}
+#vgAwardsProgressP3 .earned{outline:3px solid #657963}
+#vgAwardsProgressP3 button{padding:9px 11px;background:#111;color:#fff;border:1px solid #555;font:900 9px "Courier New",monospace}
+#vgAwardsProgressP3 .p3-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+@media(max-width:720px){#vgAwardsProgressP3 .p3-grid{grid-template-columns:1fr}#vgAwardsProgressP3 .p3-stats{grid-template-columns:repeat(2,1fr)}}
+</style>
+
+<script id="vg-cert-p3-earned-achievements">
+(function(){
+"use strict";
+const RULES=[
+["VG-LIB-001","Close First Patient Case",m=>m.closed>=1,m=>m.closed+"/1 closed case"],
+["VG-LIB-006","Complete Diagnostic Work",m=>m.diagnostics>=1,m=>m.diagnostics+"/1 diagnostic case"],
+["VG-LIB-011","Complete Stabilization",m=>m.stabilized>=1,m=>m.stabilized+"/1 stabilized patient"],
+["VG-LIB-016","Complete Recovery",m=>m.recovered>=1,m=>m.recovered+"/1 recovered patient"],
+["VG-LIB-021","Treat an Exotic / Nontraditional Species",m=>m.exotic>=1,m=>m.exotic+"/1 exotic case"],
+["VG-LIB-026","Create First Morph Creature",m=>m.morphs>=1,m=>m.morphs+"/1 morph creature"],
+["VG-LIB-027","Reach Morph Generation 3",m=>m.maxGen>=3,m=>"Generation "+m.maxGen+"/3"],
+["VG-LIB-029","Cement a Permanent Morph Form",m=>m.cemented>=1,m=>m.cemented+"/1 cemented form"],
+["VG-LIB-031","Place First Resident in Sanctuary",m=>m.sanctuary>=1,m=>m.sanctuary+"/1 sanctuary resident"],
+["VG-LIB-033","Complete First Adoption Placement",m=>m.adoption>=1,m=>m.adoption+"/1 adoption placement"],
+["VG-LIB-036","Complete Nutrition Support",m=>m.nutrition>=1,m=>m.nutrition+"/1 nutrition-supported patient"],
+["VG-LIB-041","Complete Five Animal Cases",m=>m.closed>=5,m=>m.closed+"/5 closed cases"],
+["VG-LIB-046","Maintain Ten Permanent Animal Records",m=>m.animals>=10,m=>m.animals+"/10 animal records"],
+["VG-LIB-051","Record Twenty-Five Lives",m=>m.animals>=25,m=>m.animals+"/25 permanent animals"],
+["VG-LIB-052","Perform One Hundred Recorded Care Actions",m=>m.actions>=100,m=>m.actions+"/100 care actions"],
+["VG-LIB-055","Complete Major Command Milestones",m=>m.closed>=10&&m.morphs>=3&&m.sanctuary>=3,m=>"Cases "+m.closed+"/10 · Morphs "+m.morphs+"/3 · Sanctuary "+m.sanctuary+"/3"]
+];
+const PROG="vetgods_achievement_progress_v1";
+function read(){try{return JSON.parse(localStorage.getItem(PROG)||'{"actions":0}')||{actions:0}}catch(e){return {actions:0}}}
+function saveP(p){try{localStorage.setItem(PROG,JSON.stringify(p))}catch(e){}}
+function id(a){return String(a?.permanentId||a?.id||"")}
+function metrics(){
+ let animals=Array.isArray(state.animals)?state.animals:[],p=read();
+ let exoticWords=/owl|bird|falcon|raven|shark|orca|whale|manta|gecko|axolotl|crocodile|beetle|moth|snake|cobra|rhino|elephant|gorilla|kangaroo|peacock|octopus|insect|reptile|avian|exotic/i;
+ return {
+  animals:animals.length,
+  closed:animals.filter(a=>a.caseClosed).length,
+  diagnostics:animals.filter(a=>a.diagnosticsComplete).length,
+  stabilized:animals.filter(a=>a.stabilizationComplete).length,
+  recovered:animals.filter(a=>a.recoveryComplete).length,
+  exotic:animals.filter(a=>exoticWords.test(String(a.species||"")) && (a.caseClosed||a.treatmentComplete||a.recoveryComplete)).length,
+  morphs:animals.filter(a=>a.morphRecord).length,
+  maxGen:Math.max(0,...animals.map(a=>Number(a.morphRecord?.generation||0))),
+  cemented:animals.filter(a=>a.morphRecord?.cemented).length,
+  sanctuary:animals.filter(a=>a.destination==="SANCTUARY"||a.inSanctuary).length,
+  adoption:animals.filter(a=>a.destination==="ADOPTION"||a.adoptionReady).length,
+  nutrition:animals.filter(a=>Number(a.nutrition)>=70 && (a.stabilizationComplete||a.treatmentComplete||a.recoveryComplete)).length,
+  actions:Number(p.actions||0)
+ }
+}
+function credentialData(){return window.VetGodsCredentialsP1?.data?.()||{playerName:"John Smith",issued:[]}}
+function already(lib){return (credentialData().issued||[]).some(c=>c.libraryId===lib)}
+function issue(lib){
+ if(already(lib))return false;
+ window.VetGodsCredentialLibraryP2?.issue?.(lib);
+ return true
+}
+function evaluate(){
+ let m=metrics(),earned=[];
+ RULES.forEach(r=>{if(r[2](m)){if(issue(r[0]))earned.push(r[0])}});
+ return {m,earned}
+}
+function countAction(){
+ let p=read();p.actions=Number(p.actions||0)+1;saveP(p);
+ setTimeout(evaluate,20)
+}
+/* Count meaningful medical actions rather than arbitrary page clicks. */
+function wrap(obj,key){
+ let o=window[obj];if(!o||typeof o[key]!=="function"||o[key]._awardP3)return;
+ let fn=o[key],w=function(){let r=fn.apply(this,arguments);countAction();setTimeout(evaluate,80);return r};
+ w._awardP3=true;o[key]=w
+}
+wrap("VetGodsSimpleStabilizationP4","action");
+wrap("VetGodsSimpleTreatmentP5","perform");
+wrap("VetGodsSimpleTreatmentP5","reassess");
+wrap("VetGodsSimpleRecoveryP6","action");
+wrap("VetGodsSimpleRecoveryP6","reassess");
+wrap("VetGodsSimpleDiagnosticsP3","complete");
+wrap("VetGodsSimpleDispositionP7","complete");
+wrap("VetGodsMorphLabP3","saveCreature");
+wrap("VetGodsMorphFinalizeP4","cement");
+
+function render(){
+ let result=evaluate(),m=result.m,lib=window.VetGodsCredentialLibraryP2?.library||[],main=document.querySelector("#main");if(!main)return;
+ document.body.classList.remove("vgSimpleChartActive");
+ let rows=RULES.map(r=>{let item=lib.find(x=>x.id===r[0])||{title:r[0],rank:"Credential"},ok=r[2](m),got=already(r[0]);
+ return '<article class="p3-card '+(got?"earned":"")+'"><small>'+r[0]+'</small><h3>'+item.title+'</h3><b>'+item.rank+'</b>'+
+ '<div>'+r[1]+'</div><div class="p3-bar"><div class="p3-fill" style="width:'+(ok?100:Math.min(90,Math.max(8,guess(r[0],m))))+'%"></div></div>'+
+ '<div>'+(got?"🏆 EARNED & ISSUED":"PROGRESS · "+r[3](m))+'</div></article>'}).join("");
+ main.innerHTML='<div id="vgAwardsProgressP3"><div class="p3-head"><h2>ACHIEVEMENT COMMAND // EARNED CREDENTIALS</h2>'+
+ '<div>Credentials now unlock from actual Vet Gods play. The system reads your permanent animals, medical completion, Morph generations and destinations.</div></div>'+
+ '<div class="p3-stats"><div class="p3-stat"><strong>'+m.animals+'</strong>ANIMALS</div><div class="p3-stat"><strong>'+m.closed+'</strong>CLOSED CASES</div>'+
+ '<div class="p3-stat"><strong>'+m.morphs+'</strong>MORPHS</div><div class="p3-stat"><strong>'+m.sanctuary+'</strong>SANCTUARY</div><div class="p3-stat"><strong>'+m.actions+'</strong>CARE ACTIONS</div></div>'+
+ '<div class="p3-grid">'+rows+'</div><div class="p3-actions"><button id="p3vault">CREDENTIAL VAULT</button><button id="p3library">FULL 55-CREDENTIAL LIBRARY</button><button id="p3check">CHECK ACHIEVEMENTS NOW</button></div></div>';
+ document.querySelector("#p3vault").onclick=()=>window.VetGodsCredentialsP1.render();
+ document.querySelector("#p3library").onclick=()=>window.VetGodsCredentialLibraryP2.render();
+ document.querySelector("#p3check").onclick=render
+}
+function guess(lib,m){
+ let map={"VG-LIB-001":m.closed*100,"VG-LIB-006":m.diagnostics*100,"VG-LIB-011":m.stabilized*100,"VG-LIB-016":m.recovered*100,
+ "VG-LIB-021":m.exotic*100,"VG-LIB-026":m.morphs*100,"VG-LIB-027":m.maxGen/3*100,"VG-LIB-029":m.cemented*100,
+ "VG-LIB-031":m.sanctuary*100,"VG-LIB-033":m.adoption*100,"VG-LIB-036":m.nutrition*100,"VG-LIB-041":m.closed/5*100,
+ "VG-LIB-046":m.animals/10*100,"VG-LIB-051":m.animals/25*100,"VG-LIB-052":m.actions/100*100,
+ "VG-LIB-055":Math.min(m.closed/10,m.morphs/3,m.sanctuary/3)*100};return map[lib]||8
+}
+setTimeout(evaluate,900);
+window.addEventListener("beforeunload",evaluate);
+window.VetGodsAchievementsP3={render,evaluate,metrics,rules:RULES};
+setTimeout(function(){
+ let nav=document.querySelector("#vgSimpleNavP9");if(!nav)return;
+ if(!nav.querySelector("[data-p9='ACHIEVEMENTS']")){
+  let b=document.createElement("button");b.dataset.p9="ACHIEVEMENTS";b.textContent="ACHIEVEMENTS";b.onclick=render;nav.appendChild(b)
+ }
+},850);
+})();
+</script>
+
+<script id="vg-cert-p4-player-name-lock">
+(function(){
+"use strict";
+const NAME_KEY="vetgods_player_name_permanent_v1";
+function clean(v){
+ v=String(v||"").trim();
+ return (!v || /^john smith$/i.test(v)) ? "" : v;
+}
+function stored(){
+ try{return clean(localStorage.getItem(NAME_KEY))}catch(e){return ""}
+}
+function credentialName(){
+ try{
+  let d=window.VetGodsCredentialsP1?.data?.();
+  return clean(d?.playerName)
+ }catch(e){return ""}
+}
+function resolve(){
+ return stored() ||
+   clean(state?.rewardSystem?.playerName) ||
+   clean(state?.certName) ||
+   credentialName() ||
+   "Player";
+}
+function force(name){
+ name=clean(name);
+ if(!name)return resolve();
+ try{localStorage.setItem(NAME_KEY,name)}catch(e){}
+ state.rewardSystem=state.rewardSystem||{};
+ state.rewardSystem.playerName=name;
+ state.certName=name;
+ try{
+   let d=window.VetGodsCredentialsP1?.data?.()||{issued:[]};
+   d.playerName=name;
+   let raw=JSON.stringify(d);
+   localStorage.setItem("vetgods_credentials_v1",raw);
+   localStorage.setItem("vetgods_credentials_v1_backup",raw);
+   save();
+ }catch(e){}
+ return name;
+}
+
+/* Capture the real player name whenever the user saves it. */
+if(window.VetGodsCredentialsP1?.setName && !window.VetGodsCredentialsP1.setName._p4){
+ let old=window.VetGodsCredentialsP1.setName;
+ window.VetGodsCredentialsP1.setName=function(){
+   let el=document.querySelector("#c1name"),typed=clean(el?.value);
+   if(typed)force(typed);
+   let r=old.apply(this,arguments);
+   force(typed||resolve());
+   return r;
+ };
+ window.VetGodsCredentialsP1.setName._p4=true;
+}
+
+/* Critical fix: before ANY certificate issuance, lock the resolved real
+   player name into every name source. Never allow the fallback to win. */
+function wrapIssue(obj,key){
+ let o=window[obj];if(!o||typeof o[key]!=="function"||o[key]._nameLockP4)return;
+ let old=o[key];
+ let w=function(){
+   let n=resolve();force(n);
+   let r=old.apply(this,arguments);
+   /* Repair only newly-issued fallback names, preserving legitimately
+      issued historical names that were not created in this call. */
+   try{
+    let d=window.VetGodsCredentialsP1.data(),changed=false;
+    (d.issued||[]).forEach(c=>{
+      if(/^john smith$/i.test(String(c.playerName||"")) && n!=="Player"){
+        c.playerName=n;changed=true;
+      }
+    });
+    if(changed){
+      let raw=JSON.stringify(d);
+      localStorage.setItem("vetgods_credentials_v1",raw);
+      localStorage.setItem("vetgods_credentials_v1_backup",raw);
+    }
+   }catch(e){}
+   return r;
+ };
+ w._nameLockP4=true;o[key]=w;
+}
+wrapIssue("VetGodsCredentialsP1","issue");
+wrapIssue("VetGodsCredentialLibraryP2","issue");
+
+/* Repair the old John Smith fallback certificates using the player's
+   established saved name. */
+function repair(){
+ let n=resolve();
+ if(n==="Player")return;
+ force(n);
+ try{
+  let d=window.VetGodsCredentialsP1.data(),changed=false;
+  (d.issued||[]).forEach(c=>{
+    if(/^john smith$/i.test(String(c.playerName||""))){c.playerName=n;changed=true}
+  });
+  if(changed){
+   let raw=JSON.stringify(d);
+   localStorage.setItem("vetgods_credentials_v1",raw);
+   localStorage.setItem("vetgods_credentials_v1_backup",raw);
+  }
+ }catch(e){}
+}
+repair();setTimeout(repair,700);
+window.addEventListener("beforeunload",repair);
+window.VetGodsPlayerNameLockP4={resolve,force,repair};
+})();
+</script>
+
+<style id="vg-cert-p4-rank-css">
+#vgRankP4{max-width:1000px;margin:10px auto 90px;background:#f1efe7;color:#111;border:1px solid #777;padding:14px;font:12px "Courier New",monospace}
+#vgRankP4 .rankHero{background:#111;color:#eee;padding:18px;text-align:center}
+#vgRankP4 .rankHero h2{font-family:Georgia,serif;font-size:25px;margin:5px}
+#vgRankP4 .rankGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:8px}
+#vgRankP4 .rankCard{background:#fff;border:1px solid #999;padding:9px}
+@media(max-width:650px){#vgRankP4 .rankGrid{grid-template-columns:1fr}}
+</style>
+<script id="vg-cert-p4-rank-profile">
+(function(){
+function render(){
+ let d=window.VetGodsCredentialsP1?.data?.()||{issued:[]},n=window.VetGodsPlayerNameLockP4?.resolve?.()||"Player";
+ let issued=d.issued||[],ranks=[...new Set(issued.map(x=>x.rank).filter(Boolean))];
+ let main=document.querySelector("#main");if(!main)return;
+ main.innerHTML='<div id="vgRankP4"><div class="rankHero"><small>VET GODS // COMMAND IDENTITY</small><h2>'+n+'</h2>'+
+ '<div>'+(ranks[0]||"Veterinary Command Candidate")+'</div><div>'+issued.length+' permanent credentials recorded</div></div>'+
+ '<div class="rankGrid">'+(ranks.length?ranks.map((r,i)=>'<div class="rankCard"><b>'+(i+1)+'. '+r+'</b><br>Earned fictional Vet Gods command title</div>').join(""):'<div class="rankCard">Earn credentials to build your command title record.</div>')+'</div></div>';
+}
+window.VetGodsRankProfileP4={render};
+setTimeout(function(){
+ let nav=document.querySelector("#vgSimpleNavP9");if(nav&&!nav.querySelector("[data-p9='RANKS']")){
+  let b=document.createElement("button");b.dataset.p9="RANKS";b.textContent="MY RANKS";b.onclick=render;nav.appendChild(b)
+ }
+},900);
+})();
+</script>
+
+<style id="vg-cert-p5-css">
+#vgGrandVaultP5{max-width:1120px;margin:10px auto 100px;font:12px "Courier New",monospace}
+#vgGrandVaultP5 .v5-head{background:#0b0d0f;color:#eee;border:1px solid #777;padding:15px;text-align:center}
+#vgGrandVaultP5 .v5-head h2{font:700 26px Georgia,serif;margin:4px}
+#vgGrandVaultP5 .v5-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}
+#vgGrandVaultP5 .v5-stat{background:#eeeade;border:1px solid #777;padding:10px;text-align:center;color:#111}
+#vgGrandVaultP5 .v5-stat strong{display:block;font-size:20px}
+#vgGrandVaultP5 .v5-grid{display:grid;grid-template-columns:300px 1fr;gap:8px}
+#vgGrandVaultP5 .v5-panel{background:#eeeade;color:#111;border:1px solid #777;padding:10px}
+#vgGrandVaultP5 .v5-list{display:grid;gap:5px;max-height:650px;overflow:auto}
+#vgGrandVaultP5 .v5-item{padding:8px;text-align:left;background:#fff;color:#111;border:1px solid #999;font:900 9px "Courier New",monospace}
+#vgGrandVaultP5 .v5-item.on{outline:3px solid #6b7967}
+#vgGrandVaultP5 .v5-cert{background:#f7f0d7;border:9px double #302a20;box-shadow:inset 0 0 0 3px #a49b78;padding:27px;text-align:center;min-height:480px;position:relative}
+#vgGrandVaultP5 .v5-cert:before{content:"✦  VET GODS  ✦";display:block;font-size:11px;letter-spacing:4px;font-weight:900}
+#vgGrandVaultP5 .v5-title{font:700 28px Georgia,serif;margin:25px 0 13px}
+#vgGrandVaultP5 .v5-name{font:700 32px Georgia,serif;display:inline-block;min-width:65%;border-bottom:1px solid #333;padding:6px}
+#vgGrandVaultP5 .v5-body{max-width:600px;margin:15px auto;line-height:1.6}
+#vgGrandVaultP5 .v5-seal{width:105px;height:105px;margin:17px auto;border:7px double #332d22;border-radius:50%;display:flex;align-items:center;justify-content:center;font:700 27px Georgia,serif}
+#vgGrandVaultP5 .v5-sign{display:grid;grid-template-columns:1fr 1fr;gap:35px;margin-top:28px}
+#vgGrandVaultP5 .v5-sign div{border-top:1px solid #333;padding-top:5px;font-size:9px}
+#vgGrandVaultP5 .v5-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+#vgGrandVaultP5 button{padding:9px 11px;background:#111;color:#fff;border:1px solid #555;font:900 9px "Courier New",monospace}
+#vgGrandVaultP5 .v5-wall{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+#vgGrandVaultP5 .v5-medal{background:#fff;border:1px solid #999;padding:9px;text-align:center}
+#vgGrandVaultP5 .v5-medal span{display:block;font-size:27px}
+@media(max-width:760px){#vgGrandVaultP5 .v5-grid{grid-template-columns:1fr}#vgGrandVaultP5 .v5-list{max-height:200px}#vgGrandVaultP5 .v5-stats{grid-template-columns:repeat(2,1fr)}#vgGrandVaultP5 .v5-wall{grid-template-columns:1fr 1fr}.v5-title{font-size:21px!important}.v5-name{font-size:24px!important}}
+@media print{body>*{display:none!important}#main,#vgGrandVaultP5,#vgGrandVaultP5 .v5-grid,#vgGrandVaultP5 .v5-panel:last-child,#vgGrandVaultP5 .v5-cert{display:block!important}#vgGrandVaultP5 .v5-panel:first-child,#vgGrandVaultP5 .v5-head,#vgGrandVaultP5 .v5-stats,#vgSimpleNavP9{display:none!important}}
+</style>
+
+<script id="vg-cert-p5-grand-vault-final">
+(function(){
+"use strict";
+let selected="";
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function data(){return window.VetGodsCredentialsP1?.data?.()||{issued:[]}}
+function name(){return window.VetGodsPlayerNameLockP4?.resolve?.()||data().playerName||"Player"}
+function current(){let a=data().issued||[];return a.find(x=>x.id===selected)||a[0]||null}
+function choose(x){selected=x;render()}
+function cert(c){
+ if(!c)return '<div class="v5-cert"><div class="v5-title">Credential Vault Awaiting First Award</div><div class="v5-body">Complete gameplay achievements or issue the founding commission to begin the Wall of Distinction.</div></div>';
+ return '<div class="v5-cert"><div>GRAND COMMAND CREDENTIAL AUTHORITY</div><div class="v5-title">'+esc(c.title)+'</div>'+
+ '<div>This fictional Vet Gods distinction is permanently recorded to</div><div class="v5-name">'+esc(c.playerName||name())+'</div>'+
+ '<div class="v5-body">'+esc(c.description||"Awarded for distinguished progression within the Vet Gods simulation.")+'</div>'+
+ '<div><b>'+esc(c.rank||"Vet Gods Command Distinction")+'</b></div><div class="v5-seal">VG<br>★</div>'+
+ '<div class="v5-sign"><div>'+esc(c.signature1||"Dr. K. Nix · Grand Veterinary Command")+'</div><div>'+esc(c.signature2||"A. Vesper · Credential Authority")+'</div></div>'+
+ '<div style="margin-top:18px;font-size:8px">CERTIFICATE '+esc(c.serial||c.id)+' · '+new Date(c.issuedAt||Date.now()).toLocaleDateString()+'</div></div>'
+}
+function render(){
+ window.VetGodsPlayerNameLockP4?.repair?.();
+ window.VetGodsAchievementsP3?.evaluate?.();
+ let d=data(),issued=d.issued||[],c=current(),lib=window.VetGodsCredentialLibraryP2?.library||[];
+ let categories=new Set(issued.map(x=>lib.find(y=>y.id===x.libraryId)?.category).filter(Boolean));
+ let ranks=[...new Set(issued.map(x=>x.rank).filter(Boolean))];
+ let main=document.querySelector("#main");if(!main)return;
+ document.body.classList.remove("vgSimpleChartActive");
+ main.innerHTML='<div id="vgGrandVaultP5"><div class="v5-head"><small>VET GODS // PERMANENT WALL OF DISTINCTION</small><h2>'+esc(name())+'</h2>'+
+ '<div>GRAND CREDENTIAL VAULT · COMMISSIONS · FELLOWSHIPS · ORDERS · COMMAND TITLES</div></div>'+
+ '<div class="v5-stats"><div class="v5-stat"><strong>'+issued.length+'</strong>CREDENTIALS</div><div class="v5-stat"><strong>'+ranks.length+'</strong>COMMAND TITLES</div>'+
+ '<div class="v5-stat"><strong>'+categories.size+'</strong>DIVISIONS</div><div class="v5-stat"><strong>'+Math.min(55,issued.filter(x=>x.libraryId).length)+'</strong>/ 55 LIBRARY</div></div>'+
+ '<div class="v5-grid"><section class="v5-panel"><h3>PERMANENT ARCHIVE</h3><div class="v5-list">'+
+ (issued.length?issued.map(x=>'<button class="v5-item '+(c?.id===x.id?"on":"")+'" data-v5="'+esc(x.id)+'">'+esc(x.title)+'<br><small>'+esc(x.playerName)+' · '+esc(x.serial||"")+'</small></button>').join(""):'No awards issued yet.')+
+ '</div><div class="v5-actions"><button id="v5ach">ACHIEVEMENTS</button><button id="v5lib">55 CREDENTIALS</button><button id="v5rank">MY RANKS</button></div>'+
+ '<h3>WALL OF DISTINCTION</h3><div class="v5-wall">'+
+ (ranks.length?ranks.slice(0,12).map((r,i)=>'<div class="v5-medal"><span>'+(["🏆","🎖️","🏅"][i%3])+'</span>'+esc(r)+'</div>').join(""):'<div class="v5-medal"><span>☆</span>Earn your first distinction</div>')+
+ '</div></section><section class="v5-panel">'+cert(c)+'<div class="v5-actions"><button id="v5print">PRINT / SAVE CURRENT CERTIFICATE</button></div></section></div></div>';
+ main.querySelectorAll("[data-v5]").forEach(b=>b.onclick=()=>choose(b.dataset.v5));
+ document.querySelector("#v5ach").onclick=()=>window.VetGodsAchievementsP3.render();
+ document.querySelector("#v5lib").onclick=()=>window.VetGodsCredentialLibraryP2.render();
+ document.querySelector("#v5rank").onclick=()=>window.VetGodsRankProfileP4.render();
+ document.querySelector("#v5print").onclick=()=>window.print()
+}
+function persist(){
+ window.VetGodsPlayerNameLockP4?.repair?.();
+ try{window.VetGodsAchievementsP3?.evaluate?.();save()}catch(e){}
+}
+persist();setTimeout(persist,1200);
+window.addEventListener("beforeunload",persist);
+window.VetGodsGrandCredentialVaultP5={render,persist};
+setTimeout(function(){
+ let nav=document.querySelector("#vgSimpleNavP9");if(!nav)return;
+ let a=nav.querySelector("[data-p9='AWARDS']");if(a){a.textContent="AWARDS VAULT";a.onclick=render}
+},950);
+})();
+</script>
+
+<style id="vg-manual-cert-fix-css">
+#vgManualCertFix{max-width:1050px;margin:10px auto 90px;background:#eeeade;color:#111;border:1px solid #777;padding:13px;font:12px "Courier New",monospace}
+#vgManualCertFix .mc-head{background:#111;color:#eee;padding:12px}
+#vgManualCertFix .mc-form{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}
+#vgManualCertFix label{display:block;font-weight:900;font-size:9px;margin-bottom:3px}
+#vgManualCertFix input,#vgManualCertFix textarea,#vgManualCertFix select{box-sizing:border-box;width:100%;padding:11px;background:#fff;color:#111;border:1px solid #555;font:12px "Courier New",monospace;pointer-events:auto!important;user-select:text!important}
+#vgManualCertFix textarea{min-height:85px;resize:vertical}
+#vgManualCertFix .wide{grid-column:1/-1}
+#vgManualCertFix button{padding:11px;background:#111;color:#fff;border:1px solid #555;font:900 10px "Courier New",monospace}
+#vgManualCertFix .mc-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+#vgManualCertFix .mc-msg{margin-top:8px;padding:9px;background:#fff;border:1px solid #999}
+@media(max-width:650px){#vgManualCertFix .mc-form{grid-template-columns:1fr}.wide{grid-column:auto!important}}
+</style>
+
+<script id="vg-manual-cert-issue-input-fix">
+(function(){
+"use strict";
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function player(){return window.VetGodsPlayerNameLockP4?.resolve?.()||"Player"}
+function data(){return window.VetGodsCredentialsP1?.data?.()||{playerName:player(),issued:[]}}
+function serial(){return "VG-MAN-"+new Date().getFullYear()+"-"+Math.random().toString(36).slice(2,7).toUpperCase()+"-"+String(Date.now()).slice(-4)}
+function store(d){
+ let raw=JSON.stringify(d);
+ localStorage.setItem("vetgods_credentials_v1",raw);
+ localStorage.setItem("vetgods_credentials_v1_backup",raw)
+}
+function issue(){
+ let recipient=(document.querySelector("#mcPlayer")?.value||"").trim();
+ let title=(document.querySelector("#mcTitle")?.value||"").trim();
+ let rank=(document.querySelector("#mcRank")?.value||"").trim();
+ let body=(document.querySelector("#mcBody")?.value||"").trim();
+ if(!recipient)return msg("ENTER THE PLAYER NAME.");
+ if(!title)return msg("ENTER A CERTIFICATE TITLE.");
+ if(!rank)rank="Distinguished Vet Gods Command Credential";
+ if(!body)body="Awarded as a fictional in-game distinction within the Vet Gods simulation.";
+ /* If issuing to the active player, this also becomes the permanent player identity. */
+ window.VetGodsPlayerNameLockP4?.force?.(recipient);
+ let d=data(),now=Date.now(),c={
+   id:"MANUAL-CERT-"+now+"-"+Math.random().toString(36).slice(2,6),
+   manual:true,serial:serial(),playerName:recipient,issuedAt:now,title,rank,description:body,
+   signature1:"Dr. K. Nix · Grand Veterinary Command",
+   signature2:"A. Vesper · Credential Authority"
+ };
+ d.playerName=recipient;d.issued=d.issued||[];d.issued.unshift(c);store(d);
+ msg("ISSUED: "+title+" → "+recipient+" · "+c.serial);
+ setTimeout(()=>window.VetGodsGrandCredentialVaultP5?.render?.(),650)
+}
+function msg(t){let x=document.querySelector("#mcMsg");if(x)x.textContent=t}
+function render(){
+ let main=document.querySelector("#main");if(!main)return;
+ document.body.classList.remove("vgSimpleChartActive");
+ main.innerHTML='<div id="vgManualCertFix"><div class="mc-head"><h2>MANUAL CERTIFICATE ISSUANCE DESK</h2>'+
+ '<div>Type directly into the fields below, then issue the certificate to your player.</div></div>'+
+ '<div class="mc-form"><div><label>PLAYER / RECIPIENT NAME</label><input id="mcPlayer" type="text" maxlength="60" autocomplete="off" value="'+esc(player())+'"></div>'+
+ '<div><label>CREDENTIAL / RANK</label><input id="mcRank" type="text" maxlength="100" value="Grand Veterinary Command Distinction"></div>'+
+ '<div class="wide"><label>CERTIFICATE TITLE</label><input id="mcTitle" type="text" maxlength="140" placeholder="Example: Supreme Commission of Multispecies Recovery"></div>'+
+ '<div class="wide"><label>CERTIFICATE WORDING</label><textarea id="mcBody" placeholder="Write what this award recognizes..."></textarea></div></div>'+
+ '<div class="mc-actions"><button id="mcIssue">ISSUE CERTIFICATE TO PLAYER</button><button id="mcVault">OPEN AWARDS VAULT</button></div>'+
+ '<div class="mc-msg" id="mcMsg">READY. These are editable text fields — click or tap and type normally.</div></div>';
+ /* Direct DOM handlers: no overlay helper, no yellow guide, no delegated click requirement. */
+ document.querySelector("#mcIssue").onclick=issue;
+ document.querySelector("#mcVault").onclick=()=>window.VetGodsGrandCredentialVaultP5?.render?.();
+ ["mcPlayer","mcRank","mcTitle","mcBody"].forEach(id=>{
+   let e=document.getElementById(id);
+   e.disabled=false;e.readOnly=false;
+   e.addEventListener("pointerdown",ev=>ev.stopPropagation());
+   e.addEventListener("click",ev=>ev.stopPropagation());
+   e.addEventListener("keydown",ev=>ev.stopPropagation());
+   e.addEventListener("input",ev=>ev.stopPropagation())
+ })
+}
+window.VetGodsManualCertificateDesk={render,issue};
+setTimeout(function(){
+ let nav=document.querySelector("#vgSimpleNavP9");if(!nav)return;
+ let old=nav.querySelector("[data-p9='ISSUE-CERT']");
+ if(!old){old=document.createElement("button");old.dataset.p9="ISSUE-CERT";old.textContent="ISSUE CERT";nav.appendChild(old)}
+ old.onclick=render
+},1000);
+})();
+</script>
 </body></html>
