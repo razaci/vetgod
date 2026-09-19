@@ -14143,4 +14143,2155 @@ function install(){
 setTimeout(install,2100);
 })();
 </script>
+
+<style id="vg-consolidation-p1-css">
+#vgMasterAnimalP1{max-width:1060px;margin:8px auto 90px;background:#eeeade;color:#111;border:2px solid #fff;box-shadow:7px 7px #111;padding:12px;box-sizing:border-box;font:10px "Courier New",monospace}
+#vgMasterAnimalP1 .head{border-bottom:3px double #111;padding-bottom:7px}
+#vgMasterAnimalP1 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+#vgMasterAnimalP1 .box{background:#faf8ef;border:1px solid #999;padding:8px}
+#vgMasterAnimalP1 .wide{grid-column:span 2}
+#vgMasterAnimalP1 button{background:#111;color:#fff;border:1px solid #111;padding:7px 9px;font:900 8px "Courier New",monospace;margin:4px}
+#vgMasterAnimalP1 .id{font-weight:900;color:#126d31}
+@media(max-width:720px){#vgMasterAnimalP1 .grid{grid-template-columns:1fr}#vgMasterAnimalP1 .wide{grid-column:span 1}}
+</style>
+<script id="vg-consolidation-p1-master-animal">
+(function(){
+"use strict";
+const KEY="vetgods_permanent_animal_master_v1";
+function read(){try{return JSON.parse(localStorage.getItem(KEY)||'{"records":{},"order":[]}')}catch(e){return {records:{},order:[]}}}
+function write(x){try{localStorage.setItem(KEY,JSON.stringify(x));if(typeof save==="function")save()}catch(e){}}
+function uid(a){
+ if(!a)return "";
+ if(a.permanentId)return String(a.permanentId);
+ let base=(a.name||a.species||"ANIMAL").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,8)||"ANIMAL";
+ a.permanentId="VG-"+base+"-"+Date.now().toString(36).toUpperCase()+"-"+Math.random().toString(36).slice(2,5).toUpperCase();
+ return a.permanentId
+}
+function roster(){return Array.isArray(window.state?.animals)?state.animals:[]}
+function active(){try{return window.VetGodsActivePatientP3?.restore?.()||null}catch(e){return null}}
+function merge(a,reason){
+ if(!a)return null;
+ let x=read(),id=uid(a),old=x.records[id]||{},now=Date.now();
+ let rec={...old,
+  permanentId:id,name:a.name||old.name||"Unnamed Animal",species:a.species||old.species||"Unknown",
+  breed:a.breed||old.breed||"",sex:a.sex||old.sex||"",temperament:a.temperament||old.temperament||"",
+  personality:a.personality||old.personality||"",backstory:a.backstory||old.backstory||"",
+  portrait:a.portrait||a.image||old.portrait||"",
+  health:a.health??old.health,pain:a.pain??old.pain,hydration:a.hydration??old.hydration,
+  oxygen:a.oxygen??a.oxygenation??old.oxygen,nutrition:a.nutrition??old.nutrition,
+  stress:a.stress??old.stress,trust:a.trust??old.trust,comfort:a.comfort??old.comfort,
+  diagnosticsComplete:!!(a.diagnosticsComplete??old.diagnosticsComplete),
+  treatmentComplete:!!(a.treatmentComplete??old.treatmentComplete),
+  recoveryComplete:!!(a.recoveryComplete??old.recoveryComplete),
+  rehabComplete:!!(a.rehabComplete??old.rehabComplete),
+  destination:a.destination||a.disposition||old.destination||"",
+  morphRecord:a.morphRecord||old.morphRecord||null,updated:now
+ };
+ rec.history=Array.isArray(old.history)?old.history:[];
+ rec.history.unshift({time:now,reason:reason||"SYNC",health:rec.health,pain:rec.pain,area:window.VetGodsMasterDataBusP1?.read?.().area||""});
+ rec.history=rec.history.slice(0,150);
+ x.records[id]=rec;if(!x.order.includes(id))x.order.push(id);write(x);return rec
+}
+function syncAll(reason){
+ roster().forEach(a=>merge(a,reason||"ROSTER SYNC"));
+ let a=active();if(a)merge(a,reason||"ACTIVE PATIENT SYNC");
+ try{if(typeof save==="function")save()}catch(e){}
+ return read()
+}
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function records(){
+ syncAll("OPEN MASTER RECORDS");
+ let m=document.querySelector("#main"),x=read();if(!m)return;
+ let list=x.order.map(id=>x.records[id]).filter(Boolean);
+ m.innerHTML='<div id="vgMasterAnimalP1"><div class="head"><small>VET GODS // PERMANENT ANIMAL MASTER FILE</small><h2>ONE ANIMAL // ONE RECORD // EVERY DEPARTMENT</h2><b>'+list.length+' permanent animal records</b></div><div class="grid">'+
+ list.map(r=>'<div class="box"><span class="id">'+esc(r.permanentId)+'</span><h3>'+esc(r.name)+'</h3><b>'+esc(r.species)+'</b><br><small>HEALTH '+(r.health??"—")+' · PAIN '+(r.pain??"—")+' · O₂ '+(r.oxygen??"—")+'</small><br><button data-master-animal="'+esc(r.permanentId)+'">OPEN MASTER FILE</button></div>').join("")+
+ '</div><div><button id="masterAnimalsBackP1">MY ANIMALS</button><button id="masterHomeP1">DOS MAIN</button></div></div>';
+ m.querySelectorAll("[data-master-animal]").forEach(b=>b.onclick=()=>detail(b.dataset.masterAnimal));
+ document.querySelector("#masterAnimalsBackP1").onclick=()=>window.VetGodsDosFormsP3?.myAnimals?.();
+ document.querySelector("#masterHomeP1").onclick=()=>window.VetGodsDosProgramP2?.render?.("MAIN")
+}
+function detail(id){
+ let m=document.querySelector("#main"),r=read().records[id];if(!m||!r)return;
+ m.innerHTML='<div id="vgMasterAnimalP1"><div class="head"><small>PERMANENT MASTER RECORD</small><h2>'+esc(r.name)+'</h2><span class="id">'+esc(r.permanentId)+'</span></div>'+
+ '<div class="grid"><div class="box"><b>IDENTITY</b><br>'+esc(r.species)+' '+esc(r.breed||"")+'<br>'+esc(r.sex||"")+'</div>'+
+ '<div class="box"><b>CARE STATUS</b><br>Health '+(r.health??"—")+' · Pain '+(r.pain??"—")+'<br>Hydration '+(r.hydration??"—")+' · O₂ '+(r.oxygen??"—")+'</div>'+
+ '<div class="box"><b>WELFARE</b><br>Nutrition '+(r.nutrition??"—")+' · Stress '+(r.stress??"—")+'<br>Trust '+(r.trust??"—")+' · Comfort '+(r.comfort??"—")+'</div>'+
+ '<div class="box wide"><b>PERSONALITY / BACKSTORY</b><br>'+esc(r.personality||r.temperament||"No personality record yet.")+'<br>'+esc(r.backstory||"No backstory filed yet.")+'</div>'+
+ '<div class="box"><b>CASE FLAGS</b><br>Diagnostics '+(r.diagnosticsComplete?"COMPLETE":"OPEN")+'<br>Treatment '+(r.treatmentComplete?"COMPLETE":"OPEN")+'<br>Recovery '+(r.recoveryComplete?"COMPLETE":"OPEN")+'<br>Rehab '+(r.rehabComplete?"COMPLETE":"OPEN")+'</div>'+
+ '<div class="box"><b>DISPOSITION</b><br>'+esc(r.destination||"ACTIVE / UNFILED")+'<br><b>MORPH</b><br>'+(r.morphRecord?"PERMANENT MORPH ATTACHED":"NO MORPH RECORD")+'</div>'+
+ '<div class="box wide"><b>MASTER HISTORY</b><br>'+r.history.slice(0,12).map(h=>new Date(h.time).toLocaleString()+' // '+esc(h.reason)+' // '+esc(h.area||"PROGRAM")).join("<br>")+'</div></div>'+
+ '<button id="detailBackP1">BACK TO MASTER ANIMALS</button><button id="detailClinicP1">PATIENT CHART</button><button id="detailHomeP1">DOS MAIN</button></div>';
+ document.querySelector("#detailBackP1").onclick=records;
+ document.querySelector("#detailClinicP1").onclick=()=>window.VetGodsDosFormsP3?.clinic?.();
+ document.querySelector("#detailHomeP1").onclick=()=>window.VetGodsDosProgramP2?.render?.("MAIN")
+}
+function install(){
+ syncAll("PHASE 1 BOOT");
+ roster().forEach(a=>uid(a));try{if(typeof save==="function")save()}catch(e){}
+ document.addEventListener("click",e=>{
+   let b=e.target.closest("button");if(!b)return;
+   let t=(b.textContent||"").toUpperCase();
+   if(/SAVE|COMPLETE|TREAT|DIAGN|SURGER|RECOVER|REHAB|MORPH|ADOPT|KEEP|DISCHARGE|RETURN|FILE/.test(t))
+     setTimeout(()=>syncAll("GAME ACTION: "+t.slice(0,50)),80)
+ },true);
+ window.VetGodsPermanentAnimalP1={read,merge,syncAll,records,detail,uid};
+ if(!document.querySelector("#vgMasterAnimalButtonP1")){
+   let b=document.createElement("button");b.id="vgMasterAnimalButtonP1";b.type="button";b.textContent="ANIMAL MASTER FILE";
+   b.style.cssText="position:fixed;left:8px;bottom:42px;z-index:2147482997;background:#050606;color:#eee;border:1px solid #eee;padding:7px 9px;font:900 8px 'Courier New',monospace";
+   b.onclick=records;document.body.appendChild(b)
+ }
+}
+setTimeout(install,2200);
+window.addEventListener("beforeunload",()=>{try{syncAll("CLOSE")}catch(e){}});
+})();
+</script>
+
+<style id="vg-consolidation-p2-css">
+#vgCaseFlowP2{max-width:1060px;margin:8px auto 90px;background:#eeeade;color:#111;border:2px solid #fff;box-shadow:7px 7px #111;padding:12px;box-sizing:border-box;font:10px "Courier New",monospace}
+#vgCaseFlowP2 .head{border-bottom:3px double #111;padding-bottom:7px}
+#vgCaseFlowP2 .steps{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:8px 0}
+#vgCaseFlowP2 .step{background:#faf8ef;border:1px solid #999;padding:7px;min-height:48px}
+#vgCaseFlowP2 .done{border:2px solid #126d31}.vgCaseFlowP2 .current,#vgCaseFlowP2 .current{border:3px double #111;font-weight:900}
+#vgCaseFlowP2 button{background:#111;color:#fff;border:1px solid #111;padding:7px 9px;font:900 8px "Courier New",monospace;margin:4px}
+#vgCaseFlowP2 .next{background:#fff;border:3px double #111;padding:10px;margin-top:8px}
+#vgCaseFlowP2 .green{color:#126d31;font-weight:900}
+@media(max-width:720px){#vgCaseFlowP2 .steps{grid-template-columns:repeat(2,1fr)}}
+</style>
+<script id="vg-consolidation-p2-case-progression">
+(function(){
+"use strict";
+const KEY="vetgods_case_progression_p2_v1";
+const STEPS=[
+ ["ADMIT","Admit Patient"],["EXAMINE","Physical Examination"],["DIAGNOSE","Diagnostics"],
+ ["STABILIZE","Stabilization"],["TREAT","Definitive Treatment"],["SURGERY","Surgery / Procedure"],
+ ["RECOVERY","Recovery"],["REHAB","Rehabilitation"],["DISPOSITION","Disposition / Home"]
+];
+function read(){try{return JSON.parse(localStorage.getItem(KEY)||'{"cases":{}}')}catch(e){return {cases:{}}}}
+function write(x){try{localStorage.setItem(KEY,JSON.stringify(x));if(typeof save==="function")save()}catch(e){}}
+function animal(){try{return window.VetGodsActivePatientP3?.restore?.()||null}catch(e){return null}}
+function id(a){return String(a?.permanentId||window.VetGodsPermanentAnimalP1?.uid?.(a)||a?.id||a?.name||"NONE")}
+function ensure(a){
+ if(!a)return null;let x=read(),k=id(a),c=x.cases[k];
+ if(!c)c=x.cases[k]={animalId:k,name:a.name||"Animal",step:0,completed:[],surgeryRequired:null,history:[],updated:Date.now()};
+ c.name=a.name||c.name;c.updated=Date.now();write(x);return c
+}
+function saveCase(c,reason){
+ let x=read();c.updated=Date.now();c.history=c.history||[];c.history.unshift({time:Date.now(),step:c.step,reason:reason||"SYNC"});c.history=c.history.slice(0,100);x.cases[c.animalId]=c;write(x);
+ try{window.VetGodsPermanentAnimalP1?.syncAll?.("CASE FLOW: "+(reason||"SYNC"))}catch(e){}
+}
+function complete(step){
+ let a=animal(),c=ensure(a);if(!c)return;
+ if(!c.completed.includes(step))c.completed.push(step);
+ let idx=STEPS.findIndex(x=>x[0]===step);
+ if(idx>=c.step)c.step=idx+1;
+ if(step==="TREAT"&&c.surgeryRequired===false)c.step=Math.max(c.step,STEPS.findIndex(x=>x[0]==="RECOVERY"));
+ if(step==="SURGERY")c.surgeryRequired=true;
+ saveCase(c,"COMPLETE "+step);render()
+}
+function surgery(v){
+ let c=ensure(animal());if(!c)return;c.surgeryRequired=!!v;
+ if(v===false&&STEPS[c.step]?.[0]==="SURGERY")c.step++;
+ saveCase(c,v?"SURGERY REQUIRED":"SURGERY NOT REQUIRED");render()
+}
+function route(step){
+ const dep={DIAGNOSE:"DIAGNOSTIC",SURGERY:"SURGERY",RECOVERY:"RECOVERY",REHAB:"REHAB"};
+ if(dep[step]&&window.VetGodsDepartments?.page)return window.VetGodsDepartments.page(dep[step]);
+ if(["ADMIT","EXAMINE","STABILIZE","TREAT"].includes(step)&&window.VetGodsDosFormsP3?.clinic)return window.VetGodsDosFormsP3.clinic();
+ if(step==="DISPOSITION"&&window.VetGodsDosFormsP3?.myAnimals)return window.VetGodsDosFormsP3.myAnimals()
+}
+function render(){
+ let m=document.querySelector("#main"),a=animal();if(!m)return;
+ if(!a){m.innerHTML='<div id="vgCaseFlowP2"><h2>CASE PROGRESSION</h2><p>No active patient. Select or admit an animal first.</p><button id="cfAnimals">MY ANIMALS</button><button id="cfHome">DOS MAIN</button></div>';document.querySelector("#cfAnimals").onclick=()=>window.VetGodsDosFormsP3?.myAnimals?.();document.querySelector("#cfHome").onclick=()=>window.VetGodsDosProgramP2?.render?.("MAIN");return}
+ let c=ensure(a),current=STEPS[Math.min(c.step,STEPS.length-1)],finished=c.completed.includes("DISPOSITION");
+ m.innerHTML='<div id="vgCaseFlowP2"><div class="head"><small>VET GODS // ACTIVE CASE ROUTE</small><h2>'+a.name+' // '+a.species+'</h2><b>'+c.animalId+'</b></div>'+
+ '<div class="steps">'+STEPS.map((x,i)=>'<div class="step '+(c.completed.includes(x[0])?'done ':'')+(i===c.step&&!finished?'current':'')+'"><b>'+(i+1)+'. '+x[1]+'</b><br><small>'+(c.completed.includes(x[0])?'COMPLETE':i===c.step?'CURRENT':'PENDING')+'</small></div>').join("")+'</div>'+
+ '<div class="next">'+(finished?'<h3 class="green">CASE ROUTE COMPLETE</h3><p>This animal has reached disposition.</p>':
+ '<h3>NEXT REQUIRED ACTION: '+current[1]+'</h3><button id="cfGo">GO TO '+current[1].toUpperCase()+'</button><button id="cfComplete">MARK THIS STEP COMPLETE</button>')+
+ (current?.[0]==="SURGERY"&&!finished?'<br><button id="cfSurgeryYes">SURGERY REQUIRED</button><button id="cfSurgeryNo">NO SURGERY — SEND TO RECOVERY</button>':'')+
+ '</div><div><button id="cfAnimals2">MY ANIMALS</button><button id="cfMaster">ANIMAL MASTER FILE</button><button id="cfHome2">DOS MAIN</button></div></div>';
+ if(!finished){
+   document.querySelector("#cfGo").onclick=()=>route(current[0]);
+   document.querySelector("#cfComplete").onclick=()=>complete(current[0]);
+   document.querySelector("#cfSurgeryYes")?.addEventListener("click",()=>surgery(true));
+   document.querySelector("#cfSurgeryNo")?.addEventListener("click",()=>surgery(false))
+ }
+ document.querySelector("#cfAnimals2").onclick=()=>window.VetGodsDosFormsP3?.myAnimals?.();
+ document.querySelector("#cfMaster").onclick=()=>window.VetGodsPermanentAnimalP1?.records?.();
+ document.querySelector("#cfHome2").onclick=()=>window.VetGodsDosProgramP2?.render?.("MAIN")
+}
+function inferFromAction(txt){
+ let t=String(txt||"").toUpperCase(),map=[
+  [/ADMIT|INTAKE/,"ADMIT"],[/PHYSICAL EXAM|EXAMINE/,"EXAMINE"],[/DIAGNOSTIC|IMAGING|LAB/,"DIAGNOSE"],
+  [/STABIL|OXYGEN|IV FLUID|OFFER WATER/,"STABILIZE"],[/TREAT|PAIN CONTROL|MEDICATION/,"TREAT"],
+  [/SURGER|PROCEDURE/,"SURGERY"],[/RECOVER/,"RECOVERY"],[/REHAB|MOBILITY/,"REHAB"],[/DISCHARGE|SEND HOME|ADOPT|KEEP IN MY PETS|DISPOSITION/,"DISPOSITION"]
+ ];
+ for(let [re,step] of map)if(re.test(t))return step;return null
+}
+function install(){
+ let a=animal();if(a)ensure(a);
+ document.addEventListener("click",e=>{
+   let b=e.target.closest("button");if(!b)return;
+   let step=inferFromAction(b.textContent);if(!step)return;
+   setTimeout(()=>{let c=ensure(animal());if(c&&!c.completed.includes(step)){c.completed.push(step);let ix=STEPS.findIndex(x=>x[0]===step);if(ix>=c.step)c.step=ix+1;saveCase(c,"GAME ACTION "+step)}},100)
+ },true);
+ window.VetGodsCaseProgressionP2={read,ensure,render,complete,route,surgery};
+ if(!document.querySelector("#vgCaseFlowButtonP2")){
+   let b=document.createElement("button");b.id="vgCaseFlowButtonP2";b.type="button";b.textContent="CONTINUE CASE";
+   b.style.cssText="position:fixed;left:8px;bottom:75px;z-index:2147482997;background:#050606;color:#20e060;border:1px solid #20e060;padding:7px 9px;font:900 8px 'Courier New',monospace";
+   b.onclick=render;document.body.appendChild(b)
+ }
+}
+setTimeout(install,2300);
+})();
+</script>
+
+<style id="vg-consolidation-p3-css">
+.vgDeptEffectsP3{margin:8px 7px;padding:9px;background:#faf8ef;border:3px double #777;font:9px "Courier New",monospace}
+.vgDeptEffectsP3 h4{margin:0 0 6px;font:700 13px Georgia,serif}
+.vgDeptEffectsP3 .row{display:grid;grid-template-columns:120px 1fr;gap:6px;border-top:1px dotted #aaa;padding:5px 0}
+.vgDeptEffectsP3 .good{color:#126d31;font-weight:900}.vgDeptEffectsP3 .warn{font-weight:900}
+.vgDeptEffectsP3 button{background:#111!important;color:#fff!important;border:1px solid #111!important;padding:6px 8px!important;font:900 8px "Courier New",monospace!important;margin:3px}
+@media(max-width:720px){.vgDeptEffectsP3 .row{grid-template-columns:1fr}}
+</style>
+<script id="vg-consolidation-p3-department-effects">
+(function(){
+"use strict";
+const KEY="vetgods_department_effects_p3_v1";
+function read(){try{return JSON.parse(localStorage.getItem(KEY)||'{"animals":{}}')}catch(e){return {animals:{}}}}
+function write(x){try{localStorage.setItem(KEY,JSON.stringify(x));if(typeof save==="function")save()}catch(e){}}
+function animal(){try{return window.VetGodsActivePatientP3?.restore?.()||null}catch(e){return null}}
+function aid(a){return String(a?.permanentId||window.VetGodsPermanentAnimalP1?.uid?.(a)||a?.id||a?.name||"NONE")}
+function rec(a){
+ if(!a)return null;let x=read(),id=aid(a);
+ if(!x.animals[id])x.animals[id]={diagnosticEvidence:0,pharmacySupply:0,nutritionPlan:0,behaviorPlan:0,habitatPlan:0,researchUnlocks:0,staffSupport:0,facilityReadiness:0,recoveryBoost:0,notes:[],updated:Date.now()};
+ write(x);return x.animals[id]
+}
+function update(field,delta,note){
+ let a=animal();if(!a)return;let x=read(),id=aid(a),r=rec(a);
+ r[field]=Math.max(0,Math.min(100,(Number(r[field])||0)+delta));r.updated=Date.now();
+ r.notes=r.notes||[];r.notes.unshift({time:Date.now(),note});r.notes=r.notes.slice(0,60);
+ x.animals[id]=r;write(x);
+ /* Real consequences on shared patient stats. */
+ if(field==="nutritionPlan"){a.nutrition=Math.min(100,(Number(a.nutrition)||50)+5);a.health=Math.min(100,(Number(a.health)||50)+2)}
+ if(field==="behaviorPlan"){a.stress=Math.max(0,(Number(a.stress)||50)-7);a.trust=Math.min(100,(Number(a.trust)||50)+6)}
+ if(field==="habitatPlan"){a.comfort=Math.min(100,(Number(a.comfort)||50)+7);a.stress=Math.max(0,(Number(a.stress)||50)-3)}
+ if(field==="recoveryBoost"){a.health=Math.min(100,(Number(a.health)||50)+5);a.comfort=Math.min(100,(Number(a.comfort)||50)+3)}
+ if(field==="pharmacySupply"){a.pain=Math.max(0,(Number(a.pain)||50)-4)}
+ try{window.VetGodsPermanentAnimalP1?.merge?.(a,"DEPARTMENT EFFECT: "+note);if(typeof save==="function")save()}catch(e){}
+ inject(true)
+}
+function status(area,r){
+ const rows={
+  DIAGNOSTIC:["Diagnostic Evidence",r.diagnosticEvidence,"Findings unlock stronger treatment planning."],
+  SURGERY:["Diagnostic Evidence",r.diagnosticEvidence,"Surgery uses diagnostic evidence and facility readiness."],
+  PHARMACY:["Pharmacy Supply",r.pharmacySupply,"Available treatment stock follows the patient."],
+  NUTRITION:["Nutrition Plan",r.nutritionPlan,"Nutrition planning improves nutrition and health."],
+  BEHAVIOR:["Behavior Plan",r.behaviorPlan,"Behavior work lowers stress and raises trust."],
+  HABITAT:["Habitat Plan",r.habitatPlan,"Habitat work raises comfort and lowers stress."],
+  RESEARCH:["Research Unlocks",r.researchUnlocks,"Research unlocks additional case knowledge."],
+  STAFF:["Staff Support",r.staffSupport,"Staff support contributes to hospital readiness."],
+  EMPLOYEES:["Staff Support",r.staffSupport,"Employee readiness follows operations."],
+  FACILITIES:["Facility Readiness",r.facilityReadiness,"Facility readiness supports surgery and recovery."],
+  OPS:["Facility Readiness",r.facilityReadiness,"Operations reflect facility and staff readiness."],
+  RECOVERY:["Recovery Support",r.recoveryBoost,"Recovery actions improve health and comfort."],
+  REHAB:["Recovery Support",r.recoveryBoost,"Rehab carries recovery support forward."],
+  SANCTUARY:["Habitat Plan",r.habitatPlan,"Sanctuary reads habitat, behavior and recovery status."],
+  CLINIC:["Diagnostic Evidence",r.diagnosticEvidence,"Clinic sees results returned from departments."]
+ };
+ return rows[area]||["Integrated Case Support",Math.round((r.diagnosticEvidence+r.pharmacySupply+r.nutritionPlan+r.behaviorPlan+r.habitatPlan+r.recoveryBoost)/6),"Department work is attached to this animal."]
+}
+function actionFor(area){
+ return {
+  DIAGNOSTIC:["diagnosticEvidence",20,"Diagnostic evidence filed"],
+  PHARMACY:["pharmacySupply",20,"Patient pharmacy supply prepared"],
+  NUTRITION:["nutritionPlan",20,"Nutrition plan completed"],
+  BEHAVIOR:["behaviorPlan",20,"Behavior support plan completed"],
+  HABITAT:["habitatPlan",20,"Habitat plan completed"],
+  RESEARCH:["researchUnlocks",20,"Research finding attached"],
+  STAFF:["staffSupport",20,"Staff support assigned"],
+  EMPLOYEES:["staffSupport",20,"Employee support assigned"],
+  FACILITIES:["facilityReadiness",20,"Facility readiness improved"],
+  OPS:["facilityReadiness",10,"Operations readiness updated"],
+  RECOVERY:["recoveryBoost",20,"Recovery support administered"],
+  REHAB:["recoveryBoost",15,"Rehabilitation support completed"]
+ }[area]
+}
+function inject(force){
+ let sheet=document.querySelector(".vgPaperSheet"),a=animal();if(!sheet||!a)return;
+ let old=sheet.querySelector(".vgDeptEffectsP3");if(old){if(!force)return;old.remove()}
+ let area=String(window.VetGodsMasterDataBusP1?.read?.().area||"CLINIC").toUpperCase(),r=rec(a),st=status(area,r),act=actionFor(area);
+ let d=document.createElement("div");d.className="vgDeptEffectsP3";
+ let requirements="";
+ if(area==="SURGERY")requirements='<div class="row"><b>SURGERY READINESS</b><span class="'+(r.diagnosticEvidence>=20&&r.facilityReadiness>=20?"good":"warn")+'">Diagnostics '+r.diagnosticEvidence+'% · Facilities '+r.facilityReadiness+'% '+(r.diagnosticEvidence>=20&&r.facilityReadiness>=20?"READY":"— MORE SUPPORT RECOMMENDED")+'</span></div>';
+ if(area==="RECOVERY")requirements='<div class="row"><b>RECOVERY INPUTS</b><span>Pharmacy '+r.pharmacySupply+'% · Nutrition '+r.nutritionPlan+'% · Behavior '+r.behaviorPlan+'%</span></div>';
+ if(area==="SANCTUARY")requirements='<div class="row"><b>WELFARE INPUTS</b><span>Behavior '+r.behaviorPlan+'% · Habitat '+r.habitatPlan+'% · Recovery '+r.recoveryBoost+'%</span></div>';
+ d.innerHTML='<h4>THIS DEPARTMENT AFFECTS THE ACTIVE ANIMAL</h4>'+
+ '<div class="row"><b>'+st[0]+'</b><span><b>'+st[1]+'%</b> — '+st[2]+'</span></div>'+requirements+
+ '<div class="row"><b>PATIENT</b><span>'+a.name+' · Health '+(a.health??"—")+' · Pain '+(a.pain??"—")+' · Stress '+(a.stress??"—")+' · Trust '+(a.trust??"—")+'</span></div>'+
+ (act?'<button id="deptEffectActionP3">APPLY '+area+' WORK TO PATIENT</button>':'')+
+ '<button id="deptEffectCaseP3">CONTINUE CASE</button>';
+ let first=sheet.querySelector(".psSection");if(first)first.insertAdjacentElement("afterend",d);else sheet.appendChild(d);
+ if(act)document.querySelector("#deptEffectActionP3").onclick=()=>update(act[0],act[1],act[2]);
+ document.querySelector("#deptEffectCaseP3").onclick=()=>window.VetGodsCaseProgressionP2?.render?.()
+}
+function install(){
+ let dep=window.VetGodsDepartments;
+ if(dep&&typeof dep.page==="function"&&!dep.page._effectsP3){
+  let old=dep.page,fn=function(){let z=old.apply(this,arguments);setTimeout(()=>inject(false),40);return z};
+  fn._effectsP3=true;dep.page=fn
+ }
+ if(window.VetGodsDosFormsP3?.clinic&&!window.VetGodsDosFormsP3.clinic._effectsP3){
+  let old=window.VetGodsDosFormsP3.clinic,fn=function(){let z=old.apply(this,arguments);setTimeout(()=>inject(false),40);return z};
+  fn._effectsP3=true;window.VetGodsDosFormsP3.clinic=fn
+ }
+ window.VetGodsDepartmentEffectsP3={read,rec,update,inject}
+}
+setTimeout(install,2400);
+})();
+</script>
+
+<style id="vg-consolidation-p4-css">
+#vgMorphWorkshopP4{max-width:1060px;margin:8px auto 90px;background:#eeeade;color:#111;border:2px solid #fff;box-shadow:7px 7px #111;padding:12px;box-sizing:border-box;font:10px "Courier New",monospace}
+#vgMorphWorkshopP4 .head{border-bottom:3px double #111;padding-bottom:7px}
+#vgMorphWorkshopP4 .layout{display:grid;grid-template-columns:1.1fr 1fr;gap:8px;margin-top:8px}
+#vgMorphWorkshopP4 .paper{background:#faf8ef;border:1px solid #999;padding:9px}
+#vgMorphWorkshopP4 .creature{height:300px;position:relative;overflow:hidden;background:radial-gradient(circle at 50% 40%,#fff,#d8d3c7);border:4px double #111}
+#vgMorphWorkshopP4 .body{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);width:180px;height:115px;border:4px solid #111;border-radius:52% 48% 45% 55%;background:#aaa}
+#vgMorphWorkshopP4 .headshape{position:absolute;left:61%;top:29%;width:82px;height:82px;border:4px solid #111;border-radius:50%;background:#bbb}
+#vgMorphWorkshopP4 .wing{position:absolute;left:28%;top:34%;width:105px;height:90px;border:4px solid #111;border-radius:80% 15% 70% 20%;transform:rotate(-18deg);background:#ddd}
+#vgMorphWorkshopP4 .tail{position:absolute;left:18%;top:49%;width:105px;height:28px;border:4px solid #111;border-radius:60%;transform:rotate(15deg);background:#aaa}
+#vgMorphWorkshopP4 .horn{position:absolute;left:67%;top:18%;width:20px;height:58px;border:3px solid #111;clip-path:polygon(50% 0,100% 100%,0 100%);background:#eee}
+#vgMorphWorkshopP4 .mark{position:absolute;left:45%;top:49%;font:bold 38px Georgia,serif}
+#vgMorphWorkshopP4 .controls{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}
+#vgMorphWorkshopP4 label{display:block;font-weight:900;font-size:8px}
+#vgMorphWorkshopP4 select,#vgMorphWorkshopP4 input{width:100%;box-sizing:border-box;padding:7px;background:#fff;color:#111;border:1px solid #777;font:9px "Courier New",monospace}
+#vgMorphWorkshopP4 button{background:#111;color:#fff;border:1px solid #111;padding:7px 9px;font:900 8px "Courier New",monospace;margin:4px}
+#vgMorphWorkshopP4 .locked{border:4px double #126d31}.vgMorphWorkshopP4 .green{color:#126d31;font-weight:900}
+@media(max-width:720px){#vgMorphWorkshopP4 .layout{grid-template-columns:1fr}#vgMorphWorkshopP4 .creature{height:260px}}
+</style>
+<script id="vg-consolidation-p4-morph-workshop">
+(function(){
+"use strict";
+const KEY="vetgods_morph_workshop_p4_v1";
+const parts={
+ body:["Wolf","Tiger","Bear","Deer","Horse","Lion","Panther","Fox","Otter","Dragon"],
+ head:["Wolf","Owl","Falcon","Dragon","Tiger","Cat","Ram","Stag","Crocodile","Whale"],
+ wings:["None","Snowy Owl","Falcon","Raven","Dragon","Manta Fins","Butterfly","Beetle"],
+ tail:["Wolf","Tiger","Fox","Lion","Dragon","Scorpion","Peacock","Otter","Whale Fluke","None"],
+ horns:["None","Ram","Stag Antlers","Dragon","Rhino","Gazelle"],
+ markings:["None","Tiger Stripes","Leopard Spots","Owl Speckles","Zebra Bands","Bioluminescent Runes","Starfield","Ember"],
+ eyes:["Amber","Ice Blue","Emerald","Violet","Gold","Crimson","Silver","Black"]
+};
+function read(){try{return JSON.parse(localStorage.getItem(KEY)||'{"drafts":{},"created":[]}')}catch(e){return {drafts:{},created:[]}}}
+function write(x){try{localStorage.setItem(KEY,JSON.stringify(x));if(typeof save==="function")save()}catch(e){}}
+function roster(){return Array.isArray(window.state?.animals)?state.animals:[]}
+function active(){try{return window.VetGodsActivePatientP3?.restore?.()||null}catch(e){return null}}
+function aid(a){return String(a?.permanentId||window.VetGodsPermanentAnimalP1?.uid?.(a)||a?.id||a?.name||"NONE")}
+function base(){
+ let a=active();if(a)return a;
+ return roster()[0]||null
+}
+function draft(a){
+ if(!a)return null;let x=read(),id=aid(a);
+ if(!x.drafts[id])x.drafts[id]={baseId:id,baseName:a.name||"Animal",body:a.species||"Wolf",head:"Wolf",wings:"None",tail:"Wolf",horns:"None",markings:"None",eyes:"Amber",locked:false,newName:"",updated:Date.now()};
+ write(x);return x.drafts[id]
+}
+function opt(arr,v){return arr.map(x=>'<option '+(x===v?'selected':'')+'>'+x+'</option>').join("")}
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function visual(d){
+ let wing=d.wings==="None"?"display:none":"";
+ let horn=d.horns==="None"?"display:none":"";
+ let tail=d.tail==="None"?"display:none":"";
+ let mark=d.markings==="None"?"":d.markings.includes("Stripe")?"≋":d.markings.includes("Spot")?"●":d.markings.includes("Rune")?"✦":d.markings.includes("Star")?"✧":"◆";
+ return '<div class="creature '+(d.locked?'locked':'')+'"><div class="tail" style="'+tail+'"></div><div class="wing" style="'+wing+'"></div><div class="body"></div><div class="headshape"></div><div class="horn" style="'+horn+'"></div><div class="mark">'+mark+'</div></div>'
+}
+function render(){
+ let m=document.querySelector("#main"),a=base();if(!m)return;
+ if(!a){m.innerHTML='<div id="vgMorphWorkshopP4"><h2>MORPH CREATURE WORKSHOP</h2><p>You need a saved animal before creating a morph.</p><button id="mwAnimals">MY ANIMALS</button></div>';document.querySelector("#mwAnimals").onclick=()=>window.VetGodsDosFormsP3?.myAnimals?.();return}
+ let d=draft(a);
+ m.innerHTML='<div id="vgMorphWorkshopP4"><div class="head"><small>AUTHORIZED MORPH RESEARCH // CREATURE WORKSHOP</small><h2>'+esc(d.baseName)+' → NEW PERMANENT CREATURE</h2><b>'+esc(d.baseId)+'</b></div>'+
+ '<div class="layout"><div class="paper">'+visual(d)+'<p><b>LIVE MORPH ASSEMBLY</b><br>Body '+esc(d.body)+' · Head '+esc(d.head)+' · Wings '+esc(d.wings)+' · Tail '+esc(d.tail)+' · Horns '+esc(d.horns)+' · '+esc(d.markings)+' · '+esc(d.eyes)+' eyes</p></div>'+
+ '<div class="paper"><div class="controls">'+
+ '<label>BODY<select data-morph="body">'+opt(parts.body,d.body)+'</select></label><label>HEAD<select data-morph="head">'+opt(parts.head,d.head)+'</select></label>'+
+ '<label>WINGS / FINS<select data-morph="wings">'+opt(parts.wings,d.wings)+'</select></label><label>TAIL<select data-morph="tail">'+opt(parts.tail,d.tail)+'</select></label>'+
+ '<label>HORNS<select data-morph="horns">'+opt(parts.horns,d.horns)+'</select></label><label>MARKINGS<select data-morph="markings">'+opt(parts.markings,d.markings)+'</select></label>'+
+ '<label>EYES<select data-morph="eyes">'+opt(parts.eyes,d.eyes)+'</select></label><label>NEW CREATURE NAME<input id="mwName" value="'+esc(d.newName||"")+'" placeholder="Name the new animal"></label></div>'+
+ '<p>'+(d.locked?'<span class="green">MORPH DESIGN CEMENTED.</span> You may now save this as a new permanent animal.':'Adjust the creature, give it a new name, then cement the design.')+'</p>'+
+ (!d.locked?'<button id="mwCement">CEMENT THIS MORPH</button>':'<button id="mwSaveAnimal">SAVE AS NEW ANIMAL</button>')+
+ '<button id="mwReset">RESET DESIGN</button><button id="mwAnimals2">MY ANIMALS</button><button id="mwHome">DOS MAIN</button></div></div></div>';
+ m.querySelectorAll("[data-morph]").forEach(el=>el.onchange=()=>{let x=read(),z=x.drafts[d.baseId];z[el.dataset.morph]=el.value;z.locked=false;z.updated=Date.now();x.drafts[d.baseId]=z;write(x);render()});
+ document.querySelector("#mwName").oninput=e=>{let x=read();x.drafts[d.baseId].newName=e.target.value;write(x)};
+ document.querySelector("#mwCement")?.addEventListener("click",()=>{let x=read(),z=x.drafts[d.baseId];z.newName=(document.querySelector("#mwName").value||"").trim();if(!z.newName){alert("Name the new creature first.");return}z.locked=true;z.updated=Date.now();x.drafts[d.baseId]=z;write(x);render()});
+ document.querySelector("#mwSaveAnimal")?.addEventListener("click",()=>saveNew(d.baseId));
+ document.querySelector("#mwReset").onclick=()=>{let x=read();delete x.drafts[d.baseId];write(x);render()};
+ document.querySelector("#mwAnimals2").onclick=()=>window.VetGodsDosFormsP3?.myAnimals?.();
+ document.querySelector("#mwHome").onclick=()=>window.VetGodsDosProgramP2?.render?.("MAIN")
+}
+function saveNew(baseId){
+ let x=read(),d=x.drafts[baseId];if(!d||!d.locked||!d.newName)return;
+ let original=roster().find(a=>aid(a)===baseId)||active()||{};
+ let now=Date.now(),n={
+   name:d.newName,species:d.body+" / "+d.head+" Morph",breed:"Authorized Composite Creature",sex:original.sex||"",
+   temperament:original.temperament||"Adaptive",personality:original.personality||"",
+   backstory:"Created in the VET GODS Authorized Morph Research Workshop from "+(original.name||d.baseName)+".",
+   health:100,pain:0,hydration:100,oxygen:100,nutrition:100,stress:15,trust:70,comfort:80,
+   destination:"MY ANIMALS",createdAt:now,
+   morphRecord:{baseAnimalId:baseId,baseAnimalName:original.name||d.baseName,body:d.body,head:d.head,wings:d.wings,tail:d.tail,horns:d.horns,markings:d.markings,eyes:d.eyes,cemented:true,createdAt:now}
+ };
+ window.VetGodsPermanentAnimalP1?.uid?.(n);
+ roster().push(n);
+ try{window.VetGodsPermanentAnimalP1?.merge?.(n,"NEW MORPH CREATURE CREATED");if(typeof save==="function")save()}catch(e){}
+ x.created=x.created||[];x.created.unshift({id:n.permanentId,name:n.name,time:now,baseId});delete x.drafts[baseId];write(x);
+ try{window.VetGodsMasterDataBusP1?.snapshot?.("MORPH","COMPLETE",{newAnimal:n.name,id:n.permanentId})}catch(e){}
+ alert(n.name+" has been saved permanently to My Animals.");
+ window.VetGodsDosFormsP3?.myAnimals?.()
+}
+function selectAnimal(id){
+ let a=roster().find(x=>aid(x)===id);if(!a)return;
+ try{window.VetGodsActivePatientP3?.set?.(a)}catch(e){}
+ render()
+}
+function picker(){
+ let m=document.querySelector("#main"),list=roster();if(!m)return;
+ m.innerHTML='<div id="vgMorphWorkshopP4"><div class="head"><small>MORPH SOURCE SELECTION</small><h2>SELECT ONE SAVED ANIMAL</h2></div><div class="layout">'+list.map(a=>'<div class="paper"><b>'+esc(a.name)+'</b><br>'+esc(a.species||"Animal")+'<br><small>'+esc(aid(a))+'</small><br><button data-mw-pick="'+esc(aid(a))+'">USE AS MORPH BASE</button></div>').join("")+'</div><button id="mwPickHome">DOS MAIN</button></div>';
+ m.querySelectorAll("[data-mw-pick]").forEach(b=>b.onclick=()=>selectAnimal(b.dataset.mwPick));
+ document.querySelector("#mwPickHome").onclick=()=>window.VetGodsDosProgramP2?.render?.("MAIN")
+}
+function install(){
+ window.VetGodsMorphWorkshopP4={render,picker,saveNew,read,selectAnimal};
+ if(window.VetGodsDosFormsP3)window.VetGodsDosFormsP3.morph=picker;
+ if(!document.querySelector("#vgMorphWorkshopButtonP4")){
+   let b=document.createElement("button");b.id="vgMorphWorkshopButtonP4";b.type="button";b.textContent="MORPH WORKSHOP";
+   b.style.cssText="position:fixed;left:8px;bottom:108px;z-index:2147482997;background:#050606;color:#eee;border:1px solid #eee;padding:7px 9px;font:900 8px 'Courier New',monospace";
+   b.onclick=picker;document.body.appendChild(b)
+ }
+}
+setTimeout(install,2500);
+})();
+</script>
+
+<style id="vg-consolidation-p5-css">
+#vgAnimalsHomeP5{max-width:1060px;margin:8px auto 90px;background:#eeeade;color:#111;border:2px solid #fff;box-shadow:7px 7px #111;padding:12px;box-sizing:border-box;font:10px "Courier New",monospace}
+#vgAnimalsHomeP5 .head{border-bottom:3px double #111;padding-bottom:7px}
+#vgAnimalsHomeP5 .roster{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:8px}
+#vgAnimalsHomeP5 .animal{background:#faf8ef;border:1px solid #999;padding:8px;min-height:130px}
+#vgAnimalsHomeP5 .portrait{height:100px;border:3px double #111;background:radial-gradient(circle,#fff,#d7d1c4);display:grid;place-items:center;font:900 28px Georgia,serif;overflow:hidden}
+#vgAnimalsHomeP5 .portrait img{width:100%;height:100%;object-fit:contain}
+#vgAnimalsHomeP5 .detailGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+#vgAnimalsHomeP5 .sheet{background:#faf8ef;border:1px solid #999;padding:9px}
+#vgAnimalsHomeP5 .wide{grid-column:span 2}.vgAnimalsHomeP5 .full,#vgAnimalsHomeP5 .full{grid-column:1/-1}
+#vgAnimalsHomeP5 button{background:#111;color:#fff;border:1px solid #111;padding:7px 9px;font:900 8px "Courier New",monospace;margin:4px}
+#vgAnimalsHomeP5 .green{color:#126d31;font-weight:900}
+#vgAnimalsHomeP5 .tabs{display:flex;gap:4px;overflow:auto;padding:6px 0}
+@media(max-width:720px){#vgAnimalsHomeP5 .roster,#vgAnimalsHomeP5 .detailGrid{grid-template-columns:1fr}#vgAnimalsHomeP5 .wide{grid-column:span 1}}
+</style>
+<script id="vg-consolidation-p5-my-animals">
+(function(){
+"use strict";
+function roster(){return Array.isArray(window.state?.animals)?state.animals:[]}
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function id(a){return String(a?.permanentId||window.VetGodsPermanentAnimalP1?.uid?.(a)||a?.id||a?.name||"NONE")}
+function master(a){try{return window.VetGodsPermanentAnimalP1?.read?.().records?.[id(a)]||a}catch(e){return a}}
+function dept(a){try{return window.VetGodsDepartmentEffectsP3?.read?.().animals?.[id(a)]||{}}catch(e){return {}}}
+function caseRec(a){try{return window.VetGodsCaseProgressionP2?.read?.().cases?.[id(a)]||{}}catch(e){return {}}}
+function awardCount(a){
+ let name=String(a?.name||"").toLowerCase();
+ try{return (window.VetGodsAwardsP1?.read?.().issued||[]).filter(x=>String(x.animalId||"")===id(a)||String(x.player||"").toLowerCase()===name).length}catch(e){return 0}
+}
+function icon(a){
+ let sp=String(a.species||"").toLowerCase();
+ if(sp.includes("owl")||sp.includes("bird")||sp.includes("falcon"))return "◉V◉";
+ if(sp.includes("cat")||sp.includes("tiger")||sp.includes("lion"))return "=^•^=";
+ if(sp.includes("dragon"))return "ᐉ◈ᐊ";
+ if(sp.includes("whale"))return "≈◉≈";
+ return "ᐡ•ᴥ•ᐡ"
+}
+function setActive(a){
+ try{
+   if(window.VetGodsActivePatientP3?.set)window.VetGodsActivePatientP3.set(a);
+   else {state.activePatient=a;if(typeof save==="function")save()}
+ }catch(e){}
+}
+function list(){
+ try{window.VetGodsPermanentAnimalP1?.syncAll?.("MY ANIMALS OPEN")}catch(e){}
+ let m=document.querySelector("#main"),arr=roster();if(!m)return;
+ m.innerHTML='<div id="vgAnimalsHomeP5"><div class="head"><small>VET GODS // MY ANIMALS</small><h2>PERMANENT COMPANION ROSTER</h2>'+
+ '<b>'+arr.length+' animals saved</b><p>Select one animal. Only that animal opens.</p></div>'+
+ '<div class="tabs"><button id="ahMaster">MASTER FILES</button><button id="ahMorph">MORPH WORKSHOP</button><button id="ahHome">DOS MAIN</button></div>'+
+ '<div class="roster">'+(arr.length?arr.map(a=>{let r=master(a);return '<div class="animal"><div class="portrait">'+(r.portrait?'<img src="'+esc(r.portrait)+'">':esc(icon(r)))+'</div>'+
+ '<h3>'+esc(r.name||"Unnamed")+'</h3><b>'+esc(r.species||"Animal")+'</b><br><small>'+esc(id(a))+'</small><br>'+
+ '<small>Health '+(r.health??"—")+' · Trust '+(r.trust??"—")+' · Comfort '+(r.comfort??"—")+'</small><br><button data-open-animal="'+esc(id(a))+'">OPEN THIS ANIMAL</button></div>'}).join(""):'<div class="animal">No saved animals yet. Complete/adopt a patient or create a Morph creature.</div>')+'</div></div>';
+ m.querySelectorAll("[data-open-animal]").forEach(b=>b.onclick=()=>detail(b.dataset.openAnimal));
+ document.querySelector("#ahMaster").onclick=()=>window.VetGodsPermanentAnimalP1?.records?.();
+ document.querySelector("#ahMorph").onclick=()=>window.VetGodsMorphWorkshopP4?.picker?.();
+ document.querySelector("#ahHome").onclick=()=>window.VetGodsDosProgramP2?.render?.("MAIN")
+}
+function detail(animalId){
+ let a=roster().find(x=>id(x)===animalId);if(!a)return list();
+ setActive(a);try{window.VetGodsPermanentAnimalP1?.merge?.(a,"MY ANIMALS DETAIL OPEN")}catch(e){}
+ let m=document.querySelector("#main"),r=master(a),d=dept(a),c=caseRec(a),mr=r.morphRecord||a.morphRecord,history=r.history||[];if(!m)return;
+ m.innerHTML='<div id="vgAnimalsHomeP5"><div class="head"><small>MY ANIMALS // INDIVIDUAL COMPANION FILE</small><h2>'+esc(r.name)+'</h2><span class="green">'+esc(id(a))+'</span></div>'+
+ '<div class="detailGrid"><div class="sheet"><div class="portrait">'+(r.portrait?'<img src="'+esc(r.portrait)+'">':esc(icon(r)))+'</div><h3>'+esc(r.species||"Animal")+'</h3>'+esc(r.breed||"")+'<br>'+esc(r.sex||"")+'</div>'+
+ '<div class="sheet"><b>LIVE CARE STATUS</b><br>Health '+(r.health??"—")+'<br>Pain '+(r.pain??"—")+'<br>Hydration '+(r.hydration??"—")+'<br>O₂ '+(r.oxygen??"—")+'<br>Nutrition '+(r.nutrition??"—")+'</div>'+
+ '<div class="sheet"><b>WELFARE</b><br>Stress '+(r.stress??"—")+'<br>Trust '+(r.trust??"—")+'<br>Comfort '+(r.comfort??"—")+'<br>Disposition '+esc(r.destination||"ACTIVE")+'</div>'+
+ '<div class="sheet wide"><b>PERSONALITY & STORY</b><p>'+esc(r.personality||r.temperament||"Personality record not yet developed.")+'</p><p>'+esc(r.backstory||"Backstory not yet filed.")+'</p></div>'+
+ '<div class="sheet"><b>CASE PROGRESSION</b><br>Stage '+Number(c.step||0)+' / 9<br>Completed: '+esc((c.completed||[]).join(" · ")||"None yet")+'<br><button id="ahContinue">CONTINUE THIS CASE</button></div>'+
+ '<div class="sheet"><b>DEPARTMENT SUPPORT</b><br>Diagnostics '+Number(d.diagnosticEvidence||0)+'%<br>Pharmacy '+Number(d.pharmacySupply||0)+'%<br>Nutrition '+Number(d.nutritionPlan||0)+'%<br>Behavior '+Number(d.behaviorPlan||0)+'%<br>Habitat '+Number(d.habitatPlan||0)+'%</div>'+
+ '<div class="sheet"><b>MORPH RECORD</b><br>'+(mr?('Body '+esc(mr.body||"—")+'<br>Head '+esc(mr.head||"—")+'<br>Wings '+esc(mr.wings||"—")+'<br>Tail '+esc(mr.tail||"—")+'<br>Markings '+esc(mr.markings||"—")):'No permanent Morph attached.')+'<br><button id="ahMorphThis">MORPH FROM THIS ANIMAL</button></div>'+
+ '<div class="sheet"><b>MISSIONS & AWARDS</b><br>Awards associated: '+awardCount(a)+'<br>Mission status: '+esc(window.VetGodsMissionLoopP8?.read?.().active?.status||"READY")+'<br><button id="ahAwards">AWARDS</button><button id="ahMission">MISSION</button></div>'+
+ '<div class="sheet full"><b>PERMANENT HISTORY</b><br>'+(history.length?history.slice(0,18).map(h=>new Date(h.time).toLocaleString()+' // '+esc(h.reason)+' // '+esc(h.area||"PROGRAM")).join("<br>"):'No history entries yet.')+'</div></div>'+
+ '<div class="tabs"><button id="ahBack">BACK TO ANIMAL LIST</button><button id="ahClinic">PATIENT CHART</button><button id="ahMasterOne">MASTER RECORD</button><button id="ahHome2">DOS MAIN</button></div></div>';
+ document.querySelector("#ahContinue").onclick=()=>window.VetGodsCaseProgressionP2?.render?.();
+ document.querySelector("#ahMorphThis").onclick=()=>window.VetGodsMorphWorkshopP4?.render?.();
+ document.querySelector("#ahAwards").onclick=()=>window.VetGodsAwardsFinalP5?.finalDesk?.();
+ document.querySelector("#ahMission").onclick=()=>window.VetGodsDepartments?.page?.("MISSION");
+ document.querySelector("#ahBack").onclick=list;
+ document.querySelector("#ahClinic").onclick=()=>window.VetGodsDosFormsP3?.clinic?.();
+ document.querySelector("#ahMasterOne").onclick=()=>window.VetGodsPermanentAnimalP1?.detail?.(id(a));
+ document.querySelector("#ahHome2").onclick=()=>window.VetGodsDosProgramP2?.render?.("MAIN")
+}
+function install(){
+ window.VetGodsAnimalsHomeP5={list,detail,setActive};
+ /* Replace only the My Animals route; underlying roster data remains untouched. */
+ if(window.VetGodsDosFormsP3)window.VetGodsDosFormsP3.myAnimals=list;
+ /* Existing animal buttons with obvious labels are routed here, without hijacking unrelated screens. */
+ document.addEventListener("click",e=>{
+   let b=e.target.closest("button");if(!b)return;
+   let t=(b.textContent||"").trim().toUpperCase();
+   if((t==="MY ANIMALS"||t==="MY PETS")&&!b.closest("#vgAnimalsHomeP5")){e.preventDefault();e.stopImmediatePropagation();list()}
+ },true)
+}
+setTimeout(install,2600);
+})();
+</script>
+
+<style id="vg-consolidation-p6-css">
+#vgCampaignP6{max-width:1060px;margin:8px auto 90px;background:#eeeade;color:#111;border:2px solid #fff;box-shadow:7px 7px #111;padding:12px;box-sizing:border-box;font:10px "Courier New",monospace}
+#vgCampaignP6 .head{border-bottom:3px double #111;padding-bottom:7px}
+#vgCampaignP6 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:8px}
+#vgCampaignP6 .card{background:#faf8ef;border:1px solid #999;padding:9px}
+#vgCampaignP6 .current{border:4px double #111}
+#vgCampaignP6 .reward{border-top:1px dotted #999;margin-top:6px;padding-top:5px}
+#vgCampaignP6 button{background:#111;color:#fff;border:1px solid #111;padding:7px 9px;font:900 8px "Courier New",monospace;margin:4px}
+#vgCampaignP6 .green{color:#126d31;font-weight:900}
+#vgCampaignP6 .inventory{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:8px 0}
+#vgCampaignP6 .inv{background:#fff;border:1px solid #999;padding:7px}
+@media(max-width:720px){#vgCampaignP6 .grid{grid-template-columns:1fr}#vgCampaignP6 .inventory{grid-template-columns:repeat(2,1fr)}}
+</style>
+<script id="vg-consolidation-p6-campaign">
+(function(){
+"use strict";
+const KEY="vetgods_campaign_loop_p6_v1";
+const missions=[
+ ["M01","Storm Drain Signal","Rescue","A frightened fox is trapped beneath a flooded service corridor.",["Rescued Fox","Credits 180","DNA: Fox Tail"]],
+ ["M02","Silent Aviary","Rescue","An injured snowy owl is transmitting from an abandoned orbital aviary.",["Rescued Snowy Owl","Research Sample","DNA: Owl Wings"]],
+ ["M03","Red Habitat Alarm","Habitat","A sanctuary habitat has lost temperature control while a lynx waits inside.",["Habitat Regulator","Credits 240","Lynx Research"]],
+ ["M04","Pharmacy Run","Medical","Recovery stock is depleted during a multi-animal emergency.",["Pain Control Pack","IV Supply","Credits 160"]],
+ ["M05","Blackwater Marsh","Expedition","A crane with a damaged wing has been reported beyond the marked route.",["Rescued Crane","DNA: Crane Wings","Field Journal"]],
+ ["M06","Broken Antler Relay","Rescue","A stag is caught near a collapsed communications mast.",["Rescued Stag","DNA: Stag Antlers","Credits 220"]],
+ ["M07","Deep Tank Echo","Aquatic","A young orca requires transport from a failing research tank.",["Rescued Orca","Aquatic Habitat Module","Research Sample"]],
+ ["M08","Ember Nest","Exotic","A heat-adapted reptile colony has been discovered around a damaged reactor vent.",["Rescued Monitor Lizard","DNA: Reptile Markings","Thermal Habitat Kit"]],
+ ["M09","Night Clinic Convoy","Medical","A transport arrives carrying three unstable animals and limited supplies.",["Emergency Medicine","Credits 300","Recovery Equipment"]],
+ ["M10","The Glass Forest","Expedition","Unusual tracks lead into a crystalline habitat dome.",["DNA: Bioluminescent Runes","Research Sample","Credits 260"]],
+ ["M11","Buried Wing","Archaeology","A preserved avian skeleton has been located under the old sanctuary deck.",["Bone Set: Falcon","DNA: Falcon Wings","Archive Record"]],
+ ["M12","River Teeth","Rescue","An otter family is isolated by a damaged water-control gate.",["Rescued Otter","DNA: Otter Tail","Credits 200"]],
+ ["M13","The Nursery Blackout","Nursery","Power loss threatens several recovering juvenile animals.",["Nursery Power Cell","Nutrition Pack","Credits 190"]],
+ ["M14","Mountain Signal","Expedition","A mountain goat with a leg injury is stranded above the rescue route.",["Rescued Mountain Goat","DNA: Gazelle Horns","Mobility Kit"]],
+ ["M15","Archive Animal 7","Research","An old record points to a forgotten patient still registered in the system.",["Special Archive File","Research Sample","Credits 250"]],
+ ["M16","Manta Corridor","Aquatic","A manta ray is trapped in a damaged transit aquarium.",["Rescued Manta Ray","DNA: Manta Fins","Aquatic Habitat Module"]],
+ ["M17","The Empty Collar","Story","A collar recovered from an abandoned station leads to a waiting dog.",["Rescued Husky","Companion Token","Credits 175"]],
+ ["M18","Hive Deck","Exotic","A displaced pollinator colony needs a safe habitat before the deck reopens.",["Habitat: Pollinator","DNA: Beetle Wings","Research Sample"]],
+ ["M19","Recovery Beacon","Medical","A discharged animal's beacon reports an unexpected setback.",["Recovery Equipment","Medication Cache","Credits 210"]],
+ ["M20","Sanctuary Gate","Rescue","Several rescued animals are waiting outside a jammed sanctuary airlock.",["Sanctuary Upgrade","Credits 400","Grand Rescue Citation"]]
+];
+function blank(){return {index:0,active:null,completed:[],inventory:{credits:0,dna:[],supplies:[],research:[],habitat:[],story:[]},history:[]}}
+function read(){try{return {...blank(),...JSON.parse(localStorage.getItem(KEY)||"{}")}}catch(e){return blank()}}
+function write(x){try{localStorage.setItem(KEY,JSON.stringify(x));if(typeof save==="function")save()}catch(e){}}
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function classify(reward,inv){
+ if(/^Credits /.test(reward)){inv.credits+=(parseInt(reward.match(/\d+/)?.[0]||0));return}
+ if(/^DNA:/.test(reward)||/^Bone Set:/.test(reward)){inv.dna.push(reward);return}
+ if(/Research|Archive|Journal/.test(reward)){inv.research.push(reward);return}
+ if(/Habitat|Sanctuary|Power Cell/.test(reward)){inv.habitat.push(reward);return}
+ if(/Medicine|Medication|IV |Pain |Nutrition|Mobility|Recovery Equipment/.test(reward)){inv.supplies.push(reward);return}
+ inv.story.push(reward)
+}
+function rescueFromReward(reward){
+ let m=reward.match(/^Rescued (.+)$/);if(!m)return null;
+ let species=m[1],name=species.split(" ").slice(-1)[0]+"-"+Math.random().toString(36).slice(2,5).toUpperCase();
+ return {name,species,breed:"Mission Rescue",temperament:"Recovering",personality:"Resilient field rescue",
+ backstory:"Rescued during a VET GODS campaign mission.",health:72,pain:25,hydration:70,oxygen:94,nutrition:65,stress:45,trust:35,comfort:45,destination:"MY ANIMALS",createdAt:Date.now()}
+}
+function start(i){
+ let x=read(),m=missions[i];if(!m)return;
+ x.active={id:m[0],index:i,stage:0,status:"ACTIVE",started:Date.now()};
+ x.history.unshift({time:Date.now(),event:"MISSION START",id:m[0]});write(x);render()
+}
+function advance(){
+ let x=read();if(!x.active)return; x.active.stage++;
+ if(x.active.stage>=3)return complete();
+ x.history.unshift({time:Date.now(),event:"MISSION STEP "+x.active.stage,id:x.active.id});write(x);render()
+}
+function complete(){
+ let x=read(),a=x.active;if(!a)return;let m=missions[a.index],rewards=m[4];
+ rewards.forEach(r=>{classify(r,x.inventory);let pet=rescueFromReward(r);if(pet){window.VetGodsPermanentAnimalP1?.uid?.(pet);if(Array.isArray(state?.animals))state.animals.push(pet);window.VetGodsPermanentAnimalP1?.merge?.(pet,"CAMPAIGN RESCUE "+m[0])}});
+ if(!x.completed.includes(m[0]))x.completed.push(m[0]);
+ x.history.unshift({time:Date.now(),event:"MISSION COMPLETE",id:m[0],rewards});x.active=null;x.index=Math.max(x.index,a.index+1);write(x);
+ try{if(state?.rewardSystem)state.rewardSystem.funds=(Number(state.rewardSystem.funds)||0)+rewards.reduce((n,r)=>n+(r.startsWith("Credits ")?parseInt(r.match(/\d+/)?.[0]||0):0),0);if(typeof save==="function")save()}catch(e){}
+ try{window.VetGodsMasterDataBusP1?.snapshot?.("MISSION","COMPLETE",{mission:m[0],rewards})}catch(e){}
+ render()
+}
+function render(){
+ let m=document.querySelector("#main"),x=read();if(!m)return;
+ let inv=x.inventory||blank().inventory,a=x.active,cur=a?missions[a.index]:missions[Math.min(x.index,missions.length-1)];
+ m.innerHTML='<div id="vgCampaignP6"><div class="head"><small>VET GODS // CAMPAIGN & FIELD MISSION COMMAND</small><h2>RESCUE MISSIONS THAT BRING THINGS HOME</h2><b>'+x.completed.length+' / '+missions.length+' missions complete</b></div>'+
+ '<div class="inventory"><div class="inv"><b>CREDITS</b><br>'+inv.credits+'</div><div class="inv"><b>DNA / BONES</b><br>'+inv.dna.length+'</div><div class="inv"><b>SUPPLIES</b><br>'+inv.supplies.length+'</div><div class="inv"><b>RESEARCH</b><br>'+inv.research.length+'</div></div>'+
+ (a?'<div class="card current"><b>ACTIVE // '+cur[0]+' // '+cur[2]+'</b><h2>'+cur[1]+'</h2><p>'+cur[3]+'</p><p>MISSION PHASE '+(a.stage+1)+' / 3</p>'+
+ '<p>'+(a.stage===0?"Locate and assess the situation.":a.stage===1?"Stabilize the route and reach the animal.":"Complete extraction and return to VET GODS.")+'</p><button id="campAdvance">COMPLETE THIS MISSION PHASE</button></div>':'')+
+ '<div class="grid">'+missions.map((z,i)=>'<div class="card '+(a?.index===i?'current':'')+'"><small>'+z[0]+' // '+z[2]+'</small><h3>'+z[1]+'</h3><p>'+z[3]+'</p><div class="reward"><b>RETURNS HOME:</b><br>'+z[4].map(esc).join("<br>")+'</div>'+
+ (x.completed.includes(z[0])?'<p class="green">MISSION COMPLETE</p>':(!a&&i<=x.index?'<button data-start-mission="'+i+'">BEGIN MISSION</button>':''))+'</div>').join("")+'</div>'+
+ '<div><button id="campAnimals">MY ANIMALS</button><button id="campInventory">MISSION INVENTORY</button><button id="campHome">DOS MAIN</button></div></div>';
+ document.querySelector("#campAdvance")?.addEventListener("click",advance);
+ m.querySelectorAll("[data-start-mission]").forEach(b=>b.onclick=()=>start(Number(b.dataset.startMission)));
+ document.querySelector("#campAnimals").onclick=()=>window.VetGodsAnimalsHomeP5?.list?.();
+ document.querySelector("#campInventory").onclick=inventory;
+ document.querySelector("#campHome").onclick=()=>window.VetGodsDosProgramP2?.render?.("MAIN")
+}
+function inventory(){
+ let m=document.querySelector("#main"),x=read(),i=x.inventory;if(!m)return;
+ let groups=[["DNA / BONE COMPONENTS",i.dna],["MEDICAL / CARE SUPPLIES",i.supplies],["RESEARCH / ARCHIVES",i.research],["HABITAT / SHIP EQUIPMENT",i.habitat],["STORY DISCOVERIES",i.story]];
+ m.innerHTML='<div id="vgCampaignP6"><div class="head"><small>CAMPAIGN RETURN INVENTORY</small><h2>ITEMS BROUGHT BACK TO VET GODS</h2><b>'+i.credits+' mission credits</b></div><div class="grid">'+groups.map(g=>'<div class="card"><h3>'+g[0]+'</h3>'+(g[1].length?g[1].map(x=>esc(x)).join("<br>"):"Nothing recovered yet.")+'</div>').join("")+'</div><button id="invBack">BACK TO MISSIONS</button><button id="invMorph">MORPH WORKSHOP</button><button id="invHome">DOS MAIN</button></div>';
+ document.querySelector("#invBack").onclick=render;document.querySelector("#invMorph").onclick=()=>window.VetGodsMorphWorkshopP4?.picker?.();document.querySelector("#invHome").onclick=()=>window.VetGodsDosProgramP2?.render?.("MAIN")
+}
+function install(){
+ window.VetGodsCampaignP6={read,render,start,advance,complete,inventory,missions};
+ /* Mission route now opens campaign gameplay. */
+ let dep=window.VetGodsDepartments;
+ if(dep&&typeof dep.page==="function"&&!dep.page._campaignP6){
+   let old=dep.page,fn=function(k){if(String(k||"").toUpperCase()==="MISSION"){render();return}return old.apply(this,arguments)};
+   fn._campaignP6=true;dep.page=fn
+ }
+ if(!document.querySelector("#vgCampaignButtonP6")){
+   let b=document.createElement("button");b.id="vgCampaignButtonP6";b.type="button";b.textContent="CAMPAIGN";
+   b.style.cssText="position:fixed;left:8px;bottom:141px;z-index:2147482997;background:#050606;color:#eee;border:1px solid #eee;padding:7px 9px;font:900 8px 'Courier New',monospace";
+   b.onclick=render;document.body.appendChild(b)
+ }
+}
+setTimeout(install,2700);
+})();
+</script>
+
+<style id="vg-consolidation-p7-css">
+#vgShipOpsP7{max-width:1080px;margin:8px auto 95px;background:#050706;color:#d8e0d8;border:2px solid #e8e8e8;box-shadow:8px 8px #111;padding:10px;box-sizing:border-box;font:10px "Courier New",monospace}
+#vgShipOpsP7 .head{border:2px solid #ddd;padding:8px;background:#111}
+#vgShipOpsP7 .lights{display:flex;gap:8px;flex-wrap:wrap;margin-top:7px}.vgOpsLightP7{display:inline-flex;align-items:center;gap:4px}.vgOpsLampP7{width:10px;height:10px;border-radius:50%;border:1px solid #fff;background:#333}.vgOpsLampP7.ok{background:#19d45b}.vgOpsLampP7.warn{background:#e5d719}.vgOpsLampP7.hot{background:#e33}
+#vgShipOpsP7 .deck{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:8px}
+#vgShipOpsP7 .console{border:1px solid #aaa;background:#101411;padding:8px;min-height:185px}
+#vgShipOpsP7 .console h3{margin:0 0 6px;color:#fff}
+#vgShipOpsP7 .gauge{height:13px;border:1px solid #aaa;background:#020302;margin:4px 0}.vgOpsFillP7{height:100%;background:#ddd}
+#vgShipOpsP7 .readout{background:#001b0b;color:#4cff7a;border:1px solid #25843d;padding:6px;margin:5px 0;min-height:34px}
+#vgShipOpsP7 button{background:#111;color:#fff;border:1px solid #ddd;padding:6px 8px;font:900 8px "Courier New",monospace;margin:3px}
+#vgShipOpsP7 .nav{display:flex;gap:4px;overflow:auto;margin-top:8px}.vgOpsWarnP7{color:#ffe65a}.vgOpsGoodP7{color:#4cff7a}
+@media(max-width:780px){#vgShipOpsP7 .deck{grid-template-columns:1fr}}
+</style>
+<script id="vg-consolidation-p7-ship-ops">
+(function(){
+"use strict";
+const KEY="vetgods_ship_operations_p7_v1";
+function blank(){return {power:78,medical:70,nutrition:62,research:55,sanctuary:66,engineering:72,navigation:64,lifeSupport:81,alerts:[],log:[],updated:Date.now()}}
+function read(){try{return {...blank(),...JSON.parse(localStorage.getItem(KEY)||"{}")}}catch(e){return blank()}}
+function write(x){try{localStorage.setItem(KEY,JSON.stringify(x));if(typeof save==="function")save()}catch(e){}}
+function clamp(n){return Math.max(0,Math.min(100,Math.round(Number(n)||0)))}
+function active(){try{return window.VetGodsActivePatientP3?.restore?.()||null}catch(e){return null}}
+function mission(){try{return window.VetGodsCampaignP6?.read?.()||{}}catch(e){return {}}}
+function dept(a){try{return a?window.VetGodsDepartmentEffectsP3?.read?.().animals?.[a.permanentId]||{}:{} }catch(e){return {}}}
+function recalc(){
+ let x=read(),a=active(),d=dept(a),m=mission(),completed=(m.completed||[]).length,inv=m.inventory||{};
+ x.medical=clamp(45+(d.diagnosticEvidence||0)*.12+(d.pharmacySupply||0)*.13+(d.recoveryBoost||0)*.12);
+ x.nutrition=clamp(42+(d.nutritionPlan||0)*.35+Math.min(20,(inv.supplies||[]).length*2));
+ x.research=clamp(40+(d.researchUnlocks||0)*.3+Math.min(30,(inv.research||[]).length*4));
+ x.sanctuary=clamp(45+(d.habitatPlan||0)*.2+(d.behaviorPlan||0)*.15+Math.min(20,(inv.habitat||[]).length*3));
+ x.engineering=clamp((x.engineering||70)+Math.min(8,completed*.3));
+ x.navigation=clamp(50+Math.min(35,completed*2)+(m.active?5:0));
+ x.lifeSupport=clamp((x.power*.35)+(x.engineering*.35)+(x.sanctuary*.3));
+ x.alerts=[];
+ if(x.power<35)x.alerts.push("POWER RESERVE LOW");
+ if(x.lifeSupport<45)x.alerts.push("LIFE SUPPORT REQUIRES ENGINEERING");
+ if(a&&Number(a.oxygen||a.oxygenation||100)<90)x.alerts.push("ACTIVE PATIENT OXYGEN BELOW TARGET");
+ if(m.active)x.alerts.push("FIELD MISSION ACTIVE: "+m.active.id);
+ x.updated=Date.now();write(x);return x
+}
+function alter(field,delta,note){
+ let x=read();x[field]=clamp((x[field]||0)+delta);x.log=x.log||[];x.log.unshift({time:Date.now(),note});x.log=x.log.slice(0,80);
+ if(field!=="power")x.power=clamp(x.power-Math.max(1,Math.ceil(Math.abs(delta)/8)));
+ write(x);render()
+}
+function gauge(label,val){
+ let cls=val>=65?"vgOpsGoodP7":val<40?"vgOpsWarnP7":"";
+ return '<b>'+label+'</b> <span class="'+cls+'">'+val+'%</span><div class="gauge"><div class="vgOpsFillP7" style="width:'+val+'%"></div></div>'
+}
+function consoleCard(title,field,text,actions){
+ let x=read(),v=x[field]||0;
+ return '<div class="console"><h3>'+title+'</h3>'+gauge("SYSTEM",v)+'<div class="readout">'+text+'</div>'+actions+'</div>'
+}
+function render(){
+ let m=document.querySelector("#main"),x=recalc(),a=active(),mi=mission(),d=dept(a);if(!m)return;
+ let alerts=x.alerts||[];
+ m.innerHTML='<div id="vgShipOpsP7"><div class="head"><small>VET GODS // ORBITAL HOSPITAL DECK NINE</small><h2>SHIP & HOSPITAL OPERATIONS COMMAND</h2>'+
+ '<div class="lights"><span class="vgOpsLightP7"><i class="vgOpsLampP7 '+(x.power>=40?"ok":"hot")+'"></i>POWER '+x.power+'%</span>'+
+ '<span class="vgOpsLightP7"><i class="vgOpsLampP7 '+(x.lifeSupport>=50?"ok":"hot")+'"></i>LIFE SUPPORT '+x.lifeSupport+'%</span>'+
+ '<span class="vgOpsLightP7"><i class="vgOpsLampP7 '+(alerts.length?"warn":"ok")+'"></i>'+alerts.length+' ALERTS</span></div>'+
+ '<div class="readout">'+(alerts.length?alerts.join(" // "):"ALL PRIMARY SYSTEMS REPORTING. DATA IS LINKED TO CURRENT GAME STATE.")+'</div></div>'+
+ '<div class="deck">'+
+ consoleCard("VETERINARY COMMAND","medical",(a?("PATIENT "+a.name+" // Health "+(a.health??"—")+" // Pain "+(a.pain??"—")+" // Diagnostics "+(d.diagnosticEvidence||0)+"%"):"NO ACTIVE PATIENT"),'<button id="opsPatient">PATIENT CHART</button><button id="opsCase">CONTINUE CASE</button>')+
+ consoleCard("NUTRITION LAB","nutrition","Patient nutrition plan "+(d.nutritionPlan||0)+"% // Mission care supplies "+((mi.inventory?.supplies||[]).length),'<button data-ops="nutrition">MIX RECOVERY NUTRITION</button><button id="opsNutritionDept">NUTRITION DEPT</button>')+
+ consoleCard("RESEARCH CORE","research","Research support "+(d.researchUnlocks||0)+"% // Recovered research "+((mi.inventory?.research||[]).length),'<button data-ops="research">PROCESS RESEARCH SAMPLE</button><button id="opsResearchDept">RESEARCH DEPT</button>')+
+ consoleCard("SANCTUARY CONTROL","sanctuary","Habitat "+(d.habitatPlan||0)+"% // Behavior "+(d.behaviorPlan||0)+"% // Habitat modules "+((mi.inventory?.habitat||[]).length),'<button data-ops="sanctuary">TUNE SANCTUARY ENVIRONMENT</button><button id="opsAnimals">MY ANIMALS</button>')+
+ consoleCard("ENGINEERING","engineering","Power routing "+x.power+"% // Life support "+x.lifeSupport+"% // Completed missions "+((mi.completed||[]).length),'<button data-ops="engineering">ROUTE POWER TO HOSPITAL</button><button data-ops="power">CHARGE POWER RESERVE</button>')+
+ consoleCard("NAVIGATION / DISPATCH","navigation",(mi.active?("MISSION "+mi.active.id+" ACTIVE // phase "+(mi.active.stage+1)):"No mission underway // "+((mi.completed||[]).length)+" missions completed"),'<button id="opsCampaign">MISSION COMMAND</button><button data-ops="navigation">CALIBRATE RESCUE NAV</button>')+
+ '</div><div class="nav"><button id="opsHome">DOS MAIN</button><button id="opsMaster">ANIMAL MASTER FILE</button><button id="opsInventory">MISSION INVENTORY</button></div></div>';
+ document.querySelector("#opsPatient").onclick=()=>window.VetGodsDosFormsP3?.clinic?.();
+ document.querySelector("#opsCase").onclick=()=>window.VetGodsCaseProgressionP2?.render?.();
+ document.querySelector("#opsNutritionDept").onclick=()=>window.VetGodsDepartments?.page?.("NUTRITION");
+ document.querySelector("#opsResearchDept").onclick=()=>window.VetGodsDepartments?.page?.("RESEARCH");
+ document.querySelector("#opsAnimals").onclick=()=>window.VetGodsAnimalsHomeP5?.list?.();
+ document.querySelector("#opsCampaign").onclick=()=>window.VetGodsCampaignP6?.render?.();
+ document.querySelector("#opsHome").onclick=()=>window.VetGodsDosProgramP2?.render?.("MAIN");
+ document.querySelector("#opsMaster").onclick=()=>window.VetGodsPermanentAnimalP1?.records?.();
+ document.querySelector("#opsInventory").onclick=()=>window.VetGodsCampaignP6?.inventory?.();
+ m.querySelectorAll("[data-ops]").forEach(b=>b.onclick=()=>{
+   let k=b.dataset.ops;
+   if(k==="nutrition"){alter("nutrition",8,"Recovery nutrition mixed");try{window.VetGodsDepartmentEffectsP3?.update?.("nutritionPlan",8,"Ship nutrition lab mixture")}catch(e){}}
+   if(k==="research"){alter("research",8,"Research sample processed");try{window.VetGodsDepartmentEffectsP3?.update?.("researchUnlocks",8,"Ship research sample processed")}catch(e){}}
+   if(k==="sanctuary"){alter("sanctuary",8,"Sanctuary environment tuned");try{window.VetGodsDepartmentEffectsP3?.update?.("habitatPlan",8,"Ship sanctuary environment tuned")}catch(e){}}
+   if(k==="engineering"){alter("engineering",8,"Hospital power routing stabilized")}
+   if(k==="power"){alter("power",12,"Power reserve charged")}
+   if(k==="navigation"){alter("navigation",8,"Rescue navigation calibrated")}
+ })
+}
+function install(){
+ window.VetGodsShipOperationsP7={read,recalc,render,alter};
+ let dep=window.VetGodsDepartments;
+ if(dep&&typeof dep.page==="function"&&!dep.page._shipOpsP7){
+   let old=dep.page,fn=function(k){let z=String(k||"").toUpperCase();if(z==="OPS"||z==="FACILITIES"||z==="DISPATCH"){render();return}return old.apply(this,arguments)};
+   fn._shipOpsP7=true;dep.page=fn
+ }
+ if(!document.querySelector("#vgShipOpsButtonP7")){
+   let b=document.createElement("button");b.id="vgShipOpsButtonP7";b.type="button";b.textContent="SHIP OPS";
+   b.style.cssText="position:fixed;left:8px;bottom:174px;z-index:2147482997;background:#050606;color:#4cff7a;border:1px solid #4cff7a;padding:7px 9px;font:900 8px 'Courier New',monospace";
+   b.onclick=render;document.body.appendChild(b)
+ }
+}
+setTimeout(install,2800);
+})();
+</script>
+
+<style id="vg-consolidation-p8-css">
+#vgCareerP8{max-width:1080px;margin:8px auto 95px;background:#eeeade;color:#111;border:2px solid #fff;box-shadow:7px 7px #111;padding:12px;box-sizing:border-box;font:10px "Courier New",monospace}
+#vgCareerP8 .head{border-bottom:3px double #111;padding-bottom:7px}
+#vgCareerP8 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:8px}
+#vgCareerP8 .card{background:#faf8ef;border:1px solid #999;padding:9px}
+#vgCareerP8 .earned{border:3px double #126d31}
+#vgCareerP8 .seal{width:58px;height:58px;float:right;border:4px double #111;border-radius:50%;display:grid;place-items:center;font:900 9px Georgia,serif}
+#vgCareerP8 .progress{height:15px;border:1px solid #111;background:#fff;margin:5px 0}.vgCareerFillP8{height:100%;background:#111}
+#vgCareerP8 button{background:#111;color:#fff;border:1px solid #111;padding:7px 9px;font:900 8px "Courier New",monospace;margin:4px}
+#vgCareerP8 .green{color:#126d31;font-weight:900}
+@media(max-width:720px){#vgCareerP8 .grid{grid-template-columns:1fr}}
+</style>
+<script id="vg-consolidation-p8-gameplay-credentials">
+(function(){
+"use strict";
+const KEY="vetgods_gameplay_credentials_p8_v1";
+const creds=[
+ ["CASE-01","Clinical Case Completion Citation","CASE","Complete a full animal case through disposition."],
+ ["CASE-05","Senior Case Officer Certificate","CASE","Complete five full animal cases."],
+ ["RESCUE-01","Field Rescue Citation","MISSION","Complete your first campaign rescue mission."],
+ ["RESCUE-10","Grand Rescue Command Medal","MISSION","Complete ten campaign missions."],
+ ["RESCUE-20","Twenty Mission Expedition Fellowship","MISSION","Complete all twenty campaign missions."],
+ ["MORPH-01","Authorized Morph Registration","MORPH","Create and permanently save a Morph creature."],
+ ["MORPH-05","Composite Creature Research Certificate","MORPH","Create five permanent Morph creatures."],
+ ["ANIMAL-05","Sanctuary Keeper Citation","ANIMALS","Maintain five permanent animals."],
+ ["ANIMAL-15","Grand Sanctuary Stewardship Commission","ANIMALS","Maintain fifteen permanent animals."],
+ ["SHIP-01","Orbital Hospital Operations Certificate","SHIP","Bring ship operations online."],
+ ["SHIP-75","Hospital Systems Readiness Medal","SHIP","Reach 75% average operational readiness."],
+ ["RESEARCH-01","Applied Research Citation","RESEARCH","Recover or process research material."],
+ ["CARE-01","Integrated Care Specialist Badge","CARE","Build diagnostic, nutrition and behavior support on one patient."],
+ ["CARE-75","Apex Patient Support Fellowship","CARE","Reach strong integrated support across patient departments."],
+ ["CAREER-10","Veterinary Command Career Medal","CAREER","Earn ten gameplay credentials."],
+ ["CAREER-15","Grand Program Fellowship","CAREER","Earn fifteen gameplay credentials."]
+];
+function blank(){return {earned:{},animalAwards:{},log:[]}}
+function read(){try{return {...blank(),...JSON.parse(localStorage.getItem(KEY)||"{}")}}catch(e){return blank()}}
+function write(x){try{localStorage.setItem(KEY,JSON.stringify(x));if(typeof save==="function")save()}catch(e){}}
+function roster(){return Array.isArray(window.state?.animals)?state.animals:[]}
+function active(){try{return window.VetGodsActivePatientP3?.restore?.()||null}catch(e){return null}}
+function id(a){return String(a?.permanentId||window.VetGodsPermanentAnimalP1?.uid?.(a)||a?.id||a?.name||"NONE")}
+function caseData(){try{return window.VetGodsCaseProgressionP2?.read?.().cases||{}}catch(e){return {}}}
+function missions(){try{return window.VetGodsCampaignP6?.read?.()||{completed:[],inventory:{}}}catch(e){return {completed:[],inventory:{}}}}
+function morphs(){try{return window.VetGodsMorphWorkshopP4?.read?.().created||[]}catch(e){return []}}
+function dept(a){try{return window.VetGodsDepartmentEffectsP3?.read?.().animals?.[id(a)]||{}}catch(e){return {}}}
+function ship(){try{return window.VetGodsShipOperationsP7?.recalc?.()||{}}catch(e){return {}}}
+function caseCompleteCount(){return Object.values(caseData()).filter(c=>(c.completed||[]).includes("DISPOSITION")).length}
+function shipAvg(){let x=ship(),ks=["medical","nutrition","research","sanctuary","engineering","navigation","lifeSupport"];return Math.round(ks.reduce((n,k)=>n+(Number(x[k])||0),0)/ks.length)}
+function condition(code){
+ let m=missions(),a=active(),d=dept(a),earned=Object.keys(read().earned).length;
+ return ({
+ "CASE-01":caseCompleteCount()>=1,"CASE-05":caseCompleteCount()>=5,
+ "RESCUE-01":(m.completed||[]).length>=1,"RESCUE-10":(m.completed||[]).length>=10,"RESCUE-20":(m.completed||[]).length>=20,
+ "MORPH-01":morphs().length>=1,"MORPH-05":morphs().length>=5,
+ "ANIMAL-05":roster().length>=5,"ANIMAL-15":roster().length>=15,
+ "SHIP-01":!!window.VetGodsShipOperationsP7,"SHIP-75":shipAvg()>=75,
+ "RESEARCH-01":((m.inventory?.research||[]).length>0)||(Number(d.researchUnlocks)||0)>0,
+ "CARE-01":(Number(d.diagnosticEvidence)||0)>=20&&(Number(d.nutritionPlan)||0)>=20&&(Number(d.behaviorPlan)||0)>=20,
+ "CARE-75":(Number(d.diagnosticEvidence)||0)>=60&&(Number(d.nutritionPlan)||0)>=60&&(Number(d.behaviorPlan)||0)>=60&&(Number(d.habitatPlan)||0)>=40,
+ "CAREER-10":earned>=10,"CAREER-15":earned>=15
+ })[code]||false
+}
+function scan(){
+ let x=read(),changed=false;
+ creds.forEach(c=>{if(!x.earned[c[0]]&&condition(c[0])){x.earned[c[0]]={time:Date.now(),title:c[1],category:c[2],automatic:true};x.log.unshift({time:Date.now(),event:"EARNED",code:c[0]});changed=true}});
+ if(changed)write(x);return x
+}
+function manual(code){
+ let c=creds.find(x=>x[0]===code);if(!c)return;let x=read();
+ if(!x.earned[code])x.earned[code]={time:Date.now(),title:c[1],category:c[2],automatic:false};
+ x.log.unshift({time:Date.now(),event:"MANUAL AWARD",code});write(x);
+ try{let def=window.VetGodsAwardsP1?.awards?.find(a=>a[3]===c[2]);if(def)window.VetGodsAwardsP1.award(def[0],window.VetGodsPlayerNameLockP4?.resolve?.()||"PLAYER")}catch(e){}
+ render()
+}
+function animalAward(animalId,title){
+ let a=roster().find(x=>id(x)===animalId);if(!a)return;let x=read();
+ x.animalAwards[animalId]=x.animalAwards[animalId]||[];
+ x.animalAwards[animalId].unshift({time:Date.now(),title:title||"VET GODS Companion Achievement",serial:"AN-"+Date.now().toString(36).toUpperCase()});
+ write(x);try{window.VetGodsPermanentAnimalP1?.merge?.(a,"ANIMAL AWARD: "+title)}catch(e){};animalDesk(animalId)
+}
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function render(){
+ let m=document.querySelector("#main"),x=scan(),earned=Object.keys(x.earned).length,pct=Math.round(earned/creds.length*100);if(!m)return;
+ m.innerHTML='<div id="vgCareerP8"><div class="head"><small>VET GODS // CAREER & GAMEPLAY CREDENTIAL COMMAND</small><h2>YOUR ACTIONS NOW CREATE CREDENTIALS</h2>'+
+ '<b>'+earned+' / '+creds.length+' gameplay credentials earned</b><div class="progress"><div class="vgCareerFillP8" style="width:'+pct+'%"></div></div></div>'+
+ '<div class="grid">'+creds.map(c=>{let e=x.earned[c[0]],ready=condition(c[0]);return '<div class="card '+(e?'earned':'')+'"><div class="seal">'+esc(c[2])+'</div><small>'+c[0]+'</small><h3>'+esc(c[1])+'</h3><p>'+esc(c[3])+'</p>'+
+ (e?'<span class="green">ISSUED '+new Date(e.time).toLocaleDateString()+'</span>':ready?'<button data-claim="'+c[0]+'">CLAIM EARNED CREDENTIAL</button>':'<button data-manual="'+c[0]+'">AWARD TO ME ANYWAY</button>')+'</div>'}).join("")+'</div>'+
+ '<div><button id="careerAnimals">ANIMAL AWARDS</button><button id="careerGrand">GRAND 55 AWARD CENTER</button><button id="careerWallet">MY PRINTABLE AWARDS</button><button id="careerHome">DOS MAIN</button></div></div>';
+ m.querySelectorAll("[data-claim],[data-manual]").forEach(b=>b.onclick=()=>manual(b.dataset.claim||b.dataset.manual));
+ document.querySelector("#careerAnimals").onclick=animalList;
+ document.querySelector("#careerGrand").onclick=()=>window.VetGodsAwardsFinalP5?.finalDesk?.();
+ document.querySelector("#careerWallet").onclick=()=>window.VetGodsAwardsP3?.wallet?.();
+ document.querySelector("#careerHome").onclick=()=>window.VetGodsDosProgramP2?.render?.("MAIN")
+}
+function animalList(){
+ let m=document.querySelector("#main"),x=read();if(!m)return;
+ m.innerHTML='<div id="vgCareerP8"><div class="head"><small>COMPANION HONORS OFFICE</small><h2>ANIMAL BADGES & CITATIONS</h2></div><div class="grid">'+roster().map(a=>'<div class="card"><b>'+esc(a.name)+'</b><br>'+esc(a.species||"Animal")+'<br><small>'+esc(id(a))+'</small><p>'+(x.animalAwards[id(a)]||[]).length+' animal honors</p><button data-animal-awards="'+esc(id(a))+'">OPEN / AWARD</button></div>').join("")+'</div><button id="animalAwardsBack">BACK TO CAREER</button></div>';
+ m.querySelectorAll("[data-animal-awards]").forEach(b=>b.onclick=()=>animalDesk(b.dataset.animalAwards));document.querySelector("#animalAwardsBack").onclick=render
+}
+function animalDesk(animalId){
+ let m=document.querySelector("#main"),a=roster().find(x=>id(x)===animalId),x=read();if(!m||!a)return;
+ let aw=x.animalAwards[animalId]||[];
+ m.innerHTML='<div id="vgCareerP8"><div class="head"><small>INDIVIDUAL ANIMAL HONORS</small><h2>'+esc(a.name)+'</h2><b>'+esc(animalId)+'</b></div><div class="grid">'+
+ ['Clinical Courage Citation','Rescue Survivor Medal','Recovery Achievement Badge','Sanctuary Companion Honor','Morph Research Registration','Mission Companion Citation'].map(t=>'<div class="card"><h3>'+t+'</h3><button data-give-animal="'+esc(t)+'">AWARD TO '+esc(a.name).toUpperCase()+'</button></div>').join("")+
+ '</div><div class="card"><h3>ISSUED ANIMAL HONORS</h3>'+(aw.length?aw.map(z=>esc(z.title)+' // '+esc(z.serial)+' // '+new Date(z.time).toLocaleDateString()).join("<br>"):"None issued yet.")+'</div><button id="animalDeskBack">ALL ANIMALS</button><button id="animalDeskHome">DOS MAIN</button></div>';
+ m.querySelectorAll("[data-give-animal]").forEach(b=>b.onclick=()=>animalAward(animalId,b.dataset.giveAnimal));
+ document.querySelector("#animalDeskBack").onclick=animalList;document.querySelector("#animalDeskHome").onclick=()=>window.VetGodsDosProgramP2?.render?.("MAIN")
+}
+function install(){
+ window.VetGodsGameplayCredentialsP8={read,scan,render,animalList,animalDesk,animalAward,condition};
+ scan();
+ if(!document.querySelector("#vgCareerButtonP8")){
+   let b=document.createElement("button");b.id="vgCareerButtonP8";b.type="button";b.textContent="CAREER / HONORS";
+   b.style.cssText="position:fixed;right:8px;bottom:109px;z-index:2147482998;background:#050606;color:#eee;border:1px solid #eee;padding:7px 9px;font:900 8px 'Courier New',monospace";
+   b.onclick=render;document.body.appendChild(b)
+ }
+ document.addEventListener("click",()=>setTimeout(scan,150),true)
+}
+setTimeout(install,2900);
+})();
+</script>
+
+<style id="vg-consolidation-p9-css">
+#vgSafetyP9{max-width:1080px;margin:8px auto 95px;background:#eeeade;color:#111;border:2px solid #fff;box-shadow:7px 7px #111;padding:12px;box-sizing:border-box;font:10px "Courier New",monospace}
+#vgSafetyP9 .head{border-bottom:3px double #111;padding-bottom:7px}
+#vgSafetyP9 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:8px}
+#vgSafetyP9 .card{background:#faf8ef;border:1px solid #999;padding:9px}
+#vgSafetyP9 .ok{color:#126d31;font-weight:900}.vgSafetyP9 .bad,#vgSafetyP9 .bad{color:#9c1010;font-weight:900}
+#vgSafetyP9 button{background:#111;color:#fff;border:1px solid #111;padding:7px 9px;font:900 8px "Courier New",monospace;margin:4px}
+#vgSafetyP9 textarea{width:100%;min-height:100px;box-sizing:border-box;font:8px "Courier New",monospace}
+@media(max-width:720px){#vgSafetyP9 .grid{grid-template-columns:1fr}}
+</style>
+<script id="vg-consolidation-p9-persistence">
+(function(){
+"use strict";
+const SNAP="vetgods_release_snapshot_p9_v1", PLAYER="vetgods_player_identity_p9_v1";
+const keys=["vetgods_permanent_animal_master_v1","vetgods_case_progression_p2_v1","vetgods_department_effects_p3_v1","vetgods_morph_workshop_p4_v1","vetgods_campaign_loop_p6_v1","vetgods_ship_operations_p7_v1","vetgods_gameplay_credentials_p8_v1"];
+function safeParse(k,fallback){try{let v=localStorage.getItem(k);return v?JSON.parse(v):fallback}catch(e){return fallback}}
+function playerName(){
+ let p=safeParse(PLAYER,{name:""}), candidates=[
+  p.name, window.VetGodsPlayerNameLockP4?.resolve?.(),
+  window.state?.rewardSystem?.playerName, window.state?.certName
+ ].filter(v=>v&&String(v).trim()&&!/^john smith$/i.test(String(v).trim()));
+ return String(candidates[0]||"PLAYER").trim()
+}
+function lockPlayer(name){
+ name=String(name||"").trim();if(!name)return false;
+ localStorage.setItem(PLAYER,JSON.stringify({name,updated:Date.now()}));
+ try{if(state.rewardSystem)state.rewardSystem.playerName=name;state.certName=name;if(typeof save==="function")save()}catch(e){}
+ return true
+}
+function capture(){
+ let data={time:Date.now(),player:playerName(),state:null,stores:{}};
+ try{data.state=JSON.parse(JSON.stringify(window.state||{}))}catch(e){}
+ keys.forEach(k=>data.stores[k]=localStorage.getItem(k));
+ localStorage.setItem(SNAP,JSON.stringify(data));return data
+}
+function restore(){
+ let snap=safeParse(SNAP,null);if(!snap)return false;
+ keys.forEach(k=>{if(!localStorage.getItem(k)&&snap.stores?.[k])localStorage.setItem(k,snap.stores[k])});
+ lockPlayer(snap.player||playerName());
+ try{
+   if(snap.state&&window.state){
+     if(!Array.isArray(state.animals)||state.animals.length===0) state.animals=snap.state.animals||[];
+     if(!state.rewardSystem&&snap.state.rewardSystem)state.rewardSystem=snap.state.rewardSystem;
+     if(typeof save==="function")save()
+   }
+ }catch(e){}
+ return true
+}
+function health(){
+ let a=window.VetGodsPermanentAnimalP1?.read?.()||{}, c=window.VetGodsCaseProgressionP2?.read?.()||{}, m=window.VetGodsMorphWorkshopP4?.read?.()||{}, q=window.VetGodsCampaignP6?.read?.()||{}, g=window.VetGodsGameplayCredentialsP8?.read?.()||{};
+ return [
+  ["PLAYER NAME",playerName()!=="PLAYER",playerName()],
+  ["ANIMAL MASTER",!!Object.keys(a.records||{}).length,Object.keys(a.records||{}).length+" permanent records"],
+  ["MY ANIMALS",Array.isArray(state?.animals),((state?.animals||[]).length)+" roster animals"],
+  ["CASE SAVE",!!c.cases,Object.keys(c.cases||{}).length+" case records"],
+  ["MORPH SAVE",!!m.created,(m.created||[]).length+" created morphs"],
+  ["MISSION SAVE",!!q.completed,(q.completed||[]).length+" missions complete"],
+  ["MISSION INVENTORY",!!q.inventory,"persistent inventory online"],
+  ["CREDENTIAL SAVE",!!g.earned,Object.keys(g.earned||{}).length+" gameplay credentials"],
+  ["SHIP SAVE",!!window.VetGodsShipOperationsP7,"operations store online"],
+  ["RECOVERY SNAPSHOT",!!localStorage.getItem(SNAP),"last-known-good snapshot"]
+ ]
+}
+function dashboard(){
+ let m=document.querySelector("#main");if(!m)return;
+ capture();let h=health();
+ m.innerHTML='<div id="vgSafetyP9"><div class="head"><small>VET GODS // RELEASE CANDIDATE SAFETY CONSOLE</small><h2>PERSISTENCE, IDENTITY & RECOVERY</h2>'+
+ '<b>PLAYER: '+playerName()+'</b></div><div class="grid">'+h.map(x=>'<div class="card"><b>'+x[0]+'</b><br><span class="'+(x[1]?'ok':'bad')+'">'+(x[1]?'PASS':'CHECK')+'</span><br>'+x[2]+'</div>').join("")+'</div>'+
+ '<div class="card"><h3>PLAYER NAME LOCK</h3><input id="p9Name" value="'+playerName().replace(/"/g,"&quot;")+'"><button id="p9SaveName">SAVE PLAYER NAME PERMANENTLY</button></div>'+
+ '<div class="card"><h3>RECOVERY CONTROLS</h3><button id="p9Snap">CREATE SAFE SNAPSHOT NOW</button><button id="p9Restore">RESTORE MISSING DATA FROM SNAPSHOT</button><button id="p9Export">SHOW BACKUP DATA</button></div>'+
+ '<div id="p9ExportArea"></div><button id="p9Animals">MY ANIMALS</button><button id="p9Case">CONTINUE CASE</button><button id="p9Home">DOS MAIN</button></div>';
+ document.querySelector("#p9SaveName").onclick=()=>{lockPlayer(document.querySelector("#p9Name").value);capture();dashboard()};
+ document.querySelector("#p9Snap").onclick=()=>{capture();dashboard()};
+ document.querySelector("#p9Restore").onclick=()=>{restore();dashboard()};
+ document.querySelector("#p9Export").onclick=()=>{let z=document.querySelector("#p9ExportArea");z.innerHTML='<div class="card"><b>LOCAL BACKUP COPY</b><textarea readonly>'+JSON.stringify(capture()).replace(/</g,"&lt;")+'</textarea></div>'};
+ document.querySelector("#p9Animals").onclick=()=>window.VetGodsAnimalsHomeP5?.list?.();
+ document.querySelector("#p9Case").onclick=()=>window.VetGodsCaseProgressionP2?.render?.();
+ document.querySelector("#p9Home").onclick=()=>window.VetGodsDosProgramP2?.render?.("MAIN")
+}
+function blankGuard(){
+ let main=document.querySelector("#main");if(!main)return;
+ if(!main.innerHTML.trim()||main.getBoundingClientRect().height<10){
+   main.innerHTML='<div id="vgSafetyP9"><div class="head"><h2>SCREEN RECOVERY</h2></div><div class="card"><b>The requested panel did not render.</b><br>The game state has not been erased.<br><button id="p9RecoverHome">RETURN TO DOS MAIN</button><button id="p9RecoverAnimals">MY ANIMALS</button></div></div>';
+   document.querySelector("#p9RecoverHome").onclick=()=>window.VetGodsDosProgramP2?.render?.("MAIN");
+   document.querySelector("#p9RecoverAnimals").onclick=()=>window.VetGodsAnimalsHomeP5?.list?.()
+ }
+}
+function install(){
+ restore();lockPlayer(playerName());
+ try{window.VetGodsPermanentAnimalP1?.syncAll?.("RELEASE CANDIDATE BOOT")}catch(e){}
+ capture();
+ window.VetGodsPersistenceP9={capture,restore,health,dashboard,playerName,lockPlayer,blankGuard};
+ document.addEventListener("click",()=>setTimeout(()=>{try{capture();blankGuard()}catch(e){}},180),true);
+ window.addEventListener("pagehide",capture);window.addEventListener("beforeunload",capture);
+ setInterval(()=>{try{capture()}catch(e){}},30000);
+ if(!document.querySelector("#vgSafetyButtonP9")){
+   let b=document.createElement("button");b.id="vgSafetyButtonP9";b.type="button";b.textContent="SAVE / SAFETY";
+   b.style.cssText="position:fixed;right:8px;bottom:142px;z-index:2147482998;background:#050606;color:#4cff7a;border:1px solid #4cff7a;padding:7px 9px;font:900 8px 'Courier New',monospace";
+   b.onclick=dashboard;document.body.appendChild(b)
+ }
+}
+setTimeout(install,3000);
+})();
+</script>
+
+<style id="vg-dos-restoration-r1-clean-shell">
+/* DOS RESTORATION 1/10
+   Cleanup surgery only: features remain installed; their floating launchers are removed. */
+#vgFolderButton,
+#vgAwardsFinalButtonP5,
+#vgMasterAnimalButtonP1,
+#vgCaseFlowButtonP2,
+#vgMorphWorkshopButtonP4,
+#vgCampaignButtonP6,
+#vgShipOpsButtonP7,
+#vgCareerButtonP8,
+#vgSafetyButtonP9,
+#vgGrandCredentialButtonP5,
+#vgReturnBoardButtonP3,
+#vgAwardsButtonP1,
+#vgAwardsButtonP3,
+#vgCertButton,
+#vgCredentialButton,
+body > button[style*="position:fixed"],
+body > div[style*="position:fixed"][id*="Button"]{display:none!important}
+
+/* Restore the original DOS frame as the visual authority. */
+.app{width:min(1080px,100%)!important;padding:4px!important}
+.frame{border:2px solid #c9c9c9!important;box-shadow:none!important}
+.title{min-height:25px!important}
+.status{white-space:nowrap;overflow:auto}
+.nav{position:static!important;z-index:auto!important;background:#000!important}
+.nav button{font-size:11px!important;min-height:30px!important}
+#main{padding:8px!important}
+.cmd{position:static!important;background:#000!important}
+.foot{position:static!important}
+
+/* Expansion pages may still use their own paper/console design inside #main,
+   but they are not allowed to become a second permanent shell. */
+#vgDosShellP1{position:static!important;inset:auto!important;min-height:0!important}
+#vgDosShellP1 > .p2bar{display:none!important}
+</style>
+
+<script id="vg-dos-restoration-r1-kernel">
+(function(){
+"use strict";
+const KEY="vetgods_dos_restoration_r1_v1";
+const FLOAT_IDS=[
+ "vgFolderButton","vgAwardsFinalButtonP5","vgMasterAnimalButtonP1","vgCaseFlowButtonP2",
+ "vgMorphWorkshopButtonP4","vgCampaignButtonP6","vgShipOpsButtonP7","vgCareerButtonP8",
+ "vgSafetyButtonP9","vgGrandCredentialButtonP5","vgReturnBoardButtonP3","vgAwardsButtonP1",
+ "vgAwardsButtonP3","vgCertButton","vgCredentialButton"
+];
+function hideLaunchers(){
+ FLOAT_IDS.forEach(id=>{let n=document.getElementById(id);if(n){n.hidden=true;n.style.setProperty("display","none","important")}});
+ /* Only remove stray direct-body fixed launchers; never touch content controls inside #main. */
+ [...document.body.children].forEach(n=>{
+   if(n.tagName==="BUTTON"&&/fixed/i.test(n.getAttribute("style")||""))n.style.setProperty("display","none","important")
+ });
+}
+function saveShell(screen){
+ try{
+  let x=JSON.parse(localStorage.getItem(KEY)||"{}");
+  x.lastScreen=screen||x.lastScreen||"MAIN";x.updated=Date.now();
+  localStorage.setItem(KEY,JSON.stringify(x))
+ }catch(e){}
+}
+function dosHome(){
+ hideLaunchers();saveShell("MAIN");
+ if(window.VetGodsDosProgramP2?.render)return window.VetGodsDosProgramP2.render("MAIN");
+ if(typeof window.home==="function")return window.home()
+}
+function install(){
+ hideLaunchers();
+ window.VetGodsDosRestorationR1={hideLaunchers,dosHome,saveShell};
+ /* Late expansion installers used to recreate their floating buttons.
+    Observe only direct body additions and immediately suppress those launchers. */
+ let obs=new MutationObserver(ms=>{
+   let needs=false;
+   ms.forEach(m=>m.addedNodes.forEach(n=>{
+     if(n.nodeType===1&&(FLOAT_IDS.includes(n.id)||(n.tagName==="BUTTON"&&/fixed/i.test(n.getAttribute("style")||""))))needs=true
+   }));
+   if(needs)hideLaunchers()
+ });
+ obs.observe(document.body,{childList:true});
+ /* Keep the DOS command line as the emergency route home. */
+ let input=document.querySelector("#input");
+ if(input&&!input.dataset.r1){
+   input.dataset.r1="1";
+   input.addEventListener("keydown",e=>{
+     if(e.key==="Escape"){e.preventDefault();dosHome()}
+   })
+ }
+}
+setTimeout(install,3100);
+setTimeout(hideLaunchers,5000);
+})();
+</script>
+
+<style id="vg-dos-restoration-r2-menu-css">
+/* DOS RESTORATION 2/10 — one authoritative top menu */
+#vgMasterMenuR2{display:flex;align-items:center;gap:0;background:#050505;border-top:1px solid #777;border-bottom:1px solid #aaa;position:relative;z-index:5000;font:11px "Courier New",monospace;overflow:visible}
+#vgMasterMenuR2 .r2item{position:relative}
+#vgMasterMenuR2 .r2top{background:#050505;color:#ddd;border:0;border-right:1px solid #333;padding:7px 10px;min-height:29px;font:700 10px "Courier New",monospace}
+#vgMasterMenuR2 .r2top:hover,#vgMasterMenuR2 .r2top.open{background:#ddd;color:#000}
+#vgMasterMenuR2 .r2drop{display:none;position:absolute;left:0;top:100%;min-width:215px;background:#050505;border:1px solid #ddd;box-shadow:4px 4px #000;padding:3px;z-index:99999}
+#vgMasterMenuR2 .r2drop.open{display:block}
+#vgMasterMenuR2 .r2drop button{display:block;width:100%;text-align:left;background:#050505;color:#ddd;border:0;padding:7px 9px;font:10px "Courier New",monospace;white-space:nowrap}
+#vgMasterMenuR2 .r2drop button:hover,#vgMasterMenuR2 .r2drop button:focus{background:#ddd;color:#000;outline:none}
+#vgMasterMenuR2 .r2sep{border-top:1px solid #555;margin:3px 0}
+#vgMasterMenuR2 .r2status{margin-left:auto;padding:0 8px;color:#4cff7a;white-space:nowrap;font-size:9px}
+#nav{display:none!important}
+@media(max-width:760px){
+ #vgMasterMenuR2{overflow-x:auto;overflow-y:visible}
+ #vgMasterMenuR2 .r2top{padding:7px 8px;font-size:9px}
+ #vgMasterMenuR2 .r2status{display:none}
+ #vgMasterMenuR2 .r2drop{position:fixed;left:6px!important;right:6px;top:62px;min-width:0}
+}
+</style>
+
+<script id="vg-dos-restoration-r2-menu">
+(function(){
+"use strict";
+const menu=[
+ ["FILE",[
+   ["HOME","home"],["CONTINUE CASE","case"],["MY ANIMALS","animals"],["---",""],
+   ["SAVE / SAFETY","safety"]
+ ]],
+ ["PATIENT",[
+   ["PATIENT CHART","patient"],["CONTINUE CASE","case"],["ANIMAL MASTER FILE","master"],["MY ANIMALS","animals"]
+ ]],
+ ["MEDICAL",[
+   ["DIAGNOSTICS","dept:DIAGNOSTIC"],["SURGERY","dept:SURGERY"],["PHARMACY","dept:PHARMACY"],
+   ["RECOVERY","dept:RECOVERY"],["REHABILITATION","dept:REHAB"],["BEHAVIOR","dept:BEHAVIOR"],["NUTRITION","dept:NUTRITION"]
+ ]],
+ ["ANIMALS",[
+   ["MY ANIMALS","animals"],["MORPH WORKSHOP","morph"],["SANCTUARY","dept:SANCTUARY"],
+   ["NURSERY","dept:NURSERY"],["HABITAT","dept:HABITAT"]
+ ]],
+ ["OPERATIONS",[
+   ["SHIP / HOSPITAL OPS","ship"],["MISSION COMMAND","campaign"],["DISPATCH","dept:DISPATCH"],
+   ["FACILITIES","dept:FACILITIES"],["EMPLOYEES","dept:EMPLOYEES"],["STAFF","dept:STAFF"]
+ ]],
+ ["RESEARCH",[
+   ["RESEARCH","dept:RESEARCH"],["NEURO","dept:NEURO"],["PARANORMAL","dept:PARANORMAL"],
+   ["SPECIAL ARCHIVES","dept:SPECIAL ARCHIVES"]
+ ]],
+ ["RECORDS",[
+   ["ANIMAL MASTER FILE","master"],["PATIENT CHART","patient"],["MISSION INVENTORY","inventory"],
+   ["CAREER / HONORS","career"]
+ ]],
+ ["AWARDS",[
+   ["GAMEPLAY CREDENTIALS","career"],["GRAND CREDENTIAL LIBRARY","grandawards"],["PRINTABLE AWARDS","wallet"],
+   ["ANIMAL HONORS","animalawards"]
+ ]],
+ ["SYSTEM",[
+   ["DOS HOME","home"],["SAVE / SAFETY","safety"],["CREATE SAFE SNAPSHOT","snapshot"],["---",""],
+   ["RESTORE CLEAN SHELL","cleanshell"]
+ ]]
+];
+function closeAll(){
+ document.querySelectorAll("#vgMasterMenuR2 .r2drop").forEach(x=>x.classList.remove("open"));
+ document.querySelectorAll("#vgMasterMenuR2 .r2top").forEach(x=>x.classList.remove("open"))
+}
+function route(code){
+ closeAll();
+ try{window.VetGodsDosRestorationR1?.saveShell?.(code)}catch(e){}
+ if(code==="home")return window.VetGodsDosProgramP2?.render?.("MAIN");
+ if(code==="patient")return window.VetGodsDosFormsP3?.clinic?.();
+ if(code==="case")return window.VetGodsCaseProgressionP2?.render?.();
+ if(code==="animals")return window.VetGodsAnimalsHomeP5?.list?.();
+ if(code==="master")return window.VetGodsPermanentAnimalP1?.records?.();
+ if(code==="morph")return window.VetGodsMorphWorkshopP4?.picker?.();
+ if(code==="campaign")return window.VetGodsCampaignP6?.render?.();
+ if(code==="inventory")return window.VetGodsCampaignP6?.inventory?.();
+ if(code==="ship")return window.VetGodsShipOperationsP7?.render?.();
+ if(code==="career")return window.VetGodsGameplayCredentialsP8?.render?.();
+ if(code==="animalawards")return window.VetGodsGameplayCredentialsP8?.animalList?.();
+ if(code==="grandawards")return window.VetGodsAwardsFinalP5?.finalDesk?.();
+ if(code==="wallet")return window.VetGodsAwardsP3?.wallet?.();
+ if(code==="safety")return window.VetGodsPersistenceP9?.dashboard?.();
+ if(code==="snapshot"){window.VetGodsPersistenceP9?.capture?.();status("SNAPSHOT SAVED");return}
+ if(code==="cleanshell"){window.VetGodsDosRestorationR1?.hideLaunchers?.();status("DOS SHELL CLEAN");return}
+ if(code.startsWith("dept:"))return window.VetGodsDepartments?.page?.(code.slice(5));
+}
+function status(msg){
+ let n=document.querySelector("#vgMasterMenuR2 .r2status");if(n){n.textContent=msg;setTimeout(updateStatus,1200)}
+}
+function updateStatus(){
+ let n=document.querySelector("#vgMasterMenuR2 .r2status");if(!n)return;
+ let a=null;try{a=window.VetGodsActivePatientP3?.restore?.()}catch(e){}
+ n.textContent=(a?"PATIENT: "+String(a.name||"ACTIVE").toUpperCase():"NO ACTIVE PATIENT")+" | SAVE: OK"
+}
+function build(){
+ if(document.getElementById("vgMasterMenuR2"))return;
+ let old=document.getElementById("nav");
+ if(!old)return;
+ let bar=document.createElement("div");bar.id="vgMasterMenuR2";
+ menu.forEach(group=>{
+   let wrap=document.createElement("div");wrap.className="r2item";
+   let top=document.createElement("button");top.type="button";top.className="r2top";top.textContent=group[0];
+   let drop=document.createElement("div");drop.className="r2drop";
+   group[1].forEach(item=>{
+     if(item[0]==="---"){let sep=document.createElement("div");sep.className="r2sep";drop.appendChild(sep);return}
+     let b=document.createElement("button");b.type="button";b.textContent=item[0];b.dataset.route=item[1];
+     b.onclick=e=>{e.stopPropagation();route(item[1])};drop.appendChild(b)
+   });
+   top.onclick=e=>{
+     e.stopPropagation();let was=drop.classList.contains("open");closeAll();
+     if(!was){drop.classList.add("open");top.classList.add("open")}
+   };
+   wrap.append(top,drop);bar.appendChild(wrap)
+ });
+ let st=document.createElement("span");st.className="r2status";bar.appendChild(st);
+ old.insertAdjacentElement("afterend",bar);updateStatus()
+}
+function install(){
+ build();
+ document.addEventListener("click",e=>{if(!e.target.closest("#vgMasterMenuR2"))closeAll()});
+ document.addEventListener("keydown",e=>{if(e.key==="Escape")closeAll()});
+ /* The old nav remains in DOM for compatibility but is no longer a competing visual menu. */
+ window.VetGodsDosMenuR2={route,closeAll,updateStatus,build};
+ setInterval(updateStatus,5000)
+}
+setTimeout(install,3200);
+})();
+</script>
+
+<style id="vg-dos-restoration-r3-command-css">
+#vgCmdHelpR3{background:#050505;color:#d9d9d9;border:1px solid #aaa;padding:9px;margin:7px 0;font:10px "Courier New",monospace}
+#vgCmdHelpR3 b{color:#4cff7a}
+#vgCmdHelpR3 .cmdgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:6px}
+#vgCmdHelpR3 .cmdcell{border:1px solid #444;padding:5px;background:#0b0d0b}
+.cmd.r3active{border-top:1px solid #4cff7a!important}
+#input{font-family:"Courier New",monospace!important}
+@media(max-width:720px){#vgCmdHelpR3 .cmdgrid{grid-template-columns:repeat(2,1fr)}}
+</style>
+
+<script id="vg-dos-restoration-r3-command-prompt">
+(function(){
+"use strict";
+const HIST="vetgods_dos_command_history_r3_v1";
+let history=[],hi=-1,previousRoute="MAIN";
+try{history=JSON.parse(localStorage.getItem(HIST)||"[]")}catch(e){}
+function saveHist(cmd){
+ if(!cmd)return;
+ if(history[history.length-1]!==cmd)history.push(cmd);
+ history=history.slice(-40);hi=history.length;
+ try{localStorage.setItem(HIST,JSON.stringify(history))}catch(e){}
+}
+function route(code){
+ previousRoute=window.VetGodsDosRestorationR1?.lastRoute||previousRoute;
+ window.VetGodsDosRestorationR1&&(window.VetGodsDosRestorationR1.lastRoute=code);
+ return window.VetGodsDosMenuR2?.route?.(code)
+}
+function help(){
+ let m=document.querySelector("#main");if(!m)return;
+ m.innerHTML='<div id="vgCmdHelpR3"><b>VET GODS DOS COMMAND REFERENCE</b><br>Type a command and press ENTER. ↑/↓ recalls previous commands.'+
+ '<div class="cmdgrid">'+[
+ ["HOME","DOS main screen"],["BACK","Previous DOS screen"],["ANIMALS","My Animals roster"],
+ ["PATIENT","Active patient chart"],["CASE","Continue active case"],["MORPH","Morph Workshop"],
+ ["MISSION","Campaign command"],["INVENTORY","Mission inventory"],["OPS","Ship/Hospital Operations"],
+ ["DIAG","Diagnostics"],["SURGERY","Surgery"],["PHARMACY","Pharmacy"],
+ ["RECOVERY","Recovery"],["REHAB","Rehabilitation"],["NUTRITION","Nutrition"],
+ ["BEHAVIOR","Behavior"],["SANCTUARY","Sanctuary"],["HABITAT","Habitat"],
+ ["RESEARCH","Research"],["NEURO","Neuro"],["AWARDS","Gameplay credentials"],
+ ["CERTS","Grand Credential Library"],["RECORDS","Animal master file"],["SAVE","Save/Safety console"],
+ ["SNAPSHOT","Create safe snapshot"],["STATUS","Current program status"],["CLS","Clear to DOS home"],
+ ["HELP","This command list"]
+ ].map(x=>'<div class="cmdcell"><b>'+x[0]+'</b><br>'+x[1]+'</div>').join("")+'</div></div>'
+}
+function status(){
+ let a=null,c=null,mi=null;
+ try{a=window.VetGodsActivePatientP3?.restore?.()}catch(e){}
+ try{c=a?window.VetGodsCaseProgressionP2?.read?.().cases?.[a.permanentId]:null}catch(e){}
+ try{mi=window.VetGodsCampaignP6?.read?.()}catch(e){}
+ let m=document.querySelector("#main");if(!m)return;
+ m.innerHTML='<div id="vgCmdHelpR3"><b>SYSTEM STATUS</b><br>'+
+ 'PLAYER: '+(window.VetGodsPersistenceP9?.playerName?.()||"PLAYER")+'<br>'+
+ 'ACTIVE PATIENT: '+(a?.name||"NONE")+'<br>'+
+ 'CASE STAGE: '+(c?.step??"NONE")+'<br>'+
+ 'ANIMALS: '+((window.state?.animals||[]).length)+'<br>'+
+ 'MISSIONS COMPLETE: '+((mi?.completed||[]).length)+' / 20<br>'+
+ 'SAVE: OK<br><br>Type <b>HELP</b> for commands.</div>'
+}
+function execute(raw){
+ let cmd=String(raw||"").trim().toUpperCase();if(!cmd)return;
+ saveHist(cmd);
+ const map={
+  "HOME":"home","MAIN":"home","MENU":"home","CLS":"home","CLEAR":"home",
+  "ANIMALS":"animals","PETS":"animals","MYANIMALS":"animals",
+  "PATIENT":"patient","CHART":"patient","CLINIC":"patient",
+  "CASE":"case","CONTINUE":"case",
+  "MORPH":"morph","MORPHING":"morph",
+  "MISSION":"campaign","MISSIONS":"campaign","CAMPAIGN":"campaign",
+  "INVENTORY":"inventory","INV":"inventory",
+  "OPS":"ship","SHIP":"ship","OPERATIONS":"ship",
+  "AWARDS":"career","CAREER":"career","HONORS":"career",
+  "CERTS":"grandawards","CERTIFICATES":"grandawards","CREDENTIALS":"grandawards",
+  "RECORDS":"master","MASTER":"master",
+  "SAVE":"safety","SAFETY":"safety",
+  "SNAPSHOT":"snapshot",
+  "DIAG":"dept:DIAGNOSTIC","DIAGNOSTICS":"dept:DIAGNOSTIC",
+  "SURGERY":"dept:SURGERY","PHARMACY":"dept:PHARMACY","RECOVERY":"dept:RECOVERY",
+  "REHAB":"dept:REHAB","BEHAVIOR":"dept:BEHAVIOR","NUTRITION":"dept:NUTRITION",
+  "SANCTUARY":"dept:SANCTUARY","NURSERY":"dept:NURSERY","HABITAT":"dept:HABITAT",
+  "RESEARCH":"dept:RESEARCH","NEURO":"dept:NEURO","PARANORMAL":"dept:PARANORMAL",
+  "DISPATCH":"dept:DISPATCH","FACILITIES":"dept:FACILITIES","STAFF":"dept:STAFF"
+ };
+ if(cmd==="HELP"||cmd==="?")return help();
+ if(cmd==="STATUS"||cmd==="STAT")return status();
+ if(cmd==="BACK"){
+   if(previousRoute&&previousRoute!=="BACK")return route(previousRoute);
+   return route("home")
+ }
+ if(map[cmd])return route(map[cmd]);
+ let m=document.querySelector("#main");if(m)m.innerHTML='<div id="vgCmdHelpR3"><b>BAD COMMAND OR FILE NAME</b><br>'+cmd+'<br><br>Type <b>HELP</b> for the VET GODS command list.</div>'
+}
+function install(){
+ let input=document.querySelector("#input");if(!input)return;
+ let cmdbar=input.closest(".cmd");cmdbar?.classList.add("r3active");
+ input.placeholder="TYPE HELP, ANIMALS, PATIENT, CASE, MORPH, MISSION, OPS...";
+ /* Capture before older prompt handlers so one command produces one route. */
+ input.addEventListener("keydown",e=>{
+   if(e.key==="Enter"){
+     let v=input.value.trim();
+     if(v){e.preventDefault();e.stopImmediatePropagation();input.value="";execute(v)}
+   }else if(e.key==="ArrowUp"){
+     if(history.length){e.preventDefault();hi=Math.max(0,hi-1);input.value=history[hi]||""}
+   }else if(e.key==="ArrowDown"){
+     if(history.length){e.preventDefault();hi=Math.min(history.length,hi+1);input.value=history[hi]||""}
+   }else if(e.key==="Tab"){
+     let val=input.value.trim().toUpperCase(),all=["HELP","HOME","BACK","ANIMALS","PATIENT","CASE","MORPH","MISSION","INVENTORY","OPS","AWARDS","CERTS","RECORDS","SAVE","STATUS","DIAG","SURGERY","PHARMACY","RECOVERY","REHAB","NUTRITION","BEHAVIOR","SANCTUARY","HABITAT","RESEARCH","NEURO"];
+     let hit=all.find(x=>x.startsWith(val));if(hit){e.preventDefault();input.value=hit}
+   }
+ },true);
+ window.VetGodsDosCommandR3={execute,help,status,history};
+}
+setTimeout(install,3300);
+})();
+</script>
+
+<style id="vg-dos-r4-award-print-css">
+#vgAwardPrintR4{max-width:980px;margin:8px auto;background:#eeeade;color:#111;border:2px solid #fff;box-shadow:7px 7px #111;padding:12px;box-sizing:border-box;font:10px "Courier New",monospace}
+#vgAwardPrintR4 .awardSheet{background:#fffdf3;border:8px double #111;padding:42px 34px;text-align:center;min-height:610px;box-sizing:border-box;position:relative}
+#vgAwardPrintR4 .awardSheet:before,#vgAwardPrintR4 .awardSheet:after{content:"";position:absolute;inset:14px;border:1px solid #777;pointer-events:none}
+#vgAwardPrintR4 .awardSheet:after{inset:20px;border-style:dotted}
+#vgAwardPrintR4 .kicker{font:700 12px "Courier New",monospace;letter-spacing:3px}
+#vgAwardPrintR4 h1{font:700 34px Georgia,serif;margin:30px 0 8px}
+#vgAwardPrintR4 .recipient{font:700 29px Georgia,serif;border-bottom:2px solid #111;display:inline-block;min-width:65%;padding:10px 25px;margin:15px 0}
+#vgAwardPrintR4 .awardTitle{font:700 23px Georgia,serif;margin:18px 0}
+#vgAwardPrintR4 .seal{width:105px;height:105px;border:7px double #111;border-radius:50%;margin:22px auto;display:grid;place-items:center;font:700 12px Georgia,serif}
+#vgAwardPrintR4 .signatures{display:grid;grid-template-columns:1fr 1fr;gap:70px;margin:48px 40px 10px}
+#vgAwardPrintR4 .sig{border-top:1px solid #111;padding-top:5px;font:10px Georgia,serif}
+#vgAwardPrintR4 .serial{font-size:9px;margin-top:24px}
+#vgAwardPrintR4 button{background:#111;color:#fff;border:1px solid #111;padding:8px 10px;font:900 9px "Courier New",monospace;margin:4px}
+#vgAwardPrintR4 .note{background:#faf8ef;border:1px solid #999;padding:8px;margin:8px 0;text-align:left}
+@media print{
+ body *{visibility:hidden!important}
+ #vgAwardPrintR4,#vgAwardPrintR4 .awardSheet,#vgAwardPrintR4 .awardSheet *{visibility:visible!important}
+ #vgAwardPrintR4{position:absolute;left:0;top:0;width:100%;max-width:none;margin:0;padding:0;border:0;box-shadow:none;background:#fff}
+ #vgAwardPrintR4 .awardSheet{width:100%;height:100vh;min-height:0;border:8px double #111;page-break-inside:avoid}
+ #vgAwardPrintR4 .noPrint{display:none!important}
+ @page{size:letter landscape;margin:.35in}
+}
+</style>
+
+<script id="vg-dos-r4-award-print">
+(function(){
+"use strict";
+const KEY="vetgods_print_awards_r4_v1";
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function player(){
+ let n="";
+ try{n=window.VetGodsPersistenceP9?.playerName?.()||window.VetGodsPlayerNameLockP4?.resolve?.()||""}catch(e){}
+ return n&& !/^john smith$/i.test(n)?n:"PLAYER"
+}
+function store(){try{return JSON.parse(localStorage.getItem(KEY)||'{"issued":[]}')}catch(e){return {issued:[]}}}
+function save(x){localStorage.setItem(KEY,JSON.stringify(x))}
+function issue(title,category,recipient){
+ recipient=String(recipient||player()).trim()||player();
+ let x=store(),a={id:"VG-"+Date.now().toString(36).toUpperCase(),title:title||"VET GODS Achievement Certificate",category:category||"PROGRAM",recipient,time:Date.now()};
+ x.issued.unshift(a);x.issued=x.issued.slice(0,200);save(x);show(a);return a
+}
+function show(a){
+ let m=document.querySelector("#main");if(!m)return;
+ let date=new Date(a.time).toLocaleDateString();
+ m.innerHTML='<div id="vgAwardPrintR4"><div class="noPrint note"><b>PRINT / PDF:</b> Press <b>PRINT / SAVE AS PDF</b>. In the browser print window choose <b>Save as PDF</b>. Only the certificate sheet prints.</div>'+
+ '<div class="awardSheet"><div class="kicker">VET GODS // APEX INTERVENTION COMMAND</div><h1>CERTIFICATE OF DISTINCTION</h1>'+
+ '<p>This instrument formally recognizes</p><div class="recipient">'+esc(a.recipient)+'</div><p>for qualification and distinction in</p>'+
+ '<div class="awardTitle">'+esc(a.title)+'</div><p>Classification: '+esc(a.category)+'</p>'+
+ '<div class="seal">VET GODS<br>OFFICIAL<br>SEAL</div>'+
+ '<p>Issued under authority of the VET GODS Orbital Hospital, Research, Rescue and Companion Stewardship Program.</p>'+
+ '<div class="signatures"><div class="sig">Director, Apex Intervention Command</div><div class="sig">Registrar, Grand Credential Office</div></div>'+
+ '<div class="serial">SERIAL '+esc(a.id)+' // ISSUED '+esc(date)+'</div></div>'+
+ '<div class="noPrint"><button id="r4Print">PRINT / SAVE AS PDF</button><button id="r4Awards">BACK TO AWARDS</button><button id="r4Home">DOS MAIN</button></div></div>';
+ document.querySelector("#r4Print").onclick=()=>window.print();
+ document.querySelector("#r4Awards").onclick=()=>window.VetGodsGameplayCredentialsP8?.render?.();
+ document.querySelector("#r4Home").onclick=()=>window.VetGodsDosProgramP2?.render?.("MAIN")
+}
+function newest(){
+ let x=store();if(x.issued[0])show(x.issued[0]);else issue("VET GODS Program Achievement","PROGRAM",player())
+}
+function install(){
+ window.VetGodsPrintableAwardsR4={issue,show,newest,store};
+ /* Hook gameplay credential manual/claim buttons AFTER their normal award logic,
+    then render a printable certificate for the award just issued. */
+ document.addEventListener("click",e=>{
+   let b=e.target.closest("[data-claim],[data-manual]");if(!b)return;
+   let code=b.dataset.claim||b.dataset.manual;
+   let c=null;try{c=window.VetGodsGameplayCredentialsP8&&document.querySelector("#vgCareerP8")?true:false}catch(err){}
+   if(!c)return;
+   let title=b.closest(".card")?.querySelector("h3")?.textContent?.trim()||code||"VET GODS Achievement";
+   setTimeout(()=>issue(title,"GAMEPLAY CREDENTIAL",player()),120)
+ },false);
+ /* Grand library buttons vary across historical patches. Detect only explicit award-to-player controls. */
+ document.addEventListener("click",e=>{
+   let b=e.target.closest("button");if(!b)return;
+   let txt=(b.textContent||"").trim().toUpperCase();
+   if(!/AWARD TO ME|ISSUE TO PLAYER|AWARD TO PLAYER/.test(txt))return;
+   if(b.closest("#vgCareerP8"))return; /* handled above */
+   let host=b.closest(".card,.awardCard,.credentialCard,.paper,.psSection,section,article,div");
+   let title=host?.querySelector("h1,h2,h3,h4,b")?.textContent?.trim()||"Grand Credential Award";
+   setTimeout(()=>issue(title,"GRAND CREDENTIAL",player()),140)
+ },false);
+ /* DOS command PRINTAWARD opens the most recent printable award. */
+ let old=window.VetGodsDosCommandR3?.execute;
+ if(old&&!old._r4){
+   let fn=function(raw){let c=String(raw||"").trim().toUpperCase();if(c==="PRINTAWARD"||c==="PDF"||c==="CERTPDF"){newest();return}return old.apply(this,arguments)};
+   fn._r4=true;window.VetGodsDosCommandR3.execute=fn
+ }
+}
+setTimeout(install,3400);
+})();
+</script>
+
+<style id="vg-dos-r5-paper-window-css">
+/* DOS Restoration 5/10: one content sheet at a time. The DOS frame remains dark;
+   the current program owns one clean paper workspace inside #main. */
+#main{background:#090b09!important;min-height:420px!important}
+#main > :not(script):not(style){max-width:1040px;margin-left:auto!important;margin-right:auto!important}
+#main .vgPaperSheet,
+#main #vgCaseFlowP2,
+#main #vgMorphWorkshopP4,
+#main #vgAnimalsHomeP5,
+#main #vgCampaignP6,
+#main #vgCareerP8,
+#main #vgSafetyP9,
+#main #vgAwardPrintR4{
+ box-shadow:4px 4px 0 #000!important;
+ margin-top:5px!important;margin-bottom:8px!important;
+}
+#vgProgramHeaderR5{max-width:1040px;margin:0 auto 5px;background:#eeeade;color:#111;border:1px solid #aaa;border-bottom:3px double #111;padding:6px 9px;box-sizing:border-box;font:9px "Courier New",monospace;display:flex;align-items:center;gap:8px}
+#vgProgramHeaderR5 .r5name{font-weight:900;font-size:11px}
+#vgProgramHeaderR5 .r5crumb{margin-left:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#vgProgramHeaderR5 button{background:#111;color:#fff;border:1px solid #111;padding:5px 7px;font:900 8px "Courier New",monospace}
+#vgProgramFooterR5{max-width:1040px;margin:4px auto 0;background:#eeeade;color:#111;border:1px solid #aaa;padding:5px 8px;box-sizing:border-box;font:8px "Courier New",monospace;display:flex;gap:6px;align-items:center}
+#vgProgramFooterR5 button{background:#111;color:#fff;border:1px solid #111;padding:5px 7px;font:900 8px "Courier New",monospace}
+#vgProgramFooterR5 .r5status{margin-left:auto}
+#main.r5ProgramWindow > #vgProgramHeaderR5 ~ #vgProgramHeaderR5,
+#main.r5ProgramWindow > #vgProgramFooterR5 ~ #vgProgramFooterR5{display:none!important}
+@media(max-width:720px){
+ #vgProgramHeaderR5 .r5crumb{display:none}
+ #vgProgramFooterR5{overflow:auto}
+}
+</style>
+
+<script id="vg-dos-r5-paper-window">
+(function(){
+"use strict";
+let lastTitle="DOS MAIN", lastRoute="home", installing=false;
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function infer(){
+ let m=document.querySelector("#main");if(!m)return ["DOS MAIN","home"];
+ if(m.querySelector("#vgAnimalsHomeP5"))return ["MY ANIMALS","animals"];
+ if(m.querySelector("#vgMorphWorkshopP4"))return ["MORPH WORKSHOP","morph"];
+ if(m.querySelector("#vgCampaignP6"))return ["CAMPAIGN / MISSIONS","campaign"];
+ if(m.querySelector("#vgShipOpsP7"))return ["SHIP / HOSPITAL OPERATIONS","ship"];
+ if(m.querySelector("#vgCareerP8"))return ["CAREER / HONORS","career"];
+ if(m.querySelector("#vgSafetyP9"))return ["SAVE / SAFETY","safety"];
+ if(m.querySelector("#vgAwardPrintR4"))return ["PRINTABLE AWARD","career"];
+ if(m.querySelector("#vgCaseFlowP2"))return ["CASE PROGRESSION","case"];
+ let h=m.querySelector("h1,h2,h3");return [h?.textContent?.trim().slice(0,70)||lastTitle,lastRoute]
+}
+function stripNestedShells(){
+ let m=document.querySelector("#main");if(!m)return;
+ /* Expansion panels may contain their own persistent nav bars. Keep real action buttons,
+    but hide only known secondary shell/navigation bars when nested in the program window. */
+ m.querySelectorAll("#vgDosShellP1 > .p2bar").forEach(x=>x.style.setProperty("display","none","important"));
+}
+function decorate(){
+ if(installing)return;installing=true;
+ let m=document.querySelector("#main");if(!m){installing=false;return}
+ let inf=infer();lastTitle=inf[0];lastRoute=inf[1]||lastRoute;
+ m.classList.add("r5ProgramWindow");
+ m.querySelectorAll(":scope > #vgProgramHeaderR5,:scope > #vgProgramFooterR5").forEach(x=>x.remove());
+ let head=document.createElement("div");head.id="vgProgramHeaderR5";
+ head.innerHTML='<button data-r5="back">◄ BACK</button><button data-r5="home">HOME</button><span class="r5name">'+esc(lastTitle)+'</span><span class="r5crumb">VETGODS:\\ '+esc(lastTitle.toUpperCase())+'</span>';
+ m.insertBefore(head,m.firstChild);
+ let foot=document.createElement("div");foot.id="vgProgramFooterR5";
+ let a=null;try{a=window.VetGodsActivePatientP3?.restore?.()}catch(e){}
+ foot.innerHTML='<button data-r5="back">BACK</button><button data-r5="home">HOME</button><span class="r5status">'+(a?'PATIENT '+esc(a.name):'NO ACTIVE PATIENT')+' // SAVE OK</span>';
+ m.appendChild(foot);
+ m.querySelectorAll("[data-r5='home']").forEach(b=>b.onclick=()=>window.VetGodsDosMenuR2?.route?.("home"));
+ m.querySelectorAll("[data-r5='back']").forEach(b=>b.onclick=()=>historyBack());
+ stripNestedShells();installing=false
+}
+let routeHistory=[];
+function remember(code){
+ if(!code||code==="BACK")return;
+ if(routeHistory[routeHistory.length-1]!==code)routeHistory.push(code);
+ routeHistory=routeHistory.slice(-20)
+}
+function historyBack(){
+ if(routeHistory.length>1)routeHistory.pop();
+ let target=routeHistory.pop()||"home";
+ window.VetGodsDosMenuR2?.route?.(target)
+}
+function install(){
+ let menu=window.VetGodsDosMenuR2;
+ if(menu?.route&&!menu.route._r5){
+   let old=menu.route,fn=function(code){remember(code);let z=old.apply(this,arguments);setTimeout(decorate,45);return z};
+   fn._r5=true;menu.route=fn
+ }
+ let main=document.querySelector("#main");
+ if(main){
+   let obs=new MutationObserver(()=>setTimeout(decorate,20));
+   obs.observe(main,{childList:true,subtree:false});
+ }
+ /* Do not decorate the initial DOS home until a program is opened; preserve its clean intro. */
+ window.VetGodsProgramWindowR5={decorate,remember,historyBack};
+ document.addEventListener("click",e=>{
+   let b=e.target.closest("button");if(!b)return;
+   if(b.closest("#vgProgramHeaderR5,#vgProgramFooterR5"))return;
+   setTimeout(()=>{let m=document.querySelector("#main");if(m&&m.children.length)decorate()},80)
+ },false)
+}
+setTimeout(install,3500);
+})();
+</script>
+
+<style id="vg-dos-r6-memory-css">
+#vgMemoryNoticeR6{position:fixed;right:8px;top:8px;z-index:2147483000;background:#050505;color:#4cff7a;border:1px solid #4cff7a;padding:6px 8px;font:9px "Courier New",monospace;display:none}
+</style>
+<script id="vg-dos-r6-memory">
+(function(){
+"use strict";
+const KEY="vetgods_dos_memory_r6_v1";
+const safeRoutes=new Set(["home","patient","case","animals","master","morph","campaign","inventory","ship","career","animalawards","grandawards","wallet","safety"]);
+let restoring=false,lastSaved=0;
+
+function read(){try{return JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){return {}}}
+function write(x){try{localStorage.setItem(KEY,JSON.stringify(x))}catch(e){}}
+function active(){
+ try{return window.VetGodsActivePatientP3?.restore?.()||null}catch(e){return null}
+}
+function aid(a){return String(a?.permanentId||a?.id||a?.name||"")}
+function capture(route){
+ let x=read(),a=active(),main=document.querySelector("#main");
+ if(route)x.route=route;
+ x.patientId=aid(a)||x.patientId||"";
+ x.patientName=a?.name||x.patientName||"";
+ try{
+   let c=a?window.VetGodsCaseProgressionP2?.read?.().cases?.[aid(a)]:null;
+   if(c)x.caseStep=Number(c.step||0)
+ }catch(e){}
+ try{x.department=String(window.VetGodsMasterDataBusP1?.read?.().area||x.department||"")}catch(e){}
+ x.scrollY=window.scrollY||0;
+ x.mainScroll=main?.scrollTop||0;
+ x.lastCommand=(window.VetGodsDosCommandR3?.history||[]).slice(-1)[0]||x.lastCommand||"";
+ x.updated=Date.now();
+ write(x);lastSaved=x.updated;return x
+}
+function findAnimal(id,name){
+ let arr=Array.isArray(window.state?.animals)?state.animals:[];
+ return arr.find(a=>aid(a)===id)||arr.find(a=>String(a.name||"")===String(name||""))||null
+}
+function restorePatient(x){
+ let a=findAnimal(x.patientId,x.patientName);if(!a)return;
+ try{
+   if(window.VetGodsActivePatientP3?.set)window.VetGodsActivePatientP3.set(a);
+   else {state.activePatient=a;if(typeof save==="function")save()}
+ }catch(e){}
+}
+function routeValid(r){
+ if(!r)return false;
+ if(safeRoutes.has(r))return true;
+ return /^dept:[A-Z _-]+$/i.test(r)
+}
+function restore(){
+ if(restoring)return;restoring=true;
+ let x=read();
+ restorePatient(x);
+ /* Never allow credentials/awards to become an accidental startup destination.
+    They restore only if they were explicitly the last route saved by this DOS memory layer. */
+ let r=routeValid(x.route)?x.route:"home";
+ if(!x.explicitRoute && /career|grandawards|wallet|animalawards/i.test(r))r="home";
+ setTimeout(()=>{
+   try{window.VetGodsDosMenuR2?.route?.(r)}catch(e){window.VetGodsDosProgramP2?.render?.("MAIN")}
+   setTimeout(()=>{
+     try{window.scrollTo(0,Number(x.scrollY)||0);let m=document.querySelector("#main");if(m)m.scrollTop=Number(x.mainScroll)||0}catch(e){}
+     restoring=false;notice("RESTORED "+String(r).toUpperCase())
+   },180)
+ },120)
+}
+function notice(t){
+ let n=document.getElementById("vgMemoryNoticeR6");
+ if(!n){n=document.createElement("div");n.id="vgMemoryNoticeR6";document.body.appendChild(n)}
+ n.textContent=t;n.style.display="block";setTimeout(()=>n.style.display="none",1100)
+}
+function install(){
+ let menu=window.VetGodsDosMenuR2;
+ if(menu?.route&&!menu.route._r6){
+   let old=menu.route,fn=function(code){
+     if(!restoring){
+       let x=read();x.route=code||"home";x.explicitRoute=true;write(x);
+       try{window.VetGodsProgramWindowR5?.remember?.(code)}catch(e){}
+     }
+     let z=old.apply(this,arguments);
+     setTimeout(()=>capture(code),120);return z
+   };
+   fn._r6=true;menu.route=fn
+ }
+ /* Clicking an animal saves the selected animal identity immediately. */
+ document.addEventListener("click",e=>{
+   let b=e.target.closest("[data-open-animal],[data-mw-pick]");
+   if(b)setTimeout(()=>capture(),120);
+ },true);
+ /* DOS commands are part of memory too. */
+ let input=document.querySelector("#input");
+ input?.addEventListener("keydown",e=>{if(e.key==="Enter")setTimeout(()=>capture(),180)},false);
+ window.addEventListener("pagehide",()=>capture());
+ window.addEventListener("beforeunload",()=>capture());
+ setInterval(()=>{if(Date.now()-lastSaved>12000)capture()},15000);
+ window.VetGodsDosMemoryR6={read,capture,restore,restorePatient};
+ /* First boot of this layer should not resurrect legacy credential auto-open.
+    Only restore after the new memory store has existed once. */
+ let existing=localStorage.getItem(KEY);
+ if(existing)setTimeout(restore,4200);
+ else {let x=capture("home");x.explicitRoute=false;write(x)}
+}
+setTimeout(install,3650);
+})();
+</script>
+
+<style id="vg-dos-r7-status-css">
+/* DOS Restoration 7/10 — one compact status strip, no competing shell telemetry */
+#vgStatusStripR7{
+ display:flex;align-items:center;gap:0;width:100%;box-sizing:border-box;
+ background:#050505;color:#d8d8d8;border-top:1px solid #777;border-bottom:1px solid #222;
+ font:9px "Courier New",monospace;min-height:25px;overflow-x:auto;white-space:nowrap
+}
+#vgStatusStripR7 .r7cell{padding:5px 8px;border-right:1px solid #333}
+#vgStatusStripR7 .r7label{color:#888}
+#vgStatusStripR7 .r7ok{color:#4cff7a}
+#vgStatusStripR7 .r7warn{color:#ffe45c}
+#vgStatusStripR7 .r7bad{color:#ff6262}
+#vgStatusStripR7 .r7push{margin-left:auto}
+#vgStatusStripR7 button{background:#050505;color:#ddd;border:0;border-left:1px solid #333;padding:5px 8px;font:900 9px "Courier New",monospace}
+#vgStatusStripR7 button:hover{background:#ddd;color:#000}
+.status,#status,.statusbar,.status-bar,.global-status{display:none!important}
+#vgProgramFooterR5 .r5status{display:none!important}
+@media(max-width:720px){
+ #vgStatusStripR7{font-size:8px}
+ #vgStatusStripR7 .r7cell{padding:5px 6px}
+}
+</style>
+
+<script id="vg-dos-r7-status-strip">
+(function(){
+"use strict";
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function patient(){try{return window.VetGodsActivePatientP3?.restore?.()||null}catch(e){return null}}
+function pid(a){return String(a?.permanentId||a?.id||a?.name||"")}
+function caseStage(a){
+ if(!a)return "NONE";
+ try{
+  let c=window.VetGodsCaseProgressionP2?.read?.().cases?.[pid(a)];
+  if(!c)return "INTAKE";
+  let labels=["INTAKE","DIAGNOSTICS","STABILIZE","TREATMENT","RECOVERY","DISPOSITION"];
+  return labels[Math.max(0,Math.min(labels.length-1,Number(c.step)||0))]||"ACTIVE"
+ }catch(e){return "ACTIVE"}
+}
+function funds(){
+ try{
+  let vals=[
+   state?.rewardSystem?.funds,state?.funds,state?.credits,
+   window.VetGodsCampaignP6?.read?.().inventory?.credits
+  ];
+  let n=vals.find(v=>Number.isFinite(Number(v)));
+  return Number(n||0).toLocaleString()
+ }catch(e){return "0"}
+}
+function mission(){
+ try{
+  let m=window.VetGodsCampaignP6?.read?.();
+  if(m?.active)return m.active.id+" P"+(Number(m.active.stage||0)+1);
+  return (m?.completed||[]).length+"/20 DONE"
+ }catch(e){return "—"}
+}
+function saveState(){
+ try{
+  let mem=window.VetGodsDosMemoryR6?.read?.(), snap=localStorage.getItem("vetgods_release_snapshot_p9_v1");
+  if(!snap)return ["NO SNAP","r7warn"];
+  if(mem?.updated&&Date.now()-mem.updated>120000)return ["STALE","r7warn"];
+  return ["OK","r7ok"]
+ }catch(e){return ["CHECK","r7warn"]}
+}
+function player(){
+ try{return window.VetGodsPersistenceP9?.playerName?.()||window.VetGodsPlayerNameLockP4?.resolve?.()||"PLAYER"}catch(e){return "PLAYER"}
+}
+function render(){
+ let bar=document.getElementById("vgStatusStripR7");if(!bar)return;
+ let a=patient(),sv=saveState();
+ bar.innerHTML=
+ '<span class="r7cell"><span class="r7label">PLAYER:</span> '+esc(player())+'</span>'+
+ '<span class="r7cell"><span class="r7label">PATIENT:</span> '+esc(a?.name||"NONE")+'</span>'+
+ '<span class="r7cell"><span class="r7label">CASE:</span> '+esc(caseStage(a))+'</span>'+
+ '<span class="r7cell"><span class="r7label">FUNDS:</span> '+esc(funds())+'</span>'+
+ '<span class="r7cell"><span class="r7label">MISSION:</span> '+esc(mission())+'</span>'+
+ '<span class="r7cell"><span class="r7label">SAVE:</span> <b class="'+sv[1]+'">'+sv[0]+'</b></span>'+
+ '<span class="r7push"></span><button data-r7="home">HOME</button><button data-r7="save">SAVE</button>';
+ bar.querySelector("[data-r7='home']").onclick=()=>window.VetGodsDosMenuR2?.route?.("home");
+ bar.querySelector("[data-r7='save']").onclick=()=>{
+   try{window.VetGodsPersistenceP9?.capture?.();window.VetGodsDosMemoryR6?.capture?.();render()}catch(e){}
+ };
+}
+function install(){
+ if(document.getElementById("vgStatusStripR7"))return;
+ let bar=document.createElement("div");bar.id="vgStatusStripR7";
+ let cmd=document.querySelector(".cmd");
+ let foot=document.querySelector(".foot");
+ if(cmd)cmd.insertAdjacentElement("beforebegin",bar);
+ else if(foot)foot.insertAdjacentElement("beforebegin",bar);
+ else document.querySelector(".frame")?.appendChild(bar);
+ render();
+ document.addEventListener("click",()=>setTimeout(render,160),true);
+ setInterval(render,5000);
+ window.VetGodsStatusStripR7={render,patient,caseStage,funds,mission};
+}
+setTimeout(install,3750);
+})();
+</script>
+
+<style id="vg-dos-r8-speed-css">
+/* Phase 8: performance kernel. No visual redesign. */
+html.vgR8Busy *{cursor:progress!important}
+</style>
+<script id="vg-dos-r8-speed-kernel">
+(function(){
+"use strict";
+const PERF="vetgods_dos_performance_r8_v1";
+const SLOW_MS=180;
+let navLock=false,lastRoute="",lastRouteAt=0,saveTimer=0,lastSnapshot=0,lastStatusSig="";
+let stats={boots:1,routes:0,blockedDoubleRoutes:0,coalescedSaves:0,lastSlowRoute:"",lastSlowMs:0};
+
+function loadStats(){try{return {...stats,...JSON.parse(sessionStorage.getItem(PERF)||"{}")}}catch(e){return stats}}
+function putStats(){try{sessionStorage.setItem(PERF,JSON.stringify(stats))}catch(e){}}
+stats=loadStats();
+
+function sig(){
+ let a=null,m=null;
+ try{a=window.VetGodsActivePatientP3?.restore?.()}catch(e){}
+ try{m=window.VetGodsCampaignP6?.read?.()}catch(e){}
+ return [
+  a?.permanentId||a?.id||a?.name||"",
+  a?.health??"",a?.pain??"",
+  m?.active?.id||"",m?.active?.stage??"",
+  (m?.completed||[]).length,
+  window.state?.rewardSystem?.funds??window.state?.funds??""
+ ].join("|")
+}
+function smartStatus(){
+ let z=sig();
+ if(z===lastStatusSig)return;
+ lastStatusSig=z;
+ try{window.VetGodsStatusStripR7?.render?.()}catch(e){}
+}
+function queueSave(reason){
+ clearTimeout(saveTimer);
+ saveTimer=setTimeout(()=>{
+   stats.coalescedSaves++;putStats();
+   try{window.VetGodsDosMemoryR6?.capture?.()}catch(e){}
+   /* Heavy full release snapshot is rate limited instead of running after every click. */
+   if(Date.now()-lastSnapshot>30000){
+     try{window.VetGodsPersistenceP9?.capture?.();lastSnapshot=Date.now()}catch(e){}
+   }
+ },650)
+}
+function installRouteThrottle(){
+ let menu=window.VetGodsDosMenuR2;if(!menu?.route||menu.route._r8)return;
+ let old=menu.route;
+ let fn=function(code){
+   let now=performance.now(),c=String(code||"home");
+   if(navLock && c===lastRoute && now-lastRouteAt<220){
+     stats.blockedDoubleRoutes++;putStats();return;
+   }
+   navLock=true;lastRoute=c;lastRouteAt=now;stats.routes++;
+   document.documentElement.classList.add("vgR8Busy");
+   let t=performance.now(),result;
+   try{result=old.apply(this,arguments)}
+   finally{
+     let ms=performance.now()-t;
+     if(ms>SLOW_MS){stats.lastSlowRoute=c;stats.lastSlowMs=Math.round(ms)}
+     putStats();queueSave("route");
+     requestAnimationFrame(()=>requestAnimationFrame(()=>{
+       navLock=false;document.documentElement.classList.remove("vgR8Busy");smartStatus()
+     }))
+   }
+   return result
+ };
+ fn._r8=true;menu.route=fn
+}
+function neutralizeRedundantIntervals(){
+ /* We don't clear unknown legacy timers blindly. Instead, new R8 work uses one heartbeat
+    and replaces the expensive click-everything save behavior with a coalesced save queue. */
+ let p=window.VetGodsPersistenceP9;
+ if(p?.capture&&!p.capture._r8wrapped){
+   let raw=p.capture,last=0,cached=null;
+   let fn=function(force){
+     let now=Date.now();
+     if(force===true||now-last>5000){last=now;cached=raw.apply(this,arguments)}
+     return cached
+   };
+   fn._r8wrapped=true;p.capture=fn
+ }
+}
+function installClickCoalescing(){
+ if(document.documentElement.dataset.r8click)return;
+ document.documentElement.dataset.r8click="1";
+ document.addEventListener("click",e=>{
+   if(!e.target.closest("button,[data-route],[data-open-animal],[data-mw-pick]"))return;
+   queueSave("action");
+   setTimeout(smartStatus,90)
+ },false)
+}
+function report(){
+ let m=document.querySelector("#main");if(!m)return;
+ m.innerHTML='<div class="vgPaperSheet" style="background:#eeeade;color:#111;border:2px solid #fff;padding:12px;font:10px Courier New,monospace">'+
+ '<h2>DOS PERFORMANCE KERNEL</h2>'+
+ '<p>This pass keeps the game systems intact while reducing repeated shell work.</p>'+
+ '<b>ROUTES THIS SESSION:</b> '+stats.routes+'<br>'+
+ '<b>DUPLICATE ROUTES BLOCKED:</b> '+stats.blockedDoubleRoutes+'<br>'+
+ '<b>COALESCED SAVE CYCLES:</b> '+stats.coalescedSaves+'<br>'+
+ '<b>LAST SLOW ROUTE:</b> '+(stats.lastSlowRoute||"NONE")+' '+(stats.lastSlowMs?stats.lastSlowMs+"ms":"")+'<br><br>'+
+ '<button onclick="VetGodsDosMenuR2.route(\'home\')">HOME</button></div>';
+ try{window.VetGodsProgramWindowR5?.decorate?.()}catch(e){}
+}
+function install(){
+ installRouteThrottle();
+ neutralizeRedundantIntervals();
+ installClickCoalescing();
+ /* One lightweight shell heartbeat instead of adding several more timers. */
+ setInterval(()=>{smartStatus();queueSave("heartbeat")},12000);
+ window.addEventListener("pagehide",()=>{try{window.VetGodsDosMemoryR6?.capture?.();window.VetGodsPersistenceP9?.capture?.(true)}catch(e){}});
+ window.VetGodsSpeedKernelR8={stats,queueSave,smartStatus,report};
+ /* PERF command without touching the older command parser. */
+ let input=document.querySelector("#input");
+ input?.addEventListener("keydown",e=>{
+   if(e.key==="Enter"&&String(input.value||"").trim().toUpperCase()==="PERF"){
+     e.preventDefault();e.stopImmediatePropagation();input.value="";report()
+   }
+ },true)
+}
+setTimeout(install,3900);
+})();
+</script>
+
+<style id="vg-dos-r9-kernel-css">
+#vgKernelR9Badge{display:inline-block;padding:2px 5px;border:1px solid #286f3d;color:#4cff7a;background:#041007;font:8px "Courier New",monospace}
+</style>
+<script id="vg-dos-r9-central-kernel">
+(function(){
+"use strict";
+const KEY="vetgods_dos_central_kernel_r9_v1";
+let booted=false,navigating=false,saveTimer=0;
+function blank(){return {version:9,current:"home",previous:"home",department:"",patientId:"",patientName:"",lastCommand:"",bootCount:0,saveCount:0,updated:0}}
+function read(){try{return {...blank(),...JSON.parse(localStorage.getItem(KEY)||"{}")}}catch(e){return blank()}}
+function write(x){try{localStorage.setItem(KEY,JSON.stringify(x))}catch(e){}}
+function patient(){
+ try{return window.VetGodsActivePatientP3?.restore?.()||null}catch(e){return null}
+}
+function pid(a){return String(a?.permanentId||a?.id||a?.name||"")}
+function snapshot(route){
+ let x=read(),a=patient();
+ if(route&&route!==x.current){x.previous=x.current||"home";x.current=route}
+ x.patientId=pid(a)||x.patientId;x.patientName=a?.name||x.patientName;
+ if(String(route||"").startsWith("dept:"))x.department=String(route).slice(5);
+ x.lastCommand=(window.VetGodsDosCommandR3?.history||[]).slice(-1)[0]||x.lastCommand;
+ x.updated=Date.now();write(x);return x
+}
+function saveNow(reason){
+ clearTimeout(saveTimer);
+ let x=snapshot();x.saveCount=(x.saveCount||0)+1;x.lastSaveReason=reason||"kernel";write(x);
+ try{if(typeof window.save==="function")window.save()}catch(e){}
+ try{window.VetGodsDosMemoryR6?.capture?.(x.current)}catch(e){}
+ /* Full safety snapshot remains a less frequent secondary backup. */
+ try{
+   let p=window.VetGodsPersistenceP9, old=Number(localStorage.getItem("vg_r9_last_full_snapshot")||0);
+   if(p?.capture&&Date.now()-old>45000){p.capture();localStorage.setItem("vg_r9_last_full_snapshot",String(Date.now()))}
+ }catch(e){}
+ return x
+}
+function queueSave(reason){clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveNow(reason),700)}
+function dispatch(code){
+ code=String(code||"home");
+ if(navigating)return;
+ navigating=true;
+ let x=read();if(code==="back")code=x.previous||"home";
+ snapshot(code);
+ let result;
+ try{
+   /* R9 is the authority, R2 remains the proven renderer/router underneath. */
+   result=window.VetGodsDosMenuR2?._r9raw?.(code);
+   if(result===undefined&&!window.VetGodsDosMenuR2?._r9raw)result=window.VetGodsDosMenuR2?.route?.(code)
+ }finally{
+   queueSave("navigation:"+code);
+   requestAnimationFrame(()=>{navigating=false;try{window.VetGodsStatusStripR7?.render?.()}catch(e){}})
+ }
+ return result
+}
+function recover(){
+ let x=read();
+ try{window.VetGodsPersistenceP9?.restore?.()}catch(e){}
+ let arr=Array.isArray(window.state?.animals)?state.animals:[];
+ let a=arr.find(z=>pid(z)===x.patientId)||arr.find(z=>String(z.name||"")===String(x.patientName||""));
+ if(a){try{window.VetGodsActivePatientP3?.set?.(a)}catch(e){}}
+ return x
+}
+function boot(){
+ if(booted)return;booted=true;
+ let x=recover();x.bootCount=(x.bootCount||0)+1;write(x);
+ /* The central kernel owns startup. It accepts only its own remembered current route. */
+ let r=x.current||"home";
+ if(!/^((home|patient|case|animals|master|morph|campaign|inventory|ship|career|animalawards|grandawards|wallet|safety)|dept:[A-Z _-]+)$/i.test(r))r="home";
+ setTimeout(()=>dispatch(r),220)
+}
+function report(){
+ let x=read(),m=document.querySelector("#main");if(!m)return;
+ m.innerHTML='<div class="vgPaperSheet" style="background:#eeeade;color:#111;border:2px solid #fff;padding:12px;font:10px Courier New,monospace">'+
+ '<small>VET GODS // DOS CENTRAL KERNEL</small><h2>SYSTEM CONTROL AUTHORITY</h2>'+
+ '<b>CURRENT PROGRAM:</b> '+x.current+'<br><b>PREVIOUS:</b> '+x.previous+'<br><b>LAST DEPARTMENT:</b> '+(x.department||"NONE")+
+ '<br><b>PATIENT:</b> '+(x.patientName||"NONE")+'<br><b>BOOT COUNT:</b> '+x.bootCount+'<br><b>KERNEL SAVES:</b> '+x.saveCount+
+ '<br><b>LAST SAVE:</b> '+(x.updated?new Date(x.updated).toLocaleTimeString():"NONE")+
+ '<p><span id="vgKernelR9Badge">KERNEL R9 ONLINE</span> Startup, navigation and save coordination are centralized here.</p>'+
+ '<button onclick="VetGodsCentralKernelR9.dispatch(\'back\')">BACK</button><button onclick="VetGodsCentralKernelR9.dispatch(\'home\')">HOME</button><button onclick="VetGodsCentralKernelR9.saveNow(\'manual\')">SAVE NOW</button></div>';
+ try{window.VetGodsProgramWindowR5?.decorate?.()}catch(e){}
+}
+function install(){
+ let menu=window.VetGodsDosMenuR2;
+ if(menu?.route&&!menu._r9raw){
+   /* Freeze the fully patched Phase-8 route as the low-level renderer. */
+   menu._r9raw=menu.route;
+   menu.route=function(code){return dispatch(code)};
+ }
+ /* Program-window BACK now uses the same authority instead of maintaining a competing history. */
+ if(window.VetGodsProgramWindowR5)window.VetGodsProgramWindowR5.historyBack=()=>dispatch("back");
+ /* R6 may still capture details, but startup restoration is no longer its authority after this boot. */
+ if(window.VetGodsDosMemoryR6)window.VetGodsDosMemoryR6.restore=function(){return read()};
+ document.addEventListener("click",e=>{
+   if(e.target.closest("button,[data-route],[data-open-animal],[data-mw-pick]"))queueSave("action")
+ },false);
+ window.addEventListener("pagehide",()=>saveNow("pagehide"));
+ window.addEventListener("beforeunload",()=>saveNow("unload"));
+ window.VetGodsCentralKernelR9={read,snapshot,saveNow,queueSave,dispatch,recover,boot,report};
+ /* KERNEL command */
+ let input=document.querySelector("#input");
+ input?.addEventListener("keydown",e=>{
+   if(e.key==="Enter"&&String(input.value||"").trim().toUpperCase()==="KERNEL"){
+     e.preventDefault();e.stopImmediatePropagation();input.value="";report()
+   }
+ },true);
+ boot()
+}
+setTimeout(install,4050);
+})();
+</script>
+
+<style id="vg-dos-r10-release-css">
+/* DOS Restoration 10/10 — release hardening, no new permanent clutter. */
+#vgR10ReleasePanel{max-width:1040px;margin:6px auto;background:#eeeade;color:#111;border:2px solid #fff;box-shadow:4px 4px #000;padding:12px;box-sizing:border-box;font:10px "Courier New",monospace}
+#vgR10ReleasePanel .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+#vgR10ReleasePanel .test{background:#faf8ef;border:1px solid #999;padding:7px}
+#vgR10ReleasePanel .pass{color:#126d31;font-weight:900}
+#vgR10ReleasePanel .warn{color:#9a6500;font-weight:900}
+#vgR10ReleasePanel button{background:#111;color:#fff;border:1px solid #111;padding:7px 9px;font:900 8px "Courier New",monospace;margin:3px}
+@media(max-width:720px){#vgR10ReleasePanel .grid{grid-template-columns:1fr}}
+</style>
+
+<script id="vg-dos-r10-final-release">
+(function(){
+"use strict";
+const KEY="vetgods_dos_final_release_r10_v1";
+let recovering=false;
+function read(){try{return JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){return {}}}
+function write(x){try{localStorage.setItem(KEY,JSON.stringify(x))}catch(e){}}
+function main(){return document.querySelector("#main")}
+function shellClean(){
+ try{window.VetGodsDosRestorationR1?.hideLaunchers?.()}catch(e){}
+ document.querySelectorAll("body > button").forEach(b=>{
+   let st=b.getAttribute("style")||"";
+   if(/position\s*:\s*fixed/i.test(st)&&!b.closest("#main"))b.style.setProperty("display","none","important")
+ });
+}
+function routeExists(code){
+ const w=window;
+ return ({
+  home:!!w.VetGodsDosProgramP2?.render,
+  patient:!!w.VetGodsDosFormsP3?.clinic,
+  case:!!w.VetGodsCaseProgressionP2?.render,
+  animals:!!w.VetGodsAnimalsHomeP5?.list,
+  master:!!w.VetGodsPermanentAnimalP1?.records,
+  morph:!!w.VetGodsMorphWorkshopP4?.picker,
+  campaign:!!w.VetGodsCampaignP6?.render,
+  inventory:!!w.VetGodsCampaignP6?.inventory,
+  ship:!!w.VetGodsShipOperationsP7?.render,
+  career:!!w.VetGodsGameplayCredentialsP8?.render,
+  safety:!!w.VetGodsPersistenceP9?.dashboard
+ })[code]||false
+}
+function checks(){
+ let a=null,morph=null,camp=null,cred=null,kernel=null;
+ try{a=window.state?.animals||[]}catch(e){a=[]}
+ try{morph=window.VetGodsMorphWorkshopP4?.read?.()}catch(e){}
+ try{camp=window.VetGodsCampaignP6?.read?.()}catch(e){}
+ try{cred=window.VetGodsGameplayCredentialsP8?.read?.()}catch(e){}
+ try{kernel=window.VetGodsCentralKernelR9?.read?.()}catch(e){}
+ return [
+  ["DOS MASTER MENU",!!document.querySelector("#vgMasterMenuR2"),"single authoritative top menu"],
+  ["DOS COMMAND PROMPT",!!document.querySelector("#input"),"command line present"],
+  ["CENTRAL KERNEL",!!window.VetGodsCentralKernelR9,"startup/navigation/save authority"],
+  ["HOME ROUTE",routeExists("home"),"DOS home renderer"],
+  ["PATIENT ROUTE",routeExists("patient"),"patient chart"],
+  ["CASE ROUTE",routeExists("case"),"case progression"],
+  ["MY ANIMALS",routeExists("animals")&&Array.isArray(a),a.length+" roster animals"],
+  ["MORPH SAVE",routeExists("morph")&&!!morph,(morph?.created||[]).length+" saved morph creatures"],
+  ["MISSIONS",routeExists("campaign")&&!!camp,(camp?.completed||[]).length+" missions complete"],
+  ["CREDENTIALS",routeExists("career")&&!!cred,Object.keys(cred?.earned||{}).length+" gameplay credentials"],
+  ["PDF AWARDS",!!window.VetGodsPrintableAwardsR4?.issue,"print/save-as-PDF certificate system"],
+  ["SAVE / RECOVERY",routeExists("safety"),"snapshot and restore console"],
+  ["STATUS STRIP",!!window.VetGodsStatusStripR7,"compact shell telemetry"],
+  ["KERNEL MEMORY",!!kernel,(kernel?.current||"home")+" current program"]
+ ]
+}
+function safeHome(){
+ try{return window.VetGodsCentralKernelR9?.dispatch?.("home")}catch(e){}
+ try{return window.VetGodsDosProgramP2?.render?.("MAIN")}catch(e){}
+}
+function guard(){
+ if(recovering)return;
+ let m=main();if(!m)return;
+ let text=(m.textContent||"").trim(),rect=m.getBoundingClientRect();
+ if((!m.children.length||(!text&&rect.height<30))&&!document.hidden){
+   recovering=true;
+   m.innerHTML='<div id="vgR10ReleasePanel"><h2>VET GODS DOS SCREEN RECOVERY</h2><p>The program window failed to render. Saved game data was left intact.</p><button id="r10SafeHome">RETURN TO DOS HOME</button><button id="r10Animals">MY ANIMALS</button></div>';
+   document.querySelector("#r10SafeHome").onclick=()=>{recovering=false;safeHome()};
+   document.querySelector("#r10Animals").onclick=()=>{recovering=false;window.VetGodsCentralKernelR9?.dispatch?.("animals")};
+   setTimeout(()=>recovering=false,300)
+ }
+}
+function audit(){
+ let m=main(),cs=checks();if(!m)return;
+ let pass=cs.filter(x=>x[1]).length;
+ m.innerHTML='<div id="vgR10ReleasePanel"><small>VET GODS // DOS RESTORATION 10/10</small><h2>FINAL DOS RELEASE AUDIT</h2>'+
+ '<p><b>'+pass+' / '+cs.length+' core checks reporting ready.</b></p><div class="grid">'+
+ cs.map(x=>'<div class="test"><b>'+x[0]+'</b><br><span class="'+(x[1]?'pass':'warn')+'">'+(x[1]?'PASS':'CHECK')+'</span><br>'+x[2]+'</div>').join("")+
+ '</div><p>This audit checks wiring and persistent systems without changing your saved animals, cases, morphs, missions or credentials.</p>'+
+ '<button id="r10Home">DOS HOME</button><button id="r10Animals2">MY ANIMALS</button><button id="r10Save">SAVE NOW</button><button id="r10Pdf">LATEST AWARD PDF</button></div>';
+ document.querySelector("#r10Home").onclick=safeHome;
+ document.querySelector("#r10Animals2").onclick=()=>window.VetGodsCentralKernelR9?.dispatch?.("animals");
+ document.querySelector("#r10Save").onclick=()=>window.VetGodsCentralKernelR9?.saveNow?.("release-audit");
+ document.querySelector("#r10Pdf").onclick=()=>window.VetGodsPrintableAwardsR4?.newest?.();
+ try{window.VetGodsProgramWindowR5?.decorate?.()}catch(e){}
+}
+function harden(){
+ shellClean();
+ let x=read();x.boots=(x.boots||0)+1;x.lastBoot=Date.now();write(x);
+ /* Ensure one known safe startup authority remains in control. */
+ if(window.VetGodsDosMemoryR6)window.VetGodsDosMemoryR6.restore=()=>window.VetGodsCentralKernelR9?.read?.()||{};
+ /* Watch only the main program window for catastrophic blank renders. */
+ let m=main();
+ if(m){
+   let obs=new MutationObserver(()=>setTimeout(guard,80));
+   obs.observe(m,{childList:true});
+ }
+ document.addEventListener("click",()=>{shellClean();setTimeout(guard,140)},false);
+ window.addEventListener("error",()=>setTimeout(guard,60));
+ window.addEventListener("unhandledrejection",()=>setTimeout(guard,60));
+ /* RELEASE command: final wiring audit. */
+ let input=document.querySelector("#input");
+ input?.addEventListener("keydown",e=>{
+   if(e.key==="Enter"&&["RELEASE","AUDIT","CHECK"].includes(String(input.value||"").trim().toUpperCase())){
+     e.preventDefault();e.stopImmediatePropagation();input.value="";audit()
+   }
+ },true);
+ window.VetGodsFinalReleaseR10={checks,audit,guard,shellClean,safeHome};
+ setTimeout(()=>{shellClean();guard()},500)
+}
+setTimeout(harden,4200);
+})();
+</script>
+
+<style id="vg-stop-blink-fix">
+/* Critical stability patch: disable visual blink/flash effects on the active program window. */
+#main, #main *, #vgMorphWorkshopP4, #vgMorphWorkshopP4 *,
+#vgCaseFlowP2, #vgCaseFlowP2 *, #vgProgramHeaderR5, #vgProgramFooterR5{
+  animation:none!important;
+  transition:none!important;
+}
+#main{opacity:1!important;visibility:visible!important}
+</style>
+<script id="vg-stop-blink-fix-script">
+(function(){
+"use strict";
+let lastHTML="", lastChange=0, decorating=false, mutationTimer=0;
+
+/* Phase 5's observer could decorate after every mutation, and decorate itself mutates #main.
+   Replace its decorator with a guarded version that refuses to redraw an already-decorated page. */
+function stabilizeDecorator(){
+ const pw=window.VetGodsProgramWindowR5;
+ if(!pw||!pw.decorate||pw.decorate._stable)return;
+ const old=pw.decorate;
+ const fn=function(){
+   if(decorating)return;
+   const m=document.querySelector("#main"); if(!m)return;
+   /* Existing header+footer means this screen is already wrapped. */
+   if(m.querySelector(":scope > #vgProgramHeaderR5")&&m.querySelector(":scope > #vgProgramFooterR5"))return;
+   decorating=true;
+   try{return old.apply(this,arguments)}finally{setTimeout(()=>decorating=false,40)}
+ };
+ fn._stable=true;pw.decorate=fn;
+}
+
+/* Stop the release guard from interpreting legitimate rapid Morph/Case redraws as blank screens. */
+function stabilizeGuard(){
+ const r=window.VetGodsFinalReleaseR10;
+ if(!r||!r.guard||r.guard._stable)return;
+ const old=r.guard;
+ const fn=function(){
+   const m=document.querySelector("#main");if(!m||document.hidden)return;
+   clearTimeout(mutationTimer);
+   mutationTimer=setTimeout(()=>{
+     const text=(m.textContent||"").trim();
+     if(!m.children.length || (!text && m.getBoundingClientRect().height<20)) old();
+   },260);
+ };
+ fn._stable=true;r.guard=fn;
+}
+
+/* Deduplicate exact immediate redraws of #main. */
+function watchMain(){
+ const m=document.querySelector("#main");if(!m||m.dataset.blinkStable)return;
+ m.dataset.blinkStable="1";
+ lastHTML=m.innerHTML;
+ const obs=new MutationObserver(()=>{
+   const now=Date.now(), html=m.innerHTML;
+   if(html===lastHTML && now-lastChange<120)return;
+   lastHTML=html;lastChange=now;
+   /* Never navigate or decorate from this observer. It only records stable state. */
+ });
+ obs.observe(m,{childList:true,subtree:false});
+}
+
+/* Morph source and case flow are explicit routes; prevent click bubbling from triggering
+   older global navigation listeners after these screens have already opened. */
+function stopHotClicks(){
+ document.addEventListener("click",e=>{
+   const b=e.target.closest("#vgMorphWorkshopP4 button,#vgCaseFlowP2 button");
+   if(!b)return;
+   e.stopPropagation();
+ },true);
+}
+
+/* Remove CSS classes commonly used by older flashing alerts inside these two workflows. */
+function calm(){
+ document.querySelectorAll("#vgMorphWorkshopP4 .blink,#vgMorphWorkshopP4 .flash,#vgCaseFlowP2 .blink,#vgCaseFlowP2 .flash")
+   .forEach(n=>{n.classList.remove("blink","flash")});
+}
+
+function install(){
+ stabilizeDecorator();stabilizeGuard();watchMain();stopHotClicks();calm();
+ setInterval(calm,2000);
+ window.VetGodsBlinkFix={calm,stabilizeDecorator,stabilizeGuard};
+}
+setTimeout(install,4400);
+})();
+</script>
 </body></html>
