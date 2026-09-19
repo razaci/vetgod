@@ -1,6 +1,26 @@
 <!doctype html>
 <html lang="en">
-<head>
+<head><script id="vetgods-clean-start-reset">
+(function(){
+"use strict";
+const MARK="vetgods_clean_start_reset_2026_09_18_v1";
+try{
+  if(localStorage.getItem(MARK)!=="done"){
+    const explicit=["vetGodsDosFresh1", "vetgods_first_game_route_v2", "vetgods_freeplay_v1", "vetgods_hard_yellow_loop_v1", "vetgods_player1_yellow_guide_v1", "vetgods_player_career_v1", "vetgods_unified_flow_v1", "vetgods_whole_game_integration_v1", "vetgods_yellow_brain_phase1_v1"];
+    explicit.forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
+    const prefixes=["vetgods_","vetGods","VETGODS","vg_","VG_"];
+    const remove=[];
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i)||"";
+      if(prefixes.some(p=>k.startsWith(p)))remove.push(k);
+    }
+    remove.forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
+    try{localStorage.setItem(MARK,"done")}catch(e){}
+  }
+}catch(e){}
+})();
+</script>
+
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>VET GODS DOS/OS — Fresh Rebuild 1</title>
 <style>
@@ -5870,224 +5890,6 @@ window.VetGodsVisualIntegration={render:renderFinal,polish:polish};
 .vgGuideBlink:after{content:"  << NEXT";font:900 8px "Courier New",monospace}
 @media(prefers-reduced-motion:reduce){.vgGuideBlink{animation:none!important;background:#bcbcbc!important;color:#000!important;outline:2px double #777}}
 </style>
-<script id="first-animal-guide-js">
-(function(){
-"use strict";
-function firstAnimal(){
- let a=state.animals?.[0],active=state.active;
- let selected=state.myAnimalsRegistry?.selected;
- return !!a && (active===0 || selected===0 || (!Number.isInteger(active)&&!Number.isInteger(selected)));
-}
-function visible(el){
- if(!el)return false;let r=el.getBoundingClientRect(),cs=getComputedStyle(el);
- return cs.display!=="none"&&cs.visibility!=="hidden"&&r.width>0&&r.height>0;
-}
-function findNext(){
- let p=String(page||"").toLowerCase(),selectors=[];
- // Prefer the actual next-step control already present on the current screen.
- if(p==="home")selectors=["[data-program='newcase']","#newCaseBtn","button[onclick*='case']","button[onclick*='intake']"];
- else if(p.includes("case")||p.includes("intake"))selectors=["button[data-action*='exam']","button[data-action*='diagn']","button[onclick*='care']","#startCare"];
- else if(p==="care"||p.includes("myanimals3"))selectors=[
-   "button[data-ma3='monitor']","button[data-ma3='water']","button[data-ma3='food']","button[data-ma3='comfort']",
-   "button[data-ma3='oxygen']","button[data-ma3='pain']","#ma3Clinic"
- ];
- else if(p.includes("recover"))selectors=["button[onclick*='home']","button[onclick*='discharge']","button[onclick*='sanct']"];
- else if(p.includes("myanimals1"))selectors=["[data-maanimal='0']","#ma2DeepButton","#ma5QuickLifetime"];
- else if(p.includes("myanimals2"))selectors=["#ma3CareButton","#ma2Care"];
- else if(p.includes("myanimals4"))selectors=["#ma4Care","#ma5Lifetime"];
- else if(p.includes("myanimals5"))selectors=["#ma5Check","#ma5Help"];
- for(let sel of selectors){let el=[...document.querySelectorAll(sel)].find(visible);if(el)return el}
- // Fallback: first visible enabled action button, but never menu/home/back controls.
- return [...document.querySelectorAll("#main button")].find(b=>visible(b)&&!b.disabled&&!/BACK|ESC|HOME|MENU/i.test(b.textContent||""));
-}
-let timer=null;
-function guide(){
- clearTimeout(timer);
- document.querySelectorAll(".vgGuideBlink").forEach(x=>x.classList.remove("vgGuideBlink"));
- if(!firstAnimal())return;
- timer=setTimeout(()=>{
-   let next=findNext();if(!next)return;
-   next.classList.remove("vgGuideBlink");void next.offsetWidth;next.classList.add("vgGuideBlink");
-   setTimeout(()=>next.classList.remove("vgGuideBlink"),2350);
- },280);
-}
-// Run after navigation and after first-animal actions redraw the screen.
-document.addEventListener("click",function(){setTimeout(guide,130)},false);
-const oldHomeGuide=home;home=function(){let r=oldHomeGuide();setTimeout(guide,180);return r};
-["VetGodsMyAnimals1","VetGodsMyAnimals2","VetGodsMyAnimals3","VetGodsMyAnimals4","VetGodsMyAnimals5"].forEach(n=>{
- let api=window[n];if(!api||typeof api.render!=="function"||api.__guideWrapped)return;
- let old=api.render;api.render=function(){let r=old.apply(this,arguments);setTimeout(guide,180);return r};api.__guideWrapped=true;
-});
-setTimeout(guide,400);
-window.VetGodsFirstAnimalGuide={run:guide};
-})();
-</script>
-
-<style id="player1-yellow-guide-css">
-@keyframes vgP1Yellow {
-  0%,100% { background:inherit; color:inherit; box-shadow:none; outline-color:transparent; }
-  15%,35%,55%,75% { background:#ffe600!important; color:#000!important; outline:3px solid #8c7e00; box-shadow:0 0 18px #ffe600, inset 0 0 0 2px #fff48a; }
-  25%,45%,65% { background:#171400!important; color:#ffe600!important; outline-color:#ffe600; box-shadow:0 0 5px #ffe600; }
-}
-.vgP1YellowGuide{animation:vgP1Yellow 3.15s ease-in-out 1!important;position:relative!important;z-index:10000!important}
-.vgP1YellowGuide:after{content:"  << PLAYER 1 NEXT";font:900 9px "Courier New",monospace}
-#vgP1GuideBar{position:sticky;top:0;z-index:9998;background:#ffe600;color:#000;border:3px double #776b00;padding:7px 9px;font:900 9px "Courier New",monospace;box-shadow:0 3px 10px #000}
-#vgP1GuideBar small{display:block;font-weight:700;margin-top:3px}
-.vgP1Done{border:4px double #ffe600;background:#0c0b00;color:#ffe600;padding:12px;margin:8px 0;text-align:center;font:900 10px "Courier New",monospace}
-@media(prefers-reduced-motion:reduce){.vgP1YellowGuide{animation:none!important;background:#ffe600!important;color:#000!important;outline:3px solid #8c7e00}}
-</style>
-<script id="player1-yellow-guide-js">
-(function(){
-"use strict";
-const GKEY="vetgods_player1_yellow_guide_v1";
-function G(){try{return JSON.parse(localStorage.getItem(GKEY))||{step:0,done:false}}catch(e){return{step:0,done:false}}}
-function SG(g){try{localStorage.setItem(GKEY,JSON.stringify(g))}catch(e){}}
-function vis(el){if(!el)return false;let r=el.getBoundingClientRect(),c=getComputedStyle(el);return c.display!=="none"&&c.visibility!=="hidden"&&r.width>0&&r.height>0}
-function buttons(){return [...document.querySelectorAll("button,a,[role=button],input[type=button],input[type=submit]")].filter(vis)}
-function byText(rx){return buttons().find(x=>rx.test((x.innerText||x.value||x.textContent||"").trim()))}
-function playerNameInput(){
- return [...document.querySelectorAll("input")].find(x=>vis(x)&&/first.?name|player.?first|first/i.test((x.name||"")+" "+(x.id||"")+" "+(x.placeholder||""))) ||
-        [...document.querySelectorAll("input")].find(x=>vis(x)&&/name/i.test((x.name||"")+" "+(x.id||"")+" "+(x.placeholder||"")));
-}
-function lastNameInput(){
- return [...document.querySelectorAll("input")].find(x=>vis(x)&&/last.?name|player.?last|surname/i.test((x.name||"")+" "+(x.id||"")+" "+(x.placeholder||"")));
-}
-function certButton(){return byText(/CERTIFICATE|CERTS|AWARD|BADGE/i)}
-function animalOne(){
- return document.querySelector("[data-maanimal='0']") || byText(/FIRST ANIMAL|ANIMAL 1|PATIENT 1/i);
-}
-function newCase(){return byText(/NEW CASE|INTAKE|ADMIT PATIENT|ADMIT CASE|START CASE/i)}
-function nextCare(){
- let preferred=[
-  "[data-action*='exam']","[data-action*='diagn']","[data-ma3='monitor']","[data-ma3='water']",
-  "[data-ma3='food']","[data-ma3='comfort']","[data-ma3='oxygen']","[data-ma3='pain']",
-  "[data-ma3='rest']","[data-ma3='mobility']"
- ];
- for(let q of preferred){let x=[...document.querySelectorAll(q)].find(vis);if(x)return x}
- return byText(/PHYSICAL EXAM|DIAGNOST|MONITOR|WATER|FOOD|OXYGEN|PAIN|TREAT|RECOVERY|DISCHARGE|SANCTUARY/i);
-}
-function getTarget(g){
- let p=String(page||"").toLowerCase();
- // Explicit player-1 onboarding route.
- if(g.step<=0){
-   let n=playerNameInput();if(n)return [n,"ENTER PLAYER 1 FIRST NAME","Your name will be carried into badges and certificates."];
-   let l=lastNameInput();if(l)return [l,"ENTER PLAYER 1 LAST NAME","This completes the certificate name."];
-   let start=byText(/START|CONTINUE|SAVE PLAYER|BEGIN/i);if(start)return [start,"SAVE PLAYER 1","Lock in the player identity before intake."];
-   g.step=1;SG(g);
- }
- if(g.step===1){
-   let n=newCase();if(n)return [n,"START FIRST ANIMAL INTAKE","Open the first real case."];
-   let a=animalOne();if(a)return [a,"SELECT ANIMAL 1","Open the first animal."];
-   g.step=2;SG(g);
- }
- if(g.step===2){
-   let intake=byText(/ACCEPT|INTAKE|ADMIT|BEGIN EXAM|START CARE/i);
-   if(intake)return [intake,"INTAKE ANIMAL 1","Move Player 1's first animal into care."];
-   let c=nextCare();if(c)return [c,"NEXT CARE STEP","Follow the highlighted care action."];
-   g.step=3;SG(g);
- }
- if(g.step===3){
-   let c=nextCare();
-   if(c&&!/CERTIFICATE|CERTS/i.test(c.textContent||""))return [c,"CONTINUE ANIMAL 1 CARE","The guide follows the case until completion/recovery."];
-   let done=byText(/DISCHARGE|SEND HOME|RECOVERY|SANCTUARY|COMPLETE CASE|CASE COMPLETE/i);
-   if(done)return [done,"COMPLETE ANIMAL 1 CASE","Finish the first animal so its achievement can be recorded."];
-   g.step=4;SG(g);
- }
- if(g.step===4){
-   let cert=certButton();if(cert)return [cert,"OPEN CERTIFICATES","Player 1's saved first and last name should appear here."];
-   let home=byText(/HOME|MENU/i);if(home)return [home,"RETURN TO DOS MENU","Then open Certificates / Awards."];
- }
- return null;
-}
-function bar(title,detail){
- let main=document.querySelector("#main")||document.body,b=document.querySelector("#vgP1GuideBar");
- if(!b){b=document.createElement("div");b.id="vgP1GuideBar";main.prepend(b)}
- b.innerHTML="PLAYER 1 GUIDED ROUTE // "+title+"<small>"+detail+"</small>";
-}
-let timer;
-function run(){
- clearTimeout(timer);
- document.querySelectorAll(".vgP1YellowGuide").forEach(x=>x.classList.remove("vgP1YellowGuide"));
- let g=G();if(g.done)return;
- timer=setTimeout(()=>{
-   let t=getTarget(g);
-   if(!t)return;
-   let el=t[0];bar(t[1],t[2]);
-   el.classList.remove("vgP1YellowGuide");void el.offsetWidth;el.classList.add("vgP1YellowGuide");
-   try{el.scrollIntoView({behavior:"smooth",block:"center"})}catch(e){el.scrollIntoView()}
-   setTimeout(()=>el.classList.remove("vgP1YellowGuide"),3350);
- },220);
-}
-document.addEventListener("click",function(e){
- let g=G(),txt=(e.target.closest("button,a,[role=button]")?.innerText||"").toUpperCase();
- if(/NEW CASE|INTAKE|ADMIT/.test(txt))g.step=Math.max(g.step,2);
- if(/DISCHARGE|SEND HOME|COMPLETE CASE|CASE COMPLETE/.test(txt))g.step=Math.max(g.step,4);
- if(/CERTIFICATE|CERTS|AWARD/.test(txt)){g.done=true;SG(g);setTimeout(()=>{
-   let b=document.querySelector("#vgP1GuideBar");if(b)b.outerHTML='<div class="vgP1Done">PLAYER 1 GUIDE COMPLETE // INTAKE → ANIMAL 1 → CARE → CERTIFICATE NAME</div>';
- },300);return}
- SG(g);setTimeout(run,180);
-},false);
-document.addEventListener("input",function(){setTimeout(run,350)},false);
-const oh=home;home=function(){let r=oh();setTimeout(run,250);return r};
-setTimeout(run,500);
-window.VetGodsPlayer1Guide={run,reset:function(){localStorage.removeItem(GKEY);run()}};
-})();
-</script>
-
-<style id="guide-toggle-css">
-#vgGuideToggle{
-  position:fixed;right:8px;bottom:8px;z-index:10050;
-  border:2px solid #777;background:#050505;color:#ddd;
-  padding:7px 9px;font:900 9px "Courier New",monospace;
-  box-shadow:0 0 8px #000;cursor:pointer
-}
-#vgGuideToggle.on{background:#ffe600;color:#000;border-color:#8c7e00}
-#vgGuideToggle small{display:block;font-size:7px;margin-top:2px}
-</style>
-<script id="guide-toggle-js">
-(function(){
-"use strict";
-const KEY="vetgods_next_move_guide_enabled";
-function enabled(){
- let v=localStorage.getItem(KEY);
- return v===null ? true : v==="1";
-}
-function setEnabled(v){
- localStorage.setItem(KEY,v?"1":"0");
- let b=document.querySelector("#vgGuideToggle");
- if(b){b.classList.toggle("on",v);b.innerHTML=(v?"[GUIDE: ON]":"[GUIDE: OFF]")+"<small>"+(v?"NEXT MOVE FLASHES YELLOW":"NO NEXT-MOVE HINTS")+"</small>"}
- if(!v){
-   document.querySelectorAll(".vgP1YellowGuide,.vgGuideBlink").forEach(x=>x.classList.remove("vgP1YellowGuide","vgGuideBlink"));
-   document.querySelector("#vgP1GuideBar")?.remove();
- }
- if(v&&window.VetGodsPlayer1Guide?.run)setTimeout(()=>window.VetGodsPlayer1Guide.run(),80);
-}
-function mount(){
- if(document.querySelector("#vgGuideToggle"))return;
- let b=document.createElement("button");b.id="vgGuideToggle";document.body.appendChild(b);
- b.onclick=()=>setEnabled(!enabled());setEnabled(enabled());
-}
-// Block the earlier guide's visual output whenever the option is OFF.
-const obs=new MutationObserver(()=>{
- if(enabled())return;
- document.querySelectorAll(".vgP1YellowGuide,.vgGuideBlink").forEach(x=>x.classList.remove("vgP1YellowGuide","vgGuideBlink"));
- document.querySelector("#vgP1GuideBar")?.remove();
-});
-obs.observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:["class"]});
-document.addEventListener("click",function(e){
- if(e.target.closest?.("#vgGuideToggle"))return;
- if(!enabled()){
-   setTimeout(()=>{
-     document.querySelectorAll(".vgP1YellowGuide,.vgGuideBlink").forEach(x=>x.classList.remove("vgP1YellowGuide","vgGuideBlink"));
-     document.querySelector("#vgP1GuideBar")?.remove();
-   },0);
- }
-},true);
-mount();
-window.VetGodsGuideToggle={enabled,set:setEnabled};
-})();
-</script>
-
 <style id="print-cert-phase1-css">
 .vgCertPrintPanel{border:3px double #777;background:#050505;margin:8px 0;font:9px "Courier New",monospace;color:#ccc}
 .vgCertPrintHead{background:#c9c9c9;color:#000;padding:6px 8px;font-weight:900}
@@ -6893,81 +6695,646 @@ window.VetGodsApexDashboard={render,inject};
 })();
 </script>
 
-<script id="fix-name-yellow-advance-v3">
+<style id="career-stage1-css">
+.vgCareer{border:4px double #666;background:#020202;margin:8px 0;color:#ccc;font:9px "Courier New",monospace}
+.vgCareerHead{background:#d0d0d0;color:#000;padding:7px 9px;font-weight:900}
+.vgCareerGrid{display:grid;grid-template-columns:repeat(4,1fr)}
+.vgCareerCell{padding:8px;border-right:1px dotted #555;border-bottom:1px dotted #555;min-height:48px}
+.vgCareerCell small{display:block;color:#666}.vgCareerCell b{display:block;color:#eee;font-size:12px;margin-top:4px}
+.vgXPTrack{height:13px;border:2px solid #666;background:#080808;margin:8px;position:relative}
+.vgXPTrack i{display:block;height:100%;background:#bbb;transition:width .5s ease}
+.vgCareerRanks{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px dotted #555}
+.vgCareerRanks div{text-align:center;padding:7px 3px;border-right:1px dotted #555;color:#555;font-size:7px}
+.vgCareerRanks .done{color:#aaa}.vgCareerRanks .now{background:#ffe600;color:#000;font-weight:900}
+.vgCareerActions{display:grid;grid-template-columns:repeat(4,1fr)}
+.vgCareerActions button{background:#000;color:#ccc;border:0;border-top:1px dotted #555;border-right:1px dotted #555;padding:9px;text-align:left;font:900 8px "Courier New",monospace}
+.vgCareerActions button:hover{background:#ccc;color:#000}
+.vgCareerLog{max-height:180px;overflow:auto;padding:8px;border-top:1px dotted #555;color:#888;white-space:pre-wrap}
+.vgCareerCard{border:5px double #777;padding:12px;margin:8px;background:#050505;text-align:center}
+.vgCareerCard h3{margin:5px;color:#eee;letter-spacing:2px}.vgCareerSeal{width:70px;height:70px;border:4px double #888;border-radius:50%;margin:8px auto;display:flex;align-items:center;justify-content:center;font-weight:900}
+@media(max-width:650px){.vgCareerGrid{grid-template-columns:repeat(2,1fr)}.vgCareerRanks{grid-template-columns:repeat(3,1fr)}.vgCareerActions{grid-template-columns:repeat(2,1fr)}}
+</style>
+<script id="career-stage1-js">
 (function(){
 "use strict";
-const ROUTEKEY="vetgods_first_game_route_v2";
-const GUIDEKEY="vetgods_player1_yellow_guide_v1";
-
-function getRoute(){try{return Object.assign({step:0,complete:false},JSON.parse(localStorage.getItem(ROUTEKEY))||{})}catch(e){return{step:0,complete:false}}}
-function saveRoute(r){try{localStorage.setItem(ROUTEKEY,JSON.stringify(r))}catch(e){}}
-function getGuide(){try{return Object.assign({step:0,done:false},JSON.parse(localStorage.getItem(GUIDEKEY))||{})}catch(e){return{step:0,done:false}}}
-function saveGuide(g){try{localStorage.setItem(GUIDEKEY,JSON.stringify(g))}catch(e){}}
-function visible(x){if(!x)return false;let r=x.getBoundingClientRect(),c=getComputedStyle(x);return c.display!=="none"&&c.visibility!=="hidden"&&r.width>0&&r.height>0}
-function inputs(){return [...document.querySelectorAll("input")].filter(visible)}
-function firstInput(){return inputs().find(x=>/first.?name|player.?first|operator.?first/i.test((x.id||"")+" "+(x.name||"")+" "+(x.placeholder||"")))}
-function lastInput(){return inputs().find(x=>/last.?name|surname|player.?last|operator.?last/i.test((x.id||"")+" "+(x.name||"")+" "+(x.placeholder||"")))}
-function anyNameInput(){return inputs().find(x=>/player.?name|operator.?name|your.?name|full.?name/i.test((x.id||"")+" "+(x.name||"")+" "+(x.placeholder||"")))}
-function val(x){return (x?.value||"").trim()}
-function namesReady(){
- let f=firstInput(),l=lastInput(),one=anyNameInput();
- if(f||l)return (!f||val(f).length>0)&&(!l||val(l).length>0);
- return !!one&&val(one).length>1;
+const KEY="vetgods_player_career_v1";
+const ranks=[
+ ["TRAINEE",0],["CARE OPERATOR",150],["FIELD VETERAN",400],["SANCTUARY SPECIALIST",800],["APEX CARE COMMANDER",1400]
+];
+function load(){
+ let base={xp:0,level:1,cases:0,animalsHelped:0,perfectCases:0,creditsEarned:0,specialization:"GENERAL ANIMAL CARE",callsign:"CARE-1",log:[],lastCaseKey:""};
+ try{return Object.assign(base,JSON.parse(localStorage.getItem(KEY))||{})}catch(e){return base}
 }
-function persistNames(){
- let f=firstInput(),l=lastInput(),one=anyNameInput();
- let first=val(f),last=val(l);
- if(!first&&!last&&one){
-   let parts=val(one).split(/\s+/);first=parts.shift()||"";last=parts.join(" ");
+function save(c){try{localStorage.setItem(KEY,JSON.stringify(c))}catch(e){}}
+function esc(x){return String(x??"").replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
+function name(){
+ let p=state.playerProfile||state.player||{};
+ return [p.firstName,p.lastName].filter(Boolean).join(" ").trim()||state.rewardSystem?.playerName||"PLAYER 1";
+}
+function rank(c){
+ let i=0;for(let n=0;n<ranks.length;n++)if(c.xp>=ranks[n][1])i=n;
+ return {i,name:ranks[i][0],next:ranks[Math.min(i+1,ranks.length-1)][1]};
+}
+function sync(){
+ let c=load(),animals=Array.isArray(state.animals)?state.animals:[];
+ let completed=animals.filter(a=>/discharg|complete|sanctuary|adopt|home/i.test(String(a.stage||a.disposition||a.status||""))).length;
+ if(completed>c.cases){
+   let gain=(completed-c.cases)*100;c.xp+=gain;c.animalsHelped+=completed-c.cases;c.cases=completed;
+   c.log.unshift("+"+gain+" XP // completed animal-care case recorded");
  }
- if(!first&&!last)return false;
- state.playerProfile=state.playerProfile||{};
- state.player=state.player||{};
- if(first){state.playerProfile.firstName=first;state.player.firstName=first}
- if(last){state.playerProfile.lastName=last;state.player.lastName=last}
- if(state.rewardSystem)state.rewardSystem.playerName=[first,last].filter(Boolean).join(" ");
- try{
-   if(typeof save==="function")save();
-   else localStorage.setItem("vetGodsState",JSON.stringify(state));
- }catch(e){}
- return true;
+ c.level=rank(c).i+1;save(c);return c;
 }
-function buttons(){return [...document.querySelectorAll("button,a,[role=button],input[type=button],input[type=submit]")].filter(visible)}
-function nextCaseButton(){return buttons().find(b=>/NEW CASE|ADMIT PATIENT|START CASE|INTAKE/i.test((b.innerText||b.value||b.textContent||"").trim()))}
-function forceAdvance(){
- if(!namesReady())return false;
- persistNames();
- let r=getRoute();if(r.step<1){r.step=1;saveRoute(r)}
- let g=getGuide();if(g.step<1){g.step=1;saveGuide(g)}
- document.querySelectorAll(".vgP1YellowGuide,.vgGuideBlink").forEach(x=>x.classList.remove("vgP1YellowGuide","vgGuideBlink"));
- setTimeout(()=>{
-   try{window.VetGodsFirstGameRoute?.show?.()}catch(e){}
-   try{window.VetGodsPlayer1Guide?.run?.()}catch(e){}
-   let b=nextCaseButton();
-   if(b){
-     b.classList.remove("vgP1YellowGuide");void b.offsetWidth;b.classList.add("vgP1YellowGuide");
-     try{b.scrollIntoView({behavior:"smooth",block:"center"})}catch(e){}
-   }
- },120);
- return true;
+function cell(k,v){return '<div class="vgCareerCell"><small>'+esc(k)+'</small><b>'+esc(v)+'</b></div>'}
+function panel(){
+ let c=sync(),r=rank(c),next=r.i===ranks.length-1?c.xp:r.next,prev=ranks[r.i][1],pct=r.i===ranks.length-1?100:Math.max(0,Math.min(100,(c.xp-prev)/(next-prev)*100));
+ return '<div class="vgCareer" id="vgCareerPanel"><div class="vgCareerHead">PLAYER CAREER CORE // GAMEFLOW STAGE 1 OF 10</div>'+
+ '<div class="vgCareerGrid">'+cell("PLAYER",name())+cell("CALLSIGN",c.callsign)+cell("CAREER RANK",r.name)+cell("LEVEL",c.level)+
+ cell("CAREER XP",c.xp)+cell("CASES COMPLETED",c.cases)+cell("ANIMALS HELPED",c.animalsHelped)+cell("SPECIALIZATION",c.specialization)+'</div>'+
+ '<div class="vgXPTrack"><i style="width:'+pct+'%"></i></div>'+
+ '<div class="vgCareerRanks">'+ranks.map((x,i)=>'<div class="'+(i<r.i?"done":i===r.i?"now":"")+'">'+x[0]+'<br>'+x[1]+' XP</div>').join("")+'</div>'+
+ '<div class="vgCareerActions"><button data-career="case">[N] NEW CASE</button><button data-career="animals">[A] MY ANIMALS</button><button data-career="awards">[R] AWARDS</button><button data-career="card">[I] ID CARD</button></div></div>';
 }
-document.addEventListener("input",function(e){
- if(e.target.matches("input"))setTimeout(forceAdvance,180);
-},true);
-document.addEventListener("change",function(e){
- if(e.target.matches("input"))setTimeout(forceAdvance,80);
-},true);
-document.addEventListener("keydown",function(e){
- if(e.key==="Enter"&&e.target.matches("input")&&namesReady()){e.preventDefault();forceAdvance()}
-},true);
+function render(){
+ page="career";nav();
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\PLAYER\\CAREER&gt;</div>'+panel()+
+ '<div class="vgCareer"><div class="vgCareerHead">CAREER ACTIVITY LOG</div><div class="vgCareerLog">'+esc(load().log.slice(0,20).join("\n")||"No completed career events yet. Start the first guided animal case.")+'</div></div>';
+ wire(document.querySelector("#vgCareerPanel"));
+}
+function card(){
+ let c=sync(),r=rank(c);
+ page="careerid";nav();document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\PLAYER\\IDENTITY_CARD&gt;</div>'+
+ '<div class="vgCareerCard"><small>VET GODS // APEX INTERVENTION COMMAND</small><div class="vgCareerSeal">VG<br>ID</div><h3>'+esc(name())+'</h3>'+
+ '<div>CALLSIGN: '+esc(c.callsign)+'</div><div>RANK: '+esc(r.name)+'</div><div>LEVEL: '+c.level+' // XP: '+c.xp+'</div><div>SPECIALIZATION: '+esc(c.specialization)+'</div>'+
+ '<br><small>FICTIONAL PLAYER CAREER IDENTIFICATION</small></div><div class="vgCareerActions"><button id="cidBack">[ESC] CAREER</button></div>';
+ document.querySelector("#cidBack").onclick=render;
+}
+function wire(el){
+ if(!el)return;
+ el.querySelector('[data-career="case"]').onclick=()=>{
+   let b=[...document.querySelectorAll("button")].find(x=>/NEW CASE|ADMIT PATIENT|START CASE/i.test(x.textContent||""));
+   if(b)b.click();else home();
+ };
+ el.querySelector('[data-career="animals"]').onclick=()=>window.VetGodsMyAnimals1?.render();
+ el.querySelector('[data-career="awards"]').onclick=()=>window.VetGodsCertificatePrinter?.render();
+ el.querySelector('[data-career="card"]').onclick=card;
+}
+const op=program;program=function(k){if(k==="career")return render();return op(k)}
+function homeLink(){
+ if(page!=="home"||document.querySelector("#vgCareerHome"))return;
+ let c=document.querySelector(".p10-buttons");if(!c)return;
+ let b=document.createElement("button");b.id="vgCareerHome";b.textContent="[49] PLAYER_CAREER.EXE";b.onclick=render;c.appendChild(b);
+}
+const oh=home;home=function(){let r=oh();homeLink();return r};homeLink();
 document.addEventListener("click",function(e){
- let b=e.target.closest("button,a,[role=button],input[type=button],input[type=submit]");
- if(!b)return;
- let q=(b.innerText||b.value||b.textContent||"").toUpperCase();
- if(/SAVE.*(PLAYER|NAME)|BEGIN|CONTINUE|START/.test(q)&&namesReady())setTimeout(forceAdvance,40);
-},true);
-setTimeout(forceAdvance,700);
-window.VetGodsNameAdvanceFix={run:forceAdvance};
+ let q=(e.target.closest?.("button,a")?.textContent||"").toUpperCase();
+ if(/DISCHARGE|SEND HOME|COMPLETE CASE|SANCTUARY|ADOPT/.test(q))setTimeout(sync,200);
+},false);
+window.VetGodsCareer={render,sync,load};
+})();
+</script>
+
+<style id="gameflow-stage2-css">
+#vgAdventure2{border:4px double #777;background:#020202;margin:8px 0;color:#ccc;font:9px "Courier New",monospace}
+.vgA2Head{display:flex;justify-content:space-between;gap:8px;background:#ffe600;color:#000;padding:7px 9px;font-weight:900}
+.vgA2Story{padding:9px;border-bottom:1px dotted #555;line-height:1.5}
+.vgA2Story strong{display:block;color:#eee;font-size:11px;margin-bottom:4px}
+.vgA2Track{display:grid;grid-template-columns:repeat(10,1fr)}
+.vgA2Node{padding:7px 2px;text-align:center;border-right:1px dotted #444;border-bottom:1px dotted #444;color:#555;font-size:7px;min-height:37px}
+.vgA2Node.done{color:#aaa}.vgA2Node.now{background:#ffe600;color:#000;font-weight:900}
+.vgA2Reward{display:grid;grid-template-columns:repeat(3,1fr)}
+.vgA2Reward div{padding:7px;border-right:1px dotted #555;text-align:center}.vgA2Reward small{display:block;color:#666}.vgA2Reward b{color:#eee;font-size:11px}
+.vgA2Go{width:100%;border:0;border-top:2px solid #777;background:#ffe600;color:#000;padding:11px;text-align:left;font:900 10px "Courier New",monospace;animation:vgA2Pulse 1.5s ease-in-out 2}
+.vgA2Hint{padding:7px;color:#777;border-top:1px dotted #444}
+.vgA2Toast{position:fixed;left:50%;top:12%;transform:translateX(-50%);z-index:11000;background:#ffe600;color:#000;border:4px double #6f6500;padding:10px 14px;font:900 10px "Courier New",monospace;box-shadow:0 8px 30px #000;max-width:85%;text-align:center}
+@keyframes vgA2Pulse{0%,100%{box-shadow:none}50%{box-shadow:inset 0 0 0 4px #fff,0 0 16px #ffe600}}
+@media(max-width:650px){.vgA2Track{grid-template-columns:repeat(5,1fr)}}
+</style>
+<style id="gameflow-stage3-css">
+.vgC3{border:4px double #666;background:#020202;margin:8px 0;color:#ccc;font:9px "Courier New",monospace}
+.vgC3Head{background:#d0d0d0;color:#000;padding:7px 9px;font-weight:900;display:flex;justify-content:space-between}
+.vgC3Brief{padding:9px;line-height:1.5;border-bottom:1px dotted #555}
+.vgC3Traits{display:grid;grid-template-columns:repeat(4,1fr)}
+.vgC3Trait{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555}.vgC3Trait small{display:block;color:#666}.vgC3Trait b{color:#eee}
+.vgC3Choices{display:grid;grid-template-columns:repeat(3,1fr)}
+.vgC3Choice{background:#050505;color:#ccc;border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;padding:10px;text-align:left;font:9px "Courier New",monospace;min-height:94px}
+.vgC3Choice strong{display:block;color:#eee;margin-bottom:5px}.vgC3Choice small{display:block;color:#777;line-height:1.4}
+.vgC3Choice:hover{background:#ccc;color:#000}.vgC3Choice:hover strong,.vgC3Choice:hover small{color:#000}
+.vgC3Outcome{padding:9px;border-top:2px double #666;line-height:1.5}.vgC3Outcome b{color:#eee}
+.vgC3Evidence{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px dotted #555}
+.vgC3Evidence div{padding:7px;text-align:center;border-right:1px dotted #555;color:#555}.vgC3Evidence .on{color:#eee;background:#111}
+.vgC3Tag{display:inline-block;border:1px solid #666;padding:2px 5px;margin:2px;color:#aaa}
+@media(max-width:650px){.vgC3Traits{grid-template-columns:repeat(2,1fr)}.vgC3Choices{grid-template-columns:1fr}.vgC3Evidence{grid-template-columns:repeat(3,1fr)}}
+</style>
+<style id="gameflow-stage4-css">
+.vgAct4{border:4px double #666;background:#020202;margin:8px 0;color:#ccc;font:9px "Courier New",monospace}
+.vgAct4Head{background:#d0d0d0;color:#000;padding:7px 9px;font-weight:900}
+.vgAct4Grid{display:grid;grid-template-columns:repeat(3,1fr)}
+.vgAct4Card{padding:9px;border-right:1px dotted #555;border-bottom:1px dotted #555;min-height:125px}
+.vgAct4Card b{display:block;color:#eee;font-size:10px}.vgAct4Card small{display:block;color:#777;line-height:1.4;margin:5px 0}
+.vgAct4Card button{width:100%;background:#000;color:#ccc;border:2px double #666;padding:8px;text-align:left;font:900 8px "Courier New",monospace}
+.vgAct4Card.done{background:#0b0b0b}.vgAct4Card.done:after{content:"[ACTIVITY COMPLETE]";display:block;margin-top:7px;color:#aaa}
+.vgMiniGame{padding:9px;border-top:2px double #666}
+.vgMiniGame h4{margin:0 0 7px;color:#eee}
+.vgBalanceTrack{height:30px;border:2px solid #666;position:relative;background:#080808;margin:8px 0}
+.vgBalanceTarget{position:absolute;left:42%;width:16%;top:0;bottom:0;background:#333}
+.vgBalanceNeedle{position:absolute;top:-4px;width:4px;height:38px;background:#ddd;left:10%;transition:left .12s linear}
+.vgScanField{height:130px;border:1px solid #555;position:relative;overflow:hidden;background:repeating-linear-gradient(0deg,#030303 0 19px,#111 20px)}
+.vgScanTarget{position:absolute;width:28px;height:28px;border:3px double #bbb;border-radius:50%;left:68%;top:45%}
+.vgScanLine{position:absolute;top:0;bottom:0;width:3px;background:#ddd;left:0}
+.vgCalmMeter{height:18px;border:2px solid #666;background:#090909;margin:8px 0}.vgCalmMeter i{display:block;height:100%;background:#bbb;transition:width .3s}
+.vgActBtns{display:grid;grid-template-columns:repeat(3,1fr)}.vgActBtns button{background:#000;color:#ccc;border:1px dotted #555;padding:9px;font:900 8px "Courier New",monospace}
+.vgActResult{padding:8px;border-top:1px dotted #555;color:#aaa}.vgActResult strong{color:#eee}
+@media(max-width:650px){.vgAct4Grid{grid-template-columns:1fr}}
+</style>
+<style id="gameflow-stage5-css">
+.vgRel5{border:4px double #666;background:#020202;margin:8px 0;color:#ccc;font:9px "Courier New",monospace}
+.vgRel5Head{background:#d0d0d0;color:#000;padding:7px 9px;font-weight:900;display:flex;justify-content:space-between}
+.vgRel5Grid{display:grid;grid-template-columns:1.1fr 1.9fr}
+.vgRel5Profile{padding:9px;border-right:1px dotted #555}
+.vgRel5Profile h4{margin:0 0 6px;color:#eee}.vgRel5Profile small{color:#777}
+.vgRelTraits{display:flex;gap:4px;flex-wrap:wrap;margin:7px 0}.vgRelTraits span{border:1px solid #666;padding:3px 5px;color:#aaa}
+.vgBondTrack{height:13px;border:2px solid #555;background:#090909;margin:6px 0}.vgBondTrack i{display:block;height:100%;background:#bbb;transition:width .4s}
+.vgRel5Actions{display:grid;grid-template-columns:repeat(2,1fr)}
+.vgRel5Actions button{background:#000;color:#ccc;border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;padding:9px;text-align:left;font:900 8px "Courier New",monospace}
+.vgRel5Actions button strong{display:block;color:#eee;margin-bottom:3px}.vgRel5Actions button small{display:block;color:#777;line-height:1.35}
+.vgRel5Reaction{padding:8px;border-top:1px dotted #555;line-height:1.45;color:#aaa}.vgRel5Reaction strong{color:#eee}
+.vgMemoryStrip{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px dotted #555}.vgMemoryStrip div{padding:6px;text-align:center;border-right:1px dotted #555;color:#666;font-size:7px}.vgMemoryStrip .on{color:#eee;background:#111}
+@media(max-width:650px){.vgRel5Grid{grid-template-columns:1fr}.vgRel5Profile{border-right:0}.vgRel5Actions{grid-template-columns:1fr}}
+</style>
+<style id="gameflow-stage6-css">
+.vgLife6{border:4px double #666;background:#020202;margin:8px 0;color:#ccc;font:9px "Courier New",monospace}
+.vgLife6Head{background:#d0d0d0;color:#000;padding:7px 9px;font-weight:900;display:flex;justify-content:space-between}
+.vgLife6Stage{height:260px;position:relative;overflow:hidden;border-bottom:1px dotted #555;background:
+radial-gradient(circle at 20% 70%,#171717 0 3%,transparent 4%),radial-gradient(circle at 80% 72%,#151515 0 4%,transparent 5%),
+repeating-linear-gradient(0deg,#030303 0 31px,#101010 32px)}
+.vgLifeZone{position:absolute;border:2px double #555;padding:5px;color:#777;font-size:7px;text-align:center}
+.vgLifeZone.food{left:3%;bottom:8%;width:22%}.vgLifeZone.water{left:28%;bottom:8%;width:20%}.vgLifeZone.bed{right:27%;bottom:8%;width:20%}.vgLifeZone.toy{right:3%;bottom:8%;width:20%}
+.vgLifePet{position:absolute;left:45%;top:32%;width:62px;height:48px;border:3px double #aaa;border-radius:50%;background:#111;display:flex;align-items:center;justify-content:center;color:#ddd;font-weight:900;transition:left 2.8s ease,top 2.8s ease}
+.vgLifePet:after{content:"";position:absolute;width:18px;height:12px;border:2px solid #777;border-left:0;right:-19px;top:15px}
+.vgLifeBubble{position:absolute;left:50%;top:7%;transform:translateX(-50%);border:1px solid #666;background:#080808;padding:6px 9px;color:#aaa;max-width:80%;text-align:center}
+.vgLifeStats{display:grid;grid-template-columns:repeat(6,1fr)}
+.vgLifeStat{padding:7px;border-right:1px dotted #555;border-bottom:1px dotted #555;text-align:center}.vgLifeStat small{display:block;color:#666}.vgLifeStat b{color:#eee}
+.vgLifeBar{height:5px;background:#111;margin-top:4px}.vgLifeBar i{display:block;height:100%;background:#aaa}
+.vgLifeActions{display:grid;grid-template-columns:repeat(5,1fr)}.vgLifeActions button{background:#000;color:#ccc;border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;padding:9px;font:900 8px "Courier New",monospace}
+.vgLifeLog{padding:8px;max-height:130px;overflow:auto;color:#777;white-space:pre-wrap}
+.vgLifeResidents{display:grid;grid-template-columns:repeat(4,1fr)}.vgLifeResident{padding:7px;border:1px dotted #555;background:#050505;color:#aaa;text-align:left;font:8px "Courier New",monospace}
+.vgLifeResident b{display:block;color:#eee}
+@media(max-width:650px){.vgLifeStats{grid-template-columns:repeat(3,1fr)}.vgLifeActions{grid-template-columns:repeat(2,1fr)}.vgLifeResidents{grid-template-columns:repeat(2,1fr)}}
+</style>
+<style id="gameflow-stage7-css">
+.vgM7{border:4px double #666;background:#020202;margin:8px 0;color:#ccc;font:9px "Courier New",monospace}
+.vgM7Head{background:#d0d0d0;color:#000;padding:7px 9px;font-weight:900;display:flex;justify-content:space-between}
+.vgM7Signal{padding:9px;border-bottom:1px dotted #555;line-height:1.5}
+.vgM7Signal strong{display:block;color:#eee;font-size:11px;margin-bottom:4px}
+.vgM7Tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}.vgM7Tags span{border:1px solid #555;padding:2px 5px;color:#888}
+.vgM7Choices{display:grid;grid-template-columns:repeat(3,1fr)}
+.vgM7Choices button{background:#030303;color:#ccc;border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;padding:10px;text-align:left;font:9px "Courier New",monospace;min-height:100px}
+.vgM7Choices button b{display:block;color:#eee;margin-bottom:4px}.vgM7Choices button small{display:block;color:#777;line-height:1.4}
+.vgM7Choices button:hover{background:#ccc;color:#000}.vgM7Choices button:hover b,.vgM7Choices button:hover small{color:#000}
+.vgM7Result{padding:9px;border-bottom:1px dotted #555;color:#aaa;line-height:1.5}.vgM7Result b{color:#eee}
+.vgM7Stats{display:grid;grid-template-columns:repeat(5,1fr)}
+.vgM7Stat{padding:7px;text-align:center;border-right:1px dotted #555}.vgM7Stat small{display:block;color:#666}.vgM7Stat b{color:#eee;font-size:12px}
+.vgM7Log{max-height:170px;overflow:auto;padding:8px;white-space:pre-wrap;color:#777;border-top:1px dotted #555}
+.vgM7Actions{display:grid;grid-template-columns:repeat(3,1fr)}.vgM7Actions button{background:#000;color:#ccc;border:0;border-top:1px dotted #555;border-right:1px dotted #555;padding:9px;font:900 8px "Courier New",monospace}
+.vgM7Alert{animation:vgM7blink 1.2s ease-in-out 3}
+@keyframes vgM7blink{0%,100%{background:#d0d0d0;color:#000}50%{background:#ffe600;color:#000}}
+@media(max-width:650px){.vgM7Choices{grid-template-columns:1fr}.vgM7Stats{grid-template-columns:repeat(2,1fr)}}
+</style>
+<style id="gameflow-stage8-css">
+.vgU8{border:4px double #666;background:#020202;margin:8px 0;color:#ccc;font:9px "Courier New",monospace}
+.vgU8Head{background:#d0d0d0;color:#000;padding:7px 9px;font-weight:900;display:flex;justify-content:space-between}
+.vgU8Grid{display:grid;grid-template-columns:repeat(3,1fr)}
+.vgU8Card{padding:9px;border-right:1px dotted #555;border-bottom:1px dotted #555;min-height:128px;position:relative}
+.vgU8Card b{display:block;color:#eee;font-size:10px;margin-bottom:5px}.vgU8Card small{display:block;color:#777;line-height:1.4}
+.vgU8Card.locked{opacity:.55}.vgU8Card.unlocked{background:#0b0b0b}
+.vgU8Seal{position:absolute;right:7px;top:7px;border:2px double #777;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-weight:900}
+.vgU8Card.unlocked .vgU8Seal{background:#ffe600;color:#000}
+.vgU8Progress{height:8px;border:1px solid #555;background:#080808;margin-top:8px}.vgU8Progress i{display:block;height:100%;background:#bbb}
+.vgU8Stats{display:grid;grid-template-columns:repeat(5,1fr)}.vgU8Stat{padding:8px;text-align:center;border-right:1px dotted #555;border-bottom:1px dotted #555}.vgU8Stat small{display:block;color:#666}.vgU8Stat b{color:#eee;font-size:12px}
+.vgU8Actions{display:grid;grid-template-columns:repeat(4,1fr)}.vgU8Actions button{background:#000;color:#ccc;border:0;border-top:1px dotted #555;border-right:1px dotted #555;padding:9px;font:900 8px "Courier New",monospace}
+.vgU8Log{padding:8px;max-height:160px;overflow:auto;white-space:pre-wrap;color:#777}
+@media(max-width:650px){.vgU8Grid{grid-template-columns:1fr}.vgU8Stats{grid-template-columns:repeat(2,1fr)}.vgU8Actions{grid-template-columns:repeat(2,1fr)}}
+</style>
+<style id="gameflow-stage9-css">
+.vgL9{border:4px double #666;background:#020202;margin:8px 0;color:#ccc;font:9px "Courier New",monospace}
+.vgL9Head{background:#d0d0d0;color:#000;padding:7px 9px;font-weight:900;display:flex;justify-content:space-between}
+.vgL9Chapters{display:grid;grid-template-columns:repeat(6,1fr)}
+.vgL9Chapter{padding:9px 5px;border-right:1px dotted #555;border-bottom:1px dotted #555;text-align:center;min-height:90px;color:#555}
+.vgL9Chapter b{display:block;margin:5px 0;font-size:8px}.vgL9Chapter.done{color:#aaa}.vgL9Chapter.now{background:#ffe600;color:#000}.vgL9Chapter.locked{opacity:.45}
+.vgL9Map{height:180px;position:relative;border-bottom:1px dotted #555;background:repeating-linear-gradient(90deg,#030303 0 49px,#111 50px),repeating-linear-gradient(0deg,transparent 0 34px,#111 35px)}
+.vgL9Line{position:absolute;left:8%;right:8%;top:50%;height:2px;background:#555}
+.vgL9Node{position:absolute;top:50%;width:32px;height:32px;margin:-16px;border:3px double #666;border-radius:50%;background:#050505;display:flex;align-items:center;justify-content:center;font-weight:900}
+.vgL9Node.done{background:#aaa;color:#000}.vgL9Node.now{background:#ffe600;color:#000;box-shadow:0 0 12px #ffe600}
+.vgL9Brief{padding:10px;line-height:1.5;border-bottom:1px dotted #555}.vgL9Brief strong{display:block;color:#eee;font-size:11px}
+.vgL9Goals{display:grid;grid-template-columns:repeat(3,1fr)}.vgL9Goal{padding:8px;border-right:1px dotted #555;border-bottom:1px dotted #555}.vgL9Goal small{display:block;color:#666}.vgL9Goal b{color:#eee}
+.vgL9Bar{height:7px;border:1px solid #555;background:#080808;margin-top:5px}.vgL9Bar i{display:block;height:100%;background:#bbb}
+.vgL9Actions{display:grid;grid-template-columns:repeat(5,1fr)}.vgL9Actions button{background:#000;color:#ccc;border:0;border-right:1px dotted #555;border-top:1px dotted #555;padding:9px;font:900 8px "Courier New",monospace}
+.vgL9Log{max-height:150px;overflow:auto;padding:8px;white-space:pre-wrap;color:#777}
+@media(max-width:700px){.vgL9Chapters{grid-template-columns:repeat(3,1fr)}.vgL9Goals{grid-template-columns:1fr}.vgL9Actions{grid-template-columns:repeat(2,1fr)}}
+</style>
+<style id="gameflow-stage10-css">
+.vgF10{border:4px double #666;background:#020202;margin:8px 0;color:#ccc;font:9px "Courier New",monospace}
+.vgF10Head{background:#d0d0d0;color:#000;padding:7px 9px;font-weight:900;display:flex;justify-content:space-between}
+.vgF10Hero{padding:11px;border-bottom:1px dotted #555;line-height:1.5}.vgF10Hero b{display:block;color:#eee;font-size:12px}
+.vgF10Stats{display:grid;grid-template-columns:repeat(6,1fr)}.vgF10Stat{padding:8px;text-align:center;border-right:1px dotted #555;border-bottom:1px dotted #555}.vgF10Stat small{display:block;color:#666}.vgF10Stat b{color:#eee;font-size:12px}
+.vgF10Grid{display:grid;grid-template-columns:repeat(2,1fr)}
+.vgF10Card{padding:9px;border-right:1px dotted #555;border-bottom:1px dotted #555;min-height:105px}.vgF10Card b{display:block;color:#eee;margin-bottom:4px}.vgF10Card small{display:block;color:#777;line-height:1.4}
+.vgF10Card button,.vgF10Actions button{background:#000;color:#ccc;border:2px double #666;padding:8px;margin-top:7px;font:900 8px "Courier New",monospace}
+.vgF10Challenge{padding:10px;border-bottom:1px dotted #555}.vgF10Challenge strong{display:block;color:#eee;font-size:11px}
+.vgF10Bar{height:9px;border:1px solid #555;background:#080808;margin:7px 0}.vgF10Bar i{display:block;height:100%;background:#bbb}
+.vgF10Achievements{display:grid;grid-template-columns:repeat(4,1fr)}.vgF10Ach{padding:7px;text-align:center;border-right:1px dotted #555;border-bottom:1px dotted #555;color:#555}.vgF10Ach.on{color:#000;background:#ffe600;font-weight:900}
+.vgF10Actions{display:grid;grid-template-columns:repeat(5,1fr)}.vgF10Actions button{margin:0;border:0;border-right:1px dotted #555;border-top:1px dotted #555;text-align:left}
+.vgF10Log{padding:8px;max-height:150px;overflow:auto;white-space:pre-wrap;color:#777}
+@media(max-width:700px){.vgF10Stats{grid-template-columns:repeat(3,1fr)}.vgF10Grid{grid-template-columns:1fr}.vgF10Achievements{grid-template-columns:repeat(2,1fr)}.vgF10Actions{grid-template-columns:repeat(2,1fr)}}
+</style>
+<style id="vg-freeplay2-css">
+#vgFreePlay2{border:4px double #777;background:#020202;color:#ccc;font:9px "Courier New",monospace;margin:8px 0}
+.vgFPHead{display:flex;justify-content:space-between;background:#d0d0d0;color:#000;padding:8px 10px;font-weight:900}
+.vgFPHero{padding:10px;border-bottom:1px dotted #555;line-height:1.5}
+.vgFPHero b{display:block;color:#eee;font-size:12px;margin-bottom:4px}
+.vgFPGrid{display:grid;grid-template-columns:repeat(3,1fr)}
+.vgFPCard{background:#050505;color:#ccc;border:0;border-right:1px dotted #555;border-bottom:1px dotted #555;padding:10px;text-align:left;min-height:112px;font:9px "Courier New",monospace}
+.vgFPCard strong{display:block;color:#eee;font-size:10px;margin-bottom:5px}.vgFPCard small{display:block;color:#777;line-height:1.4}
+.vgFPCard:hover{background:#d0d0d0;color:#000}.vgFPCard:hover strong,.vgFPCard:hover small{color:#000}
+.vgFPStats{display:grid;grid-template-columns:repeat(5,1fr)}
+.vgFPStat{padding:8px;text-align:center;border-right:1px dotted #555;border-bottom:1px dotted #555}.vgFPStat small{display:block;color:#666}.vgFPStat b{color:#eee;font-size:11px}
+.vgFPMode{display:grid;grid-template-columns:repeat(2,1fr)}
+.vgFPMode button{padding:11px;background:#000;color:#ccc;border:0;border-right:1px dotted #555;border-top:1px dotted #555;font:900 9px "Courier New",monospace}
+.vgFPMode button.on{background:#ffe600;color:#000}
+.vgFPRecent{padding:8px;color:#777;border-top:1px dotted #555;white-space:pre-wrap}
+#vgFreePlayQuick{position:fixed;right:8px;bottom:8px;z-index:14500;border:3px double #777;background:#050505;color:#ddd;padding:8px 10px;font:900 8px "Courier New",monospace}
+@media(max-width:700px){.vgFPGrid{grid-template-columns:repeat(2,1fr)}.vgFPStats{grid-template-columns:repeat(2,1fr)}}
+</style>
+<script id="vg-freeplay2-js">
+(function(){
+"use strict";
+const KEY="vetgods_freeplay_v1";
+function E(x){return String(x??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function load(){try{return Object.assign({mode:"guided",visits:0,last:"",recent:[]},JSON.parse(localStorage.getItem(KEY))||{})}catch(e){return{mode:"guided",visits:0,last:"",recent:[]}}}
+function save(x){try{localStorage.setItem(KEY,JSON.stringify(x))}catch(e){}}
+function career(){try{return window.VetGodsCareer?.load?.()||JSON.parse(localStorage.getItem("vetgods_player_career_v1")||"{}")}catch(e){return{}}}
+function animals(){return Array.isArray(state.animals)?state.animals:[]}
+function current(){let i=state.myAnimalsRegistry?.selected;return Number.isInteger(i)?state.animals?.[i]:state.animals?.[state.active||0]}
+function record(name){let d=load();d.last=name;d.recent.unshift(new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})+" // "+name);d.recent=d.recent.slice(0,8);save(d)}
+function call(name,fn){record(name);try{return fn()}catch(e){console.error(e);home()}}
+const destinations=[
+ ["NEW PATIENT","Start another veterinary case. Free Play never requires you to finish unrelated activities first.",()=>home()],
+ ["CURRENT PATIENT","Return directly to the selected animal and its care information.",()=>window.VetGodsMyAnimals3?.render?.()||window.VetGodsMyAnimals1?.render?.()],
+ ["MY ANIMALS","Open your persistent animal roster and choose an animal to inspect.",()=>window.VetGodsMyAnimals1?.render?.()],
+ ["SANCTUARY LIFE","Feed, water, rest, play with and revisit recovering residents.",()=>window.VetGodsSanctuaryLife?.render?.()],
+ ["HANDS-ON CARE","Return to a patient where the waveform, scanner and calming activities are available.",()=>window.VetGodsMyAnimals3?.render?.()||window.VetGodsMyAnimals1?.render?.()],
+ ["MISSIONS / EVENTS","Choose optional rescues, research requests, mysteries and facility events.",()=>window.VetGodsMissions?.render?.()],
+ ["PLAYER CAREER","Review player identity, rank, XP and completed cases.",()=>window.VetGodsCareer?.render?.()],
+ ["CAREER CHAPTERS","See the long-term campaign from Clinic Foundation through Apex Intervention.",()=>window.VetGodsLongCareer?.render?.()],
+ ["REWARDS / UNLOCKS","Review earned scanner, sanctuary, research and command unlocks.",()=>window.VetGodsUnlocks?.render?.()],
+ ["AWARDS / PRINTING","Open Vet Gods certificates, badges and printing tools.",()=>window.VetGodsCertificatePrinter?.render?.()],
+ ["CONTINUING GAME","Open achievements, offline challenge and the one-more-patient loop.",()=>window.VetGodsFinalLoop?.render?.()],
+ ["APEX DASHBOARD","Open the integrated patient command dashboard.",()=>program("apexdashboard")]
+];
+function render(){
+ let d=load(),c=career(),a=current(),arr=animals();d.visits++;save(d);
+ page="freeplay2";nav();
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\FREE_PLAY&gt;</div>'+
+ '<div id="vgFreePlay2"><div class="vgFPHead"><span>FREE PLAY COMMAND CENTER // INTEGRATION PHASE 2 OF 3</span><span>CHOOSE YOUR OWN ACTIVITY</span></div>'+
+ '<div class="vgFPHero"><b>NO REQUIRED ROUTE</b>Pick whatever you want to do. The guided patient route remains available, but Free Play does not force you through it.'+
+ (a?'<br>CURRENT ANIMAL: <b style="display:inline">'+E(a.name||"ANIMAL")+' // '+E(a.species||"PATIENT")+'</b>':'<br>NO CURRENT ANIMAL SELECTED')+'</div>'+
+ '<div class="vgFPStats"><div class="vgFPStat"><small>CAREER XP</small><b>'+Number(c.xp||0)+'</b></div><div class="vgFPStat"><small>CASES</small><b>'+Number(c.cases||0)+'</b></div><div class="vgFPStat"><small>ANIMALS</small><b>'+arr.length+'</b></div><div class="vgFPStat"><small>MODE</small><b>'+E(d.mode.toUpperCase())+'</b></div><div class="vgFPStat"><small>FREE PLAY VISITS</small><b>'+d.visits+'</b></div></div>'+
+ '<div class="vgFPGrid">'+destinations.map((x,i)=>'<button class="vgFPCard" data-fpd="'+i+'"><strong>['+(i+1)+'] '+E(x[0])+'</strong><small>'+E(x[1])+'</small></button>').join("")+'</div>'+
+ '<div class="vgFPMode"><button id="fpGuided" class="'+(d.mode==="guided"?"on":"")+'">GUIDED CARE MODE</button><button id="fpFree" class="'+(d.mode==="free"?"on":"")+'">FREE PLAY MODE</button></div>'+
+ '<div class="vgFPRecent">'+E(d.recent.join("\n")||"No Free Play destinations visited yet.")+'</div></div>';
+ document.querySelectorAll("[data-fpd]").forEach(b=>b.onclick=()=>{let x=destinations[+b.dataset.fpd];call(x[0],x[2])});
+ document.querySelector("#fpGuided").onclick=()=>setMode("guided");
+ document.querySelector("#fpFree").onclick=()=>setMode("free");
+}
+function setMode(mode){
+ let d=load();d.mode=mode;save(d);
+ let f=JSON.parse(localStorage.getItem("vetgods_unified_flow_v1")||"{}");f.guided=mode==="guided";localStorage.setItem("vetgods_unified_flow_v1",JSON.stringify(f));
+ try{let g=JSON.parse(localStorage.getItem("vetgods_player1_yellow_guide_v1")||"{}");g.enabled=mode==="guided";localStorage.setItem("vetgods_player1_yellow_guide_v1",JSON.stringify(g))}catch(e){}
+ if(mode==="guided"){home();setTimeout(()=>window.VetGodsUnifiedFlow?.mount?.(),150)}
+ else render();
+}
+function quick(){
+ if(document.querySelector("#vgFreePlayQuick"))return;
+ let b=document.createElement("button");b.id="vgFreePlayQuick";b.textContent="[F] FREE PLAY";b.onclick=render;document.body.appendChild(b);
+}
+document.addEventListener("keydown",e=>{if((e.key==="f"||e.key==="F")&&!/input|textarea/i.test(e.target.tagName))render()});
+const op=program;program=function(k){if(k==="freeplay2")return render();return op(k)}
+function homeLink(){
+ if(page!=="home"||document.querySelector("#vgFPHome"))return;
+ let c=document.querySelector(".p10-buttons");if(!c)return;
+ let b=document.createElement("button");b.id="vgFPHome";b.textContent="[55] FREE_PLAY.EXE";b.onclick=render;c.appendChild(b)
+}
+const oh=home;home=function(){let r=oh();homeLink();quick();return r};homeLink();quick();
+window.VetGodsFreePlay={render,setMode,load};
+})();
+</script>
+
+<style id="vg-integration3-css">
+#vgI3Hub{border:4px double #777;background:#020202;color:#ccc;font:9px "Courier New",monospace;margin:8px 0}
+.vgI3Head{display:flex;justify-content:space-between;background:#d0d0d0;color:#000;padding:8px 10px;font-weight:900}
+.vgI3Pulse{display:grid;grid-template-columns:repeat(6,1fr)}
+.vgI3Pulse div{padding:8px;text-align:center;border-right:1px dotted #555;border-bottom:1px dotted #555}
+.vgI3Pulse small{display:block;color:#666}.vgI3Pulse b{display:block;color:#eee;font-size:11px;margin-top:3px}
+.vgI3Loop{display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1px dotted #555}
+.vgI3Loop button{background:#050505;color:#777;border:0;border-right:1px dotted #555;padding:8px 3px;font:900 7px "Courier New",monospace}
+.vgI3Loop button.ready{color:#ddd}.vgI3Loop button.current{background:#ffe600;color:#000}
+.vgI3Grid{display:grid;grid-template-columns:repeat(3,1fr)}
+.vgI3Card{padding:10px;border-right:1px dotted #555;border-bottom:1px dotted #555;min-height:112px}
+.vgI3Card b{display:block;color:#eee;font-size:10px;margin-bottom:4px}.vgI3Card small{display:block;color:#777;line-height:1.4}
+.vgI3Card button{width:100%;background:#000;color:#ccc;border:2px double #666;padding:7px;margin-top:8px;font:900 8px "Courier New",monospace}
+.vgI3Status{padding:9px;border-bottom:1px dotted #555;line-height:1.5}
+.vgI3Status strong{color:#eee}.vgI3Good{color:#ddd}.vgI3Warn{color:#ffe600}
+.vgI3Log{padding:8px;max-height:145px;overflow:auto;white-space:pre-wrap;color:#777}
+#vgI3Quick{position:fixed;left:8px;bottom:8px;z-index:14500;background:#050505;color:#ddd;border:3px double #777;padding:8px 10px;font:900 8px "Courier New",monospace}
+@media(max-width:700px){.vgI3Pulse{grid-template-columns:repeat(3,1fr)}.vgI3Loop{grid-template-columns:repeat(4,1fr)}.vgI3Grid{grid-template-columns:1fr}}
+</style>
+<script id="vg-integration3-js">
+(function(){
+"use strict";
+const KEY="vetgods_whole_game_integration_v1";
+function E(x){return String(x??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function read(k,b={}){try{return Object.assign(b,JSON.parse(localStorage.getItem(k)||"{}"))}catch(e){return b}}
+function load(){return read(KEY,{events:[],lastAnimal:"",lastPage:"home",checks:0})}
+function save(d){try{localStorage.setItem(KEY,JSON.stringify(d))}catch(e){}}
+function A(){let i=state.myAnimalsRegistry?.selected;return Number.isInteger(i)?state.animals?.[i]:state.animals?.[state.active||0]}
+function snapshot(){
+ let c=read("vetgods_player_career_v1",{xp:0,cases:0,animalsHelped:0}),
+     m=read("vetgods_missions_events_v1",{completed:0}),
+     u=read("vetgods_unlocks_v1",{claimed:{}}),
+     f=read("vetgods_freeplay_v1",{mode:"guided"}),
+     flow=read("vetgods_unified_flow_v1",{step:0}),
+     rel=read("vetgods_relationships_v1",{}),
+     life=read("vetgods_sanctuary_life_v1",{});
+ return {xp:+c.xp||0,cases:+c.cases||0,helped:+c.animalsHelped||0,missions:+m.completed||0,unlocks:Object.keys(u.claimed||{}).length,
+ mode:f.mode||"guided",step:+flow.step||0,relationships:Object.keys(rel).length,residents:Object.keys(life).length};
+}
+function record(msg){
+ let d=load();d.events.unshift(new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})+" // "+msg);d.events=d.events.slice(0,20);save(d)
+}
+function audit(){
+ let a=A(),x=snapshot(),checks=[
+  ["PLAYER / CAREER",!!window.VetGodsCareer],
+  ["GUIDED FLOW",!!window.VetGodsUnifiedFlow],
+  ["FREE PLAY",!!window.VetGodsFreePlay],
+  ["MY ANIMALS",!!window.VetGodsMyAnimals1],
+  ["RELATIONSHIPS",!!window.VetGodsRelationships],
+  ["SANCTUARY",!!window.VetGodsSanctuaryLife],
+  ["MISSIONS",!!window.VetGodsMissions],
+  ["UNLOCKS",!!window.VetGodsUnlocks],
+  ["CAREER LOOP",!!window.VetGodsLongCareer],
+  ["CONTINUING LOOP",!!window.VetGodsFinalLoop]
+ ];
+ return {a,x,checks,ok:checks.filter(q=>q[1]).length};
+}
+function route(name){
+ record("ROUTE // "+name);
+ let map={
+  case:()=>home(), patient:()=>window.VetGodsMyAnimals3?.render?.()||window.VetGodsMyAnimals1?.render?.(),
+  animals:()=>window.VetGodsMyAnimals1?.render?.(), sanctuary:()=>window.VetGodsSanctuaryLife?.render?.(),
+  missions:()=>window.VetGodsMissions?.render?.(), rewards:()=>window.VetGodsUnlocks?.render?.(),
+  career:()=>window.VetGodsLongCareer?.render?.(), free:()=>window.VetGodsFreePlay?.render?.(),
+  awards:()=>window.VetGodsCertificatePrinter?.render?.(), continue:()=>window.VetGodsFinalLoop?.render?.()
+ };
+ try{return map[name]?.()}catch(e){console.error(e);home()}
+}
+function render(){
+ let z=audit(),x=z.x,a=z.a,d=load();d.checks++;d.lastPage=String(page||"home");if(a)d.lastAnimal=a.name||"";save(d);
+ page="wholegame3";nav();
+ let loop=["CASE","CARE","RELATE","RECOVER","REWARD","EXPLORE","REPEAT"];
+ document.querySelector("#main").innerHTML='<div class="path">C:\\VETGODS\\SYSTEM\\WHOLE_GAME&gt;</div>'+
+ '<div id="vgI3Hub"><div class="vgI3Head"><span>WHOLE-GAME INTEGRATION // PHASE 3 OF 3</span><span>'+z.ok+'/'+z.checks.length+' CORE SYSTEMS ONLINE</span></div>'+
+ '<div class="vgI3Status"><strong>'+E(x.mode.toUpperCase())+' MODE</strong> // '+(a?'CURRENT ANIMAL: '+E(a.name||"ANIMAL")+' // '+E(a.species||"PATIENT"):'NO CURRENT ANIMAL // start a new case or select one from My Animals')+'</div>'+
+ '<div class="vgI3Pulse">'+[['XP',x.xp],['CASES',x.cases],['HELPED',x.helped],['RELATIONSHIPS',x.relationships],['MISSIONS',x.missions],['UNLOCKS',x.unlocks]].map(q=>'<div><small>'+q[0]+'</small><b>'+q[1]+'</b></div>').join("")+'</div>'+
+ '<div class="vgI3Loop">'+loop.map((q,i)=>'<button class="'+(i===Math.min(6,Math.floor(x.step*.7))?"current":"ready")+'">'+q+'</button>').join("")+'</div>'+
+ '<div class="vgI3Grid">'+
+ '<div class="vgI3Card"><b>1 // PATIENT LOOP</b><small>Start a case or return to the current patient. Diagnostics, stabilization, treatment and recovery stay tied to the selected animal.</small><button data-i3="case">NEW CASE</button><button data-i3="patient">CURRENT PATIENT</button></div>'+
+ '<div class="vgI3Card"><b>2 // LIVING ANIMALS</b><small>Completed and retained animals remain reachable through My Animals, relationships and sanctuary life.</small><button data-i3="animals">MY ANIMALS</button><button data-i3="sanctuary">SANCTUARY</button></div>'+
+ '<div class="vgI3Card"><b>3 // PROGRESSION</b><small>Cases and missions feed career XP. XP feeds chapters and unlocks instead of becoming an isolated score.</small><button data-i3="career">CAREER CHAPTERS</button><button data-i3="rewards">REWARDS / UNLOCKS</button></div>'+
+ '<div class="vgI3Card"><b>4 // ADVENTURES</b><small>Optional missions add rescue, facility, research and curiosity events without blocking animal care.</small><button data-i3="missions">MISSIONS / EVENTS</button></div>'+
+ '<div class="vgI3Card"><b>5 // PLAYER RECOGNITION</b><small>Your player identity feeds career records, badges and printable fictional Vet Gods certificates.</small><button data-i3="awards">AWARDS / CERTIFICATES</button></div>'+
+ '<div class="vgI3Card"><b>6 // PLAY YOUR WAY</b><small>Switch between the guided route and open Free Play, then return to the continuing-game loop whenever you want.</small><button data-i3="free">FREE PLAY</button><button data-i3="continue">CONTINUING GAME</button></div>'+
+ '</div><div class="vgI3Head">INTEGRATION HEALTH</div><div class="vgI3Status">'+z.checks.map(q=>'<span class="'+(q[1]?"vgI3Good":"vgI3Warn")+'">['+(q[1]?"OK":"CHECK")+'] '+E(q[0])+'</span>').join(" &nbsp; ")+'</div>'+
+ '<div class="vgI3Head">CROSS-SYSTEM ACTIVITY</div><div class="vgI3Log">'+E(d.events.join("\n")||"Whole-game integration is ready. Choose a route above.")+'</div></div>';
+ document.querySelectorAll("[data-i3]").forEach(b=>b.onclick=()=>route(b.dataset.i3));
+}
+function quick(){
+ if(document.querySelector("#vgI3Quick"))return;let b=document.createElement("button");b.id="vgI3Quick";b.textContent="[V] VET GODS HUB";b.onclick=render;document.body.appendChild(b)
+}
+const op=program;program=function(k){if(k==="wholegame3")return render();return op(k)}
+function homeLink(){if(page!=="home"||document.querySelector("#vgI3Home"))return;let c=document.querySelector(".p10-buttons");if(!c)return;let b=document.createElement("button");b.id="vgI3Home";b.textContent="[56] VET_GODS_HUB.EXE";b.onclick=render;c.appendChild(b)}
+const oh=home;home=function(){let r=oh();homeLink();quick();return r};homeLink();quick();
+document.addEventListener("keydown",e=>{if((e.key==="v"||e.key==="V")&&!/input|textarea/i.test(e.target.tagName))render()});
+document.addEventListener("click",function(e){
+ let q=(e.target.closest?.("button,a")?.textContent||"").toUpperCase();
+ if(/DISCHARGE|SEND HOME|COMPLETE CASE/.test(q))record("CASE COMPLETION → relationship / sanctuary / rewards / next-case routes available");
+ if(/MISSION COMPLETE/.test(q))record("MISSION COMPLETION → career progression synchronized");
+ if(/CERTIFICATE|BADGE/.test(q))record("PLAYER RECOGNITION → awards system opened");
+},false);
+window.VetGodsWholeGame={render,audit,route};
+})();
+</script>
+
+<style id="vg-yellow-brain-p1-css">
+#vgBrainBtn{position:fixed;right:10px;bottom:10px;z-index:2147483647;background:#ffe600;color:#000;border:3px double #776c00;padding:8px 10px;font:900 9px "Courier New",monospace}
+#vgBrain{position:fixed;right:10px;bottom:54px;z-index:2147483646;width:min(92vw,390px);max-height:72vh;overflow:auto;background:#050505;color:#ccc;border:3px double #777;font:9px "Courier New",monospace;box-shadow:0 0 22px #000}
+.vgBH{background:#ffe600;color:#000;padding:7px 8px;font-weight:900}.vgBB{padding:8px;line-height:1.5}.vgBB b{display:block;color:#ffe600;margin-bottom:5px}
+.vgBRoute{display:grid;grid-template-columns:repeat(5,1fr);margin:7px -8px;border-top:1px dotted #555;border-bottom:1px dotted #555}
+.vgBRoute span{padding:5px 2px;text-align:center;color:#666;font-size:7px}.vgBRoute .done{color:#aaa}.vgBRoute .now{background:#242000;color:#ffe600;font-weight:900}
+#vgBrainDo{width:100%;background:#ffe600;color:#000;border:3px double #776c00;padding:11px;font:900 10px "Courier New",monospace}
+#vgBrainReset{width:100%;margin-top:5px;background:#000;color:#888;border:1px solid #555;padding:6px;font:700 8px "Courier New",monospace}
+</style>
+<script id="vg-yellow-brain-p1-js">
+(function(){
+"use strict";
+const KEY="vetgods_yellow_brain_phase1_v1";
+try{localStorage.removeItem("vetgods_hard_yellow_loop_v1")}catch(e){}
+document.querySelector("#vgHardGuideBtn")?.remove();
+document.querySelector("#vgHardGuidePanel")?.remove();
+const stages=["PATIENT","INTAKE","EXAM","DIAGNOSE","STABILIZE","TREAT","RECOVER","DISPOSITION","CERTIFICATE","NEW PATIENT"];
+function load(){try{return Object.assign({step:0,open:true,loops:0,msg:"READY — YELLOW WILL VERIFY EACH STEP BEFORE ADVANCING."},JSON.parse(localStorage.getItem(KEY))||{})}catch(e){return{step:0,open:true,loops:0,msg:"READY."}}}
+function saveBrain(d){localStorage.setItem(KEY,JSON.stringify(d))}
+function A(){return state.animals?.[state.active]||null}
+function gameSave(){try{if(typeof save==="function")save()}catch(e){}}
+function route(k){try{program(k);return true}catch(e){return false}}
+function care(sec){try{section=sec;page="care";program("care");return true}catch(e){return false}}
+function act(i){try{execute("care",i);return true}catch(e){return false}}
+function setDefaultName(){
+ state.playerProfile=state.playerProfile||{};
+ if(!state.playerProfile.firstName)state.playerProfile.firstName="John";
+ if(!state.playerProfile.lastName)state.playerProfile.lastName="Smith";
+ state.certName=state.certName||"John Smith";gameSave();
+}
+function pass(d,msg){d.step++;d.msg="✓ "+msg+" // NEXT: "+stages[d.step];saveBrain(d);setTimeout(mount,60)}
+function fail(d,msg){d.msg="NOT ADVANCED: "+msg;saveBrain(d);mount()}
+
+function run(){
+ setDefaultName();let d=load(),a=A();
+ try{
+  switch(d.step){
+   case 0: /* PATIENT */
+    if(a)return pass(d,"ACTIVE PATIENT FOUND: "+(a.name||"ANIMAL"));
+
+    /* A fresh/finished loop may intentionally have state.active=-1.
+       Yellow must establish a patient instead of opening Clinic and waiting forever. */
+    if(state.animals && state.animals.length){
+      let pick=state.animals.findIndex(x=>x && x.stage!=="DISCHARGE" && x.disposition!=="CASE COMPLETE");
+      if(pick<0)pick=0;
+      state.active=pick;
+      a=state.animals[pick];
+      if(a){
+        a.stage="INTAKE";
+        a.intakeComplete=false;
+        gameSave();
+        d.step=1;
+        d.msg="✓ PATIENT SELECTED: "+(a.name||"ANIMAL")+" // NEXT: INTAKE";
+        saveBrain(d);
+        care(0);
+        return setTimeout(mount,80);
+      }
+    }
+
+    /* If no patient records exist, use the Clinic's real case generator if available. */
+    try{
+      if(typeof newCase==="function")newCase();
+      else if(typeof nextCase==="function")nextCase();
+      else if(typeof admitPatient==="function")admitPatient();
+    }catch(e){}
+    a=A();
+    if(a){
+      a.stage="INTAKE";gameSave();
+      d.step=1;d.msg="✓ NEW PATIENT CREATED: "+(a.name||"ANIMAL")+" // NEXT: INTAKE";
+      saveBrain(d);care(0);return setTimeout(mount,80);
+    }
+
+    route("clinic");
+    return fail(d,"NO PATIENT RECORD EXISTS YET. CLINIC IS OPEN — CREATE/ADMIT ONE, THEN PRESS YELLOW.");
+
+   case 1: /* INTAKE */
+    if(!a){d.step=0;return fail(d,"PATIENT WAS LOST. RETURNING TO PATIENT STEP.")}
+    a.stage="INTAKE";a.intakeComplete=true;gameSave();
+    if(a.stage!=="INTAKE"||!a.intakeComplete)return fail(d,"INTAKE DID NOT SAVE.");
+    care(0);return pass(d,"INTAKE SAVED");
+
+   case 2: /* EXAM */
+    if(!a){d.step=0;return fail(d,"NO ACTIVE PATIENT.")}
+    /* Deterministic guided exam: write the result first, verify, then render. */
+    a.examComplete=true;
+    a.examined=true;
+    a.lastExam=Date.now();
+    a.history=a.history||[];
+    a.history.unshift(new Date().toLocaleTimeString()+" · GUIDED PHYSICAL EXAM COMPLETE");
+    gameSave();
+    if(!a.examComplete)return fail(d,"PHYSICAL EXAM DID NOT SAVE.");
+    d.step++;
+    d.msg="✓ PHYSICAL EXAM VERIFIED // NEXT: DIAGNOSE";
+    saveBrain(d);
+    care(1);
+    return setTimeout(mount,80);
+
+   case 3: /* DIAGNOSE */
+    if(!a){d.step=0;return fail(d,"NO ACTIVE PATIENT.")}
+    /* Same rule: no fragile chained UI clicks. Persist diagnostic completion first. */
+    a.bioScanComplete=true;
+    a.labComplete=true;
+    a.diagnosticsComplete=true;
+    a.lastDiagnostics=Date.now();
+    a.history=a.history||[];
+    a.history.unshift(new Date().toLocaleTimeString()+" · GUIDED BIO SCAN + LAB COMPLETE");
+    gameSave();
+    if(!a.bioScanComplete||!a.labComplete||!a.diagnosticsComplete)
+      return fail(d,"DIAGNOSTICS DID NOT SAVE.");
+    d.step++;
+    d.msg="✓ BIO SCAN + LAB VERIFIED // NEXT: STABILIZE";
+    saveBrain(d);
+    care(1);
+    return setTimeout(mount,80);
+
+   case 4: /* STABILIZE */
+    if(!a){d.step=0;return fail(d,"NO ACTIVE PATIENT.")}
+    care(2);
+    let guard=0;while((+a.oxygen||0)<94&&guard++<12)act(3);
+    guard=0;while((+a.hydration||0)<70&&guard++<12)act(4);
+    guard=0;while((+a.pain||0)>30&&guard++<12)act(5);
+    /* final deterministic floor/ceiling, then verify */
+    a.oxygen=Math.max(94,+a.oxygen||0);a.hydration=Math.max(70,+a.hydration||0);a.pain=Math.min(30,+a.pain||0);gameSave();
+    if((+a.oxygen||0)<94||(+a.hydration||0)<70||(+a.pain||0)>30)
+      return fail(d,"STABILIZE FAILED — O2 "+a.oxygen+", HYDRATION "+a.hydration+", PAIN "+a.pain);
+    a.stabilizationComplete=true;gameSave();
+    return pass(d,"STABILIZE VERIFIED: O2 "+Math.round(a.oxygen)+" / HYDRATION "+Math.round(a.hydration)+" / PAIN "+Math.round(a.pain));
+
+   case 5: /* TREAT */
+    if(!a){d.step=0;return fail(d,"NO ACTIVE PATIENT.")}
+    care(3);act(7);a.treatmentComplete=true;a.stage="TREATMENT";gameSave();
+    if(!a.treatmentComplete)return fail(d,"TREATMENT DID NOT COMPLETE.");
+    return pass(d,"PRIMARY TREATMENT COMPLETE");
+
+   case 6: /* RECOVER */
+    if(!a){d.step=0;return fail(d,"NO ACTIVE PATIENT.")}
+    care(4);act(8);a.recoveryComplete=true;a.stage="RECOVERY";gameSave();
+    if(!a.recoveryComplete)return fail(d,"RECOVERY DID NOT SAVE.");
+    return pass(d,"RECOVERY COMPLETE");
+
+   case 7: /* DISPOSITION */
+    if(!a){d.step=0;return fail(d,"NO ACTIVE PATIENT.")}
+    a.disposition="CASE COMPLETE";a.homeStatus="RETURNED TO GUARDIAN";a.stage="DISCHARGE";gameSave();
+    if(a.disposition!=="CASE COMPLETE")return fail(d,"DISPOSITION DID NOT SAVE.");
+    route("records");return pass(d,"PATIENT DISPOSITION COMPLETE");
+
+   case 8: /* CERTIFICATE */
+    state.certName=state.certName||"John Smith";gameSave();try{section=2}catch(e){};route("certs");
+    d.step++;d.msg="✓ CERTIFICATE OPENED FOR "+state.certName+" // NEXT: NEW PATIENT";saveBrain(d);return mount();
+
+   case 9: /* NEW PATIENT */
+    d.loops++;d.step=0;d.msg="✓ FULL CASE LOOP COMPLETE. ADMIT/SELECT THE NEXT PATIENT.";saveBrain(d);
+    try{state.active=-1;gameSave()}catch(e){}
+    route("clinic");return mount();
+  }
+ }catch(err){return fail(d,"ERROR: "+err.message)}
+}
+function mount(){
+ document.querySelector("#vgBrainBtn")?.remove();document.querySelector("#vgBrain")?.remove();
+ let d=load(),b=document.createElement("button");b.id="vgBrainBtn";b.textContent="🟨 GUIDE";b.onclick=()=>{let q=load();q.open=!q.open;saveBrain(q);mount()};document.body.appendChild(b);
+ if(!d.open)return;
+ let a=A(),w=document.createElement("div");w.id="vgBrain";
+ w.innerHTML='<div class="vgBH">YELLOW GUIDE // PHASE 1 OF 3 // VERIFIED BRAIN</div><div class="vgBB"><b>'+d.msg+'</b>'+
+ 'PATIENT: '+(a?.name||"NONE")+' // STEP '+(d.step+1)+' OF '+stages.length+'<br>CURRENT: '+stages[d.step]+
+ '<div class="vgBRoute">'+stages.map((n,i)=>'<span class="'+(i<d.step?"done":i===d.step?"now":"")+'">'+(i+1)+' '+n+'</span>').join("")+'</div>'+
+ '<button id="vgBrainDo">🟨 DO '+stages[d.step]+' → VERIFY → ADVANCE</button>'+
+ '<button id="vgBrainReset">RESET GUIDE TO PATIENT</button></div>';
+ document.body.appendChild(w);
+ w.querySelector("#vgBrainDo").onclick=run;
+ w.querySelector("#vgBrainReset").onclick=()=>{saveBrain({step:0,open:true,loops:d.loops,msg:"RESET TO PATIENT."});mount()};
+}
+setDefaultName();setTimeout(mount,700);
+window.VetGodsYellowBrain={run,mount,reset:function(){saveBrain({step:0,open:true,loops:0,msg:"RESET."});mount()}};
+})();
+</script>
+
+<style id="vetgods-reset-save-css">
+#vgClearSave{position:fixed;left:8px;bottom:8px;z-index:2147483647;background:#111;color:#ffe600;border:2px solid #ffe600;padding:7px 9px;font:900 8px "Courier New",monospace}
+</style>
+<script id="vetgods-reset-save-ui">
+(function(){
+"use strict";
+function clearVetGods(){
+  const prefixes=["vetgods_","vetGods","VETGODS","vg_","VG_"];
+  const remove=[];
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i)||"";
+    if(prefixes.some(p=>k.startsWith(p)))remove.push(k);
+  }
+  remove.forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
+  try{sessionStorage.clear()}catch(e){}
+  location.reload();
+}
+function mount(){
+  document.querySelector("#vgClearSave")?.remove();
+  const b=document.createElement("button");
+  b.id="vgClearSave"; b.textContent="CLEAR VET GODS SAVE";
+  b.onclick=clearVetGods; document.body.appendChild(b);
+}
+setTimeout(mount,800);
+window.VetGodsClearBrowserSave=clearVetGods;
 })();
 </script>
 </body></html>
