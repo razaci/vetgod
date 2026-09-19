@@ -1,24 +1,9 @@
 <!doctype html>
 <html lang="en">
 <head><script id="vetgods-clean-start-reset">
-(function(){
-"use strict";
-const MARK="vetgods_clean_start_reset_2026_09_18_v1";
-try{
-  if(localStorage.getItem(MARK)!=="done"){
-    const explicit=["vetGodsDosFresh1", "vetgods_first_game_route_v2", "vetgods_freeplay_v1", "vetgods_hard_yellow_loop_v1", "vetgods_player1_yellow_guide_v1", "vetgods_player_career_v1", "vetgods_unified_flow_v1", "vetgods_whole_game_integration_v1", "vetgods_yellow_brain_phase1_v1"];
-    explicit.forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
-    const prefixes=["vetgods_","vetGods","VETGODS","vg_","VG_"];
-    const remove=[];
-    for(let i=0;i<localStorage.length;i++){
-      const k=localStorage.key(i)||"";
-      if(prefixes.some(p=>k.startsWith(p)))remove.push(k);
-    }
-    remove.forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
-    try{localStorage.setItem(MARK,"done")}catch(e){}
-  }
-}catch(e){}
-})();
+/* SAVE FIX: startup storage deletion permanently disabled.
+   Opening/reloading VET GODS must never erase player progress. */
+(function(){"use strict";})();
 </script>
 
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -76,8 +61,25 @@ ship:["PROGRAM DIRECTORY","BRIDGE STATUS","HOSPITAL STATUS","SANCTUARY STATUS","
 let state=load(),page="home",section=0;
 function freshAnimal(a,i){return {...a,id:i,health:82,pain:38,hydration:62,oxygen:92,trust:48,stress:48,comfort:52,stage:"INTAKE",morph:"UNSELECTED FORM",history:[]}}
 function defaults(){return {credits:620,research:12,active:0,animals:ANIMALS.map(freshAnimal),logs:["DOS/OS initialized."],certName:""}}
-function load(){try{let x=JSON.parse(localStorage.getItem("vetGodsDosFresh1")||"null");return x&&x.animals?x:defaults()}catch(e){return defaults()}}
-function save(){localStorage.setItem("vetGodsDosFresh1",JSON.stringify(state))}
+function load(){
+ try{
+  const keys=["vetGodsDosFresh1","vetGodsDosFresh1_backup"];
+  for(const k of keys){
+   try{
+    const x=JSON.parse(localStorage.getItem(k)||"null");
+    if(x&&Array.isArray(x.animals)&&x.animals.length)return x;
+   }catch(_){}
+  }
+  return defaults();
+ }catch(e){return defaults()}
+}
+function save(){
+ try{
+  const raw=JSON.stringify(state);
+  localStorage.setItem("vetGodsDosFresh1",raw);
+  localStorage.setItem("vetGodsDosFresh1_backup",raw);
+ }catch(e){}
+}
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],esc=s=>String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
 function active(){return state.animals[state.active]||state.animals[0]}
 function nav(){
@@ -6090,88 +6092,7 @@ window.VetGodsBadgePrinter={render,printLarge:printOne,printSticker,printSheet};
 .vgFRMini{color:#777;margin-top:4px;font-size:8px}
 @media(max-width:650px){.vgFRSteps{grid-template-columns:repeat(2,1fr)}}
 </style>
-<script id="clear-first-run-js">
-(function(){
-"use strict";
-const KEY="vetgods_first_game_route_v2";
-function R(){try{return Object.assign({step:0,complete:false},JSON.parse(localStorage.getItem(KEY))||{})}catch(e){return{step:0,complete:false}}}
-function SR(r){try{localStorage.setItem(KEY,JSON.stringify(r))}catch(e){}}
-function vis(x){if(!x)return false;let r=x.getBoundingClientRect(),c=getComputedStyle(x);return c.display!=="none"&&c.visibility!=="hidden"&&r.width>0&&r.height>0}
-function all(){return [...document.querySelectorAll("button,a,[role=button],input[type=button],input[type=submit]")].filter(vis)}
-function txt(rx){return all().find(x=>rx.test((x.innerText||x.value||x.textContent||"").trim()))}
-function nameInput(){return [...document.querySelectorAll("input")].find(x=>vis(x)&&/first.?name|player.?name|operator.?name/i.test((x.id||"")+" "+(x.name||"")+" "+(x.placeholder||"")))}
-function lastInput(){return [...document.querySelectorAll("input")].find(x=>vis(x)&&/last.?name|surname/i.test((x.id||"")+" "+(x.name||"")+" "+(x.placeholder||"")))}
-function targetFor(step){
- if(step===0)return nameInput()||lastInput()||txt(/SAVE PLAYER|BEGIN|START|CONTINUE/i);
- if(step===1)return txt(/NEW CASE|ADMIT PATIENT|INTAKE|START CASE/i);
- if(step===2)return txt(/ACCEPT|ADMIT|INTAKE|BEGIN EXAM|PHYSICAL EXAM|DIAGNOST/i);
- if(step===3)return document.querySelector("[data-ma3='monitor']")||txt(/MONITOR|BIO.?SCAN|PHYSICAL EXAM|DIAGNOST/i);
- if(step===4)return document.querySelector("[data-ma3='water']")||document.querySelector("[data-ma3='oxygen']")||document.querySelector("[data-ma3='pain']")||txt(/WATER|OXYGEN|PAIN CONTROL|STABIL/i);
- if(step===5)return txt(/TREAT|PROCEDURE|SURGERY|DEFINITIVE/i);
- if(step===6)return txt(/RECOVERY|OBSERVATION|REHAB/i);
- if(step===7)return txt(/DISCHARGE|SEND HOME|SANCTUARY|MY PETS|COMPLETE CASE/i);
- if(step===8)return txt(/CERTIFICATE|CERTS|AWARD|BADGE/i);
- if(step===9)return txt(/NEW CASE|NEXT PATIENT|NEXT ANIMAL|ADMIT PATIENT/i);
- return null;
-}
-const STEPS=[
- ["PLAYER","Enter/save your Player 1 name."],
- ["NEW CASE","Start the first animal case."],
- ["INTAKE","Accept the animal and begin the exam."],
- ["DIAGNOSTICS","Examine/scan and collect evidence."],
- ["STABILIZE","Handle oxygen, water, pain and immediate needs."],
- ["TREAT","Perform the appropriate treatment."],
- ["RECOVERY","Move the animal into recovery/observation."],
- ["FINISH","Discharge, sanctuary, adoption or completed disposition."],
- ["AWARD","View/print the earned badge or certificate."],
- ["NEXT ANIMAL","Start the next patient. The normal game loop now repeats."]
-];
-function infer(){
- let r=R(),p=String(page||"").toLowerCase();
- if(r.complete)return r;
- if(p.includes("printcert")||p.includes("printbadge"))r.step=Math.max(r.step,8);
- else if(p.includes("recover"))r.step=Math.max(r.step,6);
- else if(p.includes("myanimals3")||p==="care")r.step=Math.max(r.step,3);
- else if(p.includes("case")||p.includes("intake"))r.step=Math.max(r.step,2);
- SR(r);return r;
-}
-function panel(){
- let r=infer();if(r.complete)return;
- let main=document.querySelector("#main");if(!main)return;
- document.querySelector("#vgFirstRunRoute")?.remove();
- let t=targetFor(r.step),wrap=document.createElement("div");wrap.id="vgFirstRunRoute";
- wrap.innerHTML='<div class="vgFRHead">FIRST GAME ROUTE // STEP '+(r.step+1)+' OF 10</div>'+
- '<div class="vgFRSteps">'+STEPS.map((x,i)=>'<div class="vgFRStep '+(i<r.step?"done":i===r.step?"now":"")+'"><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join("")+'</div>'+
- '<div class="vgFRCommand"><strong>NEXT: '+STEPS[r.step][0]+'</strong>'+STEPS[r.step][1]+
- (t?'<button id="vgFRGo">[GO TO NEXT STEP] '+(t.innerText||t.value||"CONTINUE").trim().slice(0,60)+'</button>':'<div class="vgFRMini">Complete the highlighted action on this screen. The route updates automatically.</div>')+
- '<div class="vgFRMini">The optional yellow GUIDE switch can still be turned OFF. This route panel remains as a simple map until the first full loop is finished.</div></div>';
- let path=main.querySelector(".path");if(path)path.insertAdjacentElement("afterend",wrap);else main.prepend(wrap);
- if(t){
-   let go=wrap.querySelector("#vgFRGo");go.onclick=()=>{try{t.scrollIntoView({behavior:"smooth",block:"center"})}catch(e){};t.click()};
- }
-}
-function advanceFromClick(e){
- let r=R(),q=(e.target.closest("button,a,[role=button]")?.innerText||"").toUpperCase();
- if(r.complete)return;
- if(r.step===0&&/SAVE|BEGIN|START|CONTINUE/.test(q))r.step=1;
- else if(r.step===1&&/NEW CASE|ADMIT PATIENT|INTAKE|START CASE/.test(q))r.step=2;
- else if(r.step===2&&/ACCEPT|ADMIT|INTAKE|EXAM|DIAGNOST/.test(q))r.step=3;
- else if(r.step===3&&/MONITOR|SCAN|EXAM|DIAGNOST/.test(q))r.step=4;
- else if(r.step===4&&/WATER|OXYGEN|PAIN|STABIL/.test(q))r.step=5;
- else if(r.step===5&&/TREAT|PROCEDURE|SURGERY/.test(q))r.step=6;
- else if(r.step===6&&/RECOVERY|OBSERVATION|REHAB/.test(q))r.step=7;
- else if(r.step===7&&/DISCHARGE|SEND HOME|SANCTUARY|MY PETS|COMPLETE/.test(q))r.step=8;
- else if(r.step===8&&/CERTIFICATE|CERTS|AWARD|BADGE/.test(q))r.step=9;
- else if(r.step===9&&/NEW CASE|NEXT PATIENT|NEXT ANIMAL|ADMIT PATIENT/.test(q)){r.complete=true}
- SR(r);setTimeout(panel,180);
-}
-document.addEventListener("click",advanceFromClick,false);
-document.addEventListener("input",()=>setTimeout(panel,250),false);
-const oh=home;home=function(){let z=oh();setTimeout(panel,200);return z};
-setTimeout(panel,450);
-window.VetGodsFirstGameRoute={show:panel,reset:function(){localStorage.removeItem(KEY);panel()},state:R};
-})();
-</script>
+
 
 <style id="dashboard-wave-pass1-css">
 .vgWLab{border:4px double #666;background:#020202;margin:8px 0;color:#ccc;font:9px "Courier New",monospace}
@@ -7134,190 +7055,8 @@ window.VetGodsWholeGame={render,audit,route};
 })();
 </script>
 
-<style id="vg-yellow-brain-p1-css">
-#vgBrainBtn{position:fixed;right:10px;bottom:10px;z-index:2147483647;background:#ffe600;color:#000;border:3px double #776c00;padding:8px 10px;font:900 9px "Courier New",monospace}
-#vgBrain{position:fixed;right:10px;bottom:54px;z-index:2147483646;width:min(92vw,390px);max-height:72vh;overflow:auto;background:#050505;color:#ccc;border:3px double #777;font:9px "Courier New",monospace;box-shadow:0 0 22px #000}
-.vgBH{background:#ffe600;color:#000;padding:7px 8px;font-weight:900}.vgBB{padding:8px;line-height:1.5}.vgBB b{display:block;color:#ffe600;margin-bottom:5px}
-.vgBRoute{display:grid;grid-template-columns:repeat(5,1fr);margin:7px -8px;border-top:1px dotted #555;border-bottom:1px dotted #555}
-.vgBRoute span{padding:5px 2px;text-align:center;color:#666;font-size:7px}.vgBRoute .done{color:#aaa}.vgBRoute .now{background:#242000;color:#ffe600;font-weight:900}
-#vgBrainDo{width:100%;background:#ffe600;color:#000;border:3px double #776c00;padding:11px;font:900 10px "Courier New",monospace}
-#vgBrainReset{width:100%;margin-top:5px;background:#000;color:#888;border:1px solid #555;padding:6px;font:700 8px "Courier New",monospace}
-</style>
-<script id="vg-yellow-brain-p1-js">
-(function(){
-"use strict";
-const KEY="vetgods_yellow_brain_phase1_v1";
-try{localStorage.removeItem("vetgods_hard_yellow_loop_v1")}catch(e){}
-document.querySelector("#vgHardGuideBtn")?.remove();
-document.querySelector("#vgHardGuidePanel")?.remove();
-const stages=["PATIENT","INTAKE","EXAM","DIAGNOSE","STABILIZE","TREAT","RECOVER","DISPOSITION","CERTIFICATE","NEW PATIENT"];
-function load(){try{return Object.assign({step:0,open:true,loops:0,coachMode:"SHOW",msg:"READY — YELLOW WILL VERIFY EACH STEP BEFORE ADVANCING."},JSON.parse(localStorage.getItem(KEY))||{})}catch(e){return{step:0,open:true,loops:0,coachMode:"SHOW",msg:"READY."}}}
-function saveBrain(d){localStorage.setItem(KEY,JSON.stringify(d))}
-function A(){return state.animals?.[state.active]||null}
-function gameSave(){try{if(typeof save==="function")save()}catch(e){}}
-function route(k){try{program(k);return true}catch(e){return false}}
-function care(sec){try{section=sec;page="care";program("care");return true}catch(e){return false}}
-function act(i){try{execute("care",i);return true}catch(e){return false}}
-function setDefaultName(){
- state.playerProfile=state.playerProfile||{};
- if(!state.playerProfile.firstName)state.playerProfile.firstName="John";
- if(!state.playerProfile.lastName)state.playerProfile.lastName="Smith";
- state.certName=state.certName||"John Smith";gameSave();
-}
-function pass(d,msg){d.step++;d.coachMode="SHOW";d.msg="✓ "+msg+" // NEXT: "+stages[d.step];saveBrain(d);setTimeout(mount,60)}
-function fail(d,msg){d.msg="NOT ADVANCED: "+msg;saveBrain(d);mount()}
 
-function run(){
- setDefaultName();let d=load(),a=A();
- try{
-  switch(d.step){
-   case 0: /* PATIENT */
-    if(a)return pass(d,"ACTIVE PATIENT FOUND: "+(a.name||"ANIMAL"));
 
-    /* A fresh/finished loop may intentionally have state.active=-1.
-       Yellow must establish a patient instead of opening Clinic and waiting forever. */
-    if(state.animals && state.animals.length){
-      let pick=state.animals.findIndex(x=>x && x.stage!=="DISCHARGE" && x.disposition!=="CASE COMPLETE");
-      if(pick<0)pick=0;
-      state.active=pick;
-      a=state.animals[pick];
-      if(a){
-        a.stage="INTAKE";
-        a.intakeComplete=false;
-        gameSave();
-        d.step=1;
-        d.msg="✓ PATIENT SELECTED: "+(a.name||"ANIMAL")+" // NEXT: INTAKE";
-        saveBrain(d);
-        care(0);
-        return setTimeout(mount,80);
-      }
-    }
-
-    /* If no patient records exist, use the Clinic's real case generator if available. */
-    try{
-      if(typeof newCase==="function")newCase();
-      else if(typeof nextCase==="function")nextCase();
-      else if(typeof admitPatient==="function")admitPatient();
-    }catch(e){}
-    a=A();
-    if(a){
-      a.stage="INTAKE";gameSave();
-      d.step=1;d.msg="✓ NEW PATIENT CREATED: "+(a.name||"ANIMAL")+" // NEXT: INTAKE";
-      saveBrain(d);care(0);return setTimeout(mount,80);
-    }
-
-    route("clinic");
-    return fail(d,"NO PATIENT RECORD EXISTS YET. CLINIC IS OPEN — CREATE/ADMIT ONE, THEN PRESS YELLOW.");
-
-   case 1: /* INTAKE */
-    if(!a){d.step=0;return fail(d,"PATIENT WAS LOST. RETURNING TO PATIENT STEP.")}
-    a.stage="INTAKE";a.intakeComplete=true;gameSave();
-    if(a.stage!=="INTAKE"||!a.intakeComplete)return fail(d,"INTAKE DID NOT SAVE.");
-    care(0);return pass(d,"INTAKE SAVED");
-
-   case 2: /* EXAM */
-    if(!a){d.step=0;return fail(d,"NO ACTIVE PATIENT.")}
-    /* Deterministic guided exam: write the result first, verify, then render. */
-    a.examComplete=true;
-    a.examined=true;
-    a.lastExam=Date.now();
-    a.history=a.history||[];
-    a.history.unshift(new Date().toLocaleTimeString()+" · GUIDED PHYSICAL EXAM COMPLETE");
-    gameSave();
-    if(!a.examComplete)return fail(d,"PHYSICAL EXAM DID NOT SAVE.");
-    d.step++;
-    d.msg="✓ PHYSICAL EXAM VERIFIED // NEXT: DIAGNOSE";
-    saveBrain(d);
-    care(1);
-    return setTimeout(mount,80);
-
-   case 3: /* DIAGNOSE */
-    if(!a){d.step=0;return fail(d,"NO ACTIVE PATIENT.")}
-    /* Same rule: no fragile chained UI clicks. Persist diagnostic completion first. */
-    a.bioScanComplete=true;
-    a.labComplete=true;
-    a.diagnosticsComplete=true;
-    a.lastDiagnostics=Date.now();
-    a.history=a.history||[];
-    a.history.unshift(new Date().toLocaleTimeString()+" · GUIDED BIO SCAN + LAB COMPLETE");
-    gameSave();
-    if(!a.bioScanComplete||!a.labComplete||!a.diagnosticsComplete)
-      return fail(d,"DIAGNOSTICS DID NOT SAVE.");
-    d.step++;
-    d.msg="✓ BIO SCAN + LAB VERIFIED // NEXT: STABILIZE";
-    saveBrain(d);
-    care(1);
-    return setTimeout(mount,80);
-
-   case 4: /* STABILIZE */
-    if(!a){d.step=0;return fail(d,"NO ACTIVE PATIENT.")}
-    care(2);
-    let guard=0;while((+a.oxygen||0)<94&&guard++<12)act(3);
-    guard=0;while((+a.hydration||0)<70&&guard++<12)act(4);
-    guard=0;while((+a.pain||0)>30&&guard++<12)act(5);
-    /* final deterministic floor/ceiling, then verify */
-    a.oxygen=Math.max(94,+a.oxygen||0);a.hydration=Math.max(70,+a.hydration||0);a.pain=Math.min(30,+a.pain||0);gameSave();
-    if((+a.oxygen||0)<94||(+a.hydration||0)<70||(+a.pain||0)>30)
-      return fail(d,"STABILIZE FAILED — O2 "+a.oxygen+", HYDRATION "+a.hydration+", PAIN "+a.pain);
-    a.stabilizationComplete=true;gameSave();
-    return pass(d,"STABILIZE VERIFIED: O2 "+Math.round(a.oxygen)+" / HYDRATION "+Math.round(a.hydration)+" / PAIN "+Math.round(a.pain));
-
-   case 5: /* TREAT */
-    if(!a){d.step=0;return fail(d,"NO ACTIVE PATIENT.")}
-    care(3);act(7);a.treatmentComplete=true;a.stage="TREATMENT";gameSave();
-    if(!a.treatmentComplete)return fail(d,"TREATMENT DID NOT COMPLETE.");
-    return pass(d,"PRIMARY TREATMENT COMPLETE");
-
-   case 6: /* RECOVER */
-    if(!a){d.step=0;return fail(d,"NO ACTIVE PATIENT.")}
-    care(4);act(8);a.recoveryComplete=true;a.stage="RECOVERY";gameSave();
-    if(!a.recoveryComplete)return fail(d,"RECOVERY DID NOT SAVE.");
-    return pass(d,"RECOVERY COMPLETE");
-
-   case 7: /* DISPOSITION */
-    if(!a){d.step=0;return fail(d,"NO ACTIVE PATIENT.")}
-    a.disposition="CASE COMPLETE";a.homeStatus="RETURNED TO GUARDIAN";a.stage="DISCHARGE";gameSave();
-    if(a.disposition!=="CASE COMPLETE")return fail(d,"DISPOSITION DID NOT SAVE.");
-    route("records");return pass(d,"PATIENT DISPOSITION COMPLETE");
-
-   case 8: /* CERTIFICATE */
-    state.certName=state.certName||"John Smith";gameSave();try{section=2}catch(e){};route("certs");
-    d.step++;d.msg="✓ CERTIFICATE OPENED FOR "+state.certName+" // NEXT: NEW PATIENT";saveBrain(d);return mount();
-
-   case 9: /* NEW PATIENT */
-    d.loops++;d.step=0;d.msg="✓ FULL CASE LOOP COMPLETE. ADMIT/SELECT THE NEXT PATIENT.";saveBrain(d);
-    try{state.active=-1;gameSave()}catch(e){}
-    route("clinic");return mount();
-  }
- }catch(err){return fail(d,"ERROR: "+err.message)}
-}
-function mount(){
- document.querySelector("#vgBrainBtn")?.remove();document.querySelector("#vgBrain")?.remove();
- let d=load(),b=document.createElement("button");b.id="vgBrainBtn";
- b.textContent=d.open?"YELLOW: ON":"GUIDE";
- b.className=d.open?"vgGuideOn":"vgGuideOff";
- b.onclick=()=>{let q=load();q.open=!q.open;saveBrain(q);mount()};
- document.body.appendChild(b);
- if(!d.open){
-   document.querySelector("#vgBrain")?.remove();
-   document.documentElement.classList.add("vgYellowOff");
-   return;
- }
- document.documentElement.classList.remove("vgYellowOff");
- let a=A(),w=document.createElement("div");w.id="vgBrain";
- w.innerHTML='<div class="vgBH">YELLOW GUIDE // PHASE 1 OF 3 // VERIFIED BRAIN</div><div class="vgBB"><b>'+d.msg+'</b>'+
- 'PATIENT: '+(a?.name||"NONE")+' // STEP '+(d.step+1)+' OF '+stages.length+'<br>CURRENT: '+stages[d.step]+
- '<div class="vgBRoute">'+stages.map((n,i)=>'<span class="'+(i<d.step?"done":i===d.step?"now":"")+'">'+(i+1)+' '+n+'</span>').join("")+'</div>'+
- '<button id="vgBrainDo">'+(d.coachMode==="DO"?"🟨 DO "+stages[d.step]+" FOR ME → ADVANCE":"🟨 SHOW ME "+stages[d.step])+'</button>'+
- '<button id="vgBrainReset">RESET GUIDE TO PATIENT</button></div>';
- document.body.appendChild(w);
- w.querySelector("#vgBrainDo").onclick=run;
- w.querySelector("#vgBrainReset").onclick=()=>{saveBrain({step:0,open:true,loops:d.loops,coachMode:"SHOW",msg:"RESET TO PATIENT."});mount()};
-}
-setDefaultName();setTimeout(mount,700);
-window.VetGodsYellowBrain={run,mount,reset:function(){saveBrain({step:0,open:true,loops:0,coachMode:"SHOW",msg:"RESET."});mount()}};
-})();
-</script>
 
 <style id="vetgods-reset-save-css">
 #vgClearSave{position:fixed;left:8px;bottom:8px;z-index:2147483647;background:#111;color:#ffe600;border:2px solid #ffe600;padding:7px 9px;font:900 8px "Courier New",monospace}
@@ -7480,30 +7219,7 @@ window.VetGodsArrangeBottomButtons=arrange;
 })();
 </script>
 
-<style id="vg-yellow-true-off-css">
-/* TRUE OFF: hide every yellow guide artifact, highlight, panel, legacy guide
-   control and yellow instructional overlay. Keep only a small neutral GUIDE
-   button so the player can turn the feature back on. */
-.vgYellowOff #vgBrain,
-.vgYellowOff #vgYellowOne,
-.vgYellowOff #vgMasterFlow,
-.vgYellowOff #vgHardGuidePanel,
-.vgYellowOff #vgYA1,
-.vgYellowOff #vgYA2Mini,
-.vgYellowOff #vgY3,
-.vgYellowOff #vgVerifiedYellow2,
-.vgYellowOff #vgSimpleYellowGuide,
-.vgYellowOff #vgStabRescue,
-.vgYellowOff .vgP2Target,
-.vgYellowOff .vgP4Treatment,
-.vgYellowOff [class*="yellow-guide"],
-.vgYellowOff [class*="yellowGuide"]{display:none!important;outline:none!important;box-shadow:none!important;animation:none!important}
-#vgBrainBtn.vgGuideOff{
- background:#111!important;color:#aaa!important;border:1px solid #555!important;
- padding:5px 7px!important;font-size:7px!important;box-shadow:none!important
-}
-#vgBrainBtn.vgGuideOn{background:#ffe600!important;color:#000!important}
-</style>
+
 <script id="vg-yellow-true-off-cleaner">
 (function(){
 "use strict";
@@ -7670,989 +7386,32 @@ setTimeout(mount,800);document.addEventListener("click",e=>{if(!e.target.closest
 })();
 </script>
 
-<style id="vg-flow-pass02-css">
-#vgIntakeRoute{margin:8px 0;padding:8px;border:1px solid #555;background:#030503}
-#vgIntakeRoute .vgIRow{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
-#vgIntakeRoute .vgI{border:1px solid #333;padding:6px 3px;text-align:center;color:#666;font:8px "Courier New",monospace}
-#vgIntakeRoute .vgI.done{color:#bbb;border-color:#666}
-#vgIntakeRoute .vgI.now{background:#ffe600;color:#000;border-color:#ffe600;font-weight:900}
-#vgIntakeRoute .vgIMsg{margin-top:7px;color:#ccc;font:9px "Courier New",monospace}
-#vgIntakeRoute .vgIMsg b{color:#ffe600}
-.vgIntakeBlink{outline:5px solid #ffe600!important;outline-offset:4px!important;animation:vgIBlink .55s steps(2,end) 7!important;box-shadow:0 0 24px #ffe600!important}
-@keyframes vgIBlink{0%,49%{outline-color:#ffe600}50%,100%{outline-color:#555}}
-</style>
-<script id="vg-flow-pass02-js">
-(function(){
-"use strict";
-const K="vetgods_flow_pass02_intake_v1";
-const labels=["PLAYER READY","SELECT ANIMAL","ADMIT PATIENT","INTAKE OPEN"];
-function S(){try{return Object.assign({step:0,msg:"CHECKING PLAYER..."},JSON.parse(localStorage.getItem(K))||{})}catch(e){return{step:0,msg:"CHECKING PLAYER..."}}}
-function W(x){localStorage.setItem(K,JSON.stringify(x))}
-function A(){return state.animals?.[state.active]||null}
-function save(){try{window.save?.()}catch(e){}}
-function player(){
- state.playerProfile=state.playerProfile||{};
- if(!state.playerProfile.firstName)state.playerProfile.firstName="John";
- if(!state.playerProfile.lastName)state.playerProfile.lastName="Smith";
- save();return (state.playerProfile.firstName+" "+state.playerProfile.lastName).trim()
-}
-function visible(x){let r=x.getBoundingClientRect(),c=getComputedStyle(x);return c.display!=="none"&&c.visibility!=="hidden"&&r.width>0&&r.height>0}
-function controls(){return [...document.querySelectorAll("button,a,[role=button],input[type=button],input[type=submit]")].filter(visible).filter(x=>!x.closest("#vgOrientation,#vgBrain,#vgBottomLeftDock,#vgBottomRightDock"))}
-function blink(rx){
- document.querySelectorAll(".vgIntakeBlink").forEach(x=>x.classList.remove("vgIntakeBlink"));
- let t=controls().find(x=>rx.test((x.textContent||x.value||"").trim()));
- if(t){t.classList.add("vgIntakeBlink");try{t.scrollIntoView({behavior:"smooth",block:"center"})}catch(e){}}
- return t
-}
-function clinic(){try{program("clinic")}catch(e){}}
-function reconcile(){
- let q=S(),a=A(),name=player();
- if(a&&a.intakeComplete){q.step=3;q.msg="✓ "+a.name+" IS ADMITTED AND INTAKE IS OPEN."}
- else if(a){q.step=2;q.msg="✓ "+a.name+" SELECTED. NEXT: ADMIT / OPEN INTAKE."}
- else {q.step=1;q.msg="✓ PLAYER READY: "+name+". NEXT: SELECT AN ANIMAL."}
- W(q);return q
-}
-function guide(){
- let q=reconcile(),a=A();
- clinic();
- setTimeout(()=>{
-   if(q.step===1){
-     let t=blink(/SELECT|CHOOSE|PATIENT|CASE|ADMIT/i);
-     if(!t && state.animals?.length){
-       q.msg="ANIMAL LIST IS OPEN. PICK THE ANIMAL YOU WANT AS YOUR PATIENT.";W(q)
-     }
-   }else if(q.step===2){
-     let t=blink(/ADMIT|INTAKE|ACCEPT CASE|OPEN CASE/i);
-     if(!t){
-       q.msg="PATIENT IS SELECTED. OPEN THEIR INTAKE / CARE RECORD.";W(q)
-     }
-   }
-   mount();
- },160)
-}
-function establishSelected(){
- let q=S(),a=A();
- if(a)return a;
- /* Only choose automatically when the player explicitly asks the pass to help.
-    Normal play can select any animal manually. */
- if(state.animals?.length){
-   let i=state.animals.findIndex(x=>x&&x.disposition!=="CASE COMPLETE");
-   if(i<0)i=0;state.active=i;a=state.animals[i];save();
-   q.step=2;q.msg="✓ SELECTED "+(a.name||"PATIENT")+" FOR YOU. NEXT: ADMIT.";W(q);
- }
- return a
-}
-function doNext(){
- let q=reconcile(),a=A();
- if(q.step===1){
-   a=establishSelected();
-   if(!a){clinic();q.msg="NO ANIMAL RECORD EXISTS YET. CREATE A CASE IN CLINIC.";W(q);return mount()}
-   clinic();setTimeout(()=>{blink(/ADMIT|INTAKE|ACCEPT CASE|OPEN CASE/i);mount()},120);return;
- }
- if(q.step===2&&a){
-   a.stage="INTAKE";a.intakeComplete=true;a.admitted=true;a.admittedAt=Date.now();
-   a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · PATIENT ADMITTED / INTAKE OPEN");
-   save();
-   q.step=3;q.msg="✓ "+(a.name||"PATIENT")+" ADMITTED. INTAKE IS NOW THE REAL ACTIVE CASE.";W(q);
-   try{section=0;page="care";program("care")}catch(e){}
-   return setTimeout(mount,100);
- }
- mount()
-}
-function mount(){
- let o=document.querySelector("#vgOrientation");if(!o)return;
- o.querySelector("#vgIntakeRoute")?.remove();
- let q=reconcile(),a=A(),d=document.createElement("div");d.id="vgIntakeRoute";
- d.innerHTML='<div class="vgIRow">'+labels.map((x,i)=>'<div class="vgI '+(i<q.step?"done":i===q.step?"now":"")+'">'+(i+1)+' '+x+'</div>').join("")+'</div>'+
- '<div class="vgIMsg"><b>PASS 2/10 — PLAYER → PATIENT → INTAKE</b><br>'+q.msg+
- '<br>PLAYER: '+player()+' | SELECTED: '+(a?.name||"NONE")+
- '<br><button id="vgIShow">SHOW ME</button> <button id="vgIDo">DO THIS STEP FOR ME</button></div>';
- o.querySelector(".b")?.appendChild(d);
- d.querySelector("#vgIShow").onclick=guide;
- d.querySelector("#vgIDo").onclick=doNext
-}
-setTimeout(mount,1100);
-document.addEventListener("click",e=>{if(!e.target.closest("#vgIntakeRoute"))setTimeout(mount,220)},false);
-window.VetGodsIntakePass2={mount,guide,doNext,reconcile};
-})();
-</script>
 
-<style id="vg-flow-pass03-css">
-#vgExamRoute{margin:8px 0;padding:8px;border:1px solid #596;background:#030604}
-#vgExamRoute .vgERow{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
-#vgExamRoute .vgE{border:1px solid #333;padding:6px 3px;text-align:center;color:#666;font:8px "Courier New",monospace}
-#vgExamRoute .vgE.done{color:#bbb;border-color:#666}.vgE.now{background:#ffe600!important;color:#000!important;border-color:#ffe600!important;font-weight:900}
-#vgExamRoute .vgEMsg{margin-top:7px;font:9px "Courier New",monospace;line-height:1.45}.vgEMsg b{color:#ffe600}
-#vgExamRoute button{margin-top:6px}
-.vgExamBlink{outline:5px solid #ffe600!important;outline-offset:4px!important;animation:vgExamBlink 0.55s steps(2,end) 7!important;box-shadow:0 0 24px #ffe600!important}
-@keyframes vgExamBlink{0%,49%{outline-color:#ffe600}50%,100%{outline-color:#555}}
-</style>
-<script id="vg-flow-pass03-js">
-(function(){
-"use strict";
-const K="vetgods_flow_pass03_exam_v1";
-const L=["INTAKE READY","OPEN EXAM","PHYSICAL EXAM","EXAM VERIFIED"];
-function get(){try{return Object.assign({step:0,msg:"WAITING FOR INTAKE."},JSON.parse(localStorage.getItem(K))||{})}catch(e){return{step:0,msg:"WAITING FOR INTAKE."}}}
-function put(q){localStorage.setItem(K,JSON.stringify(q))}
-function A(){return state.animals?.[state.active]||null}
-function gs(){try{window.save?.()}catch(e){}}
-function vis(x){let r=x.getBoundingClientRect(),c=getComputedStyle(x);return c.display!=="none"&&c.visibility!=="hidden"&&r.width>0&&r.height>0}
-function controls(){return [...document.querySelectorAll("button,a,[role=button],input[type=button],input[type=submit]")].filter(vis).filter(x=>!x.closest("#vgOrientation,#vgBrain,#vgBottomLeftDock,#vgBottomRightDock"))}
-function careExam(){try{section=1;page="care";program("care");return true}catch(e){return false}}
-function reconcile(){
- let q=get(),a=A();
- if(!a){q.step=0;q.msg="NO ACTIVE PATIENT. COMPLETE PASS 2 FIRST."}
- else if(a.examComplete||a.examined){q.step=3;q.msg="✓ PHYSICAL EXAM VERIFIED FOR "+(a.name||"PATIENT")+". NEXT NORMAL AREA: DIAGNOSTICS."}
- else if(a.intakeComplete||a.stage==="INTAKE"){q.step=Math.max(1,q.step);q.msg=q.step>=2?"PHYSICAL EXAM IS READY.":"✓ INTAKE READY. NEXT: OPEN THE EXAM AREA."}
- else {q.step=0;q.msg="INTAKE IS NOT COMPLETE YET. FINISH ADMISSION FIRST."}
- put(q);return q
-}
-function blink(){
- document.querySelectorAll(".vgExamBlink").forEach(x=>x.classList.remove("vgExamBlink"));
- let t=controls().find(x=>/PHYSICAL EXAM|RUN EXAM|EXAM PATIENT|EXAM/i.test((x.textContent||x.value||"").trim()));
- if(t){t.classList.add("vgExamBlink");try{t.scrollIntoView({behavior:"smooth",block:"center"})}catch(e){}}
- return t
-}
-function show(){
- let q=reconcile(),a=A();if(!a)return mount();
- if(q.step===1){careExam();q.step=2;q.msg="EXAM AREA OPEN. THE REAL PHYSICAL EXAM CONTROL SHOULD BLINK.";put(q)}
- setTimeout(()=>{let t=blink();if(!t){q=get();q.msg="EXAM AREA IS OPEN. I COULD NOT FIND A LABELED EXAM BUTTON, SO THE EXAM PAGE ITSELF IS YOUR NEXT AREA.";put(q)}mount()},160)
-}
-function doExam(){
- let q=reconcile(),a=A();if(!a)return mount();
- if(!(a.intakeComplete||a.stage==="INTAKE")){q.msg="NOT ADVANCED: INTAKE MUST BE COMPLETE FIRST.";put(q);return mount()}
- careExam();
- /* Assisted path records the same patient exam state used by normal flow. */
- a.examComplete=true;a.examined=true;a.lastExam=Date.now();
- a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · PHYSICAL EXAM COMPLETE");
- gs();
- if(!(a.examComplete||a.examined)){q.msg="NOT ADVANCED: EXAM DID NOT SAVE.";put(q);return mount()}
- q.step=3;q.msg="✓ PHYSICAL EXAM SAVED AND VERIFIED. NEXT: DIAGNOSTICS.";put(q);
- setTimeout(mount,100)
-}
-function mount(){
- let o=document.querySelector("#vgOrientation");if(!o)return;
- o.querySelector("#vgExamRoute")?.remove();
- let q=reconcile(),a=A(),d=document.createElement("div");d.id="vgExamRoute";
- d.innerHTML='<div class="vgERow">'+L.map((x,i)=>'<div class="vgE '+(i<q.step?"done":i===q.step?"now":"")+'">'+(i+1)+' '+x+'</div>').join("")+'</div>'+
- '<div class="vgEMsg"><b>PASS 3/10 — INTAKE → EXAMINATION</b><br>'+q.msg+
- '<br>PATIENT: '+(a?.name||"NONE")+' | INTAKE: '+((a?.intakeComplete||a?.stage==="INTAKE")?"READY":"NOT READY")+' | EXAM: '+((a?.examComplete||a?.examined)?"COMPLETE":"PENDING")+
- '<br><button id="vgEShow">SHOW REAL EXAM CONTROL</button> <button id="vgEDo">DO PHYSICAL EXAM FOR ME</button></div>';
- o.querySelector(".b")?.appendChild(d);
- d.querySelector("#vgEShow").onclick=show;d.querySelector("#vgEDo").onclick=doExam
-}
-setTimeout(mount,1250);
-document.addEventListener("click",e=>{if(!e.target.closest("#vgExamRoute"))setTimeout(mount,230)},false);
-window.VetGodsExamPass3={mount,show,doExam,reconcile};
-})();
-</script>
 
-<style id="vg-flow-pass04-css">
-#vgDiagRoute{margin:8px 0;padding:8px;border:1px solid #657;background:#030504}
-#vgDiagRoute .vgDRow{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
-#vgDiagRoute .vgD{border:1px solid #333;padding:6px 2px;text-align:center;color:#666;font:8px "Courier New",monospace}
-#vgDiagRoute .vgD.done{color:#bbb;border-color:#666}
-#vgDiagRoute .vgD.now{background:#ffe600;color:#000;border-color:#ffe600;font-weight:900}
-#vgDiagRoute .vgDMsg{margin-top:7px;font:9px "Courier New",monospace;line-height:1.45}
-#vgDiagRoute .vgDMsg b{color:#ffe600}
-#vgDiagRoute .vgDStats{margin-top:5px;color:#aaa}
-#vgDiagRoute button{margin-top:6px}
-.vgDiagBlink{outline:5px solid #ffe600!important;outline-offset:4px!important;animation:vgDiagBlink .55s steps(2,end) 7!important;box-shadow:0 0 24px #ffe600!important}
-@keyframes vgDiagBlink{0%,49%{outline-color:#ffe600}50%,100%{outline-color:#555}}
-@media(max-width:520px){#vgDiagRoute .vgDRow{grid-template-columns:repeat(2,1fr)}}
-</style>
-<script id="vg-flow-pass04-js">
-(function(){
-"use strict";
-const K="vetgods_flow_pass04_diagnostics_v1";
-const L=["EXAM READY","BIO SCAN","LAB / IMAGING","REVIEW RESULTS","DIAGNOSTICS COMPLETE"];
-function G(){try{return Object.assign({step:0,msg:"WAITING FOR PHYSICAL EXAM."},JSON.parse(localStorage.getItem(K))||{})}catch(e){return{step:0,msg:"WAITING FOR PHYSICAL EXAM."}}}
-function P(q){localStorage.setItem(K,JSON.stringify(q))}
-function A(){return state.animals?.[state.active]||null}
-function save(){try{window.save?.()}catch(e){}}
-function diagPage(){try{section=1;page="care";program("care");return true}catch(e){return false}}
-function visible(x){let r=x.getBoundingClientRect(),c=getComputedStyle(x);return c.display!=="none"&&c.visibility!=="hidden"&&r.width>0&&r.height>0}
-function controls(){return [...document.querySelectorAll("button,a,[role=button],input[type=button],input[type=submit]")].filter(visible).filter(x=>!x.closest("#vgOrientation,#vgBrain,#vgBottomLeftDock,#vgBottomRightDock"))}
-function status(){
- let q=G(),a=A();
- if(!a){q.step=0;q.msg="NO ACTIVE PATIENT. RETURN TO PATIENT / INTAKE."}
- else if(a.diagnosticsComplete){q.step=4;q.msg="✓ DIAGNOSTICS VERIFIED. NEXT NORMAL OPERATION: STABILIZE."}
- else if(!(a.examComplete||a.examined)){q.step=0;q.msg="PHYSICAL EXAM IS NOT COMPLETE. FINISH PASS 3 FIRST."}
- else if(a.bioScanComplete&&(a.labComplete||a.imagingComplete)){q.step=3;q.msg="BIO SCAN + LAB / IMAGING ARE COMPLETE. REVIEW THE RESULTS."}
- else if(a.bioScanComplete){q.step=2;q.msg="✓ BIO SCAN COMPLETE. NEXT: LAB / IMAGING."}
- else {q.step=1;q.msg="✓ PHYSICAL EXAM READY. NEXT: BIO SCAN."}
- P(q);return q
-}
-function blink(rx){
- document.querySelectorAll(".vgDiagBlink").forEach(x=>x.classList.remove("vgDiagBlink"));
- let t=controls().find(x=>rx.test((x.textContent||x.value||"").trim()));
- if(t){t.classList.add("vgDiagBlink");try{t.scrollIntoView({behavior:"smooth",block:"center"})}catch(e){}}
- return t
-}
-function show(){
- let q=status(),a=A();if(!a)return mount();
- diagPage();
- setTimeout(()=>{
-   q=status();let t=null;
-   if(q.step===1)t=blink(/BIO SCAN|SCAN|BIOSCAN/i);
-   else if(q.step===2)t=blink(/LAB|IMAGING|IMAGE|RADIOGRAPH|X.?RAY/i);
-   else if(q.step===3)t=blink(/REVIEW|RESULT|DIAGNOST|ASSESS/i);
-   if(!t&&q.step>0&&q.step<4){q.msg+=" THE DIAGNOSTICS PAGE IS OPEN; USE THE MATCHING CONTROL HERE.";P(q)}
-   mount()
- },160)
-}
-function doNext(){
- let q=status(),a=A();if(!a)return mount();
- if(!(a.examComplete||a.examined)){q.msg="NOT ADVANCED: PHYSICAL EXAM MUST BE COMPLETE.";P(q);return mount()}
- diagPage();
- if(q.step===1){
-   a.bioScanComplete=true;a.lastBioScan=Date.now();
-   a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · BIO SCAN COMPLETE");
-   save();q.step=2;q.msg="✓ BIO SCAN SAVED. NEXT: LAB / IMAGING.";P(q)
- }else if(q.step===2){
-   a.labComplete=true;a.imagingComplete=true;a.lastLab=Date.now();
-   a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · LAB + IMAGING COMPLETE");
-   save();q.step=3;q.msg="✓ LAB / IMAGING SAVED. NEXT: REVIEW RESULTS.";P(q)
- }else if(q.step===3){
-   if(!a.bioScanComplete||!(a.labComplete||a.imagingComplete)){q.msg="NOT ADVANCED: REQUIRED DIAGNOSTICS ARE MISSING.";P(q);return mount()}
-   a.diagnosticsComplete=true;a.diagnosticsReviewed=true;a.lastDiagnostics=Date.now();
-   a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · DIAGNOSTICS REVIEWED / COMPLETE");
-   save();
-   if(!a.diagnosticsComplete){q.msg="NOT ADVANCED: DIAGNOSTICS DID NOT SAVE.";P(q);return mount()}
-   q.step=4;q.msg="✓ DIAGNOSTICS COMPLETE AND VERIFIED. NEXT: STABILIZE.";P(q)
- }
- setTimeout(mount,100)
-}
-function mount(){
- let o=document.querySelector("#vgOrientation");if(!o)return;
- o.querySelector("#vgDiagRoute")?.remove();
- let q=status(),a=A(),d=document.createElement("div");d.id="vgDiagRoute";
- d.innerHTML='<div class="vgDRow">'+L.map((x,i)=>'<div class="vgD '+(i<q.step?"done":i===q.step?"now":"")+'">'+(i+1)+' '+x+'</div>').join("")+'</div>'+
- '<div class="vgDMsg"><b>PASS 4/10 — DIAGNOSTICS</b><br>'+q.msg+
- '<div class="vgDStats">PATIENT: '+(a?.name||"NONE")+
- ' | EXAM: '+((a?.examComplete||a?.examined)?"✓":"—")+
- ' | BIO SCAN: '+(a?.bioScanComplete?"✓":"—")+
- ' | LAB: '+(a?.labComplete?"✓":"—")+
- ' | IMAGING: '+(a?.imagingComplete?"✓":"—")+
- ' | REVIEW: '+(a?.diagnosticsComplete?"✓":"—")+'</div>'+
- '<button id="vgDShow">SHOW NEXT DIAGNOSTIC CONTROL</button> <button id="vgDDo">DO THIS DIAGNOSTIC STEP FOR ME</button></div>';
- o.querySelector(".b")?.appendChild(d);
- d.querySelector("#vgDShow").onclick=show;d.querySelector("#vgDDo").onclick=doNext
-}
-setTimeout(mount,1400);
-document.addEventListener("click",e=>{if(!e.target.closest("#vgDiagRoute"))setTimeout(mount,240)},false);
-window.VetGodsDiagnosticsPass4={mount,show,doNext,status};
-})();
-</script>
 
-<style id="vg-flow-pass05-css">
-#vgStabRoute{margin:8px 0;padding:8px;border:1px solid #765;background:#060503}
-#vgStabRoute .vgSRow{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
-#vgStabRoute .vgS{border:1px solid #333;padding:6px 2px;text-align:center;color:#666;font:8px "Courier New",monospace}
-#vgStabRoute .vgS.done{color:#bbb;border-color:#666}
-#vgStabRoute .vgS.now{background:#ffe600;color:#000;border-color:#ffe600;font-weight:900}
-#vgStabRoute .vgSMsg{margin-top:7px;font:9px "Courier New",monospace;line-height:1.45}
-#vgStabRoute .vgSMsg b{color:#ffe600}
-#vgStabRoute .vgVitals{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:7px 0}
-#vgStabRoute .vgVital{border:1px solid #444;padding:6px;text-align:center;background:#050505}
-#vgStabRoute .vgVital strong{display:block;color:#fff;font-size:12px}
-#vgStabRoute .vgVital.ok{border-color:#777}.vgVital.ok strong{color:#ffe600}
-#vgStabRoute button{margin-top:5px}
-.vgStabBlink{outline:5px solid #ffe600!important;outline-offset:4px!important;animation:vgStabBlink .55s steps(2,end) 7!important;box-shadow:0 0 24px #ffe600!important}
-@keyframes vgStabBlink{0%,49%{outline-color:#ffe600}50%,100%{outline-color:#555}}
-@media(max-width:520px){#vgStabRoute .vgSRow{grid-template-columns:repeat(2,1fr)}#vgStabRoute .vgVitals{grid-template-columns:repeat(2,1fr)}}
-</style>
-<script id="vg-flow-pass05-js">
-(function(){
-"use strict";
-const K="vetgods_flow_pass05_stabilize_v1";
-const L=["DIAGNOSTICS READY","OXYGEN","HYDRATION","PAIN CONTROL","NUTRITION","STABLE → TREATMENT"];
-const TARGET={oxygen:94,hydration:70,pain:30,nutrition:55};
-function G(){try{return Object.assign({step:0,msg:"WAITING FOR DIAGNOSTICS."},JSON.parse(localStorage.getItem(K))||{})}catch(e){return{step:0,msg:"WAITING FOR DIAGNOSTICS."}}}
-function P(q){localStorage.setItem(K,JSON.stringify(q))}
-function A(){return state.animals?.[state.active]||null}
-function save(){try{window.save?.()}catch(e){}}
-function num(v,d=0){v=Number(v);return Number.isFinite(v)?v:d}
-function nutrition(a){return num(a?.nutrition,num(a?.food,0))}
-function stable(a){return num(a?.oxygen)<TARGET.oxygen?false:num(a?.hydration)<TARGET.hydration?false:num(a?.pain,100)>TARGET.pain?false:nutrition(a)<TARGET.nutrition?false:true}
-function stabPage(){try{section=2;page="care";program("care");return true}catch(e){return false}}
-function visible(x){let r=x.getBoundingClientRect(),c=getComputedStyle(x);return c.display!=="none"&&c.visibility!=="hidden"&&r.width>0&&r.height>0}
-function controls(){return [...document.querySelectorAll("button,a,[role=button],input[type=button],input[type=submit]")].filter(visible).filter(x=>!x.closest("#vgOrientation,#vgBrain,#vgBottomLeftDock,#vgBottomRightDock"))}
-function status(){
- let q=G(),a=A();
- if(!a){q.step=0;q.msg="NO ACTIVE PATIENT."}
- else if(!a.diagnosticsComplete){q.step=0;q.msg="DIAGNOSTICS ARE NOT COMPLETE. FINISH PASS 4 FIRST."}
- else if(stable(a)){q.step=5;a.stabilizationComplete=true;a.stage="STABILIZE";save();q.msg="✓ PATIENT IS STABLE. TREATMENT IS NOW THE NEXT REAL OPERATION."}
- else if(num(a.oxygen)<TARGET.oxygen){q.step=1;q.msg="OXYGEN IS BELOW TARGET. NEXT: OXYGEN SUPPORT."}
- else if(num(a.hydration)<TARGET.hydration){q.step=2;q.msg="HYDRATION IS BELOW TARGET. NEXT: WATER / IV FLUIDS."}
- else if(num(a.pain,100)>TARGET.pain){q.step=3;q.msg="PAIN IS ABOVE TARGET. NEXT: PAIN CONTROL."}
- else {q.step=4;q.msg="NUTRITION IS BELOW TARGET. NEXT: FOOD / NUTRITION SUPPORT."}
- P(q);return q
-}
-function blink(rx){
- document.querySelectorAll(".vgStabBlink").forEach(x=>x.classList.remove("vgStabBlink"));
- let t=controls().find(x=>rx.test((x.textContent||x.value||"").trim()));
- if(t){t.classList.add("vgStabBlink");try{t.scrollIntoView({behavior:"smooth",block:"center"})}catch(e){}}
- return t
-}
-function show(){
- let q=status(),a=A();if(!a)return mount();
- stabPage();
- setTimeout(()=>{
-  q=status();let t=null;
-  if(q.step===1)t=blink(/OXYGEN|O2/i);
-  else if(q.step===2)t=blink(/WATER|IV FLUID|FLUID|HYDRAT/i);
-  else if(q.step===3)t=blink(/PAIN CONTROL|PAIN MED|ANALGES/i);
-  else if(q.step===4)t=blink(/FOOD|NUTRITION|FEED/i);
-  else if(q.step===5)t=blink(/TREATMENT|PRIMARY TREATMENT|TREAT/i);
-  if(!t){q.msg+=" THE STABILIZATION PAGE IS OPEN; USE THE MATCHING CONTROL HERE.";P(q)}
-  mount()
- },160)
-}
-function perform(){
- let q=status(),a=A();if(!a)return mount();
- if(!a.diagnosticsComplete){q.msg="NOT ADVANCED: DIAGNOSTICS MUST BE COMPLETE.";P(q);return mount()}
- stabPage();
- if(q.step===1){
-   a.oxygen=Math.max(TARGET.oxygen,num(a.oxygen)+12);
-   a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · OXYGEN SUPPORT");
- }else if(q.step===2){
-   a.hydration=Math.max(TARGET.hydration,num(a.hydration)+18);
-   a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · HYDRATION / FLUID SUPPORT");
- }else if(q.step===3){
-   a.pain=Math.min(TARGET.pain,num(a.pain,100)-25);
-   a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · PAIN CONTROL");
- }else if(q.step===4){
-   let n=Math.max(TARGET.nutrition,nutrition(a)+20);a.nutrition=n;a.food=n;
-   a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · NUTRITION SUPPORT");
- }
- save();q=status();
- if(stable(a)){
-   a.stabilizationComplete=true;a.stage="STABILIZE";save();
-   q.step=5;q.msg="✓ ALL FOUR STABILIZATION TARGETS VERIFIED. TREATMENT IS UNLOCKED.";P(q)
- }
- setTimeout(mount,100)
-}
-function allForMe(){
- let a=A(),q=status();if(!a||!a.diagnosticsComplete)return mount();
- a.oxygen=Math.max(TARGET.oxygen,num(a.oxygen));
- a.hydration=Math.max(TARGET.hydration,num(a.hydration));
- a.pain=Math.min(TARGET.pain,num(a.pain,100));
- let n=Math.max(TARGET.nutrition,nutrition(a));a.nutrition=n;a.food=n;
- a.stabilizationComplete=true;a.stage="STABILIZE";
- a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · GUIDED STABILIZATION COMPLETE");
- save();q.step=5;q.msg="✓ STABILIZATION VERIFIED: OXYGEN, HYDRATION, PAIN AND NUTRITION ARE IN TARGET. TREATMENT UNLOCKED.";P(q);
- stabPage();setTimeout(mount,100)
-}
-function mount(){
- let o=document.querySelector("#vgOrientation");if(!o)return;
- o.querySelector("#vgStabRoute")?.remove();
- let q=status(),a=A(),d=document.createElement("div");d.id="vgStabRoute";
- let O=num(a?.oxygen),H=num(a?.hydration),Pain=num(a?.pain,100),N=nutrition(a);
- d.innerHTML='<div class="vgSRow">'+L.map((x,i)=>'<div class="vgS '+(i<q.step?"done":i===q.step?"now":"")+'">'+(i+1)+' '+x+'</div>').join("")+'</div>'+
- '<div class="vgSMsg"><b>PASS 5/10 — STABILIZATION</b><br>'+q.msg+
- '<div class="vgVitals"><div class="vgVital '+(O>=TARGET.oxygen?"ok":"")+'">OXYGEN<strong>'+Math.round(O)+'%</strong>TARGET ≥ '+TARGET.oxygen+'</div>'+
- '<div class="vgVital '+(H>=TARGET.hydration?"ok":"")+'">HYDRATION<strong>'+Math.round(H)+'%</strong>TARGET ≥ '+TARGET.hydration+'</div>'+
- '<div class="vgVital '+(Pain<=TARGET.pain?"ok":"")+'">PAIN<strong>'+Math.round(Pain)+'</strong>TARGET ≤ '+TARGET.pain+'</div>'+
- '<div class="vgVital '+(N>=TARGET.nutrition?"ok":"")+'">NUTRITION<strong>'+Math.round(N)+'%</strong>TARGET ≥ '+TARGET.nutrition+'</div></div>'+
- 'STABILIZATION: '+(a?.stabilizationComplete?"✓ VERIFIED":"IN PROGRESS")+
- '<br><button id="vgSShow">SHOW NEXT STABILIZATION CONTROL</button> <button id="vgSDo">DO THIS STEP FOR ME</button> <button id="vgSAll">STABILIZE ALL FOR ME</button></div>';
- o.querySelector(".b")?.appendChild(d);
- d.querySelector("#vgSShow").onclick=show;d.querySelector("#vgSDo").onclick=perform;d.querySelector("#vgSAll").onclick=allForMe
-}
-setTimeout(mount,1550);
-document.addEventListener("click",e=>{if(!e.target.closest("#vgStabRoute"))setTimeout(mount,250)},false);
-window.VetGodsStabilizePass5={mount,show,perform,allForMe,status};
-})();
-</script>
 
-<style id="vg-flow-pass06-css">
-#vgTreatRoute{margin:8px 0;padding:8px;border:1px solid #756;background:#060304}
-#vgTreatRoute .vgTRow{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
-#vgTreatRoute .vgT{border:1px solid #333;padding:6px 2px;text-align:center;color:#666;font:8px "Courier New",monospace}
-#vgTreatRoute .vgT.done{color:#bbb;border-color:#666}
-#vgTreatRoute .vgT.now{background:#ffe600;color:#000;border-color:#ffe600;font-weight:900}
-#vgTreatRoute .vgTMsg{margin-top:7px;font:9px "Courier New",monospace;line-height:1.45}
-#vgTreatRoute .vgTMsg b{color:#ffe600}
-#vgTreatRoute .vgTState{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:7px 0}
-#vgTreatRoute .vgTC{border:1px solid #444;padding:6px;text-align:center;background:#050505}
-#vgTreatRoute .vgTC strong{display:block;color:#fff;font-size:11px}
-#vgTreatRoute .vgTC.ok{border-color:#777}.vgTC.ok strong{color:#ffe600}
-#vgTreatRoute button{margin-top:5px}
-.vgTreatBlink{outline:5px solid #ffe600!important;outline-offset:4px!important;animation:vgTreatBlink .55s steps(2,end) 7!important;box-shadow:0 0 24px #ffe600!important}
-@keyframes vgTreatBlink{0%,49%{outline-color:#ffe600}50%,100%{outline-color:#555}}
-@media(max-width:520px){#vgTreatRoute .vgTRow{grid-template-columns:repeat(2,1fr)}#vgTreatRoute .vgTState{grid-template-columns:1fr}}
-</style>
-<script id="vg-flow-pass06-js">
-(function(){
-"use strict";
-const K="vetgods_flow_pass06_treatment_v1";
-const L=["STABLE","OPEN TREATMENT","PRIMARY TREATMENT","VERIFY RESPONSE","RECOVERY READY"];
-function G(){try{return Object.assign({step:0,msg:"WAITING FOR STABILIZATION."},JSON.parse(localStorage.getItem(K))||{})}catch(e){return{step:0,msg:"WAITING FOR STABILIZATION."}}}
-function P(q){localStorage.setItem(K,JSON.stringify(q))}
-function A(){return state.animals?.[state.active]||null}
-function save(){try{window.save?.()}catch(e){}}
-function treatPage(){try{section=3;page="care";program("care");return true}catch(e){return false}}
-function visible(x){let r=x.getBoundingClientRect(),c=getComputedStyle(x);return c.display!=="none"&&c.visibility!=="hidden"&&r.width>0&&r.height>0}
-function controls(){return [...document.querySelectorAll("button,a,[role=button],input[type=button],input[type=submit]")].filter(visible).filter(x=>!x.closest("#vgOrientation,#vgBrain,#vgBottomLeftDock,#vgBottomRightDock"))}
-function ready(a){return !!(a?.stabilizationComplete)}
-function status(){
- let q=G(),a=A();
- if(!a){q.step=0;q.msg="NO ACTIVE PATIENT."}
- else if(!ready(a)){q.step=0;q.msg="PATIENT IS NOT VERIFIED STABLE. COMPLETE PASS 5 FIRST."}
- else if(a.recoveryReady||a.treatmentComplete&&a.treatmentVerified){q.step=4;q.msg="✓ TREATMENT RESPONSE VERIFIED. PATIENT IS READY FOR RECOVERY."}
- else if(a.treatmentComplete){q.step=3;q.msg="PRIMARY TREATMENT IS COMPLETE. VERIFY THE PATIENT RESPONSE."}
- else if(a.treatmentOpened){q.step=2;q.msg="TREATMENT AREA OPEN. NEXT: PRIMARY TREATMENT."}
- else {q.step=1;q.msg="✓ PATIENT STABLE. NEXT: OPEN TREATMENT."}
- P(q);return q
-}
-function blink(rx){
- document.querySelectorAll(".vgTreatBlink").forEach(x=>x.classList.remove("vgTreatBlink"));
- let t=controls().find(x=>rx.test((x.textContent||x.value||"").trim()));
- if(t){t.classList.add("vgTreatBlink");try{t.scrollIntoView({behavior:"smooth",block:"center"})}catch(e){}}
- return t
-}
-function open(){
- let q=status(),a=A();if(!a)return mount();
- if(!ready(a)){q.msg="NOT OPENED: STABILIZATION MUST VERIFY FIRST.";P(q);return mount()}
- a.treatmentOpened=true;a.stage="TREATMENT";save();
- q.step=2;q.msg="✓ TREATMENT AREA OPEN. NEXT: PRIMARY TREATMENT.";P(q);
- treatPage();setTimeout(()=>{blink(/PRIMARY TREATMENT|BEGIN TREATMENT|TREAT PATIENT|TREAT/i);mount()},140)
-}
-function show(){
- let q=status(),a=A();if(!a)return mount();
- if(q.step===1)return open();
- treatPage();
- setTimeout(()=>{
-   q=status();let t=null;
-   if(q.step===2)t=blink(/PRIMARY TREATMENT|BEGIN TREATMENT|TREAT PATIENT|TREAT/i);
-   else if(q.step===3)t=blink(/VERIFY|REASSESS|RESPONSE|CHECK|MONITOR/i);
-   else if(q.step===4)t=blink(/SEND TO RECOVERY|RECOVERY/i);
-   if(!t){q.msg+=" TREATMENT PAGE IS OPEN; USE THE MATCHING CONTROL HERE.";P(q)}
-   mount()
- },150)
-}
-function perform(){
- let q=status(),a=A();if(!a)return mount();
- if(!ready(a)){q.msg="NOT ADVANCED: PATIENT MUST BE STABLE.";P(q);return mount()}
- if(q.step===1)return open();
- treatPage();
- if(q.step===2){
-   a.treatmentOpened=true;a.treatmentComplete=true;a.primaryTreatmentComplete=true;a.treatmentAt=Date.now();a.stage="TREATMENT";
-   a.health=Math.min(100,Number(a.health||50)+12);
-   a.comfort=Math.min(100,Number(a.comfort||50)+8);
-   a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · PRIMARY TREATMENT COMPLETE");
-   save();q.step=3;q.msg="✓ PRIMARY TREATMENT SAVED. NEXT: VERIFY RESPONSE.";P(q)
- }else if(q.step===3){
-   if(!a.treatmentComplete){q.msg="NOT ADVANCED: PRIMARY TREATMENT IS MISSING.";P(q);return mount()}
-   a.treatmentVerified=true;a.recoveryReady=true;a.responseCheckedAt=Date.now();
-   a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · TREATMENT RESPONSE VERIFIED / RECOVERY READY");
-   save();
-   if(!(a.treatmentComplete&&a.treatmentVerified&&a.recoveryReady)){q.msg="NOT ADVANCED: TREATMENT VERIFICATION DID NOT SAVE.";P(q);return mount()}
-   q.step=4;q.msg="✓ TREATMENT COMPLETE AND VERIFIED. RECOVERY IS UNLOCKED.";P(q)
- }
- setTimeout(mount,100)
-}
-function all(){
- let a=A(),q=status();if(!a||!ready(a))return mount();
- a.treatmentOpened=true;a.treatmentComplete=true;a.primaryTreatmentComplete=true;a.treatmentVerified=true;a.recoveryReady=true;a.stage="TREATMENT";
- a.health=Math.min(100,Number(a.health||50)+12);a.comfort=Math.min(100,Number(a.comfort||50)+8);
- a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · GUIDED TREATMENT COMPLETE / RESPONSE VERIFIED");
- save();q.step=4;q.msg="✓ PRIMARY TREATMENT + RESPONSE CHECK VERIFIED. RECOVERY UNLOCKED.";P(q);treatPage();setTimeout(mount,100)
-}
-function mount(){
- let o=document.querySelector("#vgOrientation");if(!o)return;
- o.querySelector("#vgTreatRoute")?.remove();
- let q=status(),a=A(),d=document.createElement("div");d.id="vgTreatRoute";
- d.innerHTML='<div class="vgTRow">'+L.map((x,i)=>'<div class="vgT '+(i<q.step?"done":i===q.step?"now":"")+'">'+(i+1)+' '+x+'</div>').join("")+'</div>'+
- '<div class="vgTMsg"><b>PASS 6/10 — TREATMENT</b><br>'+q.msg+
- '<div class="vgTState"><div class="vgTC '+(a?.stabilizationComplete?"ok":"")+'">STABLE<strong>'+(a?.stabilizationComplete?"YES":"NO")+'</strong></div>'+
- '<div class="vgTC '+(a?.treatmentComplete?"ok":"")+'">PRIMARY TREATMENT<strong>'+(a?.treatmentComplete?"COMPLETE":"PENDING")+'</strong></div>'+
- '<div class="vgTC '+(a?.treatmentVerified?"ok":"")+'">RESPONSE CHECK<strong>'+(a?.treatmentVerified?"VERIFIED":"PENDING")+'</strong></div></div>'+
- '<button id="vgTShow">SHOW NEXT TREATMENT CONTROL</button> <button id="vgTDo">DO THIS TREATMENT STEP FOR ME</button> <button id="vgTAll">COMPLETE TREATMENT FOR ME</button></div>';
- o.querySelector(".b")?.appendChild(d);
- d.querySelector("#vgTShow").onclick=show;d.querySelector("#vgTDo").onclick=perform;d.querySelector("#vgTAll").onclick=all
-}
-setTimeout(mount,1650);
-document.addEventListener("click",e=>{if(!e.target.closest("#vgTreatRoute"))setTimeout(mount,260)},false);
-window.VetGodsTreatmentPass6={mount,show,perform,all,status,open};
-})();
-</script>
 
-<style id="vg-flow-pass07-css">
-#vgRecoveryRoute{margin:8px 0;padding:8px;border:1px solid #567;background:#030506}
-#vgRecoveryRoute .vgRRow{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
-#vgRecoveryRoute .vgR{border:1px solid #333;padding:6px 2px;text-align:center;color:#666;font:8px "Courier New",monospace}
-#vgRecoveryRoute .vgR.done{color:#bbb;border-color:#666}
-#vgRecoveryRoute .vgR.now{background:#ffe600;color:#000;border-color:#ffe600;font-weight:900}
-#vgRecoveryRoute .vgRMsg{margin-top:7px;font:9px "Courier New",monospace;line-height:1.45}
-#vgRecoveryRoute .vgRMsg b{color:#ffe600}
-#vgRecoveryRoute .vgRStats{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:7px 0}
-#vgRecoveryRoute .vgRC{border:1px solid #444;padding:6px;text-align:center;background:#050505}
-#vgRecoveryRoute .vgRC strong{display:block;color:#fff;font-size:11px}
-#vgRecoveryRoute .vgRC.ok{border-color:#777}.vgRC.ok strong{color:#ffe600}
-#vgRecoveryRoute button{margin-top:5px}
-.vgRecoveryBlink{outline:5px solid #ffe600!important;outline-offset:4px!important;animation:vgRecoveryBlink .55s steps(2,end) 7!important;box-shadow:0 0 24px #ffe600!important}
-@keyframes vgRecoveryBlink{0%,49%{outline-color:#ffe600}50%,100%{outline-color:#555}}
-@media(max-width:520px){#vgRecoveryRoute .vgRRow{grid-template-columns:repeat(2,1fr)}#vgRecoveryRoute .vgRStats{grid-template-columns:repeat(2,1fr)}}
-</style>
-<script id="vg-flow-pass07-js">
-(function(){
-"use strict";
-const K="vetgods_flow_pass07_recovery_v1";
-const L=["TREATMENT VERIFIED","ENTER RECOVERY","RECOVERY CARE","REASSESS","DISPOSITION READY"];
-function G(){try{return Object.assign({step:0,msg:"WAITING FOR TREATMENT."},JSON.parse(localStorage.getItem(K))||{})}catch(e){return{step:0,msg:"WAITING FOR TREATMENT."}}}
-function P(q){localStorage.setItem(K,JSON.stringify(q))}
-function A(){return state.animals?.[state.active]||null}
-function save(){try{window.save?.()}catch(e){}}
-function recPage(){try{section=4;page="care";program("care");return true}catch(e){return false}}
-function visible(x){let r=x.getBoundingClientRect(),c=getComputedStyle(x);return c.display!=="none"&&c.visibility!=="hidden"&&r.width>0&&r.height>0}
-function controls(){return [...document.querySelectorAll("button,a,[role=button],input[type=button],input[type=submit]")].filter(visible).filter(x=>!x.closest("#vgOrientation,#vgBrain,#vgBottomLeftDock,#vgBottomRightDock"))}
-function treated(a){return !!(a?.recoveryReady||a?.treatmentComplete&&a?.treatmentVerified)}
-function status(){
- let q=G(),a=A();
- if(!a){q.step=0;q.msg="NO ACTIVE PATIENT."}
- else if(!treated(a)){q.step=0;q.msg="TREATMENT RESPONSE IS NOT VERIFIED. COMPLETE PASS 6 FIRST."}
- else if(a.dispositionReady){q.step=4;q.msg="✓ RECOVERY VERIFIED. PATIENT IS READY FOR DISPOSITION."}
- else if(a.recoveryReassessed){q.step=3;q.msg="RECOVERY CARE COMPLETE. FINAL REASSESSMENT IS READY."}
- else if(a.recoveryCareComplete){q.step=3;q.msg="RECOVERY CARE COMPLETE. NEXT: REASSESS PATIENT."}
- else if(a.stage==="RECOVERY"||a.inRecovery){q.step=2;q.msg="PATIENT IS IN RECOVERY. NEXT: RECOVERY CARE."}
- else {q.step=1;q.msg="✓ TREATMENT VERIFIED. NEXT: MOVE PATIENT INTO RECOVERY."}
- P(q);return q
-}
-function blink(rx){
- document.querySelectorAll(".vgRecoveryBlink").forEach(x=>x.classList.remove("vgRecoveryBlink"));
- let t=controls().find(x=>rx.test((x.textContent||x.value||"").trim()));
- if(t){t.classList.add("vgRecoveryBlink");try{t.scrollIntoView({behavior:"smooth",block:"center"})}catch(e){}}
- return t
-}
-function enter(){
- let q=status(),a=A();if(!a)return mount();
- if(!treated(a)){q.msg="NOT MOVED: TREATMENT MUST BE VERIFIED FIRST.";P(q);return mount()}
- a.stage="RECOVERY";a.inRecovery=true;a.recoveryEnteredAt=Date.now();
- a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · ENTERED RECOVERY");
- save();q.step=2;q.msg="✓ PATIENT MOVED INTO RECOVERY. NEXT: RECOVERY CARE.";P(q);
- recPage();setTimeout(mount,100)
-}
-function show(){
- let q=status(),a=A();if(!a)return mount();
- if(q.step===1)return enter();
- recPage();
- setTimeout(()=>{
-   q=status();let t=null;
-   if(q.step===2)t=blink(/RECOVERY CARE|COMFORT|REST|MONITOR|RECOVER/i);
-   else if(q.step===3)t=blink(/REASSESS|CHECK|MONITOR|READY|DISPOSITION/i);
-   else if(q.step===4)t=blink(/DISCHARGE|SEND HOME|ADOPT|SANCTUARY|DISPOSITION/i);
-   if(!t){q.msg+=" RECOVERY PAGE IS OPEN; USE THE MATCHING CONTROL HERE.";P(q)}
-   mount()
- },150)
-}
-function perform(){
- let q=status(),a=A();if(!a)return mount();
- if(!treated(a)){q.msg="NOT ADVANCED: TREATMENT MUST BE VERIFIED.";P(q);return mount()}
- if(q.step===1)return enter();
- recPage();
- if(q.step===2){
-   a.stage="RECOVERY";a.inRecovery=true;a.recoveryCareComplete=true;
-   a.health=Math.min(100,Number(a.health||55)+10);
-   a.comfort=Math.min(100,Number(a.comfort||55)+15);
-   a.stress=Math.max(0,Number(a.stress||35)-12);
-   a.pain=Math.max(0,Number(a.pain||25)-8);
-   a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · RECOVERY CARE COMPLETE");
-   save();q.step=3;q.msg="✓ RECOVERY CARE SAVED. NEXT: REASSESS.";P(q)
- }else if(q.step===3){
-   if(!a.recoveryCareComplete){q.msg="NOT ADVANCED: RECOVERY CARE IS MISSING.";P(q);return mount()}
-   a.recoveryReassessed=true;a.recoveryComplete=true;a.dispositionReady=true;a.recoveryCheckedAt=Date.now();
-   a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · RECOVERY REASSESSED / DISPOSITION READY");
-   save();
-   if(!(a.recoveryComplete&&a.dispositionReady)){q.msg="NOT ADVANCED: RECOVERY VERIFICATION DID NOT SAVE.";P(q);return mount()}
-   q.step=4;q.msg="✓ RECOVERY COMPLETE AND VERIFIED. DISPOSITION UNLOCKED.";P(q)
- }
- setTimeout(mount,100)
-}
-function all(){
- let a=A(),q=status();if(!a||!treated(a))return mount();
- a.stage="RECOVERY";a.inRecovery=true;a.recoveryCareComplete=true;a.recoveryReassessed=true;a.recoveryComplete=true;a.dispositionReady=true;
- a.health=Math.min(100,Number(a.health||55)+10);a.comfort=Math.min(100,Number(a.comfort||55)+15);
- a.stress=Math.max(0,Number(a.stress||35)-12);a.pain=Math.max(0,Number(a.pain||25)-8);
- a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · GUIDED RECOVERY COMPLETE / DISPOSITION READY");
- save();q.step=4;q.msg="✓ RECOVERY CARE + REASSESSMENT VERIFIED. DISPOSITION UNLOCKED.";P(q);recPage();setTimeout(mount,100)
-}
-function mount(){
- let o=document.querySelector("#vgOrientation");if(!o)return;
- o.querySelector("#vgRecoveryRoute")?.remove();
- let q=status(),a=A(),d=document.createElement("div");d.id="vgRecoveryRoute";
- let H=Math.round(Number(a?.health||0)),C=Math.round(Number(a?.comfort||0)),S=Math.round(Number(a?.stress||0)),Pain=Math.round(Number(a?.pain||0));
- d.innerHTML='<div class="vgRRow">'+L.map((x,i)=>'<div class="vgR '+(i<q.step?"done":i===q.step?"now":"")+'">'+(i+1)+' '+x+'</div>').join("")+'</div>'+
- '<div class="vgRMsg"><b>PASS 7/10 — RECOVERY</b><br>'+q.msg+
- '<div class="vgRStats"><div class="vgRC">HEALTH<strong>'+H+'</strong></div><div class="vgRC">COMFORT<strong>'+C+'</strong></div>'+
- '<div class="vgRC">STRESS<strong>'+S+'</strong></div><div class="vgRC">PAIN<strong>'+Pain+'</strong></div></div>'+
- 'IN RECOVERY: '+(a?.inRecovery?"✓ YES":"NO")+' | CARE: '+(a?.recoveryCareComplete?"✓":"PENDING")+' | REASSESS: '+(a?.recoveryReassessed?"✓":"PENDING")+
- '<br><button id="vgRShow">SHOW NEXT RECOVERY CONTROL</button> <button id="vgRDo">DO THIS RECOVERY STEP FOR ME</button> <button id="vgRAll">COMPLETE RECOVERY FOR ME</button></div>';
- o.querySelector(".b")?.appendChild(d);
- d.querySelector("#vgRShow").onclick=show;d.querySelector("#vgRDo").onclick=perform;d.querySelector("#vgRAll").onclick=all
-}
-setTimeout(mount,1750);
-document.addEventListener("click",e=>{if(!e.target.closest("#vgRecoveryRoute"))setTimeout(mount,270)},false);
-window.VetGodsRecoveryPass7={mount,show,perform,all,status,enter};
-})();
-</script>
 
-<style id="vg-flow-pass08-css">
-#vgDispositionRoute{margin:8px 0;padding:8px;border:1px solid #675;background:#050604}
-#vgDispositionRoute .vgXRow{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
-#vgDispositionRoute .vgX{border:1px solid #333;padding:6px 2px;text-align:center;color:#666;font:8px "Courier New",monospace}
-#vgDispositionRoute .vgX.done{color:#bbb;border-color:#666}
-#vgDispositionRoute .vgX.now{background:#ffe600;color:#000;border-color:#ffe600;font-weight:900}
-#vgDispositionRoute .vgXMsg{margin-top:7px;font:9px "Courier New",monospace;line-height:1.45}
-#vgDispositionRoute .vgXMsg b{color:#ffe600}
-#vgDispositionRoute .vgChoices{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:8px 0}
-#vgDispositionRoute .vgChoices button{min-height:44px}
-#vgDispositionRoute .vgDest{padding:7px;border:1px dashed #666;margin-top:6px;color:#ccc}
-.vgDispositionBlink{outline:5px solid #ffe600!important;outline-offset:4px!important;animation:vgDispBlink .55s steps(2,end) 7!important;box-shadow:0 0 24px #ffe600!important}
-@keyframes vgDispBlink{0%,49%{outline-color:#ffe600}50%,100%{outline-color:#555}}
-@media(max-width:520px){#vgDispositionRoute .vgXRow{grid-template-columns:repeat(2,1fr)}#vgDispositionRoute .vgChoices{grid-template-columns:repeat(2,1fr)}}
-</style>
-<script id="vg-flow-pass08-js">
-(function(){
-"use strict";
-const K="vetgods_flow_pass08_disposition_v1";
-const L=["RECOVERY READY","CHOOSE DESTINATION","MOVE PATIENT","VERIFY DESTINATION","CASE CLOSED"];
-function G(){try{return Object.assign({step:0,msg:"WAITING FOR RECOVERY.",lastDestination:""},JSON.parse(localStorage.getItem(K))||{})}catch(e){return{step:0,msg:"WAITING FOR RECOVERY.",lastDestination:""}}}
-function P(q){localStorage.setItem(K,JSON.stringify(q))}
-function A(){return state.animals?.[state.active]||null}
-function save(){try{window.save?.()}catch(e){}}
-function ready(a){return !!(a?.dispositionReady||a?.recoveryComplete)}
-function ensureLists(){
- state.myPets=Array.isArray(state.myPets)?state.myPets:[];
- state.sanctuary=Array.isArray(state.sanctuary)?state.sanctuary:[];
- state.dischargedAnimals=Array.isArray(state.dischargedAnimals)?state.dischargedAnimals:[]
-}
-function key(a){return a?.id||a?.uid||a?.name}
-function uniquePush(arr,a){let k=key(a);if(!arr.some(x=>key(x)===k))arr.push(a)}
-function removeFrom(arr,a){if(!Array.isArray(arr))return;let k=key(a);for(let i=arr.length-1;i>=0;i--)if(key(arr[i])===k)arr.splice(i,1)}
-function status(){
- let q=G(),a=A();
- if(!a){if(q.lastDestination){q.step=4;q.msg="✓ CASE CLOSED. PATIENT MOVED TO "+q.lastDestination+"."}else{q.step=0;q.msg="NO ACTIVE PATIENT."}}
- else if(a.disposition==="CASE COMPLETE"){q.step=4;q.msg="✓ CASE CLOSED: "+(a.name||"PATIENT")+" → "+(a.finalDestination||"COMPLETED CASE")+"."}
- else if(!ready(a)){q.step=0;q.msg="RECOVERY IS NOT VERIFIED. COMPLETE PASS 7 FIRST."}
- else if(a.finalDestination){q.step=3;q.msg="PATIENT DESTINATION RECORDED: "+a.finalDestination+". VERIFY AND CLOSE CASE."}
- else {q.step=1;q.msg="✓ RECOVERY COMPLETE. CHOOSE WHERE THIS PATIENT GOES."}
- P(q);return q
-}
-function move(dest){
- let q=status(),a=A();if(!a)return mount();
- if(!ready(a)){q.msg="NOT MOVED: RECOVERY MUST BE COMPLETE FIRST.";P(q);return mount()}
- ensureLists();
- /* Remove stale duplicates before putting the animal in exactly one destination. */
- removeFrom(state.myPets,a);removeFrom(state.sanctuary,a);removeFrom(state.dischargedAnimals,a);
- a.finalDestination=dest;a.dispositionChoice=dest;a.dispositionAt=Date.now();
- if(dest==="MY PETS"){a.owner="PLAYER";a.homeStatus="MY PET";uniquePush(state.myPets,a)}
- else if(dest==="SANCTUARY"){a.homeStatus="SANCTUARY RESIDENT";uniquePush(state.sanctuary,a)}
- else if(dest==="ADOPTED"){a.homeStatus="ADOPTED";uniquePush(state.dischargedAnimals,a)}
- else {a.homeStatus="RETURNED TO GUARDIAN";uniquePush(state.dischargedAnimals,a)}
- a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · DISPOSITION SELECTED: "+dest);
- save();q.step=3;q.lastDestination=dest;q.msg="✓ "+(a.name||"PATIENT")+" MOVED TO "+dest+". NEXT: VERIFY / CLOSE CASE.";P(q);mount()
-}
-function closeCase(){
- let q=status(),a=A();if(!a)return mount();
- if(!a.finalDestination){q.msg="NOT CLOSED: CHOOSE A DESTINATION FIRST.";P(q);return mount()}
- a.disposition="CASE COMPLETE";a.stage="DISCHARGE";a.caseClosed=true;a.caseClosedAt=Date.now();
- a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · CASE CLOSED / "+a.finalDestination);
- q.lastDestination=a.finalDestination;save();
- /* Active-care slot is cleared only after destination is saved. */
- try{state.active=-1;save()}catch(e){}
- q.step=4;q.msg="✓ CASE CLOSED. "+(a.name||"PATIENT")+" IS NO LONGER IN ACTIVE TREATMENT. NEXT: AWARDS / CERTIFICATE.";P(q);mount()
-}
-function show(){
- let q=status(),a=A();document.querySelectorAll(".vgDispositionBlink").forEach(x=>x.classList.remove("vgDispositionBlink"));
- if(!a)return;
- let rx=q.step===1?/SEND HOME|ADOPT|MY PET|KEEP|SANCTUARY|DISPOSITION/i:q.step===3?/CLOSE CASE|COMPLETE CASE|CERTIFICATE|AWARD/i:/DISPOSITION/i;
- let t=[...document.querySelectorAll("button,a,[role=button]")].find(x=>{if(x.closest("#vgDispositionRoute,#vgBrain"))return false;let r=x.getBoundingClientRect(),c=getComputedStyle(x);return c.display!=="none"&&c.visibility!=="hidden"&&r.width>0&&r.height>0&&rx.test((x.textContent||"").trim())});
- if(t){t.classList.add("vgDispositionBlink");try{t.scrollIntoView({behavior:"smooth",block:"center"})}catch(e){}}
-}
-function mount(){
- let o=document.querySelector("#vgOrientation");if(!o)return;
- o.querySelector("#vgDispositionRoute")?.remove();
- let q=status(),a=A(),d=document.createElement("div");d.id="vgDispositionRoute";
- d.innerHTML='<div class="vgXRow">'+L.map((x,i)=>'<div class="vgX '+(i<q.step?"done":i===q.step?"now":"")+'">'+(i+1)+' '+x+'</div>').join("")+'</div>'+
- '<div class="vgXMsg"><b>PASS 8/10 — DISPOSITION + MY ANIMALS</b><br>'+q.msg+
- '<div class="vgDest">ACTIVE PATIENT: '+(a?.name||"NONE — CASE MAY BE CLOSED")+' | DESTINATION: '+(a?.finalDestination||q.lastDestination||"NOT CHOSEN")+'</div>'+
- (a&&ready(a)&&!a.caseClosed?'<div class="vgChoices"><button data-d="HOME">SEND HOME</button><button data-d="ADOPTED">ADOPT OUT</button><button data-d="MY PETS">KEEP IN MY PETS</button><button data-d="SANCTUARY">MOVE TO SANCTUARY</button></div>':'')+
- '<button id="vgXShow">SHOW REAL DISPOSITION CONTROL</button> '+(a?.finalDestination&&!a?.caseClosed?'<button id="vgXClose">VERIFY + CLOSE CASE</button>':'')+'</div>';
- o.querySelector(".b")?.appendChild(d);
- d.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>move(b.dataset.d));
- d.querySelector("#vgXShow").onclick=show;
- d.querySelector("#vgXClose")?.addEventListener("click",closeCase)
-}
-setTimeout(mount,1850);
-document.addEventListener("click",e=>{if(!e.target.closest("#vgDispositionRoute"))setTimeout(mount,280)},false);
-window.VetGodsDispositionPass8={mount,move,closeCase,status,show};
-})();
-</script>
 
-<style id="vg-flow-pass09-css">
-#vgAwardRoute{margin:8px 0;padding:8px;border:1px solid #756;background:#060504}
-#vgAwardRoute .vgARow{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
-#vgAwardRoute .vgA{border:1px solid #333;padding:6px 2px;text-align:center;color:#666;font:8px "Courier New",monospace}
-#vgAwardRoute .vgA.done{color:#bbb;border-color:#666}
-#vgAwardRoute .vgA.now{background:#ffe600;color:#000;border-color:#ffe600;font-weight:900}
-#vgAwardRoute .vgAMsg{margin-top:7px;font:9px "Courier New",monospace;line-height:1.45}
-#vgAwardRoute .vgAMsg b{color:#ffe600}
-#vgAwardRoute .vgAwardCard{margin:8px 0;padding:12px;border:3px double #9a8;background:linear-gradient(135deg,#10130f,#030403);text-align:center}
-#vgAwardRoute .vgAwardCard h3{margin:3px;color:#ffe600;letter-spacing:1px}
-#vgAwardRoute .vgAwardCard .animal{font-size:16px;font-weight:900;color:#fff;margin:6px}
-#vgAwardRoute .vgSigs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
-#vgAwardRoute .vgSig{border-top:1px solid #aaa;padding-top:3px;font-size:8px;color:#aaa}
-#vgAwardRoute .vgBtns{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:8px}
-#vgAwardRoute button{padding:7px 9px}
-.vgAwardBlink{outline:5px solid #ffe600!important;outline-offset:4px!important;animation:vgAwardBlink .55s steps(2,end) 7!important;box-shadow:0 0 24px #ffe600!important}
-@keyframes vgAwardBlink{0%,49%{outline-color:#ffe600}50%,100%{outline-color:#555}}
-@media(max-width:520px){#vgAwardRoute .vgARow{grid-template-columns:repeat(2,1fr)}}
-@media print{body>*{display:none!important}#vgAwardRoute,#vgAwardRoute *{display:block!important}#vgAwardRoute{position:absolute;inset:0;border:0}.vgBtns,.vgARow,.vgAMsg>b{display:none!important}}
-</style>
-<script id="vg-flow-pass09-js">
-(function(){
-"use strict";
-const K="vetgods_flow_pass09_award_v1";
-const L=["CASE CLOSED","BUILD AWARD","SIGN + VERIFY","CERTIFICATE READY","NEXT PATIENT"];
-function G(){try{return Object.assign({step:0,msg:"WAITING FOR A CLOSED CASE.",caseName:"",destination:"",awardId:""},JSON.parse(localStorage.getItem(K))||{})}catch(e){return{step:0,msg:"WAITING FOR A CLOSED CASE."}}}
-function P(q){localStorage.setItem(K,JSON.stringify(q))}
-function save(){try{window.save?.()}catch(e){}}
-function player(){
- state.playerProfile=state.playerProfile||{};
- if(!state.playerProfile.firstName)state.playerProfile.firstName="John";
- if(!state.playerProfile.lastName)state.playerProfile.lastName="Smith";
- save();
- return (state.playerProfile.firstName+" "+state.playerProfile.lastName).trim()
-}
-function lastClosed(){
- let all=Array.isArray(state.animals)?state.animals:[];
- return [...all].filter(a=>a&&(a.caseClosed||a.disposition==="CASE COMPLETE")).sort((a,b)=>(b.caseClosedAt||0)-(a.caseClosedAt||0))[0]||null
-}
-function status(){
- let q=G(),a=lastClosed();
- if(a){
-   q.caseName=a.name||"PATIENT";q.destination=a.finalDestination||a.homeStatus||"COMPLETED CASE";
-   if(a.certificateReady){q.step=4;q.msg="✓ CERTIFICATE VERIFIED. NEXT PATIENT IS READY."}
-   else if(a.awardSigned){q.step=3;q.msg="✓ TWO SIGNATURES VERIFIED. CERTIFICATE IS READY."}
-   else if(a.awardBuilt){q.step=2;q.msg="AWARD CREATED. NEXT: SIGN AND VERIFY."}
-   else {q.step=1;q.msg="✓ CASE CLOSED. BUILD THE COMPLETION AWARD."}
- }else if(q.caseName&&q.awardId){q.step=4;q.msg="✓ PRIOR CASE COMPLETE. READY FOR NEXT PATIENT."}
- else {q.step=0;q.msg="NO CLOSED CASE YET. COMPLETE PASS 8 FIRST."}
- P(q);return {q,a}
-}
-function build(){
- let {q,a}=status();if(!a)return mount();
- a.awardBuilt=true;a.awardId=a.awardId||("VG-"+Date.now().toString(36).toUpperCase());
- a.awardedTo=player();a.awardBuiltAt=Date.now();
- a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · COMPLETION AWARD CREATED");
- save();q.awardId=a.awardId;q.step=2;q.msg="✓ AWARD CREATED. NEXT: TWO SIGNATURES.";P(q);mount()
-}
-function sign(){
- let {q,a}=status();if(!a)return mount();
- if(!a.awardBuilt)return build();
- a.awardSigned=true;a.signatureOne="VET GODS CLINICAL DIRECTOR";a.signatureTwo="ORBITAL ANIMAL CARE REGISTRAR";a.awardSignedAt=Date.now();
- a.certificateReady=true;
- a.history=a.history||[];a.history.unshift(new Date().toLocaleTimeString()+" · AWARD SIGNED / CERTIFICATE VERIFIED");
- save();q.step=4;q.awardId=a.awardId;q.msg="✓ CERTIFICATE READY WITH TWO SIGNATURES. NEXT: NEW PATIENT.";P(q);mount()
-}
-function nextPatient(){
- let {q}=status();
- try{state.active=-1;save();program("clinic")}catch(e){}
- /* Reset coaching passes for a genuine new loop, but retain completed animals and awards. */
- ["vetgods_flow_pass02_intake_v1","vetgods_flow_pass03_exam_v1","vetgods_flow_pass04_diagnostics_v1",
-  "vetgods_flow_pass05_stabilize_v1","vetgods_flow_pass06_treatment_v1","vetgods_flow_pass07_recovery_v1",
-  "vetgods_flow_pass08_disposition_v1"].forEach(k=>localStorage.removeItem(k));
- try{
-   let b=JSON.parse(localStorage.getItem("vetgods_yellow_brain_phase1_v1")||"{}");
-   b.step=0;b.coachMode="SHOW";b.msg="NEW PATIENT LOOP — SELECT OR ADMIT THE NEXT ANIMAL.";
-   localStorage.setItem("vetgods_yellow_brain_phase1_v1",JSON.stringify(b))
- }catch(e){}
- q.step=4;q.msg="NEW LOOP STARTED. SELECT / ADMIT YOUR NEXT ANIMAL.";P(q);
- setTimeout(()=>{window.VetGodsOrientation?.mount?.();mount()},180)
-}
-function show(){
- let {q}=status(),rx=q.step===1?/AWARD|CERTIFICATE|BADGE/i:q.step===2?/SIGN|VERIFY|CERTIFICATE/i:/NEXT PATIENT|NEW PATIENT|ADMIT|NEW CASE/i;
- document.querySelectorAll(".vgAwardBlink").forEach(x=>x.classList.remove("vgAwardBlink"));
- let t=[...document.querySelectorAll("button,a,[role=button]")].find(x=>{if(x.closest("#vgAwardRoute,#vgBrain"))return false;let r=x.getBoundingClientRect(),c=getComputedStyle(x);return c.display!=="none"&&c.visibility!=="hidden"&&r.width>0&&r.height>0&&rx.test((x.textContent||"").trim())});
- if(t){t.classList.add("vgAwardBlink");try{t.scrollIntoView({behavior:"smooth",block:"center"})}catch(e){}}
-}
-function mount(){
- let o=document.querySelector("#vgOrientation");if(!o)return;
- o.querySelector("#vgAwardRoute")?.remove();
- let {q,a}=status(),d=document.createElement("div");d.id="vgAwardRoute";
- let cert=(a?.awardBuilt||q.awardId)?'<div class="vgAwardCard"><small>VET GODS // COMPLETION RECORD</small><h3>ANIMAL RECOVERY CERTIFICATE</h3><div class="animal">'+(a?.name||q.caseName||"PATIENT")+'</div><div>Clinical operator: <b>'+player()+'</b></div><div>Final destination: <b>'+(a?.finalDestination||q.destination||"COMPLETED")+'</b></div><div>Award ID: '+(a?.awardId||q.awardId||"PENDING")+'</div><div class="vgSigs"><div class="vgSig">'+(a?.awardSigned?"VET GODS CLINICAL DIRECTOR":"SIGNATURE 1 PENDING")+'</div><div class="vgSig">'+(a?.awardSigned?"ORBITAL ANIMAL CARE REGISTRAR":"SIGNATURE 2 PENDING")+'</div></div></div>':'';
- d.innerHTML='<div class="vgARow">'+L.map((x,i)=>'<div class="vgA '+(i<q.step?"done":i===q.step?"now":"")+'">'+(i+1)+' '+x+'</div>').join("")+'</div><div class="vgAMsg"><b>PASS 9/10 — AWARDS + NEXT PATIENT</b><br>'+q.msg+cert+'<div class="vgBtns">'+
- (q.step===1?'<button id="vgABuild">BUILD CASE AWARD</button>':'')+
- (q.step===2?'<button id="vgASign">ADD TWO SIGNATURES + VERIFY</button>':'')+
- ((a?.certificateReady||q.step===4)?'<button id="vgAPrint">PRINT / SAVE CERTIFICATE</button><button id="vgANext">NEXT PATIENT → START NEW LOOP</button>':'')+
- '<button id="vgAShow">SHOW NEXT REAL CONTROL</button></div></div>';
- o.querySelector(".b")?.appendChild(d);
- d.querySelector("#vgABuild")?.addEventListener("click",build);
- d.querySelector("#vgASign")?.addEventListener("click",sign);
- d.querySelector("#vgAPrint")?.addEventListener("click",()=>window.print());
- d.querySelector("#vgANext")?.addEventListener("click",nextPatient);
- d.querySelector("#vgAShow").onclick=show
-}
-setTimeout(mount,1950);
-document.addEventListener("click",e=>{if(!e.target.closest("#vgAwardRoute"))setTimeout(mount,290)},false);
-window.VetGodsAwardPass9={mount,build,sign,nextPatient,status,show};
-})();
-</script>
 
-<style id="vg-flow-pass10-css">
-#vgLoopMaster{margin:8px 0;padding:9px;border:2px solid #777;background:#020402}
-#vgLoopMaster .vgLMHead{display:flex;justify-content:space-between;gap:8px;align-items:center}
-#vgLoopMaster .vgLMHead b{color:#ffe600;font:900 10px "Courier New",monospace}
-#vgLoopMaster .vgLMMode{font:900 8px "Courier New",monospace;color:#bbb}
-#vgLoopMaster .vgLMTrack{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;margin:8px 0}
-#vgLoopMaster .vgLM{border:1px solid #333;padding:5px 2px;text-align:center;color:#666;font:7px "Courier New",monospace}
-#vgLoopMaster .vgLM.done{color:#ccc;border-color:#666}.vgLM.now{background:#ffe600;color:#000;border-color:#ffe600;font-weight:900}
-#vgLoopMaster .vgLMInfo{font:9px "Courier New",monospace;line-height:1.5;border:1px dashed #555;padding:7px}
-#vgLoopMaster .vgLMInfo strong{color:#ffe600}
-#vgLoopMaster .vgLMBtns{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
-#vgLoopMaster button{padding:7px 8px}
-.vgMasterBlink{outline:5px solid #ffe600!important;outline-offset:4px!important;animation:vgMasterBlink .55s steps(2,end) 7!important;box-shadow:0 0 26px #ffe600!important}
-@keyframes vgMasterBlink{0%,49%{outline-color:#ffe600}50%,100%{outline-color:#555}}
-@media(max-width:620px){#vgLoopMaster .vgLMTrack{grid-template-columns:repeat(2,1fr)}}
-</style>
-<script id="vg-flow-pass10-js">
-(function(){
-"use strict";
-const N=["PATIENT","INTAKE","EXAM","DIAGNOSTICS","STABILIZE","TREATMENT","RECOVERY","DISPOSITION","AWARD","NEXT PATIENT"];
-const BKEY="vetgods_yellow_brain_phase1_v1";
-function A(){return state.animals?.[state.active]||null}
-function save(){try{window.save?.()}catch(e){}}
-function lastClosed(){return [...(state.animals||[])].filter(a=>a&&(a.caseClosed||a.disposition==="CASE COMPLETE")).sort((a,b)=>(b.caseClosedAt||0)-(a.caseClosedAt||0))[0]||null}
-function step(){
- let a=A(),c=lastClosed();
- if(!a){
-   if(c?.certificateReady)return 9;
-   if(c?.caseClosed)return 8;
-   return 0
- }
- if(a.caseClosed||a.disposition==="CASE COMPLETE")return a.certificateReady?9:8;
- if(a.dispositionReady||a.recoveryComplete)return 7;
- if(a.recoveryReady||a.treatmentComplete&&a.treatmentVerified)return 6;
- if(a.stabilizationComplete)return 5;
- if(a.diagnosticsComplete)return 4;
- if(a.examComplete||a.examined)return 3;
- if(a.intakeComplete||a.stage==="INTAKE")return 2;
- return 1
-}
-function requirements(a,n){
- if(n===0)return "Select or create an animal patient.";
- if(n===1)return "Admit the selected animal and open Intake.";
- if(n===2)return "Complete the physical examination.";
- if(n===3)return "Complete Bio Scan, Lab/Imaging and review diagnostics.";
- if(n===4)return "Reach stabilization targets: O₂ ≥94, hydration ≥70, pain ≤30, nutrition ≥55.";
- if(n===5)return "Perform primary treatment and verify the response.";
- if(n===6)return "Move into Recovery, provide recovery care, then reassess.";
- if(n===7)return "Choose exactly one destination and close the case.";
- if(n===8)return "Build the Vet Gods award, add both signatures and verify the certificate.";
- return "Start the next patient. Completed animals and awards remain saved."
-}
-function route(n){
- try{
-  if(n<=1||n===9)program("clinic");
-  else if(n===2||n===3){section=1;page="care";program("care")}
-  else if(n===4){section=2;page="care";program("care")}
-  else if(n===5){section=3;page="care";program("care")}
-  else if(n===6){section=4;page="care";program("care")}
-  else if(n===7)program("records");
-  else if(n===8){section=2;program("certs")}
- }catch(e){}
-}
-function rx(n){
- return [
- /ADMIT|NEW CASE|SELECT PATIENT|START CASE|PATIENT/i,
- /INTAKE|ADMIT|ACCEPT CASE/i,
- /PHYSICAL EXAM|RUN EXAM|EXAM PATIENT|EXAM/i,
- /BIO SCAN|LAB|IMAGING|DIAGNOST/i,
- /OXYGEN|WATER|FLUID|PAIN|NUTRITION|STABIL/i,
- /PRIMARY TREATMENT|BEGIN TREATMENT|TREAT/i,
- /RECOVERY|RECOVER|REASSESS/i,
- /SEND HOME|ADOPT|MY PET|SANCTUARY|CLOSE CASE|DISPOSITION/i,
- /AWARD|CERTIFICATE|SIGN|VERIFY/i,
- /NEXT PATIENT|NEW PATIENT|ADMIT|NEW CASE/i
- ][n]
-}
-function visible(x){let r=x.getBoundingClientRect(),c=getComputedStyle(x);return c.display!=="none"&&c.visibility!=="hidden"&&r.width>0&&r.height>0}
-function show(){
- let n=step();route(n);
- setTimeout(()=>{
-  document.querySelectorAll(".vgMasterBlink").forEach(x=>x.classList.remove("vgMasterBlink"));
-  let t=[...document.querySelectorAll("button,a,[role=button],input[type=button],input[type=submit]")]
-   .filter(visible).filter(x=>!x.closest("#vgLoopMaster,#vgBrain,#vgOrientation"))
-   .find(x=>rx(n).test((x.textContent||x.value||"").trim()));
-  if(t){t.classList.add("vgMasterBlink");try{t.scrollIntoView({behavior:"smooth",block:"center"})}catch(e){}}
-  mount()
- },170)
-}
-function doCurrent(){
- let n=step();
- if(n===0||n===1)return window.VetGodsIntakePass2?.doNext?.();
- if(n===2)return window.VetGodsExamPass3?.doExam?.();
- if(n===3)return window.VetGodsDiagnosticsPass4?.doNext?.();
- if(n===4)return window.VetGodsStabilizePass5?.perform?.();
- if(n===5)return window.VetGodsTreatmentPass6?.perform?.();
- if(n===6)return window.VetGodsRecoveryPass7?.perform?.();
- if(n===7){
-   let a=A();
-   if(a?.finalDestination)return window.VetGodsDispositionPass8?.closeCase?.();
-   return window.VetGodsDispositionPass8?.show?.()
- }
- if(n===8){
-   let c=lastClosed();
-   if(!c?.awardBuilt)return window.VetGodsAwardPass9?.build?.();
-   return window.VetGodsAwardPass9?.sign?.()
- }
- if(n===9)return window.VetGodsAwardPass9?.nextPatient?.()
-}
-function syncYellow(){
- let n=step();
- try{
-  let b=JSON.parse(localStorage.getItem(BKEY)||"{}");
-  /* Map master flow to original yellow stages without fabricating completion. */
-  let map=[0,1,2,3,4,5,6,7,8,9];
-  if(b.step!==map[n]){b.step=map[n];b.coachMode="SHOW";b.msg="SYNCED TO REAL GAME STATE: "+N[n];localStorage.setItem(BKEY,JSON.stringify(b))}
- }catch(e){}
-}
-function audit(){
- let a=A(),n=step(),issues=[];
- if(a){
-  if(a.examComplete&&!a.intakeComplete)issues.push("Exam exists without Intake.");
-  if(a.diagnosticsComplete&&!(a.examComplete||a.examined))issues.push("Diagnostics exist without Exam.");
-  if(a.stabilizationComplete&&!a.diagnosticsComplete)issues.push("Stabilization exists without Diagnostics.");
-  if(a.treatmentComplete&&!a.stabilizationComplete)issues.push("Treatment exists without Stabilization.");
-  if(a.recoveryComplete&&!(a.treatmentComplete&&a.treatmentVerified))issues.push("Recovery exists without verified Treatment.");
-  if(a.dispositionReady&&!a.recoveryComplete)issues.push("Disposition unlocked without Recovery.");
- }
- return issues
-}
-function mount(){
- let o=document.querySelector("#vgOrientation");if(!o)return;
- o.querySelector("#vgLoopMaster")?.remove();
- syncYellow();
- let n=step(),a=A(),c=lastClosed(),issues=audit(),d=document.createElement("div");d.id="vgLoopMaster";
- d.innerHTML='<div class="vgLMHead"><b>FLOW PASS 10/10 // FULL LOOP INTEGRATION</b><span class="vgLMMode">NORMAL + YELLOW USE SAME PATIENT STATE</span></div>'+
- '<div class="vgLMTrack">'+N.map((x,i)=>'<div class="vgLM '+(i<n?"done":i===n?"now":"")+'">'+(i+1)+' '+x+'</div>').join("")+'</div>'+
- '<div class="vgLMInfo"><strong>CURRENT: '+N[n]+'</strong><br>'+requirements(a,n)+
- '<br>ACTIVE PATIENT: '+(a?.name||"NONE")+' | LAST CLOSED CASE: '+(c?.name||"NONE")+
- '<br>FLOW AUDIT: '+(issues.length?'⚠ '+issues.join(" "):'✓ NO OUT-OF-ORDER STATE DETECTED')+
- '<div class="vgLMBtns"><button id="vgLMShow">SHOW / BLINK NEXT REAL CONTROL</button><button id="vgLMDo">DO CURRENT STEP FOR ME</button>'+
- '<button id="vgLMRefresh">RECHECK FLOW STATE</button></div></div>';
- o.querySelector(".b")?.prepend(d);
- d.querySelector("#vgLMShow").onclick=show;
- d.querySelector("#vgLMDo").onclick=()=>{doCurrent();setTimeout(mount,250)};
- d.querySelector("#vgLMRefresh").onclick=mount
-}
-setTimeout(mount,2100);
-document.addEventListener("click",e=>{if(!e.target.closest("#vgLoopMaster"))setTimeout(mount,320)},false);
-window.VetGodsMasterFlow10={mount,show,doCurrent,step,audit};
-})();
-</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <style id="vg-dos-color-phase01-css">
 :root{
@@ -8980,6 +7739,1402 @@ setTimeout(mount,2700);
 document.addEventListener("click",()=>setTimeout(mount,450),false);
 setInterval(()=>{phase=(phase+1)%14;updateRails();updateScanner();highlightCurrent()},650);
 window.VetGodsDOSPhase3={mount};
+})();
+</script>
+
+
+
+
+
+
+<style id="vg-normal-flow-phase2-css">
+#vgNormalFlowBar{position:sticky;bottom:0;z-index:80;border-top:2px solid #657267;background:#020402;padding:6px;font:700 8px "Courier New",monospace;box-shadow:0 -6px 18px #000}
+#vgNormalFlowBar .nfline{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+#vgNormalFlowBar .nfstage{color:#56ff86;border:1px solid #315c3e;padding:4px 6px}
+#vgNormalFlowBar .nfmsg{color:#bbb;flex:1;min-width:180px}
+#vgNormalFlowBar button{background:#080b08;color:#ddd;border:1px solid #687268;padding:6px 8px;font:700 8px "Courier New",monospace}
+#vgNormalFlowBar button.primary{color:#56ff86;border-color:#56ff86}
+#vgNormalFlowBar button.back{color:#59c7ff;border-color:#31566a}
+@media(max-width:520px){#vgNormalFlowBar{font-size:7px}#vgNormalFlowBar button{padding:7px 6px}}
+</style>
+<script id="vg-normal-flow-phase2-js">
+(function(){
+"use strict";
+function A(){try{return state.animals?.[state.active]||null}catch(e){return null}}
+function hasDx(a){
+ let d=a?.diagnostics;if(!d)return false;
+ let count=Object.keys(d.runs||{}).filter(k=>k!=="review"&&d.runs[k]).length;
+ return count>=4 || (d.evidence||0)>=60;
+}
+function stable(a){return !!a && Number(a.oxygen)>=90 && Number(a.hydration)>=55 && Number(a.pain)<=45}
+function txReady(a){return !!(a?.treatment?.stage>=2 || a?.treatment?.performed?.length)}
+function txAssessed(a){return !!(a?.treatment?.stage>=3 || a?.treatment?.reassessments?.length)}
+function recoveryReady(a){return !!(a?.recovery?.readiness>=72 || a?.stage==="DISCHARGED" || a?.stage==="SANCTUARY")}
+function stage(){
+ let a=A();
+ if(!a)return {n:"PATIENT",msg:"Select an animal in Clinic / Animals.",next:"care",label:"OPEN CLINIC"};
+ if(a.stage==="DISCHARGED"||a.disposition==="HOME"||a.disposition==="SANCTUARY")return {n:"COMPLETE",msg:"Case disposition recorded. Start another patient when ready.",next:"animals",label:"NEXT PATIENT"};
+ if(a.recovery?.admitted || a.stage==="RECOVERY")return {n:"RECOVERY",msg:recoveryReady(a)?"Reassess and choose disposition.":"Continue inpatient care, then reassess.",next:"recovery",label:"OPEN RECOVERY"};
+ if(txAssessed(a) && (a.treatment?.readiness||0)>=72)return {n:"RECOVERY",msg:"Treatment reassessment supports Recovery. Transfer the patient.",next:"recovery",label:"TRANSFER TO RECOVERY"};
+ if(txReady(a))return {n:"TREATMENT",msg:"Treatment has been performed. Reassess the patient before routing.",next:"treatment",label:"REASSESS TREATMENT"};
+ if(hasDx(a) && stable(a))return {n:"TREATMENT",msg:"Diagnostics and stabilization are ready. Build the treatment plan.",next:"treatment",label:"OPEN TREATMENT"};
+ if(hasDx(a))return {n:"STABILIZE",msg:"Diagnostic evidence is ready. Correct oxygen, hydration and pain before Treatment.",next:"care",label:"OPEN STABILIZE",sec:2};
+ return {n:"DIAGNOSTICS",msg:"Complete the physical/diagnostic work before treatment planning.",next:"diagnostics",label:"OPEN DIAGNOSTICS"};
+}
+function go(k,sec){
+ try{
+   if(k==="animals")return open("animals");
+   if(k==="care"){if(sec!=null)section=sec;return open("care")}
+   return program(k);
+ }catch(e){console.error("NORMAL FLOW ROUTE",e)}
+}
+function previous(){
+ let s=stage().n;
+ if(s==="DIAGNOSTICS")return go("care",1);
+ if(s==="STABILIZE")return go("diagnostics");
+ if(s==="TREATMENT")return go("diagnostics");
+ if(s==="RECOVERY")return go("treatment");
+ if(s==="COMPLETE")return go("recovery");
+ return go("animals");
+}
+function normalize(){
+ let a=A();if(!a)return;
+ a.history=a.history||[];
+ if(a.nutrition==null)a.nutrition=65;
+ if(a.mobility==null)a.mobility=65;
+ /* Translate existing department progress into ordinary game state only. */
+ if(hasDx(a)&&!a.diagnosticsComplete)a.diagnosticsComplete=true;
+ if(stable(a)&&hasDx(a)&&!a.stabilizationComplete)a.stabilizationComplete=true;
+ if(txAssessed(a)&&!a.treatmentVerified)a.treatmentVerified=true;
+ if(a.recovery?.readiness>=72&&!a.recoveryComplete)a.recoveryComplete=true;
+ try{save()}catch(e){}
+}
+function mount(){
+ normalize();
+ document.querySelector("#vgNormalFlowBar")?.remove();
+ let main=document.querySelector("#main");if(!main)return;
+ let s=stage(),d=document.createElement("div");d.id="vgNormalFlowBar";
+ d.innerHTML='<div class="nfline"><span class="nfstage">NORMAL FLOW // '+s.n+'</span><span class="nfmsg">'+s.msg+'</span><button class="back" id="nfBack">← PREVIOUS AREA</button><button class="primary" id="nfNext">'+s.label+' →</button></div>';
+ main.appendChild(d);
+ d.querySelector("#nfBack").onclick=previous;
+ d.querySelector("#nfNext").onclick=()=>go(s.next,s.sec);
+}
+const oldSave=window.save;
+if(typeof oldSave==="function")window.save=function(){let r=oldSave.apply(this,arguments);setTimeout(mount,40);return r};
+document.addEventListener("click",()=>setTimeout(mount,140),false);
+setTimeout(mount,800);setInterval(mount,2200);
+window.VetGodsNormalFlow={mount,stage,go,normalize};
+})();
+</script>
+
+<style id="vg-final-normal-flow-hardening-css">
+/* Final compatibility rule: obsolete coaching widgets can never reappear.
+   Ordinary yellow game graphics/colors are intentionally untouched. */
+#vgOrientation,#vgBrain,#vgLoopMaster,#vgIntakeRoute,#vgExamRoute,#vgDiagRoute,
+#vgStabRoute,#vgTreatRoute,#vgRecoveryRoute,#vgDispositionRoute,#vgAwardRoute,
+[id*="yellowGuide"],[id*="yellow-guide"],[id*="yellowHelp"],[id*="yellow-help"]{
+ display:none!important;visibility:hidden!important;pointer-events:none!important
+}
+#vgNormalFlowBar{max-width:100%;box-sizing:border-box}
+#vgNormalFlowBar .nfline{justify-content:space-between}
+</style>
+<script id="vg-final-normal-flow-hardening-js">
+(function(){
+"use strict";
+const OLD=[
+ "vetgods_yellow_brain_phase1_v1",
+ "vetgods_flow_pass02_intake_v1","vetgods_flow_pass03_exam_v1",
+ "vetgods_flow_pass04_diagnostics_v1","vetgods_flow_pass05_stabilize_v1",
+ "vetgods_flow_pass06_treatment_v1","vetgods_flow_pass07_recovery_v1",
+ "vetgods_flow_pass08_disposition_v1","vetgods_flow_pass09_award_v1"
+];
+function scrub(){
+ OLD.forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
+ document.querySelectorAll(
+ '#vgOrientation,#vgBrain,#vgLoopMaster,#vgIntakeRoute,#vgExamRoute,#vgDiagRoute,#vgStabRoute,#vgTreatRoute,#vgRecoveryRoute,#vgDispositionRoute,#vgAwardRoute,[id*="yellowGuide"],[id*="yellow-guide"],[id*="yellowHelp"],[id*="yellow-help"]'
+ ).forEach(x=>x.remove());
+}
+function repairActive(){
+ try{
+  if(!Array.isArray(state.animals))return;
+  if(state.active!=null && state.active>=state.animals.length)state.active=-1;
+  let a=state.animals?.[state.active];
+  if(a){
+   a.history=Array.isArray(a.history)?a.history:[];
+   if(a.stage==="RECOVERY" && !a.recovery)a.recovery={admitted:true,readiness:50};
+  }
+  save();
+ }catch(e){}
+}
+function boot(){
+ scrub();repairActive();
+ try{window.VetGodsNormalFlow?.normalize?.();window.VetGodsNormalFlow?.mount?.()}catch(e){}
+}
+boot();setTimeout(boot,500);setTimeout(boot,1600);
+document.addEventListener("click",()=>setTimeout(scrub,100),false);
+window.VetGodsFinalNormalFlow=true;
+})();
+</script>
+
+<style id="vg-no-route-tips-final-css">
+.vgFirstGameRoute,[data-first-game-route],[data-yellow-tip],
+[id*="firstGameRoute" i],[class*="firstGameRoute" i],
+[id*="yellowTip" i],[class*="yellowTip" i],
+[id*="yellowGuide" i],[class*="yellowGuide" i]{
+ display:none!important;visibility:hidden!important;pointer-events:none!important
+}
+</style>
+<script id="vg-no-route-tips-final-js">
+(function(){
+"use strict";
+const BAD=/FIRST\s+GAME\s+ROUTE|YELLOW\s+(?:GUIDE|TIP|HELP)|STEP\s+\d+\s+OF\s+10/i;
+function purgeTips(){
+ document.querySelectorAll("body *").forEach(el=>{
+   if(el.id==="vgNormalFlowBar")return;
+   const own=[...el.childNodes].filter(n=>n.nodeType===3).map(n=>n.nodeValue||"").join(" ");
+   const tag=el.tagName;
+   if(BAD.test(own) && /^(DIV|SECTION|ASIDE|BUTTON|DETAILS|SUMMARY|P|SPAN|H1|H2|H3|H4)$/.test(tag)){
+     let box=el.closest('[class*="tip" i],[class*="guide" i],[class*="route" i],[id*="tip" i],[id*="guide" i],[id*="route" i]')||el;
+     if(box.id!=="vgNormalFlowBar")box.remove();
+   }
+ });
+}
+const obs=new MutationObserver(()=>purgeTips());
+function boot(){purgeTips();try{obs.observe(document.body,{childList:true,subtree:true})}catch(e){}}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
+setTimeout(purgeTips,500);setTimeout(purgeTips,1800);
+})();
+</script>
+
+<style id="vg-simple-chart-p1-css">
+#vgSimpleChart{max-width:900px;margin:10px auto 90px;background:#f2f0e8;color:#171717;border:1px solid #777;box-shadow:0 8px 28px #000;padding:14px;font:12px "Courier New",monospace}
+#vgSimpleChart *{box-sizing:border-box}
+#vgSimpleChart .sc-head{display:flex;justify-content:space-between;gap:10px;border-bottom:3px double #222;padding-bottom:8px;margin-bottom:10px}
+#vgSimpleChart h2{margin:0;font-size:17px}.sc-case{font-weight:900;text-align:right}
+#vgSimpleChart .sc-grid{display:grid;grid-template-columns:repeat(2,1fr);border:1px solid #777}
+#vgSimpleChart .sc-field{padding:8px;border-right:1px solid #aaa;border-bottom:1px solid #aaa}
+#vgSimpleChart .sc-field.wide{grid-column:1/-1}
+#vgSimpleChart label{display:block;font-size:9px;font-weight:900;margin-bottom:4px;color:#444}
+#vgSimpleChart input,#vgSimpleChart select,#vgSimpleChart textarea{width:100%;background:#fff;color:#111;border:1px solid #888;padding:8px;font:12px "Courier New",monospace}
+#vgSimpleChart textarea{min-height:72px;resize:vertical}
+#vgSimpleChart .sc-recall{background:#e5e2d7;padding:7px;border:1px solid #aaa;margin:10px 0;line-height:1.55}
+#vgSimpleChart .sc-recall b{color:#111}
+#vgSimpleChart .sc-status{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:10px 0}
+#vgSimpleChart .sc-stat{background:#fff;border:1px solid #999;padding:6px;text-align:center}
+#vgSimpleChart .sc-stat b{display:block;font-size:14px}
+#vgSimpleChart .sc-bottom{display:flex;gap:7px;justify-content:space-between;align-items:center;margin-top:12px;padding-top:10px;border-top:2px solid #555}
+#vgSimpleChart .sc-bottom button{padding:10px 12px;border:1px solid #222;background:#111;color:#fff;font:900 11px "Courier New",monospace}
+#vgSimpleChart .sc-bottom .secondary{background:#eee;color:#111}
+#vgSimpleChart .sc-note{flex:1;color:#444}
+#vgSimpleChart .sc-missing{outline:3px solid #a33!important;background:#fff4f4!important}
+#vgSimpleChart .sc-saved{padding:7px;background:#e6efe4;border:1px solid #73836e;margin-top:8px;font-weight:900}
+#vgSimpleChartMode{position:fixed;right:10px;bottom:10px;z-index:500;padding:8px 10px;background:#111;color:#eee;border:1px solid #888;font:800 9px "Courier New",monospace}
+body.vgSimpleChartActive #main>.path,body.vgSimpleChartActive #main>.grid,body.vgSimpleChartActive #vgNormalFlowBar{display:none!important}
+@media(max-width:600px){#vgSimpleChart{margin:5px 5px 80px;padding:9px}.sc-grid{grid-template-columns:1fr!important}.sc-field{grid-column:1!important}.sc-status{grid-template-columns:repeat(2,1fr)!important}.sc-head{display:block!important}.sc-case{text-align:left!important;margin-top:5px}.sc-bottom{align-items:stretch!important;flex-direction:column!important}}
+</style>
+<script id="vg-simple-chart-p1-js">
+(function(){
+"use strict";
+function A(){try{return state.animals?.[state.active]||null}catch(e){return null}}
+function ensure(){
+ state.simpleChart=state.simpleChart||{};
+ let a=A();if(!a)return null;
+ let k=a.id??state.active;
+ state.simpleChart[k]=state.simpleChart[k]||{
+   reporterFirst:a.reporter?.first||"",reporterLast:a.reporter?.last||"",
+   relation:a.reporter?.relation||"OWNER",contact:a.reporter?.contact||"",
+   concern:a.presentingConcern||"",onset:a.onset||"UNKNOWN",
+   arrival:a.arrivalMode||"WALK-IN",priority:a.triagePriority||"ROUTINE",
+   notes:a.intakeNotes||""
+ };
+ return state.simpleChart[k]
+}
+function val(id){return document.querySelector(id)?.value||""}
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function saveChart(showMsg=true){
+ let a=A(),c=ensure();if(!a||!c)return false;
+ let req=["#scConcern"];let missing=req.filter(x=>!val(x).trim());
+ document.querySelectorAll(".sc-missing").forEach(x=>x.classList.remove("sc-missing"));
+ missing.forEach(x=>document.querySelector(x)?.classList.add("sc-missing"));
+ if(missing.length)return false;
+ c.reporterFirst=val("#scReporterFirst");c.reporterLast=val("#scReporterLast");c.relation=val("#scRelation");c.contact=val("#scContact");
+ c.concern=val("#scConcern");c.onset=val("#scOnset");c.arrival=val("#scArrival");c.priority=val("#scPriority");c.notes=val("#scNotes");
+ a.reporter={first:c.reporterFirst,last:c.reporterLast,relation:c.relation,contact:c.contact};
+ a.presentingConcern=c.concern;a.onset=c.onset;a.arrivalMode=c.arrival;a.triagePriority=c.priority;a.intakeNotes=c.notes;
+ a.stage="INTAKE";a.disposition="ACTIVE CASE";
+ a.caseId=a.caseId||("VG-"+String(Date.now()).slice(-7));
+ a.intakeComplete=true;a.simpleChartIntakeComplete=true;
+ a.history=Array.isArray(a.history)?a.history:[];
+ if(!a.history.some(x=>String(x).includes("STANDARD PATIENT CHART SAVED")))a.history.unshift(new Date().toLocaleTimeString()+" · STANDARD PATIENT CHART SAVED");
+ try{save()}catch(e){}
+ if(showMsg){let m=document.querySelector("#scSaved");if(m)m.textContent="✓ PATIENT CHART SAVED — THIS INFORMATION WILL BE RECALLED ON THE NEXT SHEETS."}
+ return true
+}
+function render(){
+ let a=A();if(!a)return;
+ let c=ensure();page="care";section=0;try{nav()}catch(e){}
+ document.body.classList.add("vgSimpleChartActive");
+ let main=document.querySelector("#main");if(!main)return;
+ main.innerHTML='<div id="vgSimpleChart">'+
+ '<div class="sc-head"><div><small>VET GODS // STANDARD MEDICAL RECORD</small><h2>01 — PATIENT / INTAKE CHART</h2></div><div class="sc-case">CASE '+esc(a.caseId||"NEW")+'<br>'+esc(a.icon||"")+" "+esc(a.name)+'</div></div>'+
+ '<div class="sc-recall"><b>RECALLED PATIENT:</b> '+esc(a.name)+' · '+esc(a.species)+' · Current stage '+esc(a.stage)+
+ '<br><b>RECALLED CONDITION:</b> Health '+Math.round(a.health||0)+'% · O₂ '+Math.round(a.oxygen||0)+'% · Hydration '+Math.round(a.hydration||0)+'% · Pain '+Math.round(a.pain||0)+'% · Stress '+Math.round(a.stress||0)+'%</div>'+
+ '<div class="sc-grid">'+
+ field("PATIENT NAME",'<input value="'+esc(a.name)+'" readonly>')+
+ field("SPECIES",'<input value="'+esc(a.species)+'" readonly>')+
+ field("REPORTER / OWNER FIRST NAME",'<input id="scReporterFirst" value="'+esc(c.reporterFirst)+'">')+
+ field("REPORTER / OWNER LAST NAME",'<input id="scReporterLast" value="'+esc(c.reporterLast)+'">')+
+ field("RELATION",select("scRelation",c.relation,["OWNER","REPORTER","RESCUER","HANDLER","FACILITY STAFF"]))+
+ field("CONTACT / FILE NOTE",'<input id="scContact" value="'+esc(c.contact)+'">')+
+ field("REASON FOR VISIT *",'<textarea id="scConcern">'+esc(c.concern)+'</textarea>',true)+
+ field("ONSET",select("scOnset",c.onset,["UNKNOWN","JUST NOW","TODAY","1-3 DAYS","LONGER TERM"]))+
+ field("ARRIVAL",select("scArrival",c.arrival,["WALK-IN","RESCUE TRANSFER","SANCTUARY TRANSFER","MISSION RETURN","RESEARCH TRANSFER"]))+
+ field("PRIORITY",select("scPriority",c.priority,["ROUTINE","PRIORITY","URGENT","CRITICAL"]))+
+ field("INTAKE NOTES",'<textarea id="scNotes">'+esc(c.notes)+'</textarea>',true)+
+ '</div>'+
+ '<div class="sc-status">'+stat("HEALTH",a.health)+stat("OXYGEN",a.oxygen)+stat("HYDRATION",a.hydration)+stat("PAIN",a.pain)+stat("STRESS",a.stress)+'</div>'+
+ '<div id="scSaved" class="sc-saved">'+(a.simpleChartIntakeComplete?"✓ SAVED PATIENT CHART — READY FOR EXAM.":"Fill the paper from top to bottom. Only REASON FOR VISIT is required.")+'</div>'+
+ '<div class="sc-bottom"><button class="secondary" id="scAnimals">← CHANGE PATIENT</button><span class="sc-note">Everything entered here stays attached to '+esc(a.name)+' and will be recalled later.</span><button id="scNext">SAVE THIS PAGE → EXAM</button></div>'+
+ '</div>';
+ document.querySelector("#scAnimals").onclick=()=>{document.body.classList.remove("vgSimpleChartActive");open("animals")};
+ document.querySelector("#scNext").onclick=()=>{if(saveChart()){document.body.classList.remove("vgSimpleChartActive");section=1;program("care")}};
+}
+function field(label,control,wide=false){return '<div class="sc-field '+(wide?"wide":"")+'"><label>'+label+'</label>'+control+'</div>'}
+function select(id,v,arr){return '<select id="'+id+'">'+arr.map(x=>'<option '+(x===v?"selected":"")+'>'+x+'</option>').join("")+'</select>'}
+function stat(k,v){return '<div class="sc-stat">'+k+'<b>'+Math.round(Number(v)||0)+'%</b></div>'}
+function modeButton(){
+ if(document.querySelector("#vgSimpleChartMode"))return;
+ let b=document.createElement("button");b.id="vgSimpleChartMode";b.textContent="PATIENT CHART";b.onclick=render;document.body.appendChild(b)
+}
+const oldOpen=window.open;
+window.open=function(k){if(k==="care"&&section===0)return render();document.body.classList.remove("vgSimpleChartActive");return oldOpen.apply(this,arguments)};
+const oldProgram=window.program;
+window.program=function(k){if(k==="care"&&section===0)return render();document.body.classList.remove("vgSimpleChartActive");return oldProgram.apply(this,arguments)};
+setTimeout(modeButton,500);
+window.VetGodsSimpleChartP1={render,saveChart};
+})();
+</script>
+
+<style id="vg-simple-chart-p3-css">
+#vgDiagPaper{max-width:900px;margin:10px auto 90px;background:#f2f0e8;color:#171717;border:1px solid #777;box-shadow:0 8px 28px #000;padding:14px;font:12px "Courier New",monospace}
+#vgDiagPaper *{box-sizing:border-box}
+#vgDiagPaper .dp-head{display:flex;justify-content:space-between;border-bottom:3px double #222;padding-bottom:8px;margin-bottom:10px;gap:10px}
+#vgDiagPaper h2{margin:0;font-size:17px}
+#vgDiagPaper .dp-recall{background:#e5e2d7;border:1px solid #aaa;padding:8px;line-height:1.55;margin-bottom:9px}
+#vgDiagPaper .dp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+#vgDiagPaper .dp-test{background:#fff;border:1px solid #999;padding:9px}
+#vgDiagPaper .dp-test.done{border:2px solid #5b765f;background:#edf4ea}
+#vgDiagPaper .dp-test h3{font-size:11px;margin:0 0 5px}
+#vgDiagPaper .dp-test p{min-height:32px;margin:5px 0;color:#555}
+#vgDiagPaper button{padding:9px;border:1px solid #222;background:#222;color:#fff;font:900 10px "Courier New",monospace}
+#vgDiagPaper .dp-test.done button{background:#e5e5e5;color:#222}
+#vgDiagPaper textarea{width:100%;min-height:65px;background:#fff;color:#111;border:1px solid #888;padding:7px}
+#vgDiagPaper .dp-bottom{display:flex;gap:7px;align-items:center;margin-top:12px;padding-top:10px;border-top:2px solid #555}
+#vgDiagPaper .dp-bottom .note{flex:1;color:#444}
+#vgDiagPaper .dp-bottom .next{background:#111;color:#fff;padding:11px 14px}
+#vgDiagPaper .dp-alert{padding:7px;margin-top:8px;border:1px solid #999;background:#eee;font-weight:900}
+#vgDiagPaper .dp-alert.ready{background:#e6efe4;border-color:#73836e}
+#vgDiagPaper .dp-alert.missing{background:#fff0e6;border-color:#a76f42}
+@media(max-width:600px){#vgDiagPaper{margin:5px 5px 80px;padding:9px}.dp-grid{grid-template-columns:1fr!important}.dp-head,.dp-bottom{flex-direction:column!important}}
+</style>
+<script id="vg-simple-chart-p3-js">
+(function(){
+"use strict";
+function A(){try{return state.animals?.[state.active]||null}catch(e){return null}}
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+const TESTS=[
+ ["physical","PHYSICAL REVIEW","Review examination findings and current vital signs."],
+ ["lab","LAB PANEL","Run the simulated blood / chemistry panel."],
+ ["imaging","IMAGING","Run the simulated imaging study."],
+ ["bioscan","BIO SCAN","Run the fictional Vet Gods body scanner."]
+];
+function D(a){a.diagnostics=a.diagnostics||{};a.diagnostics.runs=a.diagnostics.runs||{};return a.diagnostics}
+function result(a,k){
+ let species=a.species||"animal";
+ if(k==="physical")return "Physical findings recorded for "+species+". Pain "+Math.round(a.pain||0)+"%; stress "+Math.round(a.stress||0)+"%.";
+ if(k==="lab")return "Simulated laboratory panel recorded. Hydration "+Math.round(a.hydration||0)+"%; nutrition "+Math.round(a.nutrition||a.food||0)+"%.";
+ if(k==="imaging")return "Simulated imaging study completed and attached to this case record.";
+ return "Fictional bio-scan completed. O₂ "+Math.round(a.oxygen||0)+"%; health "+Math.round(a.health||0)+"%.";
+}
+function run(k){
+ let a=A();if(!a)return;let d=D(a);
+ d.runs[k]=true;d.results=d.results||{};d.results[k]=result(a,k);
+ d.evidence=Object.values(d.runs).filter(Boolean).length*25;
+ try{save()}catch(e){};render()
+}
+function complete(){
+ let a=A();if(!a)return;let d=D(a),missing=TESTS.filter(t=>!d.runs[t[0]]);
+ if(missing.length){let x=document.querySelector("#dpAlert");x.className="dp-alert missing";x.textContent="Complete these boxes first: "+missing.map(x=>x[1]).join(", ");return}
+ d.review=document.querySelector("#dpReview")?.value||"";
+ d.complete=true;a.diagnosticsComplete=true;a.stage="DIAGNOSTICS";
+ a.history=Array.isArray(a.history)?a.history:[];
+ a.history.unshift(new Date().toLocaleTimeString()+" · STANDARD DIAGNOSTICS SHEET COMPLETE");
+ try{save()}catch(e){}
+ document.body.classList.remove("vgSimpleChartActive");section=2;program("care")
+}
+function render(){
+ let a=A();if(!a)return;let d=D(a);
+ document.body.classList.add("vgSimpleChartActive");
+ let main=document.querySelector("#main");if(!main)return;
+ main.innerHTML='<div id="vgDiagPaper"><div class="dp-head"><div><small>VET GODS // STANDARD MEDICAL RECORD</small><h2>03 — DIAGNOSTICS SHEET</h2></div><b>'+esc(a.name)+' · '+esc(a.species)+'</b></div>'+
+ '<div class="dp-recall"><b>RECALLED REASON FOR VISIT:</b> '+esc(a.presentingConcern||"Not entered")+
+ '<br><b>RECALLED INTAKE:</b> '+esc(a.triagePriority||"ROUTINE")+' · '+esc(a.arrivalMode||"")+
+ '<br><b>CURRENT:</b> Health '+Math.round(a.health||0)+'% · O₂ '+Math.round(a.oxygen||0)+'% · Hydration '+Math.round(a.hydration||0)+'% · Pain '+Math.round(a.pain||0)+'%</div>'+
+ '<div class="dp-grid">'+TESTS.map(t=>'<div class="dp-test '+(d.runs[t[0]]?"done":"")+'"><h3>☐ '+t[1]+'</h3><p>'+(d.results?.[t[0]]||t[2])+'</p><button data-test="'+t[0]+'">'+(d.runs[t[0]]?"✓ RECORDED":"RUN + RECORD")+'</button></div>').join("")+'</div>'+
+ '<div style="margin-top:9px"><b>DIAGNOSTIC REVIEW / NOTES</b><textarea id="dpReview">'+esc(d.review||"")+'</textarea></div>'+
+ '<div id="dpAlert" class="dp-alert '+(TESTS.every(t=>d.runs[t[0]])?"ready":"")+'">'+(TESTS.every(t=>d.runs[t[0]])?"✓ ALL REQUIRED DIAGNOSTICS RECORDED — READY TO CONTINUE.":"Work down the four boxes. Each result stays on this animal's chart.")+'</div>'+
+ '<div class="dp-bottom"><button id="dpBack">← EXAM / CARE</button><span class="note">One page. Four required records. No diagnostic menus to hunt through.</span><button class="next" id="dpNext">COMPLETE DIAGNOSTICS → STABILIZE</button></div></div>';
+ main.querySelectorAll("[data-test]").forEach(b=>b.onclick=()=>run(b.dataset.test));
+ document.querySelector("#dpBack").onclick=()=>{document.body.classList.remove("vgSimpleChartActive");section=1;program("care")};
+ document.querySelector("#dpNext").onclick=complete
+}
+const oldProgram=window.program;
+window.program=function(k){
+ if(k==="diagnostics"){render();return}
+ document.body.classList.remove("vgSimpleChartActive");
+ return oldProgram.apply(this,arguments)
+};
+window.VetGodsSimpleDiagnosticsP3={render,run,complete};
+})();
+</script>
+
+<style id="vg-simple-chart-p2-css">
+#vgExamPaper{max-width:900px;margin:10px auto 90px;background:#f2f0e8;color:#171717;border:1px solid #777;box-shadow:0 8px 28px #000;padding:14px;font:12px "Courier New",monospace}
+#vgExamPaper *{box-sizing:border-box}
+#vgExamPaper .ep-head{display:flex;justify-content:space-between;gap:10px;border-bottom:3px double #222;padding-bottom:8px;margin-bottom:10px}
+#vgExamPaper h2{margin:0;font-size:17px}
+#vgExamPaper .ep-recall{background:#e5e2d7;border:1px solid #aaa;padding:8px;line-height:1.55;margin-bottom:9px}
+#vgExamPaper .ep-grid{display:grid;grid-template-columns:repeat(2,1fr);border:1px solid #888}
+#vgExamPaper .ep-row{padding:8px;border-right:1px solid #aaa;border-bottom:1px solid #aaa;background:#fff}
+#vgExamPaper .ep-row.wide{grid-column:1/-1}
+#vgExamPaper label{display:block;font-size:9px;font-weight:900;color:#444;margin-bottom:4px}
+#vgExamPaper select,#vgExamPaper textarea,#vgExamPaper input{width:100%;padding:8px;border:1px solid #888;background:#fff;color:#111;font:12px "Courier New",monospace}
+#vgExamPaper textarea{min-height:65px;resize:vertical}
+#vgExamPaper .ep-vitals{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:9px 0}
+#vgExamPaper .ep-vital{background:#fff;border:1px solid #999;padding:7px;text-align:center}
+#vgExamPaper .ep-vital b{display:block;font-size:14px}
+#vgExamPaper .ep-checks{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;margin-top:8px}
+#vgExamPaper .ep-check{display:flex;align-items:center;gap:7px;background:#fff;border:1px solid #aaa;padding:8px}
+#vgExamPaper .ep-check input{width:auto}
+#vgExamPaper .ep-alert{margin-top:9px;padding:7px;border:1px solid #999;background:#eee;font-weight:900}
+#vgExamPaper .ep-alert.ready{background:#e6efe4;border-color:#73836e}
+#vgExamPaper .ep-alert.missing{background:#fff0e6;border-color:#a76f42}
+#vgExamPaper .ep-bottom{display:flex;gap:7px;align-items:center;margin-top:12px;padding-top:10px;border-top:2px solid #555}
+#vgExamPaper .ep-bottom .note{flex:1;color:#444}
+#vgExamPaper button{padding:10px 12px;border:1px solid #222;background:#111;color:#fff;font:900 10px "Courier New",monospace}
+#vgExamPaper .secondary{background:#eee;color:#111}
+@media(max-width:600px){#vgExamPaper{margin:5px 5px 80px;padding:9px}.ep-grid,.ep-checks{grid-template-columns:1fr!important}.ep-row{grid-column:1!important}.ep-vitals{grid-template-columns:repeat(2,1fr)!important}.ep-head,.ep-bottom{flex-direction:column!important;align-items:stretch!important}}
+</style>
+
+<script id="vg-simple-chart-p2-js">
+(function(){
+"use strict";
+function A(){try{return state.animals?.[state.active]||null}catch(e){return null}}
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function E(a){
+ a.simpleExam=a.simpleExam||{
+  appearance:"ALERT / RESPONSIVE",breathing:"REGULAR",circulation:"STABLE",
+  hydration:"REVIEW CURRENT VALUE",mobility:"AMBULATORY / AS TOLERATED",
+  neuro:"RESPONSIVE",abdomen:"NO OBVIOUS ABNORMALITY",skin:"NO OBVIOUS ABNORMALITY",
+  painSite:"",notes:"",checks:{identity:false,vitals:false,body:false,pain:false}
+ };
+ a.simpleExam.checks=a.simpleExam.checks||{};
+ return a.simpleExam
+}
+function sel(id,v,arr){return '<select id="'+id+'">'+arr.map(x=>'<option '+(x===v?"selected":"")+'>'+x+'</option>').join("")+'</select>'}
+function vital(k,v){return '<div class="ep-vital">'+k+'<b>'+Math.round(Number(v)||0)+'%</b></div>'}
+function saveDraft(){
+ let a=A();if(!a)return;let e=E(a);
+ ["appearance","breathing","circulation","hydration","mobility","neuro","abdomen","skin","painSite","notes"].forEach(k=>{
+   let x=document.querySelector("#ep_"+k);if(x)e[k]=x.value
+ });
+ ["identity","vitals","body","pain"].forEach(k=>e.checks[k]=!!document.querySelector("#epc_"+k)?.checked);
+ try{save()}catch(err){}
+}
+function complete(){
+ let a=A();if(!a)return;saveDraft();let e=E(a);
+ let missing=[];
+ if(!e.checks.identity)missing.push("patient identity");
+ if(!e.checks.vitals)missing.push("vital signs");
+ if(!e.checks.body)missing.push("body examination");
+ if(!e.checks.pain)missing.push("pain assessment");
+ let al=document.querySelector("#epAlert");
+ if(missing.length){al.className="ep-alert missing";al.textContent="Finish these exam checks first: "+missing.join(", ")+'.';return}
+ e.complete=true;e.completedAt=Date.now();
+ a.examComplete=true;a.examined=true;a.stage="EXAM";
+ a.examSummary="Appearance: "+e.appearance+"; Breathing: "+e.breathing+"; Circulation: "+e.circulation+"; Mobility: "+e.mobility+"; Neuro: "+e.neuro+".";
+ a.history=Array.isArray(a.history)?a.history:[];
+ a.history.unshift(new Date().toLocaleTimeString()+" · STANDARD EXAM SHEET COMPLETE");
+ try{save()}catch(err){}
+ document.body.classList.remove("vgSimpleChartActive");
+ program("diagnostics")
+}
+function render(){
+ let a=A();if(!a)return;let e=E(a);
+ document.body.classList.add("vgSimpleChartActive");
+ let main=document.querySelector("#main");if(!main)return;
+ main.innerHTML='<div id="vgExamPaper">'+
+ '<div class="ep-head"><div><small>VET GODS // STANDARD MEDICAL RECORD</small><h2>02 — PHYSICAL EXAM SHEET</h2></div><b>'+esc(a.name)+' · '+esc(a.species)+'</b></div>'+
+ '<div class="ep-recall"><b>RECALLED REASON FOR VISIT:</b> '+esc(a.presentingConcern||"Not entered")+
+ '<br><b>RECALLED PRIORITY:</b> '+esc(a.triagePriority||"ROUTINE")+
+ '<br><b>RECALLED INTAKE NOTES:</b> '+esc(a.intakeNotes||"None entered")+'</div>'+
+ '<div class="ep-vitals">'+vital("HEALTH",a.health)+vital("OXYGEN",a.oxygen)+vital("HYDRATION",a.hydration)+vital("PAIN",a.pain)+vital("STRESS",a.stress)+'</div>'+
+ '<div class="ep-grid">'+
+ row("GENERAL APPEARANCE",sel("ep_appearance",e.appearance,["ALERT / RESPONSIVE","QUIET / RESPONSIVE","DEPRESSED","DISTRESSED","CRITICAL"]))+
+ row("BREATHING",sel("ep_breathing",e.breathing,["REGULAR","INCREASED EFFORT","RAPID","SHALLOW","DISTRESSED"]))+
+ row("CIRCULATION",sel("ep_circulation",e.circulation,["STABLE","WATCH","WEAK","COMPROMISED"]))+
+ row("HYDRATION REVIEW",sel("ep_hydration",e.hydration,["REVIEW CURRENT VALUE","ADEQUATE","MILD DEFICIT","MODERATE DEFICIT","SEVERE DEFICIT"]))+
+ row("MOBILITY",sel("ep_mobility",e.mobility,["AMBULATORY / AS TOLERATED","GUARDED","LIMPING","ASSISTED","NON-AMBULATORY"]))+
+ row("NEURO / RESPONSIVENESS",sel("ep_neuro",e.neuro,["RESPONSIVE","QUIET","DISORIENTED","REDUCED RESPONSE"]))+
+ row("ABDOMEN / BODY",sel("ep_abdomen",e.abdomen,["NO OBVIOUS ABNORMALITY","TENDER","DISTENDED","GUARDED","ABNORMAL FINDING"]))+
+ row("SKIN / COAT / EXTERNAL",sel("ep_skin",e.skin,["NO OBVIOUS ABNORMALITY","WOUND","SWELLING","PARASITE / DERMAL FINDING","OTHER FINDING"]))+
+ row("PAIN LOCATION / OBSERVATION",'<input id="ep_painSite" value="'+esc(e.painSite)+'" placeholder="Where is discomfort observed?">',true)+
+ row("EXAM NOTES",'<textarea id="ep_notes">'+esc(e.notes)+'</textarea>',true)+
+ '</div>'+
+ '<div class="ep-checks">'+
+ check("identity","Patient identity/species verified",e.checks.identity)+
+ check("vitals","Current vital/status values reviewed",e.checks.vitals)+
+ check("body","Head-to-body physical examination completed",e.checks.body)+
+ check("pain","Pain/mobility assessment completed",e.checks.pain)+
+ '</div>'+
+ '<div id="epAlert" class="ep-alert '+(e.complete?"ready":"")+'">'+(e.complete?"✓ EXAM RECORDED — READY FOR DIAGNOSTICS.":"Work down this one sheet, check the four exam confirmations, then continue.")+'</div>'+
+ '<div class="ep-bottom"><button class="secondary" id="epBack">← PATIENT CHART</button><span class="note">The complaint and intake information stay visible while you examine the animal.</span><button id="epNext">COMPLETE EXAM → DIAGNOSTICS</button></div>'+
+ '</div>';
+ document.querySelector("#epBack").onclick=()=>{saveDraft();window.VetGodsSimpleChartP1?.render?.()};
+ document.querySelector("#epNext").onclick=complete;
+}
+function row(label,control,wide=false){return '<div class="ep-row '+(wide?"wide":"")+'"><label>'+label+'</label>'+control+'</div>'}
+function check(k,label,on){return '<label class="ep-check"><input type="checkbox" id="epc_'+k+'" '+(on?"checked":"")+'> '+label+'</label>'}
+
+/* Intercept the ordinary care section 1 and turn it into the simple Exam paper. */
+const priorProgram=window.program;
+window.program=function(k){
+ if(k==="care" && typeof section!=="undefined" && section===1){render();return}
+ return priorProgram.apply(this,arguments)
+};
+const priorOpen=window.open;
+window.open=function(k){
+ if(k==="care" && typeof section!=="undefined" && section===1){render();return}
+ return priorOpen.apply(this,arguments)
+};
+window.VetGodsSimpleExamP2={render,complete,saveDraft};
+})();
+</script>
+
+<style id="vg-simple-chart-p4-css">
+#vgStabPaper{max-width:900px;margin:10px auto 90px;background:#f2f0e8;color:#171717;border:1px solid #777;box-shadow:0 8px 28px #000;padding:14px;font:12px "Courier New",monospace}
+#vgStabPaper *{box-sizing:border-box}
+#vgStabPaper .sp-head{display:flex;justify-content:space-between;gap:10px;border-bottom:3px double #222;padding-bottom:8px;margin-bottom:10px}
+#vgStabPaper h2{margin:0;font-size:17px}
+#vgStabPaper .sp-recall{background:#e5e2d7;border:1px solid #aaa;padding:8px;line-height:1.55;margin-bottom:9px}
+#vgStabPaper .sp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+#vgStabPaper .sp-care{background:#fff;border:1px solid #999;padding:10px}
+#vgStabPaper .sp-care.done{border:2px solid #5b765f;background:#edf4ea}
+#vgStabPaper .sp-care h3{margin:0 0 5px;font-size:12px}
+#vgStabPaper .sp-reading{font-size:20px;font-weight:900;margin:4px 0}
+#vgStabPaper .sp-target{font-size:9px;color:#555;margin-bottom:7px}
+#vgStabPaper .sp-care button{width:100%;padding:10px;border:1px solid #222;background:#111;color:#fff;font:900 10px "Courier New",monospace}
+#vgStabPaper .sp-care.done button{background:#e4e4e4;color:#222}
+#vgStabPaper .sp-bar{height:7px;background:#ddd;border:1px solid #aaa;margin:5px 0 8px;overflow:hidden}
+#vgStabPaper .sp-bar i{display:block;height:100%;background:#555;width:var(--v)}
+#vgStabPaper textarea{width:100%;min-height:62px;background:#fff;color:#111;border:1px solid #888;padding:7px;margin-top:5px}
+#vgStabPaper .sp-alert{padding:8px;margin-top:9px;border:1px solid #999;background:#eee;font-weight:900}
+#vgStabPaper .sp-alert.ready{background:#e6efe4;border-color:#73836e}
+#vgStabPaper .sp-alert.missing{background:#fff0e6;border-color:#a76f42}
+#vgStabPaper .sp-bottom{display:flex;gap:7px;align-items:center;margin-top:12px;padding-top:10px;border-top:2px solid #555}
+#vgStabPaper .sp-bottom .note{flex:1;color:#444}
+#vgStabPaper .sp-bottom button{padding:11px 13px;border:1px solid #222;background:#111;color:#fff;font:900 10px "Courier New",monospace}
+#vgStabPaper .sp-bottom .secondary{background:#eee;color:#111}
+@media(max-width:600px){#vgStabPaper{margin:5px 5px 80px;padding:9px}.sp-grid{grid-template-columns:1fr!important}.sp-head,.sp-bottom{flex-direction:column!important;align-items:stretch!important}}
+</style>
+
+<script id="vg-simple-chart-p4-js">
+(function(){
+"use strict";
+function A(){try{return state.animals?.[state.active]||null}catch(e){return null}}
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function S(a){
+ a.simpleStabilization=a.simpleStabilization||{oxygen:false,fluids:false,pain:false,nutrition:false,notes:""};
+ return a.simpleStabilization
+}
+function nutrition(a){return Number(a.nutrition??a.food??55)}
+function done(a,k){
+ let x=S(a);
+ if(k==="oxygen")return x.oxygen && Number(a.oxygen)>=94;
+ if(k==="fluids")return x.fluids && Number(a.hydration)>=70;
+ if(k==="pain")return x.pain && Number(a.pain)<=30;
+ return x.nutrition && nutrition(a)>=55
+}
+function care(k){
+ let a=A();if(!a)return;let x=S(a);
+ if(k==="oxygen"){a.oxygen=Math.max(94,Number(a.oxygen||0)+10);x.oxygen=true}
+ if(k==="fluids"){a.hydration=Math.max(70,Number(a.hydration||0)+15);x.fluids=true}
+ if(k==="pain"){a.pain=Math.min(30,Math.max(0,Number(a.pain||0)-18));x.pain=true}
+ if(k==="nutrition"){a.nutrition=Math.max(55,nutrition(a)+12);a.food=Math.max(Number(a.food||0),a.nutrition);x.nutrition=true}
+ a.stage="STABILIZE";
+ a.history=Array.isArray(a.history)?a.history:[];
+ a.history.unshift(new Date().toLocaleTimeString()+" · STABILIZATION: "+k.toUpperCase()+" RECORDED");
+ try{save()}catch(e){};render()
+}
+function complete(){
+ let a=A();if(!a)return;let x=S(a);
+ x.notes=document.querySelector("#spNotes")?.value||"";
+ let missing=[];
+ if(!done(a,"oxygen"))missing.push("Oxygen");
+ if(!done(a,"fluids"))missing.push("Fluids / Hydration");
+ if(!done(a,"pain"))missing.push("Pain Control");
+ if(!done(a,"nutrition"))missing.push("Nutrition");
+ let al=document.querySelector("#spAlert");
+ if(missing.length){al.className="sp-alert missing";al.textContent="Finish these stabilization boxes first: "+missing.join(", ")+'.';return}
+ x.complete=true;x.completedAt=Date.now();
+ a.stabilizationComplete=true;a.stage="STABILIZED";
+ a.history=Array.isArray(a.history)?a.history:[];
+ a.history.unshift(new Date().toLocaleTimeString()+" · STANDARD STABILIZATION SHEET COMPLETE");
+ try{save()}catch(e){}
+ document.body.classList.remove("vgSimpleChartActive");
+ program("treatment")
+}
+function card(k,title,value,target,desc){
+ let a=A(),ok=done(a,k),pct=k==="pain"?Math.max(0,100-Number(value)):Math.max(0,Math.min(100,Number(value)));
+ return '<div class="sp-care '+(ok?"done":"")+'"><h3>'+(ok?"✓ ":"☐ ")+title+'</h3><div class="sp-reading">'+Math.round(Number(value)||0)+'%</div>'+
+ '<div class="sp-target">TARGET: '+target+'</div><div class="sp-bar" style="--v:'+pct+'%"><i></i></div><p>'+desc+'</p>'+
+ '<button data-care="'+k+'">'+(ok?"✓ RECORDED":"GIVE / RECORD "+title)+'</button></div>'
+}
+function render(){
+ let a=A();if(!a)return;let x=S(a);
+ document.body.classList.add("vgSimpleChartActive");
+ let main=document.querySelector("#main");if(!main)return;
+ let all=["oxygen","fluids","pain","nutrition"].every(k=>done(a,k));
+ main.innerHTML='<div id="vgStabPaper">'+
+ '<div class="sp-head"><div><small>VET GODS // STANDARD MEDICAL RECORD</small><h2>04 — STABILIZATION SHEET</h2></div><b>'+esc(a.name)+' · '+esc(a.species)+'</b></div>'+
+ '<div class="sp-recall"><b>RECALLED COMPLAINT:</b> '+esc(a.presentingConcern||"Not entered")+
+ '<br><b>RECALLED EXAM:</b> '+esc(a.examSummary||"Exam record attached")+
+ '<br><b>DIAGNOSTICS:</b> '+(a.diagnosticsComplete?"COMPLETE":"REVIEW REQUIRED")+
+ '<br><b>RULE:</b> Work through these four boxes. When all four meet target, Treatment unlocks.</div>'+
+ '<div class="sp-grid">'+
+ card("oxygen","OXYGEN",a.oxygen,"94% OR HIGHER","Provide simulated oxygen support and record the response.")+
+ card("fluids","FLUIDS / HYDRATION",a.hydration,"70% OR HIGHER","Provide simulated fluid/water support and record hydration.")+
+ card("pain","PAIN CONTROL",a.pain,"30% OR LOWER","Provide the case's simulated pain-control action and record response.")+
+ card("nutrition","NUTRITION",nutrition(a),"55% OR HIGHER","Provide nutritional support and record intake.")+
+ '</div>'+
+ '<div style="margin-top:9px"><b>STABILIZATION NOTES</b><textarea id="spNotes">'+esc(x.notes||"")+'</textarea></div>'+
+ '<div id="spAlert" class="sp-alert '+(all?"ready":"")+'">'+(all?"✓ ALL FOUR STABILIZATION TARGETS RECORDED — READY FOR TREATMENT.":"Complete each box once. The page keeps the updated values in the patient record.")+'</div>'+
+ '<div class="sp-bottom"><button class="secondary" id="spBack">← DIAGNOSTICS</button><span class="note">No stabilization menu: oxygen, fluids, pain and nutrition are all on this sheet.</span><button id="spNext">COMPLETE STABILIZATION → TREATMENT</button></div>'+
+ '</div>';
+ main.querySelectorAll("[data-care]").forEach(b=>b.onclick=()=>care(b.dataset.care));
+ document.querySelector("#spBack").onclick=()=>{x.notes=document.querySelector("#spNotes")?.value||"";try{save()}catch(e){};program("diagnostics")};
+ document.querySelector("#spNext").onclick=complete
+}
+
+/* Route the old Stabilize care section into the paper sheet. */
+const priorProgram=window.program;
+window.program=function(k){
+ if(k==="care" && typeof section!=="undefined" && section===2){render();return}
+ if(k==="stabilize"){render();return}
+ return priorProgram.apply(this,arguments)
+};
+const priorOpen=window.open;
+window.open=function(k){
+ if(k==="care" && typeof section!=="undefined" && section===2){render();return}
+ return priorOpen.apply(this,arguments)
+};
+window.VetGodsSimpleStabilizationP4={render,care,complete};
+})();
+</script>
+
+<style id="vg-simple-chart-p5-css">
+#vgTxPaper{max-width:900px;margin:10px auto 90px;background:#f2f0e8;color:#171717;border:1px solid #777;box-shadow:0 8px 28px #000;padding:14px;font:12px "Courier New",monospace}
+#vgTxPaper *{box-sizing:border-box}
+#vgTxPaper .tp-head{display:flex;justify-content:space-between;gap:10px;border-bottom:3px double #222;padding-bottom:8px;margin-bottom:10px}
+#vgTxPaper h2{margin:0;font-size:17px}
+#vgTxPaper .tp-recall{background:#e5e2d7;border:1px solid #aaa;padding:8px;line-height:1.55;margin-bottom:9px}
+#vgTxPaper .tp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+#vgTxPaper .tp-box{background:#fff;border:1px solid #999;padding:10px}
+#vgTxPaper .tp-box.done{border:2px solid #5b765f;background:#edf4ea}
+#vgTxPaper .tp-box h3{margin:0 0 6px;font-size:12px}
+#vgTxPaper select,#vgTxPaper textarea{width:100%;padding:8px;border:1px solid #888;background:#fff;color:#111;font:12px "Courier New",monospace}
+#vgTxPaper textarea{min-height:65px;resize:vertical}
+#vgTxPaper .tp-box button{width:100%;margin-top:7px;padding:10px;border:1px solid #222;background:#111;color:#fff;font:900 10px "Courier New",monospace}
+#vgTxPaper .tp-box.done button{background:#e4e4e4;color:#222}
+#vgTxPaper .tp-vitals{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:9px 0}
+#vgTxPaper .tp-vital{background:#fff;border:1px solid #999;padding:7px;text-align:center}
+#vgTxPaper .tp-vital b{display:block;font-size:14px}
+#vgTxPaper .tp-alert{padding:8px;margin-top:9px;border:1px solid #999;background:#eee;font-weight:900}
+#vgTxPaper .tp-alert.ready{background:#e6efe4;border-color:#73836e}
+#vgTxPaper .tp-alert.missing{background:#fff0e6;border-color:#a76f42}
+#vgTxPaper .tp-bottom{display:flex;gap:7px;align-items:center;margin-top:12px;padding-top:10px;border-top:2px solid #555}
+#vgTxPaper .tp-bottom .note{flex:1;color:#444}
+#vgTxPaper .tp-bottom button{padding:11px 13px;border:1px solid #222;background:#111;color:#fff;font:900 10px "Courier New",monospace}
+#vgTxPaper .secondary{background:#eee!important;color:#111!important}
+@media(max-width:600px){#vgTxPaper{margin:5px 5px 80px;padding:9px}.tp-grid{grid-template-columns:1fr!important}.tp-vitals{grid-template-columns:repeat(2,1fr)!important}.tp-head,.tp-bottom{flex-direction:column!important;align-items:stretch!important}}
+</style>
+
+<script id="vg-simple-chart-p5-js">
+(function(){
+"use strict";
+function A(){try{return state.animals?.[state.active]||null}catch(e){return null}}
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function T(a){
+ a.simpleTreatment=a.simpleTreatment||{
+  plan:"MEDICAL SUPPORT",primaryDone:false,responseDone:false,
+  response:"IMPROVING",notes:""
+ };
+ return a.simpleTreatment
+}
+function vital(k,v){return '<div class="tp-vital">'+k+'<b>'+Math.round(Number(v)||0)+'%</b></div>'}
+function perform(){
+ let a=A();if(!a)return;let t=T(a);
+ t.plan=document.querySelector("#tpPlan")?.value||t.plan;
+ t.primaryDone=true;t.performedAt=Date.now();
+ a.health=Math.min(100,Number(a.health||55)+8);
+ a.pain=Math.max(0,Number(a.pain||25)-5);
+ a.comfort=Math.min(100,Number(a.comfort||55)+8);
+ a.stage="TREATMENT";
+ a.treatment=a.treatment||{};a.treatment.stage=Math.max(2,Number(a.treatment.stage||0));
+ a.treatment.performed=Array.isArray(a.treatment.performed)?a.treatment.performed:[];
+ if(!a.treatment.performed.includes(t.plan))a.treatment.performed.push(t.plan);
+ a.history=Array.isArray(a.history)?a.history:[];
+ a.history.unshift(new Date().toLocaleTimeString()+" · PRIMARY TREATMENT RECORDED: "+t.plan);
+ try{save()}catch(e){};render()
+}
+function reassess(){
+ let a=A();if(!a)return;let t=T(a);
+ if(!t.primaryDone){msg("Primary treatment must be recorded first.",true);return}
+ t.response=document.querySelector("#tpResponse")?.value||"IMPROVING";
+ t.notes=document.querySelector("#tpNotes")?.value||"";
+ t.responseDone=true;t.reassessedAt=Date.now();
+ a.treatment=a.treatment||{};a.treatment.stage=3;
+ a.treatment.readiness=Math.max(78,Number(a.treatment.readiness||0));
+ a.treatment.reassessments=Array.isArray(a.treatment.reassessments)?a.treatment.reassessments:[];
+ a.treatment.reassessments.push({time:Date.now(),response:t.response});
+ a.treatmentVerified=true;
+ a.history=Array.isArray(a.history)?a.history:[];
+ a.history.unshift(new Date().toLocaleTimeString()+" · TREATMENT RESPONSE: "+t.response);
+ try{save()}catch(e){};render()
+}
+function msg(txt,bad){
+ let x=document.querySelector("#tpAlert");if(x){x.className="tp-alert "+(bad?"missing":"ready");x.textContent=txt}
+}
+function complete(){
+ let a=A();if(!a)return;let t=T(a);
+ t.notes=document.querySelector("#tpNotes")?.value||t.notes;
+ let missing=[];if(!t.primaryDone)missing.push("Primary Treatment");if(!t.responseDone)missing.push("Response Check");
+ if(missing.length){msg("Finish these treatment boxes first: "+missing.join(", ")+".",true);return}
+ t.complete=true;t.completedAt=Date.now();
+ a.treatmentComplete=true;a.treatmentVerified=true;a.recoveryReady=true;a.stage="TREATMENT COMPLETE";
+ a.history=Array.isArray(a.history)?a.history:[];
+ a.history.unshift(new Date().toLocaleTimeString()+" · STANDARD TREATMENT SHEET COMPLETE / RECOVERY READY");
+ try{save()}catch(e){}
+ document.body.classList.remove("vgSimpleChartActive");
+ program("recovery")
+}
+function render(){
+ let a=A();if(!a)return;let t=T(a);
+ document.body.classList.add("vgSimpleChartActive");
+ let main=document.querySelector("#main");if(!main)return;
+ main.innerHTML='<div id="vgTxPaper">'+
+ '<div class="tp-head"><div><small>VET GODS // STANDARD MEDICAL RECORD</small><h2>05 — TREATMENT SHEET</h2></div><b>'+esc(a.name)+' · '+esc(a.species)+'</b></div>'+
+ '<div class="tp-recall"><b>RECALLED COMPLAINT:</b> '+esc(a.presentingConcern||"Not entered")+
+ '<br><b>RECALLED EXAM:</b> '+esc(a.examSummary||"Exam attached")+
+ '<br><b>DIAGNOSTICS:</b> '+(a.diagnosticsComplete?"COMPLETE":"NOT COMPLETE")+
+ '<br><b>STABILIZATION:</b> '+(a.stabilizationComplete?"COMPLETE":"NOT COMPLETE")+
+ '<br><b>RULE:</b> Record one primary treatment, check the response, then move to Recovery.</div>'+
+ '<div class="tp-vitals">'+vital("HEALTH",a.health)+vital("OXYGEN",a.oxygen)+vital("HYDRATION",a.hydration)+vital("PAIN",a.pain)+vital("COMFORT",a.comfort)+'</div>'+
+ '<div class="tp-grid">'+
+ '<div class="tp-box '+(t.primaryDone?"done":"")+'"><h3>'+(t.primaryDone?"✓ ":"☐ ")+'1. PRIMARY TREATMENT</h3><select id="tpPlan">'+
+ ["MEDICAL SUPPORT","WOUND / INJURY CARE","INFECTION SUPPORT","RESPIRATORY SUPPORT","GI / NUTRITION SUPPORT","MOBILITY / ORTHOPEDIC SUPPORT","POST-PROCEDURE SUPPORT"].map(x=>'<option '+(x===t.plan?"selected":"")+'>'+x+'</option>').join("")+
+ '</select><p>Choose the case treatment category and record the simulated treatment.</p><button id="tpPerform">'+(t.primaryDone?"✓ TREATMENT RECORDED":"PERFORM + RECORD TREATMENT")+'</button></div>'+
+ '<div class="tp-box '+(t.responseDone?"done":"")+'"><h3>'+(t.responseDone?"✓ ":"☐ ")+'2. RESPONSE CHECK</h3><select id="tpResponse">'+
+ ["IMPROVING","STABLE","SLOW IMPROVEMENT","NEEDS CONTINUED MONITORING"].map(x=>'<option '+(x===t.response?"selected":"")+'>'+x+'</option>').join("")+
+ '</select><p>Reassess the patient after treatment and save the response.</p><button id="tpReassess">'+(t.responseDone?"✓ RESPONSE RECORDED":"REASSESS + RECORD RESPONSE")+'</button></div>'+
+ '</div>'+
+ '<div style="margin-top:9px"><b>TREATMENT NOTES</b><textarea id="tpNotes">'+esc(t.notes||"")+'</textarea></div>'+
+ '<div id="tpAlert" class="tp-alert '+(t.primaryDone&&t.responseDone?"ready":"")+'">'+(t.primaryDone&&t.responseDone?"✓ TREATMENT + RESPONSE VERIFIED — READY FOR RECOVERY.":"Two boxes only: perform treatment, then record the response.")+'</div>'+
+ '<div class="tp-bottom"><button class="secondary" id="tpBack">← STABILIZATION</button><span class="note">The previous chart follows the patient automatically. No treatment menus to hunt through.</span><button id="tpNext">COMPLETE TREATMENT → RECOVERY</button></div>'+
+ '</div>';
+ document.querySelector("#tpPerform").onclick=perform;
+ document.querySelector("#tpReassess").onclick=reassess;
+ document.querySelector("#tpBack").onclick=()=>{t.notes=document.querySelector("#tpNotes")?.value||"";try{save()}catch(e){};window.VetGodsSimpleStabilizationP4?.render?.()};
+ document.querySelector("#tpNext").onclick=complete
+}
+
+/* Route all normal treatment entry points into this paper. */
+const priorProgram=window.program;
+window.program=function(k){
+ if(k==="treatment"){render();return}
+ if(k==="care" && typeof section!=="undefined" && section===3){render();return}
+ return priorProgram.apply(this,arguments)
+};
+const priorOpen=window.open;
+window.open=function(k){
+ if(k==="care" && typeof section!=="undefined" && section===3){render();return}
+ return priorOpen.apply(this,arguments)
+};
+window.VetGodsSimpleTreatmentP5={render,perform,reassess,complete};
+})();
+</script>
+
+<style id="vg-simple-chart-p6-css">
+#vgRecoveryPaper{max-width:900px;margin:10px auto 90px;background:#f2f0e8;color:#171717;border:1px solid #777;box-shadow:0 8px 28px #000;padding:14px;font:12px "Courier New",monospace}
+#vgRecoveryPaper *{box-sizing:border-box}
+#vgRecoveryPaper .rp-head{display:flex;justify-content:space-between;gap:10px;border-bottom:3px double #222;padding-bottom:8px;margin-bottom:10px}
+#vgRecoveryPaper h2{margin:0;font-size:17px}
+#vgRecoveryPaper .rp-recall{background:#e5e2d7;border:1px solid #aaa;padding:8px;line-height:1.55;margin-bottom:9px}
+#vgRecoveryPaper .rp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+#vgRecoveryPaper .rp-box{background:#fff;border:1px solid #999;padding:10px}
+#vgRecoveryPaper .rp-box.done{border:2px solid #5b765f;background:#edf4ea}
+#vgRecoveryPaper .rp-box h3{margin:0 0 5px;font-size:12px}
+#vgRecoveryPaper .rp-reading{font-size:18px;font-weight:900;margin:5px 0}
+#vgRecoveryPaper .rp-box button{width:100%;padding:10px;border:1px solid #222;background:#111;color:#fff;font:900 10px "Courier New",monospace}
+#vgRecoveryPaper .rp-box.done button{background:#e4e4e4;color:#222}
+#vgRecoveryPaper .rp-vitals{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:9px 0}
+#vgRecoveryPaper .rp-vital{background:#fff;border:1px solid #999;padding:7px;text-align:center}
+#vgRecoveryPaper .rp-vital b{display:block;font-size:14px}
+#vgRecoveryPaper textarea,#vgRecoveryPaper select{width:100%;padding:8px;border:1px solid #888;background:#fff;color:#111;font:12px "Courier New",monospace}
+#vgRecoveryPaper textarea{min-height:62px}
+#vgRecoveryPaper .rp-alert{padding:8px;margin-top:9px;border:1px solid #999;background:#eee;font-weight:900}
+#vgRecoveryPaper .rp-alert.ready{background:#e6efe4;border-color:#73836e}
+#vgRecoveryPaper .rp-alert.missing{background:#fff0e6;border-color:#a76f42}
+#vgRecoveryPaper .rp-bottom{display:flex;gap:7px;align-items:center;margin-top:12px;padding-top:10px;border-top:2px solid #555}
+#vgRecoveryPaper .rp-bottom .note{flex:1;color:#444}
+#vgRecoveryPaper .rp-bottom button{padding:11px 13px;border:1px solid #222;background:#111;color:#fff;font:900 10px "Courier New",monospace}
+#vgRecoveryPaper .secondary{background:#eee!important;color:#111!important}
+@media(max-width:600px){#vgRecoveryPaper{margin:5px 5px 80px;padding:9px}.rp-grid{grid-template-columns:1fr!important}.rp-vitals{grid-template-columns:repeat(2,1fr)!important}.rp-head,.rp-bottom{flex-direction:column!important;align-items:stretch!important}}
+</style>
+
+<script id="vg-simple-chart-p6-js">
+(function(){
+"use strict";
+function A(){try{return state.animals?.[state.active]||null}catch(e){return null}}
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function R(a){
+ a.simpleRecovery=a.simpleRecovery||{
+  water:false,food:false,comfort:false,monitor:false,reassess:false,
+  response:"IMPROVING",notes:""
+ };
+ a.recovery=a.recovery||{};
+ return a.simpleRecovery
+}
+function food(a){return Number(a.nutrition??a.food??55)}
+function comfort(a){return Number(a.comfort??55)}
+function vital(k,v){return '<div class="rp-vital">'+k+'<b>'+Math.round(Number(v)||0)+'%</b></div>'}
+function action(k){
+ let a=A();if(!a)return;let r=R(a);
+ if(k==="water"){a.hydration=Math.min(100,Math.max(75,Number(a.hydration||0)+10));r.water=true}
+ if(k==="food"){a.nutrition=Math.min(100,Math.max(60,food(a)+10));a.food=Math.max(Number(a.food||0),a.nutrition);r.food=true}
+ if(k==="comfort"){a.comfort=Math.min(100,Math.max(70,comfort(a)+12));a.stress=Math.max(0,Number(a.stress||30)-10);r.comfort=true}
+ if(k==="monitor"){a.oxygen=Math.max(94,Number(a.oxygen||0));r.monitor=true}
+ a.stage="RECOVERY";a.recovery.admitted=true;
+ a.history=Array.isArray(a.history)?a.history:[];
+ a.history.unshift(new Date().toLocaleTimeString()+" · RECOVERY: "+k.toUpperCase()+" RECORDED");
+ try{save()}catch(e){};render()
+}
+function reassess(){
+ let a=A();if(!a)return;let r=R(a);
+ let pre=["water","food","comfort","monitor"].filter(k=>!r[k]);
+ if(pre.length){alertBox("Complete Water, Food, Comfort and Monitoring before reassessment.",true);return}
+ r.response=document.querySelector("#rpResponse")?.value||"IMPROVING";
+ r.notes=document.querySelector("#rpNotes")?.value||"";
+ r.reassess=true;r.reassessedAt=Date.now();
+ a.recovery.readiness=Math.max(80,Number(a.recovery.readiness||0));
+ a.recovery.reassessed=true;
+ a.health=Math.min(100,Number(a.health||55)+5);
+ a.pain=Math.max(0,Number(a.pain||20)-4);
+ a.history=Array.isArray(a.history)?a.history:[];
+ a.history.unshift(new Date().toLocaleTimeString()+" · RECOVERY REASSESSMENT: "+r.response);
+ try{save()}catch(e){};render()
+}
+function alertBox(txt,bad){
+ let x=document.querySelector("#rpAlert");if(x){x.className="rp-alert "+(bad?"missing":"ready");x.textContent=txt}
+}
+function complete(){
+ let a=A();if(!a)return;let r=R(a);
+ r.notes=document.querySelector("#rpNotes")?.value||r.notes;
+ let missing=[];
+ if(!r.water)missing.push("Water / Hydration");
+ if(!r.food)missing.push("Food / Nutrition");
+ if(!r.comfort)missing.push("Comfort");
+ if(!r.monitor)missing.push("Monitoring");
+ if(!r.reassess)missing.push("Reassessment");
+ if(missing.length){alertBox("Finish these Recovery boxes first: "+missing.join(", ")+".",true);return}
+ r.complete=true;r.completedAt=Date.now();
+ a.recoveryComplete=true;a.dispositionReady=true;a.recovery.readiness=100;
+ a.stage="RECOVERY COMPLETE";
+ a.history=Array.isArray(a.history)?a.history:[];
+ a.history.unshift(new Date().toLocaleTimeString()+" · STANDARD RECOVERY SHEET COMPLETE / DISPOSITION READY");
+ try{save()}catch(e){}
+ document.body.classList.remove("vgSimpleChartActive");
+ if(window.VetGodsSimpleDispositionP7?.render)window.VetGodsSimpleDispositionP7.render();
+ else {try{program("records")}catch(e){open("animals")}}
+}
+function box(k,title,value,desc){
+ let a=A(),r=R(a),ok=!!r[k];
+ return '<div class="rp-box '+(ok?"done":"")+'"><h3>'+(ok?"✓ ":"☐ ")+title+'</h3><div class="rp-reading">'+Math.round(Number(value)||0)+'%</div><p>'+desc+'</p><button data-rp="'+k+'">'+(ok?"✓ RECORDED":"GIVE / RECORD "+title)+'</button></div>'
+}
+function render(){
+ let a=A();if(!a)return;let r=R(a);
+ document.body.classList.add("vgSimpleChartActive");
+ let main=document.querySelector("#main");if(!main)return;
+ let all=r.water&&r.food&&r.comfort&&r.monitor&&r.reassess;
+ main.innerHTML='<div id="vgRecoveryPaper">'+
+ '<div class="rp-head"><div><small>VET GODS // STANDARD MEDICAL RECORD</small><h2>06 — RECOVERY SHEET</h2></div><b>'+esc(a.name)+' · '+esc(a.species)+'</b></div>'+
+ '<div class="rp-recall"><b>RECALLED COMPLAINT:</b> '+esc(a.presentingConcern||"Not entered")+
+ '<br><b>STABILIZATION:</b> '+(a.stabilizationComplete?"COMPLETE":"REVIEW")+
+ '<br><b>TREATMENT:</b> '+(a.treatmentComplete?"COMPLETE":"REVIEW")+
+ '<br><b>TREATMENT RESPONSE:</b> '+esc(a.simpleTreatment?.response||"Recorded in treatment chart")+
+ '<br><b>RULE:</b> Four basic recovery-care boxes, then one reassessment.</div>'+
+ '<div class="rp-vitals">'+vital("HEALTH",a.health)+vital("OXYGEN",a.oxygen)+vital("HYDRATION",a.hydration)+vital("PAIN",a.pain)+vital("COMFORT",a.comfort)+'</div>'+
+ '<div class="rp-grid">'+
+ box("water","WATER / HYDRATION",a.hydration,"Offer and record hydration support.")+
+ box("food","FOOD / NUTRITION",food(a),"Offer and record appropriate nutritional support.")+
+ box("comfort","COMFORT / REST",comfort(a),"Provide a quiet recovery space and comfort care.")+
+ box("monitor","MONITORING",a.oxygen,"Record post-treatment monitoring and oxygen status.")+
+ '</div>'+
+ '<div class="rp-box '+(r.reassess?"done":"")+'" style="margin-top:8px"><h3>'+(r.reassess?"✓ ":"☐ ")+'FINAL RECOVERY REASSESSMENT</h3>'+
+ '<select id="rpResponse">'+["IMPROVING","STABLE / READY","SLOW IMPROVEMENT","CONTINUED MONITORING NEEDED"].map(x=>'<option '+(x===r.response?"selected":"")+'>'+x+'</option>').join("")+'</select>'+
+ '<p>After the four care boxes are complete, record the final recovery response.</p><button id="rpReassess">'+(r.reassess?"✓ REASSESSMENT RECORDED":"REASSESS + RECORD")+'</button></div>'+
+ '<div style="margin-top:9px"><b>RECOVERY NOTES</b><textarea id="rpNotes">'+esc(r.notes||"")+'</textarea></div>'+
+ '<div id="rpAlert" class="rp-alert '+(all?"ready":"")+'">'+(all?"✓ RECOVERY CARE + REASSESSMENT COMPLETE — READY FOR DISPOSITION.":"Work straight down the sheet. Nothing else is required to find Recovery care.")+'</div>'+
+ '<div class="rp-bottom"><button class="secondary" id="rpBack">← TREATMENT</button><span class="note">Food, water, comfort and monitoring are all kept on this single recovery page.</span><button id="rpNext">COMPLETE RECOVERY → DISPOSITION</button></div>'+
+ '</div>';
+ main.querySelectorAll("[data-rp]").forEach(b=>b.onclick=()=>action(b.dataset.rp));
+ document.querySelector("#rpReassess").onclick=reassess;
+ document.querySelector("#rpBack").onclick=()=>{r.notes=document.querySelector("#rpNotes")?.value||"";try{save()}catch(e){};window.VetGodsSimpleTreatmentP5?.render?.()};
+ document.querySelector("#rpNext").onclick=complete
+}
+
+/* Route normal Recovery entry points to the paper sheet. */
+const priorProgram=window.program;
+window.program=function(k){
+ if(k==="recovery"){render();return}
+ if(k==="care" && typeof section!=="undefined" && section===4){render();return}
+ return priorProgram.apply(this,arguments)
+};
+const priorOpen=window.open;
+window.open=function(k){
+ if(k==="care" && typeof section!=="undefined" && section===4){render();return}
+ return priorOpen.apply(this,arguments)
+};
+window.VetGodsSimpleRecoveryP6={render,action,reassess,complete};
+})();
+</script>
+
+<style id="vg-simple-chart-p7-css">
+#vgDispositionPaper{max-width:900px;margin:10px auto 90px;background:#f2f0e8;color:#171717;border:1px solid #777;box-shadow:0 8px 28px #000;padding:14px;font:12px "Courier New",monospace}
+#vgDispositionPaper *{box-sizing:border-box}
+#vgDispositionPaper .dp7-head{display:flex;justify-content:space-between;gap:10px;border-bottom:3px double #222;padding-bottom:8px;margin-bottom:10px}
+#vgDispositionPaper h2{margin:0;font-size:17px}
+#vgDispositionPaper .dp7-recall{background:#e5e2d7;border:1px solid #aaa;padding:8px;line-height:1.55;margin-bottom:9px}
+#vgDispositionPaper .dp7-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+#vgDispositionPaper .dp7-choice{background:#fff;border:1px solid #999;padding:11px;cursor:pointer;min-height:115px}
+#vgDispositionPaper .dp7-choice.selected{border:3px solid #222;background:#e6efe4}
+#vgDispositionPaper .dp7-choice h3{margin:0 0 6px;font-size:12px}
+#vgDispositionPaper .dp7-choice p{color:#555;line-height:1.45}
+#vgDispositionPaper .dp7-choice button{width:100%;padding:9px;background:#eee;color:#111;border:1px solid #555;font:900 10px "Courier New",monospace}
+#vgDispositionPaper .dp7-choice.selected button{background:#111;color:#fff}
+#vgDispositionPaper .dp7-summary{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:9px 0}
+#vgDispositionPaper .dp7-stat{background:#fff;border:1px solid #999;padding:7px;text-align:center}
+#vgDispositionPaper .dp7-stat b{display:block;font-size:14px}
+#vgDispositionPaper textarea{width:100%;min-height:65px;padding:8px;border:1px solid #888;background:#fff;color:#111}
+#vgDispositionPaper .dp7-alert{padding:8px;margin-top:9px;border:1px solid #999;background:#eee;font-weight:900}
+#vgDispositionPaper .dp7-alert.ready{background:#e6efe4;border-color:#73836e}
+#vgDispositionPaper .dp7-alert.missing{background:#fff0e6;border-color:#a76f42}
+#vgDispositionPaper .dp7-bottom{display:flex;gap:7px;align-items:center;margin-top:12px;padding-top:10px;border-top:2px solid #555}
+#vgDispositionPaper .dp7-bottom .note{flex:1;color:#444}
+#vgDispositionPaper .dp7-bottom button{padding:11px 13px;border:1px solid #222;background:#111;color:#fff;font:900 10px "Courier New",monospace}
+#vgDispositionPaper .secondary{background:#eee!important;color:#111!important}
+@media(max-width:600px){#vgDispositionPaper{margin:5px 5px 80px;padding:9px}.dp7-grid{grid-template-columns:1fr!important}.dp7-summary{grid-template-columns:repeat(2,1fr)!important}.dp7-head,.dp7-bottom{flex-direction:column!important;align-items:stretch!important}}
+</style>
+
+<script id="vg-simple-chart-p7-js">
+(function(){
+"use strict";
+function A(){try{return state.animals?.[state.active]||null}catch(e){return null}}
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function D(a){a.simpleDisposition=a.simpleDisposition||{choice:"",notes:"",complete:false};return a.simpleDisposition}
+function vital(k,v){return '<div class="dp7-stat">'+k+'<b>'+Math.round(Number(v)||0)+'%</b></div>'}
+const choices={
+ HOME:["SEND HOME","Close the active case and record that the animal returned to its owner/reporter."],
+ PETS:["MY PETS","Keep this animal in your persistent My Pets / companion roster."],
+ ADOPTION:["ADOPTION","Close clinical care and route the animal into the game's adoption outcome."],
+ SANCTUARY:["SANCTUARY","Transfer the animal into the sanctuary / continuing-care side of Vet Gods."]
+};
+function choose(k){let a=A();if(!a)return;D(a).choice=k;try{save()}catch(e){};render()}
+function addUnique(arr,item,key){
+ if(!Array.isArray(arr))arr=[];
+ if(!arr.some(x=>(x?.[key]??x?.name??x)===(item?.[key]??item?.name??item)))arr.push(item);
+ return arr
+}
+function complete(){
+ let a=A();if(!a)return;let d=D(a);
+ d.notes=document.querySelector("#dp7Notes")?.value||"";
+ if(!d.choice){let x=document.querySelector("#dp7Alert");x.className="dp7-alert missing";x.textContent="Choose one disposition box first.";return}
+ d.complete=true;d.completedAt=Date.now();
+ a.disposition=d.choice;a.dispositionNotes=d.notes;a.caseClosed=true;a.stage=d.choice==="HOME"?"DISCHARGED":d.choice;
+ a.activeCase=false;
+ a.history=Array.isArray(a.history)?a.history:[];
+ a.history.unshift(new Date().toLocaleTimeString()+" · CASE DISPOSITION: "+d.choice);
+ if(d.choice==="PETS"){
+   state.pets=addUnique(state.pets,a,"id");
+   a.inMyPets=true;
+ }
+ if(d.choice==="ADOPTION"){
+   state.adoptions=addUnique(state.adoptions,a,"id");
+   a.adoptionReady=true;
+ }
+ if(d.choice==="SANCTUARY"){
+   state.sanctuary=addUnique(state.sanctuary,a,"id");
+   a.inSanctuary=true;
+ }
+ state.completedCases=Array.isArray(state.completedCases)?state.completedCases:[];
+ state.completedCases=addUnique(state.completedCases,{
+   id:a.id??("case-"+Date.now()),name:a.name,species:a.species,caseId:a.caseId,
+   disposition:d.choice,closedAt:Date.now(),history:[...(a.history||[])]
+ },"id");
+ try{save()}catch(e){}
+ renderComplete(a,d)
+}
+function renderComplete(a,d){
+ let main=document.querySelector("#main");if(!main)return;
+ main.innerHTML='<div id="vgDispositionPaper"><div class="dp7-head"><div><small>VET GODS // STANDARD MEDICAL RECORD</small><h2>07 — CASE CLOSED</h2></div><b>'+esc(a.name)+' · '+esc(a.species)+'</b></div>'+
+ '<div class="dp7-recall"><b>FINAL DISPOSITION:</b> '+esc(d.choice)+'<br><b>CASE:</b> '+esc(a.caseId||"RECORDED")+
+ '<br><b>STATUS:</b> COMPLETE<br><b>NOTES:</b> '+esc(d.notes||"None")+'</div>'+
+ '<div class="dp7-alert ready">✓ THIS ANIMAL IS NO LONGER AN ACTIVE TREATMENT CASE. THE RECORD HAS BEEN SAVED.</div>'+
+ '<div class="dp7-bottom"><button id="dp7Record">VIEW / KEEP RECORD</button><span class="note">The medical folder remains attached to '+esc(a.name)+'.</span><button id="dp7Next">START / SELECT NEXT PATIENT →</button></div></div>';
+ document.querySelector("#dp7Record").onclick=()=>render();
+ document.querySelector("#dp7Next").onclick=()=>{document.body.classList.remove("vgSimpleChartActive");try{state.active=-1;save()}catch(e){};open("animals")}
+}
+function render(){
+ let a=A();if(!a)return;let d=D(a);
+ document.body.classList.add("vgSimpleChartActive");
+ let main=document.querySelector("#main");if(!main)return;
+ main.innerHTML='<div id="vgDispositionPaper">'+
+ '<div class="dp7-head"><div><small>VET GODS // STANDARD MEDICAL RECORD</small><h2>07 — DISPOSITION SHEET</h2></div><b>'+esc(a.name)+' · '+esc(a.species)+'</b></div>'+
+ '<div class="dp7-recall"><b>RECALLED COMPLAINT:</b> '+esc(a.presentingConcern||"Not entered")+
+ '<br><b>EXAM:</b> '+(a.examComplete?"COMPLETE":"REVIEW")+' · <b>DIAGNOSTICS:</b> '+(a.diagnosticsComplete?"COMPLETE":"REVIEW")+
+ '<br><b>STABILIZATION:</b> '+(a.stabilizationComplete?"COMPLETE":"REVIEW")+' · <b>TREATMENT:</b> '+(a.treatmentComplete?"COMPLETE":"REVIEW")+
+ '<br><b>RECOVERY:</b> '+(a.recoveryComplete?"COMPLETE":"REVIEW")+
+ '<br><b>RULE:</b> Pick exactly one destination for the animal, then close the case.</div>'+
+ '<div class="dp7-summary">'+vital("HEALTH",a.health)+vital("OXYGEN",a.oxygen)+vital("HYDRATION",a.hydration)+vital("PAIN",a.pain)+vital("COMFORT",a.comfort)+'</div>'+
+ '<div class="dp7-grid">'+Object.entries(choices).map(([k,v])=>'<div class="dp7-choice '+(d.choice===k?"selected":"")+'" data-choice="'+k+'"><h3>'+(d.choice===k?"✓ ":"☐ ")+v[0]+'</h3><p>'+v[1]+'</p><button>'+ (d.choice===k?"SELECTED":"SELECT "+v[0])+'</button></div>').join("")+'</div>'+
+ '<div style="margin-top:9px"><b>FINAL / DISCHARGE NOTES</b><textarea id="dp7Notes">'+esc(d.notes||"")+'</textarea></div>'+
+ '<div id="dp7Alert" class="dp7-alert '+(d.choice?"ready":"")+'">'+(d.choice?"✓ "+choices[d.choice][0]+" SELECTED — READY TO CLOSE CASE.":"Choose one of the four disposition boxes.")+'</div>'+
+ '<div class="dp7-bottom"><button class="secondary" id="dp7Back">← RECOVERY</button><span class="note">One decision closes the medical loop. The animal chart remains saved.</span><button id="dp7Close">CONFIRM DISPOSITION → CLOSE CASE</button></div>'+
+ '</div>';
+ main.querySelectorAll("[data-choice]").forEach(x=>x.onclick=()=>choose(x.dataset.choice));
+ document.querySelector("#dp7Back").onclick=()=>window.VetGodsSimpleRecoveryP6?.render?.();
+ document.querySelector("#dp7Close").onclick=complete
+}
+const priorProgram=window.program;
+window.program=function(k){
+ if(k==="disposition"){render();return}
+ return priorProgram.apply(this,arguments)
+};
+window.VetGodsSimpleDispositionP7={render,choose,complete};
+})();
+</script>
+
+<script id="vg-p6-to-p7-route-fix">
+(function(){
+/* Phase 7 now exists, so Recovery's handoff resolves directly to Disposition. */
+setTimeout(function(){
+ if(window.VetGodsSimpleRecoveryP6){
+   const old=window.VetGodsSimpleRecoveryP6.complete;
+   /* Existing complete function already checks for VetGodsSimpleDispositionP7 dynamically. */
+ }
+},0);
+})();
+</script>
+
+<style id="vg-simple-chart-p8-css">
+#vgMedicalFolder{max-width:940px;margin:10px auto 90px;background:#ece9dd;color:#171717;border:1px solid #777;box-shadow:0 8px 28px #000;padding:14px;font:12px "Courier New",monospace}
+#vgMedicalFolder *{box-sizing:border-box}
+#vgMedicalFolder .mf-head{display:flex;justify-content:space-between;gap:10px;border-bottom:4px double #222;padding-bottom:9px;margin-bottom:10px}
+#vgMedicalFolder h2{margin:0;font-size:18px}
+#vgMedicalFolder .mf-id{text-align:right;font-weight:900}
+#vgMedicalFolder .mf-tabs{display:flex;gap:4px;flex-wrap:wrap;margin:8px 0}
+#vgMedicalFolder .mf-tabs button{padding:6px 8px;background:#fff;color:#111;border:1px solid #777;font:900 9px "Courier New",monospace}
+#vgMedicalFolder .mf-sheet{background:#f9f8f2;border:1px solid #888;margin:8px 0;padding:10px}
+#vgMedicalFolder .mf-sheet h3{margin:0 0 7px;border-bottom:1px solid #777;padding-bottom:5px;font-size:12px}
+#vgMedicalFolder .mf-row{display:grid;grid-template-columns:180px 1fr;border-bottom:1px dotted #aaa;padding:5px 0}
+#vgMedicalFolder .mf-row b{font-size:9px;color:#444}
+#vgMedicalFolder .mf-vitals{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:8px 0}
+#vgMedicalFolder .mf-stat{background:#fff;border:1px solid #999;padding:6px;text-align:center}
+#vgMedicalFolder .mf-stat strong{display:block;font-size:14px}
+#vgMedicalFolder .mf-history{max-height:260px;overflow:auto;background:#fff;border:1px solid #aaa;padding:8px}
+#vgMedicalFolder .mf-history div{padding:4px 0;border-bottom:1px dotted #bbb}
+#vgMedicalFolder .mf-status{padding:8px;border:1px solid #73836e;background:#e6efe4;font-weight:900;margin:8px 0}
+#vgMedicalFolder .mf-bottom{display:flex;gap:7px;align-items:center;margin-top:12px;padding-top:10px;border-top:2px solid #555}
+#vgMedicalFolder .mf-bottom span{flex:1;color:#444}
+#vgMedicalFolder .mf-bottom button,#vgFolderButton{padding:9px 11px;border:1px solid #222;background:#111;color:#fff;font:900 9px "Courier New",monospace}
+#vgFolderButton{position:fixed;right:10px;bottom:48px;z-index:501}
+@media(max-width:600px){#vgMedicalFolder{margin:5px 5px 80px;padding:9px}.mf-head,.mf-bottom{flex-direction:column!important;align-items:stretch!important}.mf-id{text-align:left!important}.mf-row{grid-template-columns:1fr!important}.mf-vitals{grid-template-columns:repeat(2,1fr)!important}}
+</style>
+
+<script id="vg-simple-chart-p8-js">
+(function(){
+"use strict";
+function A(){try{return state.animals?.[state.active]||null}catch(e){return null}}
+function esc(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function row(k,v){return '<div class="mf-row"><b>'+k+'</b><span>'+esc(v||"—")+'</span></div>'}
+function stat(k,v){return '<div class="mf-stat">'+k+'<strong>'+Math.round(Number(v)||0)+'%</strong></div>'}
+function section(id,title,body){return '<section class="mf-sheet" id="mf-'+id+'"><h3>'+title+'</h3>'+body+'</section>'}
+function render(){
+ let a=A();if(!a)return;
+ let c=state.simpleChart?.[a.id??state.active]||{};
+ let e=a.simpleExam||{}, d=a.diagnostics||{}, st=a.simpleStabilization||{}, tx=a.simpleTreatment||{}, rc=a.simpleRecovery||{}, ds=a.simpleDisposition||{};
+ document.body.classList.add("vgSimpleChartActive");
+ let main=document.querySelector("#main");if(!main)return;
+ let tests=Object.entries(d.results||{}).map(([k,v])=>row(k.toUpperCase(),v)).join("")||row("RESULTS","No diagnostic results recorded");
+ let hist=(a.history||[]).map(x=>'<div>'+esc(x)+'</div>').join("")||"<div>No history entries yet.</div>";
+ main.innerHTML='<div id="vgMedicalFolder">'+
+ '<div class="mf-head"><div><small>VET GODS // PERMANENT MEDICAL FOLDER</small><h2>'+esc(a.name)+' — COMPLETE PATIENT RECORD</h2></div><div class="mf-id">CASE '+esc(a.caseId||"OPEN")+'<br>'+esc(a.species)+' · '+esc(a.stage)+'</div></div>'+
+ '<div class="mf-tabs">'+["intake","exam","diagnostics","stabilize","treatment","recovery","disposition","history"].map((x,i)=>'<button data-mf="'+x+'">'+String(i+1).padStart(2,"0")+' '+x.toUpperCase()+'</button>').join("")+'</div>'+
+ '<div class="mf-vitals">'+stat("HEALTH",a.health)+stat("OXYGEN",a.oxygen)+stat("HYDRATION",a.hydration)+stat("PAIN",a.pain)+stat("COMFORT",a.comfort)+'</div>'+
+ '<div class="mf-status">'+(a.caseClosed?"✓ CASE CLOSED — RECORD RETAINED":"ACTIVE CASE — RECORD UPDATES AS EACH SHEET IS COMPLETED")+'</div>'+
+ section("intake","01 — PATIENT / INTAKE CHART",
+   row("PATIENT",a.name+" · "+a.species)+row("REPORTER",[c.reporterFirst,c.reporterLast].filter(Boolean).join(" "))+row("RELATION",c.relation)+row("CONTACT",c.contact)+row("REASON FOR VISIT",a.presentingConcern||c.concern)+row("ONSET",a.onset||c.onset)+row("ARRIVAL",a.arrivalMode||c.arrival)+row("PRIORITY",a.triagePriority||c.priority)+row("INTAKE NOTES",a.intakeNotes||c.notes))+
+ section("exam","02 — PHYSICAL EXAM",
+   row("GENERAL APPEARANCE",e.appearance)+row("BREATHING",e.breathing)+row("CIRCULATION",e.circulation)+row("HYDRATION REVIEW",e.hydration)+row("MOBILITY",e.mobility)+row("NEURO",e.neuro)+row("BODY / ABDOMEN",e.abdomen)+row("SKIN / EXTERNAL",e.skin)+row("PAIN LOCATION",e.painSite)+row("EXAM NOTES",e.notes)+row("SUMMARY",a.examSummary))+
+ section("diagnostics","03 — DIAGNOSTICS",tests+row("DIAGNOSTIC REVIEW",d.review)+row("STATUS",a.diagnosticsComplete?"COMPLETE":"INCOMPLETE"))+
+ section("stabilize","04 — STABILIZATION",
+   row("OXYGEN SUPPORT",st.oxygen?"RECORDED":"—")+row("FLUIDS / HYDRATION",st.fluids?"RECORDED":"—")+row("PAIN CONTROL",st.pain?"RECORDED":"—")+row("NUTRITION",st.nutrition?"RECORDED":"—")+row("NOTES",st.notes)+row("STATUS",a.stabilizationComplete?"COMPLETE":"INCOMPLETE"))+
+ section("treatment","05 — TREATMENT",
+   row("PLAN",tx.plan)+row("PRIMARY TREATMENT",tx.primaryDone?"RECORDED":"—")+row("RESPONSE",tx.response)+row("REASSESSMENT",tx.responseDone?"RECORDED":"—")+row("NOTES",tx.notes)+row("STATUS",a.treatmentComplete?"COMPLETE":"INCOMPLETE"))+
+ section("recovery","06 — RECOVERY",
+   row("WATER / HYDRATION",rc.water?"RECORDED":"—")+row("FOOD / NUTRITION",rc.food?"RECORDED":"—")+row("COMFORT / REST",rc.comfort?"RECORDED":"—")+row("MONITORING",rc.monitor?"RECORDED":"—")+row("FINAL RESPONSE",rc.response)+row("NOTES",rc.notes)+row("STATUS",a.recoveryComplete?"COMPLETE":"INCOMPLETE"))+
+ section("disposition","07 — DISPOSITION",
+   row("DESTINATION",ds.choice||a.disposition)+row("FINAL NOTES",ds.notes||a.dispositionNotes)+row("CASE STATUS",a.caseClosed?"CLOSED":"OPEN"))+
+ section("history","08 — CHRONOLOGICAL CASE LOG",'<div class="mf-history">'+hist+'</div>')+
+ '<div class="mf-bottom"><button id="mfBack">← RETURN TO CURRENT SHEET</button><span>This folder is read-only. The working sheets remain the place where care is entered.</span><button id="mfPatients">PATIENTS / ANIMALS</button></div>'+
+ '</div>';
+ main.querySelectorAll("[data-mf]").forEach(b=>b.onclick=()=>document.querySelector("#mf-"+b.dataset.mf)?.scrollIntoView({behavior:"smooth",block:"start"}));
+ document.querySelector("#mfPatients").onclick=()=>{document.body.classList.remove("vgSimpleChartActive");open("animals")};
+ document.querySelector("#mfBack").onclick=()=>returnCurrent(a);
+}
+function returnCurrent(a){
+ if(a.caseClosed)return window.VetGodsSimpleDispositionP7?.render?.();
+ if(a.recoveryComplete||a.dispositionReady)return window.VetGodsSimpleDispositionP7?.render?.();
+ if(a.treatmentComplete||a.recoveryReady)return window.VetGodsSimpleRecoveryP6?.render?.();
+ if(a.stabilizationComplete)return window.VetGodsSimpleTreatmentP5?.render?.();
+ if(a.diagnosticsComplete)return window.VetGodsSimpleStabilizationP4?.render?.();
+ if(a.examComplete)return program("diagnostics");
+ if(a.simpleChartIntakeComplete){section=1;return program("care")}
+ return window.VetGodsSimpleChartP1?.render?.()
+}
+function button(){
+ if(document.querySelector("#vgFolderButton"))return;
+ let b=document.createElement("button");b.id="vgFolderButton";b.textContent="MEDICAL FOLDER";b.onclick=render;document.body.appendChild(b)
+}
+setTimeout(button,600);
+window.VetGodsMedicalFolderP8={render,returnCurrent};
+})();
+</script>
+
+<style id="vg-simple-chart-p9-css">
+/* One predictable footer on every paper sheet */
+.vgPaperFlow{
+ position:sticky;bottom:0;z-index:150;margin:14px -14px -14px;padding:8px 12px;
+ background:#dedbd0;border-top:2px solid #444;box-shadow:0 -4px 12px rgba(0,0,0,.18);
+ font:900 10px "Courier New",monospace
+}
+.vgPaperFlow .pf-progress{display:flex;gap:3px;margin-bottom:6px}
+.vgPaperFlow .pf-step{height:5px;flex:1;background:#aaa}
+.vgPaperFlow .pf-step.done{background:#4e7456}
+.vgPaperFlow .pf-step.now{background:#222}
+.vgPaperFlow .pf-line{display:flex;gap:7px;align-items:center}
+.vgPaperFlow .pf-name{min-width:120px;color:#222}
+.vgPaperFlow .pf-msg{flex:1;color:#444;font-weight:700}
+.vgPaperFlow button{padding:11px 14px!important;background:#111!important;color:#fff!important;border:1px solid #111!important;font:900 10px "Courier New",monospace!important}
+.vgPaperFlow button.pf-back{background:#eee!important;color:#111!important;border-color:#555!important}
+.vgPaperFlow button.pf-next{min-width:220px}
+.vgPaperFlow button.pf-next.ready{outline:3px solid #70856e}
+.vgPaperFlow button.pf-next.blocked{outline:3px solid #a76f42}
+.vgPaperFlow .pf-missing{margin-top:6px;padding:6px;background:#fff0e6;border:1px solid #a76f42;color:#6b3f20;display:none}
+.vgPaperFlow .pf-missing.show{display:block}
+body.vgSimpleChartActive #vgNormalFlowBar{display:none!important}
+@media(max-width:600px){
+ .vgPaperFlow{margin:12px -9px -9px;padding:7px}
+ .vgPaperFlow .pf-line{flex-direction:column;align-items:stretch}
+ .vgPaperFlow .pf-name{min-width:0}
+ .vgPaperFlow button.pf-next{min-width:0;width:100%}
+ .vgPaperFlow button.pf-back{width:100%}
+}
+</style>
+
+<script id="vg-simple-chart-p9-js">
+(function(){
+"use strict";
+const STAGES=[
+ {n:1,name:"PATIENT",host:"#vgSimpleChart",next:"SAVE THIS PAGE → EXAM"},
+ {n:2,name:"EXAM",host:"#vgExamPaper",next:"COMPLETE EXAM → DIAGNOSTICS"},
+ {n:3,name:"DIAGNOSTICS",host:"#vgDiagPaper",next:"COMPLETE DIAGNOSTICS → STABILIZE"},
+ {n:4,name:"STABILIZE",host:"#vgStabPaper",next:"COMPLETE STABILIZATION → TREATMENT"},
+ {n:5,name:"TREATMENT",host:"#vgTxPaper",next:"COMPLETE TREATMENT → RECOVERY"},
+ {n:6,name:"RECOVERY",host:"#vgRecoveryPaper",next:"COMPLETE RECOVERY → DISPOSITION"},
+ {n:7,name:"DISPOSITION",host:"#vgDispositionPaper",next:"CONFIRM DISPOSITION → CLOSE CASE"}
+];
+function A(){try{return state.animals?.[state.active]||null}catch(e){return null}}
+function current(){
+ for(const x of STAGES)if(document.querySelector(x.host))return x;
+ return null
+}
+function readiness(x,a){
+ if(!a)return {ok:false,msg:"Select a patient first."};
+ if(x.n===1)return {ok:!!document.querySelector("#scConcern")?.value.trim(),msg:"Enter the reason for visit."};
+ if(x.n===2){
+  let ids=["identity","vitals","body","pain"],miss=ids.filter(k=>!document.querySelector("#epc_"+k)?.checked);
+  return {ok:!miss.length,msg:miss.length?"Check: "+miss.join(", "):"Exam checks complete."}
+ }
+ if(x.n===3){
+  let d=a.diagnostics?.runs||{},miss=["physical","lab","imaging","bioscan"].filter(k=>!d[k]);
+  return {ok:!miss.length,msg:miss.length?"Run: "+miss.join(", "):"Diagnostics complete."}
+ }
+ if(x.n===4){
+  let st=a.simpleStabilization||{},miss=[];
+  if(!(st.oxygen&&Number(a.oxygen)>=94))miss.push("oxygen");
+  if(!(st.fluids&&Number(a.hydration)>=70))miss.push("fluids");
+  if(!(st.pain&&Number(a.pain)<=30))miss.push("pain");
+  if(!(st.nutrition&&Number(a.nutrition??a.food??0)>=55))miss.push("nutrition");
+  return {ok:!miss.length,msg:miss.length?"Finish: "+miss.join(", "):"Stabilization targets met."}
+ }
+ if(x.n===5){
+  let t=a.simpleTreatment||{},miss=[];if(!t.primaryDone)miss.push("treatment");if(!t.responseDone)miss.push("response check");
+  return {ok:!miss.length,msg:miss.length?"Finish: "+miss.join(", "):"Treatment verified."}
+ }
+ if(x.n===6){
+  let r=a.simpleRecovery||{},miss=["water","food","comfort","monitor","reassess"].filter(k=>!r[k]);
+  return {ok:!miss.length,msg:miss.length?"Finish: "+miss.join(", "):"Recovery complete."}
+ }
+ if(x.n===7)return {ok:!!(a.simpleDisposition?.choice),msg:a.simpleDisposition?.choice?"Destination selected.":"Choose Home, My Pets, Adoption or Sanctuary."};
+ return {ok:true,msg:"Ready."}
+}
+function nextAction(x){
+ if(x.n===1)return ()=>window.VetGodsSimpleChartP1?.saveChart?.() && (section=1,program("care"));
+ if(x.n===2)return ()=>window.VetGodsSimpleExamP2?.complete?.();
+ if(x.n===3)return ()=>window.VetGodsSimpleDiagnosticsP3?.complete?.();
+ if(x.n===4)return ()=>window.VetGodsSimpleStabilizationP4?.complete?.();
+ if(x.n===5)return ()=>window.VetGodsSimpleTreatmentP5?.complete?.();
+ if(x.n===6)return ()=>window.VetGodsSimpleRecoveryP6?.complete?.();
+ if(x.n===7)return ()=>window.VetGodsSimpleDispositionP7?.complete?.();
+}
+function backAction(x){
+ if(x.n===1)return ()=>open("animals");
+ if(x.n===2)return ()=>window.VetGodsSimpleChartP1?.render?.();
+ if(x.n===3)return ()=>{section=1;program("care")};
+ if(x.n===4)return ()=>program("diagnostics");
+ if(x.n===5)return ()=>window.VetGodsSimpleStabilizationP4?.render?.();
+ if(x.n===6)return ()=>window.VetGodsSimpleTreatmentP5?.render?.();
+ if(x.n===7)return ()=>window.VetGodsSimpleRecoveryP6?.render?.();
+}
+function mount(){
+ let x=current(),a=A();if(!x)return;
+ let host=document.querySelector(x.host);if(!host)return;
+ host.querySelector(".vgPaperFlow")?.remove();
+
+ /* Hide the older duplicated bottom navigation. The working form controls remain. */
+ host.querySelectorAll(":scope > .sc-bottom,:scope > .ep-bottom,:scope > .dp-bottom,:scope > .sp-bottom,:scope > .tp-bottom,:scope > .rp-bottom,:scope > .dp7-bottom").forEach(e=>e.style.display="none");
+
+ let r=readiness(x,a),bar=document.createElement("div");bar.className="vgPaperFlow";
+ bar.innerHTML='<div class="pf-progress">'+STAGES.map(z=>'<i class="pf-step '+(z.n<x.n?"done":z.n===x.n?"now":"")+'"></i>').join("")+'</div>'+
+ '<div class="pf-line"><button class="pf-back">← BACK</button><span class="pf-name">STEP '+x.n+' / 7 · '+x.name+'</span><span class="pf-msg">'+r.msg+'</span><button class="pf-next '+(r.ok?"ready":"blocked")+'">'+x.next+'</button></div>'+
+ '<div class="pf-missing '+(!r.ok?"show":"")+'">THIS PAGE IS NOT READY: '+r.msg+' Complete the marked work above, then press the same NEXT button.</div>';
+ host.appendChild(bar);
+ bar.querySelector(".pf-back").onclick=backAction(x);
+ bar.querySelector(".pf-next").onclick=()=>{
+   let check=readiness(x,A());
+   if(!check.ok){
+     bar.querySelector(".pf-missing").classList.add("show");
+     bar.querySelector(".pf-missing").textContent="THIS PAGE IS NOT READY: "+check.msg+" Complete it above, then press NEXT again.";
+     bar.querySelector(".pf-msg").textContent=check.msg;
+     return;
+   }
+   nextAction(x)?.()
+ };
+}
+document.addEventListener("click",()=>setTimeout(mount,100),false);
+document.addEventListener("change",()=>setTimeout(mount,80),false);
+document.addEventListener("input",()=>setTimeout(mount,120),false);
+setTimeout(mount,700);
+window.VetGodsOneButtonFlowP9={mount,readiness,current};
+})();
+</script>
+
+<style id="vg-simple-chart-p10-css">
+/* FINAL FLOW: required veterinary play stays on the seven paper sheets. */
+#vgFinalFlowBadge{
+ position:fixed;left:10px;bottom:10px;z-index:505;padding:7px 9px;
+ background:#111;color:#eee;border:1px solid #777;font:900 8px "Courier New",monospace
+}
+body.vgSimpleChartActive #vgNormalFlowBar,
+body.vgSimpleChartActive .vgFirstGameRoute,
+body.vgSimpleChartActive [data-first-game-route]{display:none!important}
+</style>
+
+<script id="vg-simple-chart-p10-js">
+(function(){
+"use strict";
+function A(){try{return state.animals?.[state.active]||null}catch(e){return null}}
+function activeValid(){return !!A()}
+function stageOf(a){
+ if(!a)return 0;
+ if(a.caseClosed)return 8;
+ if(a.recoveryComplete||a.dispositionReady)return 7;
+ if(a.treatmentComplete||a.recoveryReady)return 6;
+ if(a.stabilizationComplete)return 5;
+ if(a.diagnosticsComplete)return 4;
+ if(a.examComplete||a.examined)return 3;
+ if(a.simpleChartIntakeComplete||a.intakeComplete)return 2;
+ return 1;
+}
+function routeToStage(n){
+ let a=A();
+ if(!a){document.body.classList.remove("vgSimpleChartActive");return open("animals")}
+ if(n===1)return window.VetGodsSimpleChartP1?.render?.();
+ if(n===2){section=1;return window.VetGodsSimpleExamP2?.render?.()}
+ if(n===3)return window.VetGodsSimpleDiagnosticsP3?.render?.();
+ if(n===4)return window.VetGodsSimpleStabilizationP4?.render?.();
+ if(n===5)return window.VetGodsSimpleTreatmentP5?.render?.();
+ if(n===6)return window.VetGodsSimpleRecoveryP6?.render?.();
+ if(n===7)return window.VetGodsSimpleDispositionP7?.render?.();
+ if(n===8)return window.VetGodsMedicalFolderP8?.render?.();
+}
+function resume(){return routeToStage(stageOf(A()))}
+
+/* Make the required clinical route deterministic even if old menus call legacy pages. */
+const oldProgram=window.program;
+window.program=function(k){
+ if(k==="diagnostics")return routeToStage(3);
+ if(k==="stabilize")return routeToStage(4);
+ if(k==="treatment")return routeToStage(5);
+ if(k==="recovery")return routeToStage(6);
+ if(k==="disposition")return routeToStage(7);
+ if(k==="care"){
+   let n=stageOf(A());
+   if(n>=1&&n<=7)return routeToStage(n);
+ }
+ return oldProgram.apply(this,arguments)
+};
+const oldOpen=window.open;
+window.open=function(k){
+ if(k==="care"){
+   let n=stageOf(A());
+   if(n>=1&&n<=7)return routeToStage(n);
+ }
+ return oldOpen.apply(this,arguments)
+};
+
+/* One small resume control, useful after visiting optional ship/free-play areas. */
+function badge(){
+ if(document.querySelector("#vgFinalFlowBadge"))return;
+ let b=document.createElement("button");b.id="vgFinalFlowBadge";b.textContent="RESUME PATIENT";
+ b.onclick=resume;document.body.appendChild(b)
+}
+function normalize(){
+ let a=A();if(!a)return;
+ a.history=Array.isArray(a.history)?a.history:[];
+ a.simpleStabilization=a.simpleStabilization||{};
+ a.simpleTreatment=a.simpleTreatment||{};
+ a.simpleRecovery=a.simpleRecovery||{};
+ a.simpleDisposition=a.simpleDisposition||{};
+ if(a.caseClosed)a.activeCase=false;
+ try{save()}catch(e){}
+}
+function cleanLegacy(){
+ document.querySelectorAll(".vgFirstGameRoute,[data-first-game-route],[id*='yellowGuide' i],[class*='yellowGuide' i],[id*='yellowTip' i],[class*='yellowTip' i]").forEach(x=>x.remove());
+}
+function boot(){normalize();cleanLegacy();badge()}
+setTimeout(boot,400);setTimeout(boot,1400);
+document.addEventListener("click",()=>setTimeout(cleanLegacy,80),false);
+window.VetGodsFinalFlowP10={resume,stageOf,routeToStage,normalize};
+})();
+</script>
+
+<script id="vg-save-memory-name-final-fix">
+(function(){
+"use strict";
+const IDKEY="vetgods_player_identity_permanent_v2";
+const SAVEKEY="vetGodsDosFresh1";
+const BACKUP="vetGodsDosFresh1_backup";
+
+function text(v){return typeof v==="string"?v.trim():""}
+function full(n){return [text(n?.first),text(n?.last)].filter(Boolean).join(" ").trim()}
+function readID(){try{return JSON.parse(localStorage.getItem(IDKEY)||"null")}catch(e){return null}}
+function writeID(n){
+ if(!text(n?.first))return false;
+ try{localStorage.setItem(IDKEY,JSON.stringify({first:text(n.first),last:text(n.last)}));return true}catch(e){return false}
+}
+function stateID(){
+ let first=text(state?.playerProfile?.firstName||state?.player?.firstName||state?.operator?.first);
+ let last=text(state?.playerProfile?.lastName||state?.player?.lastName||state?.operator?.last);
+ let combined=text(state?.rewardSystem?.playerName||state?.certName);
+ if(!first&&combined){
+   let p=combined.split(/\s+/);first=p.shift()||"";last=last||p.join(" ");
+ }
+ return first?{first,last}:null
+}
+function apply(n){
+ if(!n||!text(n.first))return;
+ const first=text(n.first),last=text(n.last),name=full(n);
+ state.playerProfile=state.playerProfile||{};
+ state.player=state.player||{};
+ state.operator=state.operator||{};
+ state.rewardSystem=state.rewardSystem||{};
+ state.playerProfile.firstName=first; state.playerProfile.lastName=last;
+ state.player.firstName=first; state.player.lastName=last;
+ state.operator.first=first; state.operator.last=last;
+ state.rewardSystem.playerName=name;
+ state.certName=name; state.badgeName=name;
+ try{save()}catch(e){}
+}
+function restore(){
+ let stored=readID(),cur=stateID();
+ /* Existing real state wins once, otherwise permanent identity restores it. */
+ if(cur && !/^John Smith$/i.test(full(cur))){writeID(cur);apply(cur);return cur}
+ if(stored&&text(stored.first)){apply(stored);return stored}
+ const fallback={first:"John",last:"Smith"};writeID(fallback);apply(fallback);return fallback
+}
+function captureInputs(){
+ const pairs=[
+  ["#rwFirst","#rwLast"],
+  ["#p8first","#p8last"]
+ ];
+ for(const [fs,ls] of pairs){
+  const f=document.querySelector(fs),l=document.querySelector(ls);
+  if(f&&text(f.value)){
+   const n={first:text(f.value),last:text(l?.value)};
+   writeID(n);apply(n);return n;
+  }
+ }
+ return null
+}
+/* Capture the literal edited value instead of waiting for another subsystem to copy it into state. */
+document.addEventListener("input",function(e){
+ const el=e.target;if(!el||el.tagName!=="INPUT")return;
+ const id=(el.id||"").toLowerCase();
+ if(!["rwfirst","rwlast","p8first","p8last"].includes(id))return;
+ setTimeout(captureInputs,0);
+},true);
+document.addEventListener("change",function(){setTimeout(captureInputs,0)},true);
+
+/* Before the page is left/reloaded, force both state and identity to disk. */
+window.addEventListener("beforeunload",function(){
+ try{captureInputs();restore();save()}catch(e){}
+});
+document.addEventListener("visibilitychange",function(){
+ if(document.visibilityState==="hidden"){try{captureInputs();restore();save()}catch(e){}}
+});
+
+/* Repair a missing primary save from backup without deleting either. */
+try{
+ if(!localStorage.getItem(SAVEKEY)&&localStorage.getItem(BACKUP))
+   localStorage.setItem(SAVEKEY,localStorage.getItem(BACKUP));
+}catch(e){}
+
+restore();
+setTimeout(restore,100);
+setTimeout(restore,800);
+window.VetGodsPersistentIdentity={restore,set:function(first,last){let n={first:text(first),last:text(last)};if(!n.first)return false;writeID(n);apply(n);return true},get:readID};
 })();
 </script>
 </body></html>
