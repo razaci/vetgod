@@ -18875,7 +18875,1480 @@ function printablePage(c,name){
  <div class="bar"><button onclick="window.print()">PRINT NOW</button><button onclick="window.close()">CLOSE</button></div>
  <section class="paper"><div class="cert"><div style="font:700 11px Arial;letter-spacing:3px">VET GODS ADMINISTRATIVE RECORDS DIVISION</div><h1 style="font-size:36px;margin-top:40px">Administrative Credential Certificate</h1><div style="font-style:italic">awarded to</div><div class="name">${esc(name)}</div><div style="font-size:78px;margin:20px">${c[1]}</div><div class="title">${esc(c[2])}</div><p>${esc(c[3])}</p><div class="seal">VET GODS<br>ADMIN</div><div class="meta"><div><b>CREDENTIAL</b><br>${esc(c[0])}</div><div><b>IRN</b><br>${esc(r.irn)}</div><div><b>ISSUED</b><br>${esc(r.date)}</div><div><b>STATUS</b><br>ACTIVE</div></div></div></section>
  <section class="paper"><div class="badge"><div class="icon">${c[1]}</div><h2>${esc(c[2])}</h2><p><b>${esc(name)}</b></p><p>${esc(c[0])}<br>IRN ${esc(r.irn)}<br>Issued ${esc(r.date)}</p><div class="seal">VET GODS<br>ADMIN</div><p><b>ADMINISTRATOR BADGE</b></p></div></section>
- </body></html>`
+ 
+<style id="hospital-pc-phase1-css">
+:root{--hgreen:#b7ffd1;--hdim:#628a70;--hline:#31533b;--hbg:#010603;--hpanel:#031009;--hpaper:#dce8df}
+#hospitalPcP1{min-height:100%;background:
+radial-gradient(circle at 70% 15%,rgba(35,82,51,.18),transparent 35%),
+repeating-linear-gradient(0deg,rgba(183,255,209,.025) 0 1px,transparent 1px 4px),
+#010603;color:var(--hgreen);font-family:"Courier New",monospace;padding:8px;box-sizing:border-box}
+.hpBoot{border:1px solid #5f8f6c;background:#010805;padding:13px;box-shadow:inset 0 0 40px #061b0e}
+.hpBoot .asset{font-size:8px;letter-spacing:2px;color:#789d82}.hpBoot h1{font-size:clamp(22px,5vw,42px);margin:5px 0;color:#eaffef;text-shadow:0 0 10px #72d48c}.hpBoot p{font-size:8px;line-height:1.55;color:#8db49a}
+.hpAlert{border:1px solid #845f4b;background:#160904;color:#ffd6bf;padding:8px;margin-top:7px;font-size:8px}
+.hpStatus{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid var(--hline);margin:7px 0}.hpStatus div{padding:7px;border-right:1px dotted var(--hline)}.hpStatus small{display:block;font-size:6px;color:var(--hdim)}.hpStatus b{font-size:9px}
+.hpLayout{display:grid;grid-template-columns:.72fr 1.28fr;gap:7px}.hpPanel{border:1px solid var(--hline);background:rgba(2,12,6,.94)}.hpPanel h2{margin:0;padding:6px 8px;background:#b9d9c2;color:#031008;font-size:9px}.hpBody{padding:8px}
+.hpDesktop{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}.hpApp{border:1px solid #31533b;background:#020a05;color:#b7ffd1;padding:9px;text-align:left;font:700 8px "Courier New";cursor:pointer;min-height:66px}.hpApp:hover{background:#b9d9c2;color:#031008}.hpApp span{display:block;font-size:25px;margin-bottom:4px}.hpApp small{display:block;font-size:6px;font-weight:400;color:#628a70}.hpApp:hover small{color:#294631}
+.hpTerm{border:1px solid #31533b;background:#000803;padding:9px;min-height:270px;max-height:420px;overflow:auto;font-size:8px;line-height:1.6;white-space:pre-wrap}.hpCursor{display:inline-block;width:7px;height:11px;background:#b7ffd1;vertical-align:middle;animation:hpblink 1s steps(1) infinite}@keyframes hpblink{50%{opacity:0}}
+.hpFiles{border:1px solid #31533b;margin-top:7px}.hpFile{display:grid;grid-template-columns:90px 1fr 60px;gap:5px;padding:6px;border-bottom:1px dotted #27432f;font-size:7px;cursor:pointer}.hpFile:hover{background:#b9d9c2;color:#031008}.hpFile b{color:#eaffef}.hpFile:hover b{color:#031008}
+.hpModal{position:fixed;inset:0;background:rgba(0,0,0,.86);z-index:2147483600;display:flex;align-items:center;justify-content:center;padding:10px}.hpWindow{width:min(760px,96vw);max-height:86vh;overflow:auto;border:2px solid #6d9a78;background:#020b05;color:#c8ffda;box-shadow:0 0 55px #000}.hpWinbar{display:flex;justify-content:space-between;background:#b9d9c2;color:#031008;padding:7px;font-size:8px;font-weight:900}.hpWinbar button{border:0;background:#031008;color:#dfffe8;cursor:pointer}.hpContent{padding:13px;font-size:9px;line-height:1.65;white-space:pre-wrap}
+.hpActions{display:grid;grid-template-columns:repeat(3,1fr);margin-top:7px}.hpActions button{background:#020a05;color:#b7ffd1;border:1px solid #31533b;padding:9px;font:700 8px "Courier New";cursor:pointer}.hpActions button:hover{background:#b9d9c2;color:#031008}
+#hospitalPcLaunch{position:fixed;right:8px;top:76px;z-index:2147483639;background:#010805;color:#b7ffd1;border:1px solid #6d9a78;padding:8px 10px;font:900 8px "Courier New";cursor:pointer}
+@media(max-width:760px){.hpLayout{grid-template-columns:1fr}.hpStatus{grid-template-columns:repeat(2,1fr)}.hpDesktop{grid-template-columns:1fr 1fr}.hpActions{grid-template-columns:1fr}}
+</style>
+<script id="hospital-pc-phase1-js">
+(function(){"use strict";
+const KEY="vetgods_hospital_pc_phase1";
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{booted:false,opened:[],log:[],printer:["ADMIN_CREDENTIAL_PACKET.PRN","VET_AWARD_REGISTER.PRN","JOB_███_0317.PRN"],last:""}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+const files={
+"handover":{title:"SHIFT_HANDOVER_0317.TXT",body:`NORTH CASCADE REGIONAL HOSPITAL
+VETERINARY MEDICINE DEPARTMENT
+NIGHT SHIFT HANDOVER // 03:17
+
+ICU census transferred.
+Two surgical recoveries stable.
+Imaging workstation VET-RAD-02 continues to reject time synchronization.
+Facilities has not answered the basement intercom ticket.
+
+If you are covering this desk:
+Do not clear the printer queue until Administration identifies job ███.
+It has reappeared three times after deletion.
+
+— A. Mercer, Department Administrator
+
+[The file ends here. There is no sign-out entry.]`},
+"printer":{title:"PRINT_QUEUE.LOG",body:`HOSP-VET-PRN04 // DEPARTMENT LASER
+STATUS: ONLINE
+
+001  ADMIN_CREDENTIAL_PACKET.PRN     READY
+002  VET_AWARD_REGISTER.PRN          READY
+003  JOB_███_0317.PRN                HELD
+004  discharge_vesper.pdf            COMPLETE
+005  CASE_1149_ADDENDUM.PRN          ORIGIN UNKNOWN
+
+NOTE: Job 003 predates the current login session.
+SOURCE WORKSTATION field is blank.`},
+"security":{title:"SECURITY_SESSION.LOG",body:`02:41  VET-ADMIN-01 LOGIN // A.MERCER
+02:58  VET-ICU-02 REMOTE SESSION OPEN
+03:11  BASEMENT SERVICE DOOR // ACCESS EVENT
+03:17  VET-ADMIN-01 LOCAL INPUT
+03:17  HOSP-VET-PRN04 JOB RECEIVED
+03:18  ACCOUNT STATUS: SESSION ACTIVE
+--:--  LOGOUT RECORD NOT FOUND
+
+The workstation clock currently disagrees with the imaging server by 11 minutes.`},
+"case":{title:"CASE_1149_HEADER.DAT",body:`PATIENT: [RECORD PARTIALLY UNAVAILABLE]
+SPECIES: CANINE
+SERVICE: VETERINARY MEDICINE
+LOCATION: RECOVERY WARD
+STATUS: DISCHARGED
+
+SYSTEM FLAG:
+Recovery telemetry continued for 46 minutes after discharge status was entered.
+
+ATTACHMENTS:
+- radiograph_1149 [LOCKED]
+- collar_inventory [MISSING]
+- discharge_note [AVAILABLE]
+- addendum [PRINTED / SOURCE UNKNOWN]`},
+"mail":{title:"DRAFT_MESSAGE.UNSENT",body:`To: Facilities
+Subject: basement service corridor
+
+The reader is accepting my badge but the access log is recording a different credential number.
+
+I checked it twice.
+
+Please don't close the ticket as user error again. The number it records belongs to—
+
+[DRAFT ENDS]
+[AUTOSAVE RECOVERY FAILED]`}
+};
+function modal(title,body){
+ let d=document.createElement("div");d.className="hpModal";d.innerHTML='<div class="hpWindow"><div class="hpWinbar"><span>'+E(title)+'</span><button>CLOSE [X]</button></div><div class="hpContent">'+E(body)+'</div></div>';d.querySelector("button").onclick=()=>d.remove();document.body.appendChild(d)
+}
+function openFile(id){
+ let x=get(),f=files[id];if(!f)return;if(!x.opened.includes(id))x.opened.push(id);x.last=f.title;x.log.unshift("OPEN "+f.title);put(x);modal(f.title,f.body);renderStatus()
+}
+function renderStatus(){
+ let x=get(),el=document.querySelector("#hpDiscoveries");if(el)el.textContent=x.opened.length+" / "+Object.keys(files).length
+}
+function render(){
+ let m=document.querySelector("#main");if(!m)return;let x=get();x.booted=true;put(x);try{page="hospitalPcP1";nav()}catch(e){}
+ let terminal=`NCRH MEDSYS/VT 6.4
+Workstation: VET-ADMIN-01
+Asset: NCRH-VET-ADM-4471
+Department: Veterinary Medicine
+Network: HOSP-CLINICAL
+Session owner: A. MERCER
+Session state: ACTIVE / LOGOUT NOT FOUND
+
+> restoring interrupted administrative session...
+> patient census mounted
+> awards/credential printer detected
+> 3 pending print jobs
+> archive index degraded
+> basement node: NO INVENTORY MATCH
+> last keyboard activity: 03:17
+
+C:\\VETMED\\ADMIN> _`;
+ m.innerHTML='<div id="hospitalPcP1"><header class="hpBoot"><div class="asset">NORTH CASCADE REGIONAL HOSPITAL // CLINICAL INFORMATION SYSTEM</div><h1>VET-ADMIN-01</h1><p>Veterinary Medicine Department administrative workstation. An interrupted night-shift session has been recovered instead of presenting a normal login screen.</p><div class="hpAlert">SESSION RECOVERY WARNING // Previous administrator logout was not recorded. Unsaved files and print jobs remain attached to this account.</div></header>'+
+ '<div class="hpStatus"><div><small>WORKSTATION</small><b>VET-ADMIN-01</b></div><div><small>ASSET</small><b>ADM-4471</b></div><div><small>SESSION</small><b>RECOVERED</b></div><div><small>PRINTER</small><b>3 PENDING</b></div><div><small>ARCHIVE</small><b>DEGRADED</b></div><div><small>DISCOVERIES</small><b id="hpDiscoveries">'+x.opened.length+' / 5</b></div></div>'+
+ '<div class="hpLayout"><section class="hpPanel"><h2>VETERINARY DEPARTMENT DESKTOP</h2><div class="hpBody"><div class="hpDesktop">'+
+ app("🐾","PATIENT CENSUS","Active veterinary patients","census")+
+ app("🩻","DIAGNOSTIC IMAGING","Radiology workstation index","imaging")+
+ app("🧪","CLINICAL LAB","Laboratory results gateway","lab")+
+ app("⚕","SURGERY / ICU","Treatment & recovery console","clinic")+
+ app("🏆","CREDENTIALING","Awards, degrees and badges","awards")+
+ app("🖨","DEPARTMENT PRINTER","Certificates and queued jobs","printerapp")+
+ app("📁","RECORDS ARCHIVE","Recovered administrative files","archive")+
+ app("🛡","ADMINISTRATION","Administrator credential office","admin")+
+ '</div><div class="hpActions"><button data-hfile="handover">OPEN SHIFT HANDOVER</button><button data-hfile="security">SECURITY SESSION LOG</button><button data-hfile="mail">RECOVER UNSENT DRAFT</button></div></div></section>'+
+ '<section class="hpPanel"><h2>RECOVERED SESSION TERMINAL</h2><div class="hpBody"><div class="hpTerm">'+E(terminal).replace("_",'<span class="hpCursor"></span>')+'</div><div class="hpFiles">'+
+ file("03:17","SHIFT_HANDOVER_0317.TXT","RECOVERED","handover")+file("03:17","PRINT_QUEUE.LOG","ACTIVE","printer")+file("03:18","SECURITY_SESSION.LOG","INCOMPLETE","security")+file("02:52","CASE_1149_HEADER.DAT","FLAGGED","case")+file("03:16","DRAFT_MESSAGE.UNSENT","DAMAGED","mail")+
+ '</div></div></section></div></div>';
+ function app(i,n,d,id){return '<button class="hpApp" data-happ="'+id+'"><span>'+i+'</span>'+n+'<small>'+d+'</small></button>'}
+ function file(t,n,s,id){return '<div class="hpFile" data-hfile="'+id+'"><span>'+t+'</span><b>'+n+'</b><span>'+s+'</span></div>'}
+ m.querySelectorAll("[data-hfile]").forEach(e=>e.onclick=()=>openFile(e.dataset.hfile));
+ m.querySelectorAll("[data-happ]").forEach(e=>e.onclick=()=>{
+  let id=e.dataset.happ;
+  if(id==="awards") return window.VetGodsHardAwards?.render?.("mine");
+  if(id==="admin") return window.VetGodsAdminPrintRepair?.render?.();
+  if(id==="printerapp") return openFile("printer");
+  if(id==="archive") return openFile("handover");
+  if(id==="clinic"){try{return window.VetGodsDosProgramP2?.render?.("MAIN")}catch(q){}}
+  if(id==="census")return modal("PATIENT CENSUS","Census service is mounted. Existing VET GODS animal records remain available through the clinical system. Phase 2 will convert this into the hospital-style patient directory.");
+  if(id==="imaging")return modal("DIAGNOSTIC IMAGING","VET-RAD-02 responds, but its clock differs from this workstation.\\n\\nOne flagged attachment references CASE 1149.\\n\\n[Phase 2 department conversion pending]");
+  if(id==="lab")return modal("CLINICAL LAB","Laboratory gateway online.\\nNo critical result acknowledgements are pending.\\n\\nOne archived accession number has no matching patient header.\\n\\n[Phase 2 department conversion pending]");
+ });
+}
+function launch(){
+ let b=document.querySelector("#hospitalPcLaunch");if(!b){b=document.createElement("button");b.id="hospitalPcLaunch";b.textContent="▣ HOSPITAL PC";b.onclick=render;document.body.appendChild(b)}
+}
+window.VetGodsHospitalPC={render,openFile,state:get};
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();
+setInterval(launch,2500);
+})();
+</script>
+
+
+<style id="hospital-pc-phase2-css">
+#hp2{min-height:100%;background:#010603;color:#c9ffda;font-family:"Courier New",monospace;padding:8px}
+.hp2bar{border:1px solid #52765d;background:#06130a;padding:10px;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.hp2bar h1{font-size:18px;margin:0}.hp2bar small{font-size:7px;color:#789d82}
+.hp2nav{display:grid;grid-template-columns:repeat(8,1fr);border:1px solid #31533b;margin:7px 0}
+.hp2nav button,.hp2btn{border:0;border-right:1px dotted #31533b;background:#020a05;color:#b7ffd1;padding:9px;font:700 7px "Courier New";cursor:pointer}
+.hp2nav button:hover,.hp2btn:hover{background:#b9d9c2;color:#031008}
+.hp2stats{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid #31533b;margin-bottom:7px}
+.hp2stats div{padding:7px;border-right:1px dotted #31533b}.hp2stats small{display:block;font-size:6px;color:#628a70}.hp2stats b{font-size:9px}
+.hp2grid{display:grid;grid-template-columns:.75fr 1.25fr;gap:7px}.hp2panel{border:1px solid #31533b;background:#020b06}
+.hp2panel h2{margin:0;padding:7px;background:#bddbc5;color:#031008;font-size:9px}.hp2body{padding:8px}
+.hp2patients{max-height:540px;overflow:auto}.hp2patient{border-bottom:1px dotted #31533b;padding:8px;display:grid;grid-template-columns:35px 1fr 65px;gap:7px;cursor:pointer}
+.hp2patient:hover,.hp2patient.on{background:#bddbc5;color:#031008}.hp2patient span{font-size:24px}.hp2patient b{font-size:8px}.hp2patient small{display:block;font-size:6px;color:#6b8e74}.hp2patient strong{font-size:7px;text-align:right}
+.hp2chart{border:1px solid #31533b;padding:9px;background:#000803}.hp2charthead{display:grid;grid-template-columns:60px 1fr;gap:10px;align-items:center}.hp2animal{font-size:52px;text-align:center}
+.hp2chart h3{margin:0;font-size:15px}.hp2muted{font-size:7px;color:#72957b}.hp2meters{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:8px}
+.hp2meter{border:1px solid #31533b;padding:6px}.hp2meter small{display:block;font-size:6px;color:#6b8e74}.hp2meter b{font-size:10px}.hp2track{height:5px;border:1px solid #31533b;margin-top:4px}.hp2track i{display:block;height:100%;background:#b7ffd1}
+.hp2orders{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:7px}.hp2order{border:1px solid #31533b;background:#031008;color:#c9ffda;padding:9px;text-align:left;font:700 7px "Courier New";cursor:pointer}.hp2order:hover{background:#bddbc5;color:#031008}
+.hp2note{border:1px solid #31533b;background:#000;padding:8px;margin-top:7px;font-size:7px;line-height:1.55;min-height:75px}
+.hp2beds{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}.hp2bed{border:1px solid #31533b;padding:8px;min-height:70px}.hp2bed b{font-size:8px}.hp2bed small{display:block;font-size:6px;color:#6b8e74}
+.hp2list{border:1px solid #31533b}.hp2row{display:grid;grid-template-columns:90px 1fr 80px;gap:5px;padding:7px;border-bottom:1px dotted #31533b;font-size:7px;cursor:pointer}.hp2row:hover{background:#bddbc5;color:#031008}
+.hp2alert{border:1px solid #805d4c;background:#160904;color:#ffd4bd;padding:8px;font-size:7px;margin-top:7px}
+@media(max-width:850px){.hp2grid{grid-template-columns:1fr}.hp2nav{grid-template-columns:repeat(2,1fr)}.hp2stats{grid-template-columns:repeat(2,1fr)}.hp2orders,.hp2meters{grid-template-columns:repeat(2,1fr)}.hp2beds{grid-template-columns:repeat(2,1fr)}}
+</style>
+<script id="hospital-pc-phase2-js">
+(function(){"use strict";
+const KEY="vetgods_hospital_pc_phase2";
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function animals(){try{return state.animals||[]}catch(e){return[]}}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{patient:null,orders:{},notes:{},accessions:[],bed:{},log:[]}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+function mrn(a){let n=String(a?.id??0).replace(/\D/g,"");return "VET-"+String(n||Math.abs(String(a?.name||"PATIENT").split("").reduce((q,c)=>q*31+c.charCodeAt(0),7))).padStart(6,"0").slice(-6)}
+function vals(a){return {health:Math.max(0,Math.min(100,+(a?.health??a?.hp??78))),oxygen:Math.max(0,Math.min(100,+(a?.oxygen??a?.o2??96))),hydration:Math.max(0,Math.min(100,+(a?.hydration??70))),pain:Math.max(0,Math.min(100,+(a?.pain??28))),stress:Math.max(0,Math.min(100,+(a?.stress??32))),nutrition:Math.max(0,Math.min(100,+(a?.nutrition??a?.food??65)))}}
+function setPatient(id){let x=get();x.patient=id;put(x);render("census")}
+function order(a,type){
+ let x=get(),id=String(a.id),o=x.orders[id]||(x.orders[id]={});
+ let stamp=new Date().toLocaleTimeString();
+ if(type==="exam"){o.exam=stamp;x.notes[id]="Physical examination documented. Cardiorespiratory, hydration, pain and mobility observations entered."}
+ if(type==="imaging"){o.imaging=stamp;x.notes[id]="Diagnostic imaging order transmitted to VET-RAD-02. Image index returned with one synchronization warning."}
+ if(type==="lab"){o.lab=stamp;let acc="LAB-"+String(Date.now()).slice(-7);o.labAcc=acc;x.accessions.unshift({acc,patient:id,name:a.name,time:stamp});x.notes[id]="Clinical laboratory accession "+acc+" created and specimen status set to RECEIVED."}
+ if(type==="icu"){o.icu=stamp;x.bed[id]=x.bed[id]||("ICU-"+String((Object.keys(x.bed).length%8)+1).padStart(2,"0"));x.notes[id]="Patient assigned to "+x.bed[id]+". Recovery telemetry opened."}
+ if(type==="pharmacy"){o.pharmacy=stamp;x.notes[id]="Medication reconciliation opened. Existing in-game treatment inventory remains available through the clinical console."}
+ if(type==="discharge"){o.discharge=stamp;x.notes[id]="Discharge workflow initiated. Final instructions, award records and owner disposition require review."}
+ x.log.unshift(stamp+" "+mrn(a)+" "+type.toUpperCase());put(x);render("census")
+}
+function shell(title,body){
+ let m=document.querySelector("#main");if(!m)return;try{page="hospitalClinicalOS";nav()}catch(e){}
+ let ls=animals(),x=get();
+ m.innerHTML='<div id="hp2"><header class="hp2bar"><div><small>NORTH CASCADE REGIONAL HOSPITAL // VETERINARY MEDICINE</small><h1>'+E(title)+'</h1></div><button class="hp2btn" id="hp2pc">VET-ADMIN-01 DESKTOP</button></header>'+
+ '<nav class="hp2nav"><button data-hp2="census">PATIENT CENSUS</button><button data-hp2="icu">ICU / RECOVERY</button><button data-hp2="imaging">IMAGING</button><button data-hp2="lab">CLINICAL LAB</button><button data-hp2="surgery">SURGERY</button><button data-hp2="pharmacy">PHARMACY</button><button data-hp2="records">RECORDS</button><button data-hp2="credentials">CREDENTIALING</button></nav>'+
+ '<div class="hp2stats"><div><small>CENSUS</small><b>'+ls.length+' PATIENTS</b></div><div><small>ICU BEDS</small><b>'+Object.keys(x.bed).length+'/8</b></div><div><small>LAB ACCESSIONS</small><b>'+x.accessions.length+'</b></div><div><small>IMAGING NODE</small><b>VET-RAD-02</b></div><div><small>PRINTER</small><b>PRN04 ONLINE</b></div><div><small>NETWORK</small><b>CLINICAL</b></div></div>'+body+'</div>';
+ m.querySelector("#hp2pc").onclick=()=>window.VetGodsHospitalPC?.render?.();
+ m.querySelectorAll("[data-hp2]").forEach(b=>b.onclick=()=>render(b.dataset.hp2));
+}
+function census(){
+ let ls=animals(),x=get(),a=ls.find(z=>String(z.id)===String(x.patient))||ls[0];if(a&&x.patient==null){x.patient=a.id;put(x)}
+ let v=vals(a),o=x.orders[String(a?.id)]||{};
+ let left='<section class="hp2panel"><h2>ACTIVE VETERINARY CENSUS</h2><div class="hp2patients">'+(ls.length?ls.map(z=>'<div class="hp2patient '+(a&&String(z.id)===String(a.id)?"on":"")+'" data-patient="'+E(z.id)+'"><span>'+E(z.icon||"🐾")+'</span><div><b>'+E(z.name||"Unnamed")+'</b><small>'+E(z.species||"Animal")+' · '+mrn(z)+'</small></div><strong>'+E((get().bed||{})[z.id]||"OUTPT")+'</strong></div>').join(""):'<div class="hp2note">No animal records are currently loaded.</div>')+'</div></section>';
+ let right='<section class="hp2panel"><h2>ELECTRONIC MEDICAL RECORD</h2><div class="hp2body">'+(a?'<div class="hp2chart"><div class="hp2charthead"><div class="hp2animal">'+E(a.icon||"🐾")+'</div><div><h3>'+E(a.name)+'</h3><div class="hp2muted">MRN '+mrn(a)+' · '+E(a.species||"ANIMAL")+' · '+E(a.breed||"BREED NOT ENTERED")+'<br>Service: VETERINARY MEDICINE · Location: '+E(x.bed[a.id]||"AMBULATORY / INTAKE")+'</div></div></div>'+
+ '<div class="hp2meters">'+meter("HEALTH",v.health)+meter("OXYGEN",v.oxygen)+meter("HYDRATION",v.hydration)+meter("PAIN",100-v.pain,"LOWER PAIN = BETTER")+meter("STRESS",100-v.stress,"LOWER STRESS = BETTER")+meter("NUTRITION",v.nutrition)+'</div>'+
+ '<div class="hp2orders"><button class="hp2order" data-order="exam">PHYSICAL EXAM<br>'+(o.exam?"DONE "+o.exam:"ORDER / DOCUMENT")+'</button><button class="hp2order" data-order="imaging">DIAGNOSTIC IMAGING<br>'+(o.imaging?"ORDERED "+o.imaging:"SEND TO VET-RAD-02")+'</button><button class="hp2order" data-order="lab">CLINICAL LAB<br>'+(o.labAcc||"CREATE ACCESSION")+'</button><button class="hp2order" data-order="icu">ICU / RECOVERY<br>'+E(x.bed[a.id]||"ASSIGN BED")+'</button><button class="hp2order" data-order="pharmacy">PHARMACY<br>'+(o.pharmacy?"RECONCILED":"MEDICATION REVIEW")+'</button><button class="hp2order" data-order="discharge">DISCHARGE<br>'+(o.discharge?"WORKFLOW OPEN":"BEGIN REVIEW")+'</button></div>'+
+ '<div class="hp2note"><b>CLINICAL NOTE</b><br>'+E(x.notes[a.id]||"No new departmental note. Select an order above to document activity.")+'</div>'+
+ ((o.imaging&&o.lab)?'<div class="hp2alert">SYSTEM CROSS-CHECK // '+mrn(a)+' has completed diagnostic orders. VET-RAD-02 returned a timestamp '+(a===ls[0]?"11 minutes":"3 minutes")+' different from the clinical record server.</div>':'')+
+ '</div>':'<div class="hp2note">Select a patient.</div>')+'</div></section>';
+ shell("PATIENT CENSUS / ELECTRONIC MEDICAL RECORD",'<div class="hp2grid">'+left+right+'</div>');
+ document.querySelectorAll("[data-patient]").forEach(e=>e.onclick=()=>setPatient(e.dataset.patient));
+ document.querySelectorAll("[data-order]").forEach(e=>e.onclick=()=>order(a,e.dataset.order));
+ function meter(n,nv,note){return '<div class="hp2meter"><small>'+n+'</small><b>'+Math.round(nv)+'%</b><div class="hp2track"><i style="width:'+nv+'%"></i></div>'+(note?'<small>'+note+'</small>':'')+'</div>'}
+}
+function simple(kind){
+ let x=get(),ls=animals();
+ if(kind==="icu"){
+  let beds=Array.from({length:8},(_,i)=>{let name="ICU-"+String(i+1).padStart(2,"0"),entry=Object.entries(x.bed).find(q=>q[1]===name),a=entry&&ls.find(z=>String(z.id)===String(entry[0]));return '<div class="hp2bed"><b>'+name+'</b><small>'+(a?E(a.name)+" · "+mrn(a):"AVAILABLE")+'</small></div>'}).join("");
+  return shell("ICU / RECOVERY WARD",'<section class="hp2panel"><h2>RECOVERY BED BOARD</h2><div class="hp2body"><div class="hp2beds">'+beds+'</div><div class="hp2alert">Telemetry gateway reports one historical recovery stream associated with a discharged chart. Archive reference: CASE 1149.</div></div></section>')
+ }
+ if(kind==="lab") return shell("CLINICAL LABORATORY",'<section class="hp2panel"><h2>ACCESSION QUEUE</h2><div class="hp2body"><div class="hp2list">'+(x.accessions.length?x.accessions.map(r=>'<div class="hp2row"><b>'+E(r.acc)+'</b><span>'+E(r.name)+'</span><span>RECEIVED '+E(r.time)+'</span></div>').join(""):'<div class="hp2row"><b>QUEUE</b><span>No new accessions</span><span>ONLINE</span></div>')+'</div><div class="hp2alert">Archived accession LAB-██417 has no matching patient header in the current census index.</div></div></section>')
+ if(kind==="imaging") return shell("DIAGNOSTIC IMAGING",'<section class="hp2panel"><h2>VET-RAD-02 IMAGE ROUTER</h2><div class="hp2body"><div class="hp2list"><div class="hp2row"><b>NODE</b><span>VET-RAD-02</span><span>ONLINE</span></div><div class="hp2row"><b>TIME SYNC</b><span>CLINICAL NTP DISAGREEMENT</span><span>+00:11</span></div><div class="hp2row"><b>FLAGGED</b><span>CASE_1149 / radiograph attachment</span><span>LOCKED</span></div></div></div></section>')
+ if(kind==="surgery") return shell("SURGICAL THEATER CONTROL",'<section class="hp2panel"><h2>OPERATING THEATER BOARD</h2><div class="hp2body"><div class="hp2beds"><div class="hp2bed"><b>OR-VET-1</b><small>AVAILABLE · terminal online</small></div><div class="hp2bed"><b>OR-VET-2</b><small>TURNOVER · environmental cycle</small></div><div class="hp2bed"><b>PROC-1</b><small>AVAILABLE</small></div><div class="hp2bed"><b>RECOVERY</b><small>'+Object.keys(x.bed).length+' monitored</small></div></div></div></section>')
+ if(kind==="pharmacy") return shell("VETERINARY PHARMACY TERMINAL",'<section class="hp2panel"><h2>MEDICATION / SUPPLY RECONCILIATION</h2><div class="hp2body"><div class="hp2list"><div class="hp2row"><b>PAIN CONTROL</b><span>Clinical inventory link</span><span>AVAILABLE</span></div><div class="hp2row"><b>IV FLUIDS</b><span>Fluid therapy inventory</span><span>AVAILABLE</span></div><div class="hp2row"><b>OXYGEN</b><span>Respiratory support</span><span>AVAILABLE</span></div><div class="hp2row"><b>NUTRITION</b><span>Recovery nutrition</span><span>AVAILABLE</span></div></div><div class="hp2note">Treatment actions remain handled by the existing clinical game systems; this phase converts their hospital-facing organization and records layer.</div></div></section>')
+ if(kind==="records") return window.VetGodsHospitalPC?.openFile?.("handover");
+ if(kind==="credentials") return window.VetGodsAdminPrintRepair?.render?.();
+}
+function render(kind){if(!kind||kind==="census")return census();return simple(kind)}
+window.VetGodsHospitalClinicalOS={render,order,state:get};
+})();
+</script>
+<script id="hospital-pc-phase2-bridge">
+(function(){
+let n=0,t=setInterval(function(){n++;
+ let p=window.VetGodsHospitalPC;
+ if(p&&!p.__phase2){
+  let old=p.render;
+  p.render=function(){old();setTimeout(function(){
+   document.querySelectorAll("[data-happ]").forEach(function(e){
+    let id=e.dataset.happ;
+    if(id==="census")e.onclick=function(){VetGodsHospitalClinicalOS.render("census")};
+    if(id==="imaging")e.onclick=function(){VetGodsHospitalClinicalOS.render("imaging")};
+    if(id==="lab")e.onclick=function(){VetGodsHospitalClinicalOS.render("lab")};
+    if(id==="clinic")e.onclick=function(){VetGodsHospitalClinicalOS.render("icu")};
+   });
+  },0)};
+  p.__phase2=true;clearInterval(t)
+ }
+ if(n>150)clearInterval(t)
+},250)
+})();
+</script>
+
+
+<style id="hospital-pc-phase3-css">
+#hp3{min-height:100%;background:
+radial-gradient(circle at 75% 5%,rgba(51,94,62,.16),transparent 32%),
+repeating-linear-gradient(0deg,rgba(180,255,204,.02) 0 1px,transparent 1px 4px),#010503;
+color:#caffda;font-family:"Courier New",monospace;padding:8px}
+.hp3head{border:1px solid #587a61;background:#041008;padding:13px;box-shadow:inset 0 0 45px #071b0d}
+.hp3head small{font-size:7px;color:#73927b;letter-spacing:2px}.hp3head h1{margin:4px 0;font-size:clamp(23px,5vw,40px)}
+.hp3alert{border:1px solid #7a5949;background:#160904;color:#ffd5bf;padding:8px;margin-top:7px;font-size:8px}
+.hp3stats{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid #31533b;margin:7px 0}.hp3stats div{padding:7px;border-right:1px dotted #31533b}.hp3stats small{display:block;font-size:6px;color:#67816e}.hp3stats b{font-size:9px}
+.hp3layout{display:grid;grid-template-columns:.68fr 1.32fr;gap:7px}.hp3panel{border:1px solid #31533b;background:#020a05}.hp3panel h2{margin:0;padding:7px;background:#bddbc5;color:#031008;font-size:9px}.hp3body{padding:8px}
+.hp3person{border:1px solid #31533b;background:#000803;padding:10px;text-align:center}.hp3portrait{font-size:62px;filter:grayscale(1)}.hp3person h3{font-size:14px;margin:4px}.hp3person p{font-size:7px;line-height:1.5;color:#789d82}
+.hp3timeline{margin-top:7px;border:1px solid #31533b}.hp3event{display:grid;grid-template-columns:45px 1fr 62px;gap:6px;padding:7px;border-bottom:1px dotted #31533b;font-size:7px;cursor:pointer}.hp3event:hover{background:#bddbc5;color:#031008}.hp3event b{color:#eaffef}.hp3event:hover b{color:#031008}
+.hp3folders{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.hp3folder{border:1px solid #31533b;background:#031008;color:#caffda;padding:9px;text-align:left;min-height:85px;font:700 8px "Courier New";cursor:pointer}.hp3folder:hover{background:#bddbc5;color:#031008}.hp3folder span{display:block;font-size:28px}.hp3folder small{display:block;font-size:6px;color:#6d8b75;font-weight:400}
+.hp3files{border:1px solid #31533b;margin-top:7px}.hp3file{display:grid;grid-template-columns:105px 1fr 75px;gap:5px;padding:7px;border-bottom:1px dotted #31533b;font-size:7px;cursor:pointer}.hp3file:hover{background:#bddbc5;color:#031008}.hp3file.locked{opacity:.5}.hp3file b{color:#eaffef}.hp3file:hover b{color:#031008}
+.hp3clues{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}.hp3clue{border:1px solid #31533b;padding:8px;min-height:70px}.hp3clue b{font-size:8px}.hp3clue small{display:block;font-size:6px;color:#73927b;margin-top:4px}.hp3clue.found{box-shadow:inset 0 0 18px #173d22}.hp3clue.missing{opacity:.35}
+.hp3terminal{background:#000;border:1px solid #31533b;padding:9px;font-size:7px;line-height:1.55;min-height:115px;white-space:pre-wrap}
+.hp3buttons{display:grid;grid-template-columns:repeat(3,1fr);margin-top:7px}.hp3buttons button{border:1px solid #31533b;background:#020a05;color:#caffda;padding:9px;font:700 7px "Courier New";cursor:pointer}.hp3buttons button:hover{background:#bddbc5;color:#031008}
+.hp3modal{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:2147483630;display:flex;align-items:center;justify-content:center;padding:10px}.hp3win{width:min(780px,96vw);max-height:88vh;overflow:auto;border:2px solid #668d70;background:#020b05}.hp3bar{display:flex;justify-content:space-between;background:#bddbc5;color:#031008;padding:7px;font-size:8px;font-weight:900}.hp3bar button{background:#031008;color:#fff;border:0}.hp3content{padding:14px;font-size:9px;line-height:1.7;white-space:pre-wrap}
+#hp3Launch{position:fixed;right:8px;top:110px;z-index:2147483638;background:#010805;color:#b7ffd1;border:1px solid #6d9a78;padding:8px 10px;font:900 8px "Courier New";cursor:pointer}
+@media(max-width:820px){.hp3layout{grid-template-columns:1fr}.hp3stats{grid-template-columns:repeat(2,1fr)}.hp3folders{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.hp3folders,.hp3clues,.hp3buttons{grid-template-columns:1fr}}
+</style>
+<script id="hospital-pc-phase3-js">
+(function(){"use strict";
+const KEY="vetgods_hospital_pc_phase3";
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{opened:[],clues:[],folder:"recovered",log:[],unlock:false}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+const docs={
+personnel:{title:"MERCER_A_PERSONNEL.TXT",clue:"identity",body:`PERSONNEL RECORD // VETERINARY MEDICINE
+
+MERCER, ADRIAN
+Department Administrator
+Employee record: VM-04471
+Primary workstation: VET-ADMIN-01
+Credential group: VET-ADMIN / RECORDS / PRINT
+Last completed annual credential review: CURRENT
+
+Supervisor note:
+Mercer requested repeated review of after-hours access events associated with the veterinary basement service corridor. No disciplinary action recorded.
+
+STATUS FIELD: ACTIVE
+
+There is no termination, transfer, leave, or separation entry.`},
+email1:{title:"EMAIL_0314_RECOVERED.MSG",clue:"badge",body:`From: A. Mercer
+To: Facilities Service Desk
+Subject: badge reader / basement corridor
+
+The basement reader is accepting my physical badge, but the audit trail records VM-03117 instead of VM-04471.
+
+VM-03117 is not my number.
+
+I searched Personnel. It does not return an active employee.
+
+Please escalate instead of resetting the reader again.
+
+— Adrian`},
+email2:{title:"EMAIL_0316_DRAFT.MSG",clue:"printer",body:`DRAFT // NOT SENT
+To: Hospital IT
+Subject: PRN04
+
+The veterinary printer produced another page at 03:17.
+
+The document properties say the job was submitted tomorrow.
+
+I know how that sounds. I checked the workstation clock, the print server and Radiology.
+
+VET-RAD-02 is wrong too, but not by the same amount.
+
+I put the pages in the locked records drawer.
+
+If this happens again I am going downstairs.`},
+voicemail:{title:"VOICEMAIL_TRANSCRIPT_0317.TXT",clue:"voice",body:`RECOVERED VOICEMAIL TRANSCRIPT
+03:09:42
+
+MERCER: "It's Adrian. I'm still in Vet Med. If Facilities calls, tell them I found the service panel."
+
+[6 seconds silence]
+
+MERCER: "There's a network cable patched into something below the old ward. It isn't labeled like hospital infrastructure."
+
+[impact / movement]
+
+MERCER: "Wait. The recovery monitor just—"
+
+[TRANSCRIPTION LOST]
+[RECORDING LENGTH: 00:31]
+[AVAILABLE AUDIO: 00:19]`},
+case1149:{title:"CASE_1149_ADDENDUM.TXT",clue:"case1149",body:`CASE 1149 // RECOVERED ADDENDUM
+
+Patient status in EMR: DISCHARGED
+Recovery telemetry: ACTIVE +46 MINUTES
+Bed assignment: NONE
+Monitor source: RECOVERY-04
+
+Manual note:
+"No patient was physically present at Recovery-04 when checked."
+
+The note is signed A. MERCER, not clinical staff.
+
+Attached device identifier:
+RX04-VM-03117
+
+The same number appears in the basement badge-reader audit.`},
+access:{title:"ACCESS_AUDIT_0317.CSV",clue:"basement",body:`02:58,VET-ICU-02,REMOTE_SESSION,VM-04471
+03:11,BASEMENT-SVC,ACCESS_GRANTED,VM-03117
+03:14,RECOVERY-04,DEVICE_WAKE,VM-03117
+03:17,HOSP-VET-PRN04,JOB_RECEIVED,UNKNOWN
+03:18,VET-ADMIN-01,SESSION_ACTIVE,VM-04471
+03:23,BASEMENT-SVC,DOOR_STATUS,OPEN
+03:24,BASEMENT-SVC,READER_OFFLINE,-
+03:41,VET-ADMIN-01,SESSION_ACTIVE,VM-04471
+
+No corresponding logout record exists.`},
+deleted:{title:"~DEL_03117_INDEX.TMP",clue:"03117",locked:true,body:`RECOVERED TEMPORARY INDEX
+
+VM-03117
+classification: [FIELD DAMAGED]
+department: VETERINARY MEDICINE
+record creation: [UNREADABLE]
+record closure: 11 YEARS BEFORE CURRENT SYSTEM INSTALL
+associated nodes:
+ - RECOVERY-04
+ - BASEMENT-SVC
+ - [UNREGISTERED HOST]
+ - HOSP-VET-PRN04
+
+NOTE:
+This record should not be addressable by the current credential server.`},
+note:{title:"DESK_NOTE_SCAN.TXT",clue:"drawer",body:`OCR TRANSCRIPTION // HANDWRITTEN NOTE
+
+"PRINTER DRAWER.
+Do not shred the 03:17 pages.
+Compare the animal ID numbers against old paper charts, not EMR.
+
+If 1149 appears again:
+check Recovery 04 first.
+Then the basement.
+
+If my account is still logged in, something interrupted me."
+
+— A.M.`}
+};
+const folders={
+recovered:["personnel","email1","email2","note"],
+communications:["email1","email2","voicemail"],
+security:["access","personnel"],
+cases:["case1149"],
+deleted:["deleted"]
+};
+function modal(doc){
+ let d=document.createElement("div");d.className="hp3modal";d.innerHTML='<div class="hp3win"><div class="hp3bar"><span>'+E(doc.title)+'</span><button>CLOSE [X]</button></div><div class="hp3content">'+E(doc.body)+'</div></div>';d.querySelector("button").onclick=()=>d.remove();document.body.appendChild(d)
+}
+function openDoc(id){
+ let x=get(),d=docs[id];if(!d)return;
+ if(d.locked&&!x.unlock){modal({title:"ACCESS DENIED",body:"Deleted index fragment is encrypted by the old credential cache.\\n\\nRequired correlation: identify at least 5 independent clues in Mercer’s recovered records."});return}
+ if(!x.opened.includes(id))x.opened.push(id);
+ if(d.clue&&!x.clues.includes(d.clue))x.clues.push(d.clue);
+ if(x.clues.length>=5)x.unlock=true;
+ x.log.unshift(new Date().toLocaleTimeString()+" OPEN "+d.title);put(x);modal(d);renderStatus()
+}
+function renderStatus(){
+ let x=get();let a=document.querySelector("#hp3Found");if(a)a.textContent=x.clues.length+" / 8";let u=document.querySelector("#hp3Unlock");if(u)u.textContent=x.unlock?"RECOVERED":"LOCKED"
+}
+function render(folder){
+ let m=document.querySelector("#main"),x=get();if(!m)return;if(folder)x.folder=folder;put(x);try{page="mercerInvestigation";nav()}catch(e){}
+ let list=folders[x.folder]||folders.recovered;
+ let timeline=[
+ ["02:41","Mercer signs into VET-ADMIN-01","NORMAL"],
+ ["02:58","Remote session opened on VET-ICU-02","REVIEW"],
+ ["03:11","Basement service access logged as VM-03117","ANOMALY"],
+ ["03:14","Recovery-04 wakes without assigned patient","ANOMALY"],
+ ["03:17","Unknown job reaches veterinary printer","FLAGGED"],
+ ["03:18","Mercer account remains active","OPEN"],
+ ["03:23","Basement service door reports open","FLAGGED"],
+ ["—","No logout event found","MISSING"]
+ ];
+ let clues=[
+ ["identity","Mercer's personnel file","Employment record remains ACTIVE."],
+ ["badge","Credential mismatch","Basement reader records VM-03117."],
+ ["printer","03:17 print anomaly","Job metadata claims an impossible submission time."],
+ ["voice","Recovered voicemail","Mercer reports an unregistered network connection."],
+ ["case1149","Case 1149","Telemetry continued after discharge."],
+ ["basement","Basement audit","Door and device events continue after Mercer leaves the desk."],
+ ["03117","VM-03117","Old identifier still addresses current systems."],
+ ["drawer","Printer drawer note","Mercer left instructions before leaving the workstation."]
+ ];
+ m.innerHTML='<div id="hp3"><header class="hp3head"><small>NCRH // VETERINARY MEDICINE // ADMINISTRATIVE INCIDENT REVIEW</small><h1>THE MERCER SESSION</h1><div style="font-size:8px;color:#8cad94">Recovered materials from the previous administrator account on VET-ADMIN-01.</div><div class="hp3alert">PERSONNEL EXCEPTION // Adrian Mercer remains ACTIVE in the directory. No logout, leave, transfer, termination or separation record has been located.</div></header>'+
+ '<div class="hp3stats"><div><small>SUBJECT</small><b>A. MERCER</b></div><div><small>EMPLOYEE</small><b>VM-04471</b></div><div><small>LAST INPUT</small><b>03:17</b></div><div><small>CLUES</small><b id="hp3Found">'+x.clues.length+' / 8</b></div><div><small>DELETED INDEX</small><b id="hp3Unlock">'+(x.unlock?"RECOVERED":"LOCKED")+'</b></div><div><small>SESSION</small><b>STILL ACTIVE</b></div></div>'+
+ '<div class="hp3layout"><section class="hp3panel"><h2>PERSONNEL / INCIDENT TIMELINE</h2><div class="hp3body"><div class="hp3person"><div class="hp3portrait">👤</div><h3>ADRIAN MERCER</h3><p>Department Administrator<br>Veterinary Medicine<br>Primary workstation VET-ADMIN-01<br>Personnel status: ACTIVE</p><button class="hp2btn" data-hp3doc="personnel">OPEN PERSONNEL RECORD</button></div><div class="hp3timeline">'+timeline.map(t=>'<div class="hp3event"><span>'+t[0]+'</span><b>'+t[1]+'</b><span>'+t[2]+'</span></div>').join("")+'</div></div></section>'+
+ '<section class="hp3panel"><h2>RECOVERED ADMINISTRATIVE ARCHIVE</h2><div class="hp3body"><div class="hp3folders">'+
+ folder("📁","RECOVERED FILES","recovered")+folder("✉","COMMUNICATIONS","communications")+folder("🛡","SECURITY","security")+folder("🐾","FLAGGED CASES","cases")+folder("⌫","DELETED / TEMP","deleted")+
+ '</div><div class="hp3files">'+list.map(id=>{let d=docs[id],locked=d.locked&&!x.unlock;return '<div class="hp3file '+(locked?"locked":"")+'" data-hp3doc="'+id+'"><span>'+E(d.title.split(".")[0])+'</span><b>'+E(d.title)+'</b><span>'+(locked?"LOCKED":x.opened.includes(id)?"READ":"UNREAD")+'</span></div>'}).join("")+'</div>'+
+ '<h2 style="margin-top:8px">CORRELATION BOARD</h2><div class="hp3clues">'+clues.map(c=>'<div class="hp3clue '+(x.clues.includes(c[0])?"found":"missing")+'"><b>'+(x.clues.includes(c[0])?"✓ ":"? ")+E(c[1])+'</b><small>'+E(x.clues.includes(c[0])?c[2]:"Evidence not yet recovered.")+'</small></div>').join("")+'</div>'+
+ '<h2 style="margin-top:8px">INCIDENT CONSOLE</h2><div class="hp3terminal">CASE: VET-ADMIN-01 / MERCER\nWorking conclusion: INCOMPLETE\n\nNo record currently establishes where Mercer went after leaving the workstation.\nNo record explains why VM-03117 is accepted by current infrastructure.\nNo record identifies the source host for the 03:17 printer job.\n\nDo not close the incident from incomplete evidence.</div>'+
+ '<div class="hp3buttons"><button id="hp3PC">VET-ADMIN-01</button><button id="hp3Clinical">CLINICAL OS</button><button id="hp3Printer">ADMIN / PRINTING</button></div></div></section></div></div>';
+ function folder(i,n,id){return '<button class="hp3folder" data-hp3folder="'+id+'"><span>'+i+'</span>'+n+'<small>'+((folders[id]||[]).length)+' recovered object(s)</small></button>'}
+ m.querySelectorAll("[data-hp3folder]").forEach(b=>b.onclick=()=>render(b.dataset.hp3folder));
+ m.querySelectorAll("[data-hp3doc]").forEach(b=>b.onclick=()=>openDoc(b.dataset.hp3doc));
+ document.querySelector("#hp3PC").onclick=()=>window.VetGodsHospitalPC?.render?.();
+ document.querySelector("#hp3Clinical").onclick=()=>window.VetGodsHospitalClinicalOS?.render?.("census");
+ document.querySelector("#hp3Printer").onclick=()=>window.VetGodsAdminPrintRepair?.render?.();
+}
+function launch(){
+ let b=document.querySelector("#hp3Launch");if(!b){b=document.createElement("button");b.id="hp3Launch";b.textContent="▣ MERCER FILES";b.onclick=()=>render();document.body.appendChild(b)}
+}
+window.VetGodsMercerInvestigation={render,openDoc,state:get};
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();
+setInterval(launch,2500);
+})();
+</script>
+<script id="hospital-pc-phase3-bridge">
+(function(){
+let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;
+if(p&&!p.__phase3){
+ let old=p.render;p.render=function(){old();setTimeout(function(){
+  let archive=document.querySelector('[data-happ="archive"]');
+  if(archive){archive.onclick=function(){VetGodsMercerInvestigation.render()};archive.querySelector("small").textContent="Mercer incident / recovered files"}
+ },0)};p.__phase3=true;clearInterval(t)}
+if(n>150)clearInterval(t)},250)
+})();
+</script>
+
+
+<style id="hospital-pc-phase4-css">
+#hp4{min-height:100%;background:radial-gradient(circle at 65% 0,rgba(54,98,66,.16),transparent 32%),repeating-linear-gradient(0deg,rgba(190,255,207,.02) 0 1px,transparent 1px 4px),#010503;color:#caffda;font-family:"Courier New",monospace;padding:8px}
+.hp4head{border:1px solid #587a61;background:#041008;padding:13px}.hp4head small{font-size:7px;color:#73927b;letter-spacing:2px}.hp4head h1{margin:4px 0;font-size:clamp(23px,5vw,40px)}
+.hp4warn{border:1px solid #805d4c;background:#170904;color:#ffd3bd;padding:8px;margin-top:7px;font-size:8px}
+.hp4stats{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid #31533b;margin:7px 0}.hp4stats div{padding:7px;border-right:1px dotted #31533b}.hp4stats small{display:block;font-size:6px;color:#68826f}.hp4stats b{font-size:9px}
+.hp4layout{display:grid;grid-template-columns:.72fr 1.28fr;gap:7px}.hp4panel{border:1px solid #31533b;background:#020a05}.hp4panel h2{margin:0;padding:7px;background:#bddbc5;color:#031008;font-size:9px}.hp4body{padding:8px}
+.hp4cases{max-height:570px;overflow:auto}.hp4case{display:grid;grid-template-columns:38px 1fr 70px;gap:7px;align-items:center;padding:8px;border-bottom:1px dotted #31533b;cursor:pointer}.hp4case:hover,.hp4case.on{background:#bddbc5;color:#031008}.hp4case span{font-size:27px}.hp4case b{font-size:8px;color:#eaffef}.hp4case:hover b,.hp4case.on b{color:#031008}.hp4case small{display:block;font-size:6px;color:#6c8b74}.hp4case strong{font-size:7px;text-align:right}
+.hp4chart{border:1px solid #31533b;background:#000803;padding:10px}.hp4charttop{display:grid;grid-template-columns:65px 1fr;gap:10px;align-items:center}.hp4icon{font-size:55px;text-align:center}.hp4chart h3{font-size:16px;margin:0}.hp4muted{font-size:7px;color:#75957d;line-height:1.5}
+.hp4compare{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}.hp4record{border:1px solid #31533b;padding:8px}.hp4record h4{font-size:8px;margin:0 0 7px}.hp4record div{display:grid;grid-template-columns:105px 1fr;border-bottom:1px dotted #27432f;padding:4px 0;font-size:7px}.hp4record label{color:#6e8e76}.hp4bad{color:#ffc5a8;font-weight:900}
+.hp4tools{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:7px}.hp4tools button{border:1px solid #31533b;background:#031008;color:#caffda;padding:9px;text-align:left;font:700 7px "Courier New";cursor:pointer}.hp4tools button:hover{background:#bddbc5;color:#031008}
+.hp4evidence{border:1px solid #31533b;margin-top:7px}.hp4ev{padding:7px;border-bottom:1px dotted #31533b;font-size:7px}.hp4ev b{color:#eaffef}.hp4ev small{display:block;color:#6e8e76;margin-top:3px}
+.hp4matrix{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.hp4node{border:1px solid #31533b;padding:8px;min-height:72px}.hp4node b{font-size:8px}.hp4node small{display:block;font-size:6px;color:#6d8c75;margin-top:4px}.hp4node.hot{box-shadow:inset 0 0 18px #472117;border-color:#805d4c}
+.hp4modal{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:2147483632;display:flex;align-items:center;justify-content:center;padding:10px}.hp4win{width:min(790px,96vw);max-height:88vh;overflow:auto;border:2px solid #688f72;background:#020b05}.hp4bar{display:flex;justify-content:space-between;background:#bddbc5;color:#031008;padding:7px;font-size:8px;font-weight:900}.hp4bar button{border:0;background:#031008;color:#fff}.hp4content{padding:14px;font-size:9px;line-height:1.7;white-space:pre-wrap}
+.hp4nav{display:grid;grid-template-columns:repeat(4,1fr);margin-top:7px}.hp4nav button{border:1px solid #31533b;background:#020a05;color:#caffda;padding:9px;font:700 7px "Courier New";cursor:pointer}.hp4nav button:hover{background:#bddbc5;color:#031008}
+#hp4Launch{position:fixed;right:8px;top:144px;z-index:2147483637;background:#010805;color:#b7ffd1;border:1px solid #6d9a78;padding:8px 10px;font:900 8px "Courier New";cursor:pointer}
+@media(max-width:850px){.hp4layout{grid-template-columns:1fr}.hp4stats{grid-template-columns:repeat(2,1fr)}.hp4compare{grid-template-columns:1fr}.hp4matrix{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.hp4tools,.hp4matrix,.hp4nav{grid-template-columns:1fr}}
+</style>
+<script id="hospital-pc-phase4-js">
+(function(){"use strict";
+const KEY="vetgods_hospital_pc_phase4";
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function animals(){try{return state.animals||[]}catch(e){return[]}}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{patient:null,reviewed:{},evidence:{},log:[],crosscheck:0}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+function mrn(a){let n=String(a?.id??0).replace(/\D/g,"");return "VET-"+String(n||Math.abs(String(a?.name||"PATIENT").split("").reduce((q,c)=>q*31+c.charCodeAt(0),7))).padStart(6,"0").slice(-6)}
+function anomaly(a,index){
+ let base={duplicate:"NONE",admission:"CURRENT",species:E(a?.species||"ANIMAL"),location:"VETERINARY MEDICINE",image:"CURRENT STUDY",legacy:"NONE"};
+ if(index%6===0){base.duplicate="MRN ALSO INDEXED TO ARCHIVE CASE "+(1149+index);base.legacy="RECOVERY-04"}
+ if(index%6===1){base.admission="ARCHIVE ENTRY PRE-DATES CURRENT CHART BY 11 YEARS";base.image="OLDER STUDY ATTACHED / SOURCE HEADER DAMAGED"}
+ if(index%6===2){base.species=(a?.species||"ANIMAL")+" / ARCHIVE HEADER: AVIAN";base.legacy="SPECIES FIELD CONFLICT"}
+ if(index%6===3){base.location="ICU-03 AND DISCHARGED / HOME";base.duplicate="TWO ACTIVE LOCATION POINTERS"}
+ if(index%6===4){base.image="RADIOGRAPH HASH MATCHES ARCHIVED CASE 1149";base.legacy="IMAGE HASH COLLISION"}
+ if(index%6===5){base.admission="ADMISSION EVENT EXISTS WITHOUT INTAKE";base.location="RECOVERY-04";base.legacy="DEVICE RX04-VM-03117"}
+ return base
+}
+function modal(title,body){let d=document.createElement("div");d.className="hp4modal";d.innerHTML='<div class="hp4win"><div class="hp4bar"><span>'+E(title)+'</span><button>CLOSE [X]</button></div><div class="hp4content">'+E(body)+'</div></div>';d.querySelector("button").onclick=()=>d.remove();document.body.appendChild(d)}
+function inspect(a,index,type){
+ let x=get(),id=String(a.id),an=anomaly(a,index);x.reviewed[id]=x.reviewed[id]||[];if(!x.reviewed[id].includes(type))x.reviewed[id].push(type);
+ let ev=x.evidence[id]||(x.evidence[id]=[]);
+ let body="",title="";
+ if(type==="identity"){title="IDENTITY CROSS-CHECK // "+mrn(a);body=`CURRENT PATIENT: ${a.name}
+CURRENT MRN: ${mrn(a)}
+SPECIES: ${a.species||"ANIMAL"}
+
+ARCHIVE RESULT:
+${an.duplicate}
+${an.species!==String(a.species||"ANIMAL")?"SPECIES CONFLICT: "+an.species:"No current demographic mismatch returned."}
+
+The system does not automatically merge these records.`;ev.push("Identity index reviewed: "+an.duplicate)}
+ if(type==="timeline"){title="ADMISSION TIMELINE // "+mrn(a);body=`CURRENT CHART:
+Patient present in Veterinary Medicine census.
+
+ARCHIVE POINTER:
+${an.admission}
+
+LOCATION INDEX:
+${an.location}
+
+No automatic correction has been made. The contradictory source entries remain preserved for investigation.`;ev.push("Timeline reviewed: "+an.admission)}
+ if(type==="image"){title="IMAGING HASH REVIEW // "+mrn(a);body=`VET-RAD-02 CROSS-CHECK
+
+CURRENT PATIENT: ${a.name}
+IMAGE INDEX: ${an.image}
+
+Archive image matching uses file hash and header metadata.
+A matching hash does not establish that the images depict the same patient.
+
+VET-RAD-02 clock remains out of synchronization.`;ev.push("Imaging reviewed: "+an.image)}
+ if(type==="location"){title="BED / DEVICE TRACE // "+mrn(a);body=`CURRENT LOCATION POINTER:
+${an.location}
+
+LEGACY DEVICE POINTER:
+${an.legacy}
+
+RECOVERY-04 remains present in historical device routing.
+No physical patient is inferred from a device pointer alone.`;ev.push("Location/device trace: "+an.legacy)}
+ x.evidence[id]=[...new Set(ev)];x.crosscheck++;x.log.unshift(new Date().toLocaleTimeString()+" "+mrn(a)+" "+type.toUpperCase());put(x);modal(title,body);renderStatus(a)
+}
+function renderStatus(a){let x=get(),id=String(a?.id),el=document.querySelector("#hp4Reviewed");if(el)el.textContent=(x.reviewed[id]||[]).length+" / 4"}
+function render(){
+ let m=document.querySelector("#main"),ls=animals(),x=get();if(!m)return;let a=ls.find(z=>String(z.id)===String(x.patient))||ls[0],idx=Math.max(0,ls.indexOf(a));if(a&&x.patient==null){x.patient=a.id;put(x)}let an=anomaly(a,idx),rev=x.reviewed[String(a?.id)]||[],ev=x.evidence[String(a?.id)]||[];
+ try{page="recordAnomalies";nav()}catch(e){}
+ let total=ls.filter((z,i)=>{let q=anomaly(z,i);return q.duplicate!=="NONE"||q.admission!=="CURRENT"||q.species!==String(z.species||"ANIMAL")||q.location!=="VETERINARY MEDICINE"||q.image!=="CURRENT STUDY"}).length;
+ m.innerHTML='<div id="hp4"><header class="hp4head"><small>NCRH // VETERINARY MEDICINE // HEALTH INFORMATION MANAGEMENT</small><h1>PATIENT IDENTITY EXCEPTION QUEUE</h1><div style="font-size:8px;color:#8cad94">Cross-system discrepancies detected between current veterinary charts, legacy archives, imaging headers and recovery-device routing.</div><div class="hp4warn">DO NOT AUTO-MERGE // Contradictory records are preserved as evidence. A duplicate identifier, image hash or device pointer does not by itself establish that two records represent the same animal.</div></header>'+
+ '<div class="hp4stats"><div><small>CURRENT CENSUS</small><b>'+ls.length+'</b></div><div><small>FLAGGED CHARTS</small><b>'+total+'</b></div><div><small>SELECTED MRN</small><b>'+E(a?mrn(a):"NONE")+'</b></div><div><small>REVIEWED</small><b id="hp4Reviewed">'+rev.length+' / 4</b></div><div><small>CROSS-CHECKS</small><b>'+x.crosscheck+'</b></div><div><small>CASE 1149</small><b>UNRESOLVED</b></div></div>'+
+ '<div class="hp4layout"><section class="hp4panel"><h2>FLAGGED PATIENTS</h2><div class="hp4cases">'+(ls.length?ls.map((z,i)=>{let q=anomaly(z,i);return '<div class="hp4case '+(a&&String(a.id)===String(z.id)?"on":"")+'" data-hp4patient="'+E(z.id)+'"><span>'+E(z.icon||"🐾")+'</span><div><b>'+E(z.name)+'</b><small>'+E(z.species||"ANIMAL")+' · '+mrn(z)+'</small></div><strong>'+(q.duplicate!=="NONE"||q.legacy!=="NONE"?"FLAGGED":"REVIEW")+'</strong></div>'}).join(""):'<div class="hp4warn">No current animal records loaded.</div>')+'</div></section>'+
+ '<section class="hp4panel"><h2>IDENTITY / RECORD COMPARISON</h2><div class="hp4body">'+(a?'<div class="hp4chart"><div class="hp4charttop"><div class="hp4icon">'+E(a.icon||"🐾")+'</div><div><h3>'+E(a.name)+'</h3><div class="hp4muted">'+mrn(a)+' · '+E(a.species||"ANIMAL")+' · CURRENT VETERINARY CHART<br>Exception review preserves source data rather than silently correcting it.</div></div></div>'+
+ '<div class="hp4compare"><div class="hp4record"><h4>CURRENT EMR</h4>'+row("PATIENT",a.name)+row("SPECIES",a.species||"ANIMAL")+row("MRN",mrn(a))+row("ADMISSION","CURRENT CENSUS")+row("SERVICE","VETERINARY MEDICINE")+row("LOCATION","CURRENT CHART")+'</div><div class="hp4record"><h4>ARCHIVE / CROSS-SYSTEM RETURN</h4>'+row("IDENTITY",an.duplicate,an.duplicate!=="NONE")+row("SPECIES",an.species,an.species!==String(a.species||"ANIMAL"))+row("ADMISSION",an.admission,an.admission!=="CURRENT")+row("LOCATION",an.location,an.location!=="VETERINARY MEDICINE")+row("IMAGING",an.image,an.image!=="CURRENT STUDY")+row("LEGACY POINTER",an.legacy,an.legacy!=="NONE")+'</div></div>'+
+ '<div class="hp4tools"><button data-hp4tool="identity">IDENTITY INDEX<br>'+(rev.includes("identity")?"REVIEWED":"CROSS-CHECK")+'</button><button data-hp4tool="timeline">ADMISSION TIMELINE<br>'+(rev.includes("timeline")?"REVIEWED":"COMPARE")+'</button><button data-hp4tool="image">IMAGING HASH<br>'+(rev.includes("image")?"REVIEWED":"TRACE")+'</button><button data-hp4tool="location">BED / DEVICE TRACE<br>'+(rev.includes("location")?"REVIEWED":"TRACE")+'</button><button id="hp4Case1149">OPEN CASE 1149</button><button id="hp4Mercer">MERCER CORRELATION</button></div>'+
+ '<div class="hp4evidence">'+(ev.length?ev.map((z,i)=>'<div class="hp4ev"><b>EVIDENCE '+String(i+1).padStart(2,"0")+'</b><small>'+E(z)+'</small></div>').join(""):'<div class="hp4ev"><b>NO CROSS-CHECKS COMPLETED</b><small>Use the four review tools above.</small></div>')+'</div></div>':'')+
+ '<h2 style="margin-top:8px">SYSTEM CORRELATION MATRIX</h2><div class="hp4matrix">'+node("CURRENT EMR","Authoritative current chart","")+node("VET-RAD-02","Imaging clock disagreement","hot")+node("RECOVERY-04","Legacy device routing","hot")+node("VM-03117","Unresolved credential identifier","hot")+node("CASE 1149","Discharge / telemetry conflict","hot")+node("PAPER ARCHIVE","Not yet fully indexed","")+'</div>'+
+ '<div class="hp4nav"><button id="hp4PC">VET-ADMIN-01</button><button id="hp4Clinical">CLINICAL OS</button><button id="hp4Mercer2">MERCER FILES</button><button id="hp4Print">ADMIN / PRINT</button></div></div></section></div></div>';
+ function row(k,v,bad){return '<div><label>'+E(k)+'</label><span class="'+(bad?"hp4bad":"")+'">'+E(v)+'</span></div>'}
+ function node(n,d,c){return '<div class="hp4node '+c+'"><b>'+E(n)+'</b><small>'+E(d)+'</small></div>'}
+ m.querySelectorAll("[data-hp4patient]").forEach(b=>b.onclick=()=>{x.patient=b.dataset.hp4patient;put(x);render()});
+ m.querySelectorAll("[data-hp4tool]").forEach(b=>b.onclick=()=>inspect(a,idx,b.dataset.hp4tool));
+ document.querySelector("#hp4Case1149").onclick=()=>window.VetGodsMercerInvestigation?.openDoc?.("case1149");
+ document.querySelector("#hp4Mercer").onclick=document.querySelector("#hp4Mercer2").onclick=()=>window.VetGodsMercerInvestigation?.render?.("cases");
+ document.querySelector("#hp4PC").onclick=()=>window.VetGodsHospitalPC?.render?.();
+ document.querySelector("#hp4Clinical").onclick=()=>window.VetGodsHospitalClinicalOS?.render?.("census");
+ document.querySelector("#hp4Print").onclick=()=>window.VetGodsAdminPrintRepair?.render?.();
+}
+function launch(){let b=document.querySelector("#hp4Launch");if(!b){b=document.createElement("button");b.id="hp4Launch";b.textContent="⚠ RECORD ANOMALIES";b.onclick=render;document.body.appendChild(b)}}
+window.VetGodsRecordAnomalies={render,state:get};
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();
+setInterval(launch,2500);
+})();
+</script>
+<script id="hospital-pc-phase4-bridge">
+(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__phase4){let old=p.render;p.render=function(){old();setTimeout(function(){let census=document.querySelector('[data-happ="census"]');if(census){let s=census.querySelector("small");if(s)s.textContent="EMR census / identity exceptions";census.ondblclick=function(){VetGodsRecordAnomalies.render()}}},0)};p.__phase4=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
+</script>
+
+
+<style id="hospital-pc-phase5-css">
+#hp5{min-height:100%;background:radial-gradient(circle at 50% 30%,rgba(38,95,55,.16),transparent 40%),repeating-linear-gradient(0deg,rgba(185,255,207,.02) 0 1px,transparent 1px 4px),#010503;color:#caffda;font-family:"Courier New",monospace;padding:8px}
+.hp5head{border:1px solid #587a61;background:#041008;padding:13px}.hp5head small{font-size:7px;color:#73927b;letter-spacing:2px}.hp5head h1{margin:4px 0;font-size:clamp(23px,5vw,40px)}
+.hp5warn{border:1px solid #805d4c;background:#170904;color:#ffd3bd;padding:8px;margin-top:7px;font-size:8px}
+.hp5stats{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid #31533b;margin:7px 0}.hp5stats div{padding:7px;border-right:1px dotted #31533b}.hp5stats small{display:block;font-size:6px;color:#68826f}.hp5stats b{font-size:9px}
+.hp5layout{display:grid;grid-template-columns:1.25fr .75fr;gap:7px}.hp5panel{border:1px solid #31533b;background:#020a05}.hp5panel h2{margin:0;padding:7px;background:#bddbc5;color:#031008;font-size:9px}.hp5body{padding:8px}
+.hp5map{position:relative;min-height:510px;border:1px solid #31533b;background:radial-gradient(circle at 50% 50%,rgba(31,79,44,.25),transparent 45%),#000803;overflow:hidden}
+.hp5map:before,.hp5map:after{content:"";position:absolute;background:#284a31;opacity:.65}.hp5map:before{left:50%;top:7%;width:1px;height:86%}.hp5map:after{top:50%;left:6%;height:1px;width:88%}
+.hp5node{position:absolute;width:122px;min-height:72px;transform:translate(-50%,-50%);border:1px solid #4e7759;background:#031008;color:#caffda;padding:7px;text-align:left;font:700 7px "Courier New";cursor:pointer;z-index:3;box-shadow:0 0 12px #000}.hp5node:hover,.hp5node.on{background:#bddbc5;color:#031008}.hp5node span{display:block;font-size:20px}.hp5node small{display:block;font-size:6px;font-weight:400;color:#6e8e76}.hp5node:hover small,.hp5node.on small{color:#35503d}
+.hp5node.ghost{border-color:#805d4c;animation:hp5pulse 1.8s infinite}.hp5node.off{opacity:.45}.hp5node.core{border-width:2px}
+@keyframes hp5pulse{50%{box-shadow:0 0 25px #6f3021}}
+.hp5route{border:1px solid #31533b;margin-top:7px}.hp5row{display:grid;grid-template-columns:95px 1fr 75px;gap:5px;padding:7px;border-bottom:1px dotted #31533b;font-size:7px;cursor:pointer}.hp5row:hover{background:#bddbc5;color:#031008}.hp5row b{color:#eaffef}.hp5row:hover b{color:#031008}
+.hp5terminal{border:1px solid #31533b;background:#000;padding:9px;min-height:180px;font-size:7px;line-height:1.55;white-space:pre-wrap}
+.hp5actions{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;margin-top:7px}.hp5actions button{border:1px solid #31533b;background:#031008;color:#caffda;padding:9px;font:700 7px "Courier New";cursor:pointer}.hp5actions button:hover{background:#bddbc5;color:#031008}
+.hp5modal{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:2147483633;display:flex;align-items:center;justify-content:center;padding:10px}.hp5win{width:min(800px,96vw);max-height:88vh;overflow:auto;border:2px solid #688f72;background:#020b05}.hp5bar{display:flex;justify-content:space-between;background:#bddbc5;color:#031008;padding:7px;font-size:8px;font-weight:900}.hp5bar button{border:0;background:#031008;color:#fff}.hp5content{padding:14px;font-size:9px;line-height:1.7;white-space:pre-wrap}
+#hp5Launch{position:fixed;right:8px;top:178px;z-index:2147483636;background:#010805;color:#b7ffd1;border:1px solid #6d9a78;padding:8px 10px;font:900 8px "Courier New";cursor:pointer}
+@media(max-width:900px){.hp5layout{grid-template-columns:1fr}.hp5stats{grid-template-columns:repeat(2,1fr)}.hp5map{min-height:620px}.hp5node{width:108px}}
+</style>
+<script id="hospital-pc-phase5-js">
+(function(){"use strict";
+const KEY="vetgods_hospital_pc_phase5";
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{selected:"VET-ADMIN-01",visited:["VET-ADMIN-01"],scans:0,pings:{},trace:[],ghostSeen:false}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+const nodes=[
+{id:"VET-ADMIN-01",icon:"▣",name:"ADMIN WORKSTATION",ip:"10.44.7.11",status:"ONLINE",x:50,y:50,desc:"Primary Veterinary Medicine administrative workstation.",go:"pc"},
+{id:"VET-ICU-02",icon:"♥",name:"ICU / RECOVERY",ip:"10.44.7.22",status:"ONLINE",x:20,y:24,desc:"Recovery telemetry, bed board and monitoring gateway.",go:"icu"},
+{id:"VET-RAD-02",icon:"◉",name:"IMAGING",ip:"10.44.7.31",status:"TIME ERROR",x:50,y:18,desc:"Diagnostic image router. Clock remains out of synchronization.",go:"imaging"},
+{id:"VET-LAB-01",icon:"⚗",name:"CLINICAL LAB",ip:"10.44.7.41",status:"ONLINE",x:80,y:24,desc:"Veterinary laboratory accession gateway.",go:"lab"},
+{id:"VET-PHARM-01",icon:"✚",name:"PHARMACY",ip:"10.44.7.51",status:"ONLINE",x:17,y:54,desc:"Medication and supply reconciliation terminal.",go:"pharmacy"},
+{id:"VET-OR-01",icon:"⚕",name:"SURGERY",ip:"10.44.7.61",status:"ONLINE",x:83,y:54,desc:"Veterinary operating theater control terminal.",go:"surgery"},
+{id:"VET-ARCH-01",icon:"▤",name:"RECORDS ARCHIVE",ip:"10.44.7.71",status:"DEGRADED",x:20,y:82,desc:"Administrative archive and legacy chart index.",go:"mercer"},
+{id:"FAC-SVC-03",icon:"⌁",name:"FACILITIES",ip:"10.44.2.18",status:"ONLINE",x:50,y:84,desc:"Facilities service desk and building systems bridge.",go:"facilities"},
+{id:"BASEMENT-SVC",icon:"▼",name:"BASEMENT SERVICE",ip:"10.44.2.99",status:"INTERMITTENT",x:80,y:82,desc:"Service corridor badge reader and infrastructure node.",go:"basement"},
+{id:"RX04-03117",icon:"?",name:"UNREGISTERED HOST",ip:"10.44.7.117",status:"LIVE / NO INVENTORY",x:50,y:68,desc:"Responds on the Veterinary Medicine subnet. No matching hospital asset record.",go:"ghost",ghost:true}
+];
+function modal(title,body){let d=document.createElement("div");d.className="hp5modal";d.innerHTML='<div class="hp5win"><div class="hp5bar"><span>'+E(title)+'</span><button>CLOSE [X]</button></div><div class="hp5content">'+E(body)+'</div></div>';d.querySelector("button").onclick=()=>d.remove();document.body.appendChild(d)}
+function select(id){
+ let x=get(),n=nodes.find(z=>z.id===id);if(!n)return;x.selected=id;if(!x.visited.includes(id))x.visited.push(id);if(n.ghost)x.ghostSeen=true;x.trace.unshift(new Date().toLocaleTimeString()+" SELECT "+id);put(x);render()
+}
+function ping(id){
+ let x=get(),n=nodes.find(z=>z.id===id);if(!n)return;let ms=n.ghost?17:Math.floor(2+Math.random()*7);x.pings[id]=(x.pings[id]||0)+1;x.scans++;x.trace.unshift(new Date().toLocaleTimeString()+" PING "+id+" "+ms+"ms");put(x);
+ modal("PING "+id,`Pinging ${n.ip} with 32 bytes of data:
+Reply from ${n.ip}: bytes=32 time=${ms}ms
+Reply from ${n.ip}: bytes=32 time=${ms+1}ms
+Reply from ${n.ip}: bytes=32 time=${ms}ms
+
+Host status: ${n.status}
+
+${n.ghost?"WARNING: Address responds, but CMDB/Hospital Asset Inventory returns NO MATCH. MAC vendor field is blank. DHCP lease history begins before the current switch installation date.":n.desc}`);render()
+}
+function route(n){
+ if(n.go==="pc")return window.VetGodsHospitalPC?.render?.();
+ if(["icu","imaging","lab","pharmacy","surgery"].includes(n.go))return window.VetGodsHospitalClinicalOS?.render?.(n.go);
+ if(n.go==="mercer")return window.VetGodsMercerInvestigation?.render?.();
+ if(n.go==="facilities")return modal("FAC-SVC-03 // FACILITIES",`BUILDING SYSTEMS BRIDGE
+Status: ONLINE
+
+Open tickets:
+#8841 Basement veterinary corridor badge reader
+#8847 VET-RAD-02 time synchronization
+#8850 Recovery-04 device wake events
+
+Ticket #8841 has been closed and reopened four times.
+Latest technician note:
+"Reader hardware tests normal. Credential VM-03117 is being supplied upstream, not generated by the reader."`);
+ if(n.go==="basement")return modal("BASEMENT-SVC",`SERVICE CORRIDOR NODE
+Status: INTERMITTENT
+Badge reader: OFFLINE / ONLINE oscillation
+Door sensor: CLOSED
+Camera endpoint: NOT INSTALLED
+Last credential accepted: VM-03117
+
+Network neighbor table:
+10.44.2.18  FAC-SVC-03
+10.44.7.117 [NO HOSTNAME]
+
+The basement service node is not supposed to bridge directly onto the Veterinary Medicine clinical subnet.`);
+ if(n.go==="ghost")return modal("RX04-03117 // UNREGISTERED HOST",`HOSPITAL ASSET INVENTORY: NO MATCH
+CMDB: NO MATCH
+PURCHASING: NO MATCH
+BIOMEDICAL EQUIPMENT: NO MATCH
+VETERINARY DEVICE REGISTER: NO MATCH
+
+NETWORK STATUS: LIVE
+ADDRESS: ${n.ip}
+ROUTE: VET-CORE > VET-SW2 > PORT 17
+PORT DESCRIPTION: [BLANK]
+
+Services observed:
+443/tcp  responding
+9100/tcp printer protocol responding
+[one service refuses identification]
+
+Last application identifiers observed:
+RECOVERY-04
+VM-03117
+CASE_1149
+
+The network confirms that something is answering.
+The records do not establish what the device physically is.`);
+}
+function render(){
+ let m=document.querySelector("#main"),x=get(),n=nodes.find(z=>z.id===x.selected)||nodes[0];if(!m)return;try{page="hospitalNetwork";nav()}catch(e){}
+ m.innerHTML='<div id="hp5"><header class="hp5head"><small>NCRH // NETWORK OPERATIONS // VETERINARY MEDICINE SEGMENT</small><h1>HOSPITAL NETWORK TOPOLOGY</h1><div style="font-size:8px;color:#8cad94">Interactive clinical-network map reconstructed from switch neighbors, host responses and hospital asset inventory.</div><div class="hp5warn">NETWORK EXCEPTION // One responding address on the Veterinary Medicine subnet has no matching hospital asset, purchasing, biomedical or device-registration record.</div></header>'+
+ '<div class="hp5stats"><div><small>VISIBLE HOSTS</small><b>'+nodes.length+'</b></div><div><small>INVENTORIED</small><b>'+(nodes.length-1)+'</b></div><div><small>UNREGISTERED</small><b>1 LIVE</b></div><div><small>VISITED</small><b>'+x.visited.length+'/'+nodes.length+'</b></div><div><small>SCANS</small><b>'+x.scans+'</b></div><div><small>SEGMENT</small><b>VET-CLINICAL</b></div></div>'+
+ '<div class="hp5layout"><section class="hp5panel"><h2>VET-CLINICAL // LIVE MAP</h2><div class="hp5body"><div class="hp5map">'+nodes.map(z=>'<button class="hp5node '+(z.ghost?"ghost ":"")+(z.id===n.id?"on ":"")+'" data-hp5node="'+z.id+'" style="left:'+z.x+'%;top:'+z.y+'%"><span>'+z.icon+'</span>'+E(z.id)+'<small>'+E(z.name)+'<br>'+E(z.status)+'</small></button>').join("")+'</div></div></section>'+
+ '<section class="hp5panel"><h2>SELECTED NETWORK OBJECT</h2><div class="hp5body"><div class="hp5terminal">HOST: '+E(n.id)+'\nNAME: '+E(n.name)+'\nADDRESS: '+E(n.ip)+'\nSTATUS: '+E(n.status)+'\nINVENTORY: '+(n.ghost?"NO MATCH":"MATCHED")+'\n\n'+E(n.desc)+'\n\n'+(n.ghost?"This host is reachable. Its physical identity is not established by the available records.":"Clinical route available.")+'</div>'+
+ '<div class="hp5actions"><button id="hp5Ping">PING / QUERY HOST</button><button id="hp5Open">OPEN NODE</button><button id="hp5Trace">TRACE ROUTE</button><button id="hp5Inventory">ASSET LOOKUP</button></div>'+
+ '<h2 style="margin-top:8px">ROUTING / DISCOVERY LOG</h2><div class="hp5route">'+nodes.map(z=>'<div class="hp5row" data-hp5node="'+z.id+'"><b>'+E(z.id)+'</b><span>'+E(z.ip)+'</span><span>'+E(z.status)+'</span></div>').join("")+'</div>'+
+ '<div class="hp5actions"><button id="hp5PC">VET-ADMIN-01</button><button id="hp5Clinical">CLINICAL OS</button><button id="hp5Mercer">MERCER FILES</button><button id="hp5Anomaly">RECORD ANOMALIES</button></div></div></section></div></div>';
+ m.querySelectorAll("[data-hp5node]").forEach(b=>b.onclick=()=>select(b.dataset.hp5node));
+ document.querySelector("#hp5Ping").onclick=()=>ping(n.id);
+ document.querySelector("#hp5Open").onclick=()=>route(n);
+ document.querySelector("#hp5Trace").onclick=()=>modal("TRACERT "+n.id,`1  VET-ADMIN-01     <1 ms
+2  VET-CORE          1 ms
+3  VET-SW2           2 ms
+4  ${n.id}           ${n.ghost?"17":"4"} ms
+
+${n.ghost?"Switch port 17 has no configured description. Physical endpoint documentation is blank.":"Route corresponds to documented hospital infrastructure."}`);
+ document.querySelector("#hp5Inventory").onclick=()=>modal("ASSET LOOKUP // "+n.id,n.ghost?`SEARCH RESULT: 0 MATCHES
+
+Hospital CMDB.............NO MATCH
+Biomedical equipment.....NO MATCH
+Veterinary device list...NO MATCH
+Facilities inventory.....NO MATCH
+Purchasing history........NO MATCH
+
+Network response..........ACTIVE`:`SEARCH RESULT: MATCHED
+
+Host ${n.id}
+Department: Veterinary Medicine
+Address: ${n.ip}
+Status: ${n.status}
+Inventory state: ACTIVE`);
+ document.querySelector("#hp5PC").onclick=()=>window.VetGodsHospitalPC?.render?.();
+ document.querySelector("#hp5Clinical").onclick=()=>window.VetGodsHospitalClinicalOS?.render?.("census");
+ document.querySelector("#hp5Mercer").onclick=()=>window.VetGodsMercerInvestigation?.render?.();
+ document.querySelector("#hp5Anomaly").onclick=()=>window.VetGodsRecordAnomalies?.render?.();
+}
+function launch(){let b=document.querySelector("#hp5Launch");if(!b){b=document.createElement("button");b.id="hp5Launch";b.textContent="⌁ HOSPITAL NETWORK";b.onclick=render;document.body.appendChild(b)}}
+window.VetGodsHospitalNetwork={render,state:get};
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();
+setInterval(launch,2500);
+})();
+</script>
+<script id="hospital-pc-phase5-bridge">
+(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__phase5){let old=p.render;p.render=function(){old();setTimeout(function(){let b=document.querySelector(".hpActions");if(b&&!document.querySelector("#hp5DeskNet")){let x=document.createElement("button");x.id="hp5DeskNet";x.textContent="OPEN HOSPITAL NETWORK MAP";x.onclick=function(){VetGodsHospitalNetwork.render()};b.appendChild(x)}},0)};p.__phase5=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
+</script>
+
+
+<style id="hospital-pc-phase6-css">
+#hp6{min-height:100%;background:radial-gradient(circle at 45% 5%,rgba(45,91,55,.18),transparent 34%),repeating-linear-gradient(0deg,rgba(185,255,207,.02) 0 1px,transparent 1px 4px),#010503;color:#caffda;font-family:"Courier New",monospace;padding:8px}
+.hp6head{border:1px solid #587a61;background:#041008;padding:13px}.hp6head small{font-size:7px;color:#73927b;letter-spacing:2px}.hp6head h1{margin:4px 0;font-size:clamp(23px,5vw,40px)}
+.hp6warn{border:1px solid #805d4c;background:#170904;color:#ffd3bd;padding:8px;margin-top:7px;font-size:8px}
+.hp6stats{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid #31533b;margin:7px 0}.hp6stats div{padding:7px;border-right:1px dotted #31533b}.hp6stats small{display:block;font-size:6px;color:#68826f}.hp6stats b{font-size:9px}
+.hp6layout{display:grid;grid-template-columns:.72fr 1.28fr;gap:7px}.hp6panel{border:1px solid #31533b;background:#020a05}.hp6panel h2{margin:0;padding:7px;background:#bddbc5;color:#031008;font-size:9px}.hp6body{padding:8px}
+.hp6search{display:grid;grid-template-columns:1fr auto;gap:5px}.hp6search input{background:#000803;color:#caffda;border:1px solid #31533b;padding:9px;font:8px "Courier New"}.hp6search button,.hp6btn{background:#031008;color:#caffda;border:1px solid #31533b;padding:9px;font:700 7px "Courier New";cursor:pointer}.hp6search button:hover,.hp6btn:hover{background:#bddbc5;color:#031008}
+.hp6shelves{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;margin-top:7px}.hp6shelf{border:1px solid #31533b;background:#031008;color:#caffda;padding:9px;text-align:left;font:700 8px "Courier New";cursor:pointer;min-height:82px}.hp6shelf:hover,.hp6shelf.on{background:#bddbc5;color:#031008}.hp6shelf span{display:block;font-size:26px}.hp6shelf small{display:block;font-size:6px;color:#6e8e76;font-weight:400}
+.hp6files{border:1px solid #31533b;max-height:475px;overflow:auto}.hp6file{display:grid;grid-template-columns:90px 1fr 70px;gap:5px;padding:7px;border-bottom:1px dotted #31533b;font-size:7px;cursor:pointer}.hp6file:hover{background:#bddbc5;color:#031008}.hp6file b{color:#eaffef}.hp6file:hover b{color:#031008}.hp6file.locked{opacity:.4}
+.hp6index{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:7px}.hp6card{border:1px solid #31533b;padding:8px;min-height:78px}.hp6card b{font-size:8px}.hp6card small{display:block;font-size:6px;color:#6d8c75;margin-top:4px}.hp6card.found{box-shadow:inset 0 0 18px #173d22}.hp6card.hot{border-color:#805d4c;box-shadow:inset 0 0 18px #472117}
+.hp6terminal{border:1px solid #31533b;background:#000;padding:9px;min-height:125px;font-size:7px;line-height:1.6;white-space:pre-wrap;margin-top:7px}
+.hp6nav{display:grid;grid-template-columns:repeat(5,1fr);margin-top:7px}.hp6nav button{background:#020a05;color:#caffda;border:1px solid #31533b;padding:9px;font:700 7px "Courier New";cursor:pointer}.hp6nav button:hover{background:#bddbc5;color:#031008}
+.hp6modal{position:fixed;inset:0;background:rgba(0,0,0,.91);z-index:2147483634;display:flex;align-items:center;justify-content:center;padding:10px}.hp6win{width:min(820px,96vw);max-height:90vh;overflow:auto;border:2px solid #688f72;background:#020b05}.hp6bar{display:flex;justify-content:space-between;background:#bddbc5;color:#031008;padding:7px;font-size:8px;font-weight:900}.hp6bar button{border:0;background:#031008;color:#fff}.hp6content{padding:14px;font-size:9px;line-height:1.7;white-space:pre-wrap}
+#hp6Launch{position:fixed;right:8px;top:212px;z-index:2147483635;background:#010805;color:#b7ffd1;border:1px solid #6d9a78;padding:8px 10px;font:900 8px "Courier New";cursor:pointer}
+@media(max-width:850px){.hp6layout{grid-template-columns:1fr}.hp6stats{grid-template-columns:repeat(2,1fr)}.hp6index{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.hp6shelves,.hp6index,.hp6nav{grid-template-columns:1fr}}
+</style>
+<script id="hospital-pc-phase6-js">
+(function(){"use strict";
+const KEY="vetgods_hospital_pc_phase6";
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{shelf:"paper",opened:[],terms:[],fragments:[],search:""}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+const docs={
+paper77:{s:"paper",y:"1977",t:"PAPER_INDEX_1977_A.TXT",tags:["03117","old ward"],body:`PAPER CHART INDEX // 1977 // BOX A-14
+
+Veterinary service was then listed as ANIMAL MEDICINE ANNEX.
+
+Selected index entries:
+03112  canine / trauma
+03114  feline / respiratory
+03117  [entry overwritten in pencil]
+03118  avian / wing injury
+03121  canine / recovery
+
+Handwritten margin:
+"03117 moved downstairs with monitor."
+
+No patient name is legible beside 03117.`},
+ward83:{s:"paper",y:"1983",t:"WARD_LEDGER_1983.TXT",tags:["recovery-04","basement"],body:`ANIMAL MEDICINE ANNEX // RECOVERY LEDGER // 1983
+
+RECOVERY BAY 4
+Equipment tag: RX-04
+Service note: intermittent chart-printer activation
+Disposition: unit removed from clinical floor
+
+Facilities transfer:
+"RX-04 to basement storage pending disposal."
+
+No disposal receipt is attached to the ledger.`},
+photo91:{s:"media",y:"1991",t:"PHOTO_CONTACT_SHEET_1991.TXT",tags:["rx-04","basement"],body:`ARCHIVE PHOTO DESCRIPTION // CONTACT SHEET 91-VET-08
+
+Frame 12:
+Old veterinary recovery ward during renovation.
+Four monitoring bays visible.
+Bay 4 cabinet bears stencil: RX-04.
+
+Frame 13:
+Equipment staged in service corridor.
+One cabinet label appears to read 03117.
+
+Frame 14:
+Basement freight door.
+Handwritten reverse caption:
+"Vet equipment waiting for pickup."
+
+The archive contains descriptions only; original photographs are not digitized.`},
+memo96:{s:"staff",y:"1996",t:"FACILITIES_MEMO_1996.TXT",tags:["printer","rx-04"],body:`FACILITIES MEMORANDUM // 1996
+
+Subject: obsolete veterinary monitoring cabinet
+
+During electrical work, an old cabinet marked RX-04 was found powered from a circuit not shown on the renovation drawing.
+
+Power was disconnected.
+
+The veterinary office reported that its dot-matrix printer produced two pages during the outage.
+
+No work order connects the printer event to the cabinet.
+Memo closed: NO FAULT FOUND.`},
+case02:{s:"cases",y:"2002",t:"CASE_ARCHIVE_2002_1149.TXT",tags:["1149","03117"],body:`LEGACY CASE CROSS-REFERENCE // 2002
+
+Local case number: 1149
+Species: CANINE
+Patient name: [DAMAGED]
+Disposition: DISCHARGED
+
+Addendum index:
+Recovery device field contains "03117".
+This field is inconsistent with the equipment naming convention used in 2002.
+
+The digitized record was imported from paper during a later migration.
+Original chart location: BOX V-1149.`},
+it08:{s:"systems",y:"2008",t:"IT_MIGRATION_2008.LOG",tags:["03117","network"],body:`VETERINARY RECORDS MIGRATION // 2008
+
+Legacy identifiers rejected by new directory:
+RX04
+RECOVERY4
+03117
+
+Migration operator note:
+"03117 repeatedly repopulates device field after import validation."
+
+Action:
+Field suppressed from visible patient interface.
+Raw import preserved.
+
+No network host with that identifier existed in the 2008 asset inventory.`},
+staff11:{s:"staff",y:"2011",t:"STAFF_NOTE_2011.TXT",tags:["printer","night"],body:`SCANNED STAFF NOTE // 2011
+
+"Night staff:
+Please stop leaving test pages in the veterinary printer.
+Pages are coming out with old recovery numbers and no patient names."
+
+Reply written below:
+"We aren't printing them."
+
+A later handwriting sample attributes neither note to Adrian Mercer; he was not yet assigned to the department.`},
+audit15:{s:"systems",y:"2015",t:"DEVICE_AUDIT_2015.CSV",tags:["rx04-03117","no inventory"],body:`DEVICE AUDIT EXCERPT // 2015
+
+VET-ICU-01      MATCH
+VET-RAD-01      MATCH
+VET-LAB-01      MATCH
+RX04-03117      RESPONSE / NO INVENTORY
+VET-PRN-02      MATCH
+
+Auditor disposition:
+"Unidentified response likely stale switch table. Recheck after replacement."
+
+Switch was replaced the following month.
+No follow-up result is attached.`},
+mercer24:{s:"staff",y:"2024",t:"MERCER_ARCHIVE_REQUEST.TXT",tags:["mercer","03117"],body:`ARCHIVE REQUEST // A. MERCER
+
+Requested terms:
+03117
+RX-04
+Recovery Bay 4
+Case 1149
+unattended printer output
+
+Reason:
+"Credential mismatch investigation."
+
+Archive system warning:
+Request spans records created before current Veterinary Medicine database.
+
+Mercer opened seven results.
+The access log lists only six filenames.`},
+deleted:{s:"deleted",y:"????",t:"FRAGMENT_03117.BIN.TXT",tags:["03117","unknown"],locked:true,body:`RECOVERED INDEX FRAGMENT
+
+identifier: 03117
+class: [DAMAGED]
+first_seen: earlier than available digital inventory
+last_seen: CURRENT
+device_aliases:
+ RX-04
+ RECOVERY-04
+ RX04-03117
+
+record_aliases:
+ CASE 1149
+ [ONE ENTRY UNRECOVERABLE]
+
+The fragment does not identify whether 03117 refers to a patient, device, credential, imported field, or multiple reused identifiers.`}
+};
+const shelves={paper:["paper77","ward83","case02"],staff:["memo96","staff11","mercer24"],systems:["it08","audit15"],media:["photo91"],cases:["case02"],deleted:["deleted"]};
+function modal(d){let z=document.createElement("div");z.className="hp6modal";z.innerHTML='<div class="hp6win"><div class="hp6bar"><span>'+E(d.t)+'</span><button>CLOSE [X]</button></div><div class="hp6content">'+E(d.body)+'</div></div>';z.querySelector("button").onclick=()=>z.remove();document.body.appendChild(z)}
+function openDoc(id){
+ let x=get(),d=docs[id];if(!d)return;
+ if(d.locked&&x.opened.length<7){return modal({t:"RECOVERY INCOMPLETE",body:"The deleted fragment cannot yet be reconstructed. Open at least seven independent archive records first."})}
+ if(!x.opened.includes(id))x.opened.push(id);d.tags.forEach(t=>{if(!x.terms.includes(t))x.terms.push(t)});x.fragments=[...new Set([...x.fragments,...d.tags])];put(x);modal(d);renderStatus()
+}
+function renderStatus(){let x=get(),a=document.querySelector("#hp6Opened");if(a)a.textContent=x.opened.length+" / "+Object.keys(docs).length;let b=document.querySelector("#hp6Terms");if(b)b.textContent=x.terms.length}
+function search(){
+ let x=get(),q=(document.querySelector("#hp6Search")?.value||"").trim().toLowerCase();x.search=q;put(x);
+ if(!q)return render();
+ let ids=Object.keys(docs).filter(id=>docs[id].t.toLowerCase().includes(q)||docs[id].body.toLowerCase().includes(q)||docs[id].tags.some(t=>t.includes(q)));
+ render("search",ids)
+}
+function render(mode,searchIds){
+ let m=document.querySelector("#main"),x=get();if(!m)return;try{page="deepArchive";nav()}catch(e){}
+ let ids=mode==="search"?(searchIds||[]):(shelves[x.shelf]||shelves.paper);
+ let chronology=[
+ ["1977","03117 appears in paper index","UNRESOLVED"],
+ ["1983","RX-04 transferred to basement","NO DISPOSAL"],
+ ["1991","RX-04 photographed in service corridor","ARCHIVE"],
+ ["1996","Powered cabinet / printer incident","NO FAULT"],
+ ["2002","Case 1149 contains 03117 device field","CONFLICT"],
+ ["2008","03117 repopulates during migration","SUPPRESSED"],
+ ["2011","Unattended printer pages reported","OPEN"],
+ ["2015","RX04-03117 responds on network","NO INVENTORY"],
+ ["2024","Mercer requests archive search","7 RESULTS"]
+ ];
+ m.innerHTML='<div id="hp6"><header class="hp6head"><small>NCRH // HEALTH INFORMATION MANAGEMENT // OFF-SITE & LEGACY HOLDINGS</small><h1>DEEP VETERINARY ARCHIVE</h1><div style="font-size:8px;color:#8cad94">Paper-chart indexes, renovation records, legacy device logs, staff notes and migration artifacts spanning multiple generations of the veterinary department.</div><div class="hp6warn">ARCHIVE CAUTION // Repeated numbers do not prove a single continuous object or patient. Historical identifiers may have been reused, copied incorrectly or migrated between unrelated systems.</div></header>'+
+ '<div class="hp6stats"><div><small>RECORD RANGE</small><b>1977–CURRENT</b></div><div><small>OPENED</small><b id="hp6Opened">'+x.opened.length+' / '+Object.keys(docs).length+'</b></div><div><small>INDEX TERMS</small><b id="hp6Terms">'+x.terms.length+'</b></div><div><small>03117</small><b>MULTI-SOURCE</b></div><div><small>RX-04</small><b>LEGACY</b></div><div><small>CASE 1149</small><b>CROSS-LINKED</b></div></div>'+
+ '<div class="hp6layout"><section class="hp6panel"><h2>ARCHIVE CATALOG</h2><div class="hp6body"><div class="hp6search"><input id="hp6Search" value="'+E(x.search)+'" placeholder="SEARCH: 03117, RX-04, printer, Case 1149..."><button id="hp6Go">SEARCH</button></div><div class="hp6shelves">'+
+ shelf("▤","PAPER CHARTS","paper")+shelf("✎","STAFF / FACILITIES","staff")+shelf("⌁","SYSTEM MIGRATIONS","systems")+shelf("▧","MEDIA INDEX","media")+shelf("🐾","CASE ARCHIVE","cases")+shelf("⌫","DELETED FRAGMENTS","deleted")+
+ '</div><h2 style="margin-top:8px">CHRONOLOGY</h2><div class="hp6files">'+chronology.map(r=>'<div class="hp6file"><span>'+r[0]+'</span><b>'+E(r[1])+'</b><span>'+r[2]+'</span></div>').join("")+'</div></div></section>'+
+ '<section class="hp6panel"><h2>'+(mode==="search"?"SEARCH RESULTS":"SELECTED ARCHIVE SHELF")+'</h2><div class="hp6body"><div class="hp6files">'+(ids.length?ids.map(id=>{let d=docs[id],locked=d.locked&&x.opened.length<7;return '<div class="hp6file '+(locked?"locked":"")+'" data-hp6doc="'+id+'"><span>'+E(d.y)+'</span><b>'+E(d.t)+'</b><span>'+(locked?"LOCKED":x.opened.includes(id)?"READ":"UNREAD")+'</span></div>'}).join(""):'<div class="hp6file"><span>—</span><b>NO MATCHING RECORDS</b><span>0</span></div>')+'</div>'+
+ '<h2 style="margin-top:8px">CORRELATION INDEX</h2><div class="hp6index">'+card("03117","Appears across paper, migration, credential and device records.",x.terms.includes("03117"),true)+card("RX-04","Recovery Bay 4 equipment identifier.",x.terms.includes("rx-04"),true)+card("CASE 1149","Legacy canine chart with conflicting device field.",x.terms.includes("1149"),true)+card("PRINTER EVENTS","Reports pre-date Mercer’s assignment.",x.terms.includes("printer"),false)+card("BASEMENT","Old equipment transfer destination.",x.terms.includes("basement"),false)+card("MERCER","Later administrator independently searched same terms.",x.terms.includes("mercer"),false)+'</div>'+
+ '<div class="hp6terminal">ARCHIVE ANALYSIS\n\nThe surviving records establish that similar identifiers recur across decades.\nThey do NOT establish that every occurrence describes the same thing.\n\nNotable problem:\nThe current network host RX04-03117 uses terminology documented before the current network existed.\n\nPossible explanations remain open: identifier reuse, migration contamination, undocumented equipment, clerical copying, or another cause not established by the archive.</div>'+
+ '<div class="hp6nav"><button id="hp6PC">VET-ADMIN-01</button><button id="hp6Net">NETWORK</button><button id="hp6Clinical">CLINICAL OS</button><button id="hp6Mercer">MERCER FILES</button><button id="hp6Anomaly">RECORD ANOMALIES</button></div></div></section></div></div>';
+ function shelf(i,n,id){return '<button class="hp6shelf '+(x.shelf===id&&mode!=="search"?"on":"")+'" data-hp6shelf="'+id+'"><span>'+i+'</span>'+n+'<small>'+(shelves[id]||[]).length+' indexed object(s)</small></button>'}
+ function card(n,d,found,hot){return '<div class="hp6card '+(found?"found ":"")+(hot?"hot":"")+'"><b>'+(found?"✓ ":"? ")+E(n)+'</b><small>'+E(found?d:"Supporting archive material not yet opened.")+'</small></div>'}
+ m.querySelectorAll("[data-hp6shelf]").forEach(b=>b.onclick=()=>{x.shelf=b.dataset.hp6shelf;x.search="";put(x);render()});
+ m.querySelectorAll("[data-hp6doc]").forEach(b=>b.onclick=()=>openDoc(b.dataset.hp6doc));
+ document.querySelector("#hp6Go").onclick=search;document.querySelector("#hp6Search").onkeydown=e=>{if(e.key==="Enter")search()};
+ document.querySelector("#hp6PC").onclick=()=>window.VetGodsHospitalPC?.render?.();
+ document.querySelector("#hp6Net").onclick=()=>window.VetGodsHospitalNetwork?.render?.();
+ document.querySelector("#hp6Clinical").onclick=()=>window.VetGodsHospitalClinicalOS?.render?.("census");
+ document.querySelector("#hp6Mercer").onclick=()=>window.VetGodsMercerInvestigation?.render?.();
+ document.querySelector("#hp6Anomaly").onclick=()=>window.VetGodsRecordAnomalies?.render?.();
+}
+function launch(){let b=document.querySelector("#hp6Launch");if(!b){b=document.createElement("button");b.id="hp6Launch";b.textContent="▤ DEEP ARCHIVE";b.onclick=()=>render();document.body.appendChild(b)}}
+window.VetGodsDeepArchive={render,state:get};
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();
+setInterval(launch,2500);
+})();
+</script>
+<script id="hospital-pc-phase6-bridge">
+(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__phase6){let old=p.render;p.render=function(){old();setTimeout(function(){let a=document.querySelector('[data-happ="archive"]');if(a){a.onclick=function(){VetGodsDeepArchive.render()};let s=a.querySelector("small");if(s)s.textContent="1977–current / legacy holdings"}} ,0)};p.__phase6=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
+</script>
+
+
+<style id="hospital-pc-phase7-css">
+#hp7{min-height:100%;background:radial-gradient(circle at 70% 8%,rgba(52,105,67,.17),transparent 34%),repeating-linear-gradient(0deg,rgba(190,255,210,.02) 0 1px,transparent 1px 4px),#010503;color:#caffda;font-family:"Courier New",monospace;padding:8px}
+.hp7head{border:1px solid #587a61;background:#041008;padding:13px}.hp7head small{font-size:7px;color:#73927b;letter-spacing:2px}.hp7head h1{margin:4px 0;font-size:clamp(23px,5vw,40px)}
+.hp7warn{border:1px solid #805d4c;background:#170904;color:#ffd3bd;padding:8px;margin-top:7px;font-size:8px}
+.hp7stats{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid #31533b;margin:7px 0}.hp7stats div{padding:7px;border-right:1px dotted #31533b}.hp7stats small{display:block;font-size:6px;color:#68826f}.hp7stats b{font-size:9px}
+.hp7layout{display:grid;grid-template-columns:.7fr 1.3fr;gap:7px}.hp7panel{border:1px solid #31533b;background:#020a05}.hp7panel h2{margin:0;padding:7px;background:#bddbc5;color:#031008;font-size:9px}.hp7body{padding:8px}
+.hp7patients{max-height:560px;overflow:auto}.hp7patient{display:grid;grid-template-columns:38px 1fr 75px;gap:7px;align-items:center;padding:8px;border-bottom:1px dotted #31533b;cursor:pointer}.hp7patient:hover,.hp7patient.on{background:#bddbc5;color:#031008}.hp7patient span{font-size:28px}.hp7patient b{font-size:8px;color:#eaffef}.hp7patient:hover b,.hp7patient.on b{color:#031008}.hp7patient small{display:block;font-size:6px;color:#6d8c75}.hp7patient strong{font-size:7px;text-align:right}
+.hp7chart{border:1px solid #31533b;background:#000803;padding:10px}.hp7top{display:grid;grid-template-columns:70px 1fr;gap:10px;align-items:center}.hp7icon{font-size:58px;text-align:center}.hp7chart h3{margin:0;font-size:16px}.hp7muted{font-size:7px;color:#73927b;line-height:1.55}
+.hp7steps{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:8px}.hp7step{border:1px solid #31533b;background:#031008;color:#caffda;padding:9px;text-align:left;font:700 7px "Courier New";cursor:pointer;min-height:66px}.hp7step:hover{background:#bddbc5;color:#031008}.hp7step.done{box-shadow:inset 0 0 16px #173d22}.hp7step small{display:block;font-size:6px;color:#6d8c75;margin-top:4px}
+.hp7evidence{border:1px solid #31533b;margin-top:7px}.hp7ev{padding:8px;border-bottom:1px dotted #31533b;font-size:7px}.hp7ev b{color:#eaffef}.hp7ev small{display:block;color:#73927b;margin-top:4px;line-height:1.45}
+.hp7chain{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:7px}.hp7link{border:1px solid #31533b;padding:8px;min-height:75px}.hp7link b{font-size:8px}.hp7link small{display:block;font-size:6px;color:#6d8c75;margin-top:4px}.hp7link.on{box-shadow:inset 0 0 18px #173d22}.hp7link.hot{border-color:#805d4c}
+.hp7log{border:1px solid #31533b;background:#000;padding:9px;min-height:120px;max-height:210px;overflow:auto;font-size:7px;line-height:1.55;white-space:pre-wrap;margin-top:7px}
+.hp7nav{display:grid;grid-template-columns:repeat(6,1fr);margin-top:7px}.hp7nav button{background:#020a05;color:#caffda;border:1px solid #31533b;padding:9px;font:700 7px "Courier New";cursor:pointer}.hp7nav button:hover{background:#bddbc5;color:#031008}
+.hp7modal{position:fixed;inset:0;background:rgba(0,0,0,.91);z-index:2147483635;display:flex;align-items:center;justify-content:center;padding:10px}.hp7win{width:min(820px,96vw);max-height:90vh;overflow:auto;border:2px solid #688f72;background:#020b05}.hp7bar{display:flex;justify-content:space-between;background:#bddbc5;color:#031008;padding:7px;font-size:8px;font-weight:900}.hp7bar button{border:0;background:#031008;color:#fff}.hp7content{padding:14px;font-size:9px;line-height:1.7;white-space:pre-wrap}
+#hp7Launch{position:fixed;right:8px;top:246px;z-index:2147483634;background:#010805;color:#b7ffd1;border:1px solid #6d9a78;padding:8px 10px;font:900 8px "Courier New";cursor:pointer}
+@media(max-width:880px){.hp7layout{grid-template-columns:1fr}.hp7stats{grid-template-columns:repeat(2,1fr)}.hp7chain{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.hp7steps,.hp7chain,.hp7nav{grid-template-columns:1fr}}
+</style>
+<script id="hospital-pc-phase7-js">
+(function(){"use strict";
+const KEY="vetgods_hospital_pc_phase7";
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function animals(){try{return state.animals||[]}catch(e){return[]}}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{patient:null,work:{},globalEvidence:[],log:[],solved:0}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+function mrn(a){let n=String(a?.id??0).replace(/\D/g,"");return "VET-"+String(n||Math.abs(String(a?.name||"PATIENT").split("").reduce((q,c)=>q*31+c.charCodeAt(0),7))).padStart(6,"0").slice(-6)}
+function profile(a,index){
+ let mode=index%5;
+ return {
+  exam: mode===0?"Old circular pressure mark beneath collar line; no acute injury.":"Physical findings entered; no unexplained acute abnormality.",
+  imaging: mode===1?"Imaging metadata contains legacy header RX-04. Anatomy remains consistent with current patient.":mode===3?"Radiograph file hash collides with an archived derivative of Case 1149; image identity is not established.":"Current study completed; one metadata field predates current imaging router.",
+  lab: mode===2?"Analyzer accession briefly returns legacy field 03117 before validation clears it. Sample values remain assigned to current patient.":"Laboratory accession completed; raw interface log contains an old device-field token.",
+  tag: mode===0||mode===4?"Scanner detects a passive identification tag. Tag number is recorded; archive search finds a formatting similarity to old inventory numbers.":"No unexpected implanted identifier detected.",
+  recovery: mode===3||mode===4?"Recovery telemetry duplicates a device-route label previously associated with RECOVERY-04.":"Recovery telemetry stable; router emits one legacy alias during handshake.",
+  archive: mode===1||mode===2?"Archive search returns a historical chart with a similar identifier but insufficient identity fields to establish a patient match.":"Archive correlation returns Case 1149 / RX-04 terminology without proving patient continuity."
+ }
+}
+function modal(title,body){let d=document.createElement("div");d.className="hp7modal";d.innerHTML='<div class="hp7win"><div class="hp7bar"><span>'+E(title)+'</span><button>CLOSE [X]</button></div><div class="hp7content">'+E(body)+'</div></div>';d.querySelector("button").onclick=()=>d.remove();document.body.appendChild(d)}
+function doStep(a,index,type){
+ let x=get(),id=String(a.id),w=x.work[id]||(x.work[id]={done:[],evidence:[],treated:false,complete:false}),p=profile(a,index);
+ if(!w.done.includes(type))w.done.push(type);
+ let title="",body="",ev="";
+ if(type==="exam"){title="CLINICAL EXAM // "+mrn(a);ev=p.exam;body=`PHYSICAL EXAMINATION
+Patient: ${a.name}
+MRN: ${mrn(a)}
+
+${p.exam}
+
+Clinical significance:
+This finding is documented as an observation only. It does not establish a connection to the historical incident.`}
+ if(type==="imaging"){title="DIAGNOSTIC IMAGING // "+mrn(a);ev=p.imaging;body=`VET-RAD-02 STUDY COMPLETE
+
+${p.imaging}
+
+The image itself remains attached to the current patient's chart.
+Metadata discrepancies are preserved separately for investigation.`}
+ if(type==="lab"){title="CLINICAL LAB // "+mrn(a);ev=p.lab;body=`LABORATORY ACCESSION COMPLETE
+
+${p.lab}
+
+Current specimen identity remains tied to ${mrn(a)}.
+The interface artifact has been copied to the investigation evidence log.`}
+ if(type==="tag"){title="IDENTIFICATION SCAN // "+mrn(a);ev=p.tag;body=`IDENTIFICATION / DEVICE SCAN
+
+${p.tag}
+
+A numerical resemblance is not treated as proof of shared origin.`}
+ if(type==="recovery"){title="RECOVERY TELEMETRY // "+mrn(a);ev=p.recovery;body=`RECOVERY MONITOR REVIEW
+
+${p.recovery}
+
+Current vital telemetry remains clinically usable. The legacy route label is stored as a separate systems anomaly.`}
+ if(type==="archive"){title="ARCHIVE CORRELATION // "+mrn(a);ev=p.archive;body=`DEEP ARCHIVE CROSS-CHECK
+
+${p.archive}
+
+Result classification: CORRELATED / NOT IDENTIFIED.
+Historical similarity alone does not merge patient identities.`}
+ if(type==="treat"){title="PATIENT CARE // "+mrn(a);w.treated=true;ev="Clinical care completed through the hospital workflow; investigation did not delay treatment.";body=`CARE PRIORITY CONFIRMED
+
+The patient's clinical needs remain separate from the records investigation.
+Care workflow marked COMPLETE for this investigation episode.
+
+No mystery evidence is required before treatment may proceed.`}
+ if(ev&&!w.evidence.includes(ev))w.evidence.push(ev);
+ if(type!=="treat"&&!x.globalEvidence.includes(mrn(a)+" :: "+ev))x.globalEvidence.push(mrn(a)+" :: "+ev);
+ if(w.done.filter(q=>q!=="treat").length>=6&&!w.complete){w.complete=true;x.solved++;x.globalEvidence.push(mrn(a)+" :: FULL SIX-SOURCE CLINICAL CORRELATION COMPLETE")}
+ x.log.unshift(new Date().toLocaleTimeString()+" "+mrn(a)+" "+type.toUpperCase()+" — "+ev);put(x);modal(title,body);render()
+}
+function render(){
+ let m=document.querySelector("#main"),ls=animals(),x=get();if(!m)return;let a=ls.find(z=>String(z.id)===String(x.patient))||ls[0],idx=Math.max(0,ls.indexOf(a));if(a&&x.patient==null){x.patient=a.id;put(x)}let w=a?(x.work[String(a.id)]||{done:[],evidence:[],treated:false,complete:false}):{done:[],evidence:[]};
+ try{page="clinicalInvestigation";nav()}catch(e){}
+ m.innerHTML='<div id="hp7"><header class="hp7head"><small>NCRH // VETERINARY MEDICINE // CLINICAL-FORENSIC CORRELATION</small><h1>CLINICAL MYSTERY WORKUP</h1><div style="font-size:8px;color:#8cad94">Normal veterinary care now generates investigation evidence through examinations, imaging, laboratory interfaces, identification scans, recovery telemetry and archive correlation.</div><div class="hp7warn">CARE FIRST // The investigation never requires withholding treatment. Clinical observations and systems anomalies are recorded separately, and historical similarities are not treated as proof that two animals are the same patient.</div></header>'+
+ '<div class="hp7stats"><div><small>PATIENTS</small><b>'+ls.length+'</b></div><div><small>SELECTED</small><b>'+E(a?mrn(a):"NONE")+'</b></div><div><small>WORKUP</small><b>'+w.done.length+'/7</b></div><div><small>EVIDENCE ITEMS</small><b>'+x.globalEvidence.length+'</b></div><div><small>FULL CORRELATIONS</small><b>'+x.solved+'</b></div><div><small>CASE 1149</small><b>OPEN</b></div></div>'+
+ '<div class="hp7layout"><section class="hp7panel"><h2>VETERINARY PATIENT WORKLIST</h2><div class="hp7patients">'+(ls.length?ls.map((z,i)=>{let q=x.work[String(z.id)]||{done:[]};return '<div class="hp7patient '+(a&&String(z.id)===String(a.id)?"on":"")+'" data-hp7patient="'+E(z.id)+'"><span>'+E(z.icon||"🐾")+'</span><div><b>'+E(z.name)+'</b><small>'+E(z.species||"ANIMAL")+' · '+mrn(z)+'</small></div><strong>'+q.done.length+'/7</strong></div>'}).join(""):'<div class="hp7warn">No animal records loaded.</div>')+'</div></section>'+
+ '<section class="hp7panel"><h2>ACTIVE CLINICAL INVESTIGATION</h2><div class="hp7body">'+(a?'<div class="hp7chart"><div class="hp7top"><div class="hp7icon">'+E(a.icon||"🐾")+'</div><div><h3>'+E(a.name)+'</h3><div class="hp7muted">'+mrn(a)+' · '+E(a.species||"ANIMAL")+'<br>Investigation episode: '+(w.complete?"SIX-SOURCE CORRELATION COMPLETE":"ACTIVE")+' · Care: '+(w.treated?"COMPLETED":"AVAILABLE AT ANY TIME")+'</div></div></div>'+
+ '<div class="hp7steps">'+step("exam","PHYSICAL EXAM","Document findings",w)+step("imaging","IMAGING STUDY","Query VET-RAD-02",w)+step("lab","LAB ACCESSION","Inspect analyzer interface",w)+step("tag","ID / TAG SCAN","Check identifiers",w)+step("recovery","RECOVERY TELEMETRY","Trace monitor route",w)+step("archive","ARCHIVE MATCH","Search historical records",w)+step("treat","PROVIDE CARE","Clinical priority",w)+'</div>'+
+ '<div class="hp7evidence">'+(w.evidence.length?w.evidence.map((e,i)=>'<div class="hp7ev"><b>EVIDENCE '+String(i+1).padStart(2,"0")+'</b><small>'+E(e)+'</small></div>').join(""):'<div class="hp7ev"><b>NO EVIDENCE RECORDED</b><small>Run clinical workup actions above. Findings differ by patient.</small></div>')+'</div></div>':'')+
+ '<h2 style="margin-top:8px">INVESTIGATION CHAIN</h2><div class="hp7chain">'+link("CURRENT PATIENT","Clinical identity remains primary.",!!a,false)+link("VET-RAD-02","Metadata/time anomalies.",w.done.includes("imaging"),true)+link("RECOVERY-04","Legacy route labels.",w.done.includes("recovery"),true)+link("03117 / RX-04","Historical identifiers recur.",w.done.includes("archive")||w.done.includes("tag"),true)+link("CASE 1149","Cross-system historical reference.",w.done.includes("archive"),true)+link("DEEP ARCHIVE","Independent historical sources.",w.done.includes("archive"),false)+link("MERCER FILES","Administrator investigated same terms.",w.done.length>=4,false)+link("UNREGISTERED HOST","Network endpoint remains unidentified.",w.done.length>=5,true)+'</div>'+
+ '<div class="hp7log">CLINICAL INVESTIGATION LOG\n\n'+E((x.log.slice(0,10).join("\n")||"No workup actions recorded yet."))+'</div>'+
+ '<div class="hp7nav"><button id="hp7Clinical">CLINICAL OS</button><button id="hp7Anom">ANOMALIES</button><button id="hp7Archive">DEEP ARCHIVE</button><button id="hp7Mercer">MERCER</button><button id="hp7Net">NETWORK</button><button id="hp7Print">ADMIN / PRINT</button></div></div></section></div></div>';
+ function step(id,n,d,w){return '<button class="hp7step '+(w.done.includes(id)?"done":"")+'" data-hp7step="'+id+'">'+(w.done.includes(id)?"✓ ":"")+n+'<small>'+d+'</small></button>'}
+ function link(n,d,on,hot){return '<div class="hp7link '+(on?"on ":"")+(hot?"hot":"")+'"><b>'+(on?"✓ ":"? ")+E(n)+'</b><small>'+E(on?d:"Not yet correlated for this patient.")+'</small></div>'}
+ m.querySelectorAll("[data-hp7patient]").forEach(b=>b.onclick=()=>{x.patient=b.dataset.hp7patient;put(x);render()});
+ m.querySelectorAll("[data-hp7step]").forEach(b=>b.onclick=()=>doStep(a,idx,b.dataset.hp7step));
+ document.querySelector("#hp7Clinical").onclick=()=>window.VetGodsHospitalClinicalOS?.render?.("census");
+ document.querySelector("#hp7Anom").onclick=()=>window.VetGodsRecordAnomalies?.render?.();
+ document.querySelector("#hp7Archive").onclick=()=>window.VetGodsDeepArchive?.render?.();
+ document.querySelector("#hp7Mercer").onclick=()=>window.VetGodsMercerInvestigation?.render?.();
+ document.querySelector("#hp7Net").onclick=()=>window.VetGodsHospitalNetwork?.render?.();
+ document.querySelector("#hp7Print").onclick=()=>window.VetGodsAdminPrintRepair?.render?.();
+}
+function launch(){let b=document.querySelector("#hp7Launch");if(!b){b=document.createElement("button");b.id="hp7Launch";b.textContent="⚕ CLINICAL MYSTERY";b.onclick=render;document.body.appendChild(b)}}
+window.VetGodsClinicalInvestigation={render,state:get};
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();
+setInterval(launch,2500);
+})();
+</script>
+<script id="hospital-pc-phase7-bridge">
+(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__phase7){let old=p.render;p.render=function(){old();setTimeout(function(){let c=document.querySelector('[data-happ="census"]');if(c&&!document.querySelector("#hp7DeskClinical")){let area=document.querySelector(".hpActions");if(area){let b=document.createElement("button");b.id="hp7DeskClinical";b.textContent="OPEN CLINICAL MYSTERY WORKUP";b.onclick=function(){VetGodsClinicalInvestigation.render()};area.appendChild(b)}}},0)};p.__phase7=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
+</script>
+
+
+<style id="hospital-pc-phase8-css">
+#hp8{min-height:100%;background:radial-gradient(circle at 75% 5%,rgba(58,108,72,.18),transparent 34%),repeating-linear-gradient(0deg,rgba(190,255,210,.02) 0 1px,transparent 1px 4px),#010503;color:#caffda;font-family:"Courier New",monospace;padding:8px}
+.hp8head{border:1px solid #587a61;background:#041008;padding:13px}.hp8head small{font-size:7px;color:#73927b;letter-spacing:2px}.hp8head h1{margin:4px 0;font-size:clamp(23px,5vw,40px)}
+.hp8stats{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid #31533b;margin:7px 0}.hp8stats div{padding:7px;border-right:1px dotted #31533b}.hp8stats small{display:block;font-size:6px;color:#68826f}.hp8stats b{font-size:9px}
+.hp8layout{display:grid;grid-template-columns:.68fr 1.32fr;gap:7px}.hp8panel{border:1px solid #31533b;background:#020a05}.hp8panel h2{margin:0;padding:7px;background:#bddbc5;color:#031008;font-size:9px}.hp8body{padding:8px}
+.hp8folders{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}.hp8folder{border:1px solid #31533b;background:#031008;color:#caffda;padding:9px;text-align:left;font:700 8px "Courier New";cursor:pointer;min-height:72px}.hp8folder:hover,.hp8folder.on{background:#bddbc5;color:#031008}.hp8folder span{display:block;font-size:24px}.hp8folder small{display:block;font-size:6px;color:#6d8c75;font-weight:400}
+.hp8search{display:grid;grid-template-columns:1fr auto;gap:5px;margin-top:7px}.hp8search input{background:#000803;color:#caffda;border:1px solid #31533b;padding:9px;font:8px "Courier New"}.hp8search button,.hp8btn{background:#031008;color:#caffda;border:1px solid #31533b;padding:9px;font:700 7px "Courier New";cursor:pointer}.hp8search button:hover,.hp8btn:hover{background:#bddbc5;color:#031008}
+.hp8list{border:1px solid #31533b;max-height:570px;overflow:auto}.hp8award{display:grid;grid-template-columns:68px 1fr 88px;gap:6px;padding:8px;border-bottom:1px dotted #31533b;cursor:pointer}.hp8award:hover,.hp8award.on{background:#bddbc5;color:#031008}.hp8award code{font-size:7px}.hp8award b{font-size:8px;color:#eaffef}.hp8award:hover b,.hp8award.on b{color:#031008}.hp8award small{display:block;font-size:6px;color:#6d8c75}.hp8award strong{font-size:7px;text-align:right}
+.hp8preview{border:1px solid #31533b;background:#000803;padding:12px;text-align:center}.hp8seal{font-size:48px}.hp8preview h3{font-size:17px;margin:5px}.hp8serial{font-size:7px;color:#75957d}.hp8desc{font-size:8px;line-height:1.55;margin:10px auto;max-width:650px}
+.hp8actions{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:7px}.hp8actions button{border:1px solid #31533b;background:#031008;color:#caffda;padding:9px;font:700 7px "Courier New";cursor:pointer}.hp8actions button:hover{background:#bddbc5;color:#031008}
+.hp8wallet{border:1px solid #31533b;margin-top:7px;max-height:200px;overflow:auto}.hp8wallet div{display:grid;grid-template-columns:80px 1fr 80px;gap:5px;padding:6px;border-bottom:1px dotted #31533b;font-size:7px}
+.hp8nav{display:grid;grid-template-columns:repeat(5,1fr);margin-top:7px}.hp8nav button{border:1px solid #31533b;background:#020a05;color:#caffda;padding:9px;font:700 7px "Courier New";cursor:pointer}.hp8nav button:hover{background:#bddbc5;color:#031008}
+#hp8Launch{position:fixed;right:8px;top:280px;z-index:2147483633;background:#010805;color:#b7ffd1;border:1px solid #6d9a78;padding:8px 10px;font:900 8px "Courier New";cursor:pointer}
+@media(max-width:880px){.hp8layout{grid-template-columns:1fr}.hp8stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.hp8folders,.hp8actions,.hp8nav{grid-template-columns:1fr}}
+@media print{body *{visibility:hidden!important}#hp8PrintSheet,#hp8PrintSheet *{visibility:visible!important}#hp8PrintSheet{display:block!important;position:absolute!important;left:0;top:0;width:100%;color:#000!important;background:#fff!important}}
+</style>
+<script id="hospital-pc-phase8-js">
+(function(){"use strict";
+const KEY="vetgods_hospital_pc_phase8";
+const cats=[
+["Administration","ADMIN","🛡"],["Clinical Operations","CLIN","⚕"],["Diagnostics","DIAG","◉"],["Surgery & Recovery","SURG","♥"],["Records & Archives","RECD","▤"],
+["Network Operations","NET","⌁"],["Patient Care","CARE","🐾"],["Emergency Response","EMRG","✚"],["Training","TRNG","◆"],["Investigation","INVS","🔎"]
+];
+const ranks=["Operator","Specialist","Senior Specialist","Coordinator","Supervisor","Lead","Officer","Senior Officer","Director","Master"];
+const subjects=["Systems","Clinical Records","Patient Safety","Diagnostic Systems","Recovery Operations","Archive Control","Department Communications","Equipment Readiness","Case Management","Quality Review"];
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function buildAwards(){
+ let a=[],n=1;
+ for(let c=0;c<cats.length;c++)for(let r=0;r<ranks.length;r++)for(let s=0;s<5;s++){
+  let cat=cats[c],sub=subjects[(c*3+r+s)%subjects.length],type=["Certificate","Badge","Qualification","Commendation","Credential"][(r+s)%5];
+  a.push({id:"VG-"+String(n).padStart(3,"0"),cat:cat[0],prefix:cat[1],icon:cat[2],title:(ranks[r]+" "+sub),type,desc:"Recognizes completed "+cat[0].toLowerCase()+" activity in "+sub.toLowerCase()+" within the hospital veterinary program."});n++;
+ }
+ return a
+}
+const awards=buildAwards();
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{issued:{},selected:"VG-001",cat:"Administration",search:"",printCount:0}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+function serial(a){return "NCRH-"+a.prefix+"-"+a.id.replace("VG-","")+"-"+String(Math.abs(a.title.split("").reduce((q,c)=>q*33+c.charCodeAt(0),17))).slice(-6)}
+function issue(a){
+ let x=get();if(!x.issued[a.id])x.issued[a.id]={date:new Date().toLocaleDateString(),serial:serial(a),prints:0};x.selected=a.id;put(x);render()
+}
+function printAward(a,mode){
+ let x=get();if(!x.issued[a.id])x.issued[a.id]={date:new Date().toLocaleDateString(),serial:serial(a),prints:0};x.issued[a.id].prints++;x.printCount++;put(x);
+ let rec=x.issued[a.id],badge=mode==="badge",title=badge?"DEPARTMENT IDENTIFICATION BADGE":a.type.toUpperCase();
+ let w=window.open("","_blank","width=900,height=700");
+ if(!w){alert("The browser blocked the print window. Allow pop-ups for this local HTML file, then try again.");return}
+ w.document.write(`<!doctype html><html><head><title>${E(a.id)} ${E(a.title)}</title><style>
+ body{font-family:Georgia,serif;background:#eee;padding:24px;color:#111}.sheet{max-width:850px;margin:auto;background:#fff;border:12px double #173823;padding:42px;box-sizing:border-box;text-align:center}.dept{font:700 12px Arial;letter-spacing:3px}.seal{font-size:72px}.kind{font:700 15px Arial;letter-spacing:4px;margin-top:8px}.name{font-size:36px;margin:22px 0 8px}.award{font-size:25px;font-weight:bold}.desc{font-size:15px;line-height:1.6;margin:24px auto;max-width:650px}.meta{display:grid;grid-template-columns:1fr 1fr;gap:20px;text-align:left;border-top:1px solid #333;padding-top:18px;font:12px Arial}.sig{margin-top:38px;display:grid;grid-template-columns:1fr 1fr;gap:50px}.sig div{border-top:1px solid #111;padding-top:6px;font:11px Arial}.print{margin:20px auto;display:block;padding:14px 25px;font-weight:bold}@media print{body{background:#fff;padding:0}.print{display:none}.sheet{border-width:8px}}</style></head><body><button class="print" onclick="window.print()">PRINT NOW</button><div class="sheet"><div class="dept">NORTH CASCADE REGIONAL HOSPITAL · VETERINARY MEDICINE</div><div class="seal">${a.icon}</div><div class="kind">${title}</div><div class="name">ADMINISTRATIVE RECORD</div><div class="award">${E(a.title)}</div><div class="desc">${E(a.desc)}</div><div class="meta"><div><b>Credential:</b> ${E(a.id)}<br><b>Registration:</b> ${E(rec.serial)}<br><b>Category:</b> ${E(a.cat)}</div><div><b>Issued:</b> ${E(rec.date)}<br><b>Document:</b> ${E(a.type)}<br><b>Record status:</b> ISSUED</div></div><div class="sig"><div>Veterinary Department Administration</div><div>Hospital Credentialing Registry</div></div></div>
+<style id="hospital-pc-phase9-css">
+#hp9{min-height:100%;background:radial-gradient(circle at 50% 0,rgba(58,105,69,.17),transparent 34%),repeating-linear-gradient(0deg,rgba(190,255,210,.018) 0 1px,transparent 1px 4px),#010403;color:#caffda;font-family:"Courier New",monospace;padding:8px}
+.hp9head{border:1px solid #587a61;background:#041008;padding:13px;position:relative;overflow:hidden}.hp9head:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(190,255,210,.05),transparent);animation:hp9scan 5s linear infinite}@keyframes hp9scan{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+.hp9head small{font-size:7px;color:#73927b;letter-spacing:2px}.hp9head h1{margin:4px 0;font-size:clamp(23px,5vw,40px)}
+.hp9alert{border:1px solid #805d4c;background:#170904;color:#ffd3bd;padding:8px;margin-top:7px;font-size:8px}
+.hp9stats{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid #31533b;margin:7px 0}.hp9stats div{padding:7px;border-right:1px dotted #31533b}.hp9stats small{display:block;font-size:6px;color:#68826f}.hp9stats b{font-size:9px}
+.hp9layout{display:grid;grid-template-columns:.78fr 1.22fr;gap:7px}.hp9panel{border:1px solid #31533b;background:#020a05}.hp9panel h2{margin:0;padding:7px;background:#bddbc5;color:#031008;font-size:9px}.hp9body{padding:8px}
+.hp9clock{border:1px solid #31533b;background:#000;padding:12px;text-align:center}.hp9clock b{font-size:34px;letter-spacing:4px}.hp9clock small{display:block;font-size:7px;color:#6d8c75}
+.hp9systems{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;margin-top:7px}.hp9sys{border:1px solid #31533b;padding:8px;min-height:68px;cursor:pointer}.hp9sys:hover{background:#bddbc5;color:#031008}.hp9sys b{font-size:8px}.hp9sys small{display:block;font-size:6px;color:#6d8c75;margin-top:4px}.hp9sys.hot{border-color:#805d4c;box-shadow:inset 0 0 15px #3b1b13}
+.hp9events{border:1px solid #31533b;max-height:465px;overflow:auto}.hp9event{display:grid;grid-template-columns:58px 1fr 74px;gap:6px;padding:8px;border-bottom:1px dotted #31533b;font-size:7px;cursor:pointer}.hp9event:hover{background:#bddbc5;color:#031008}.hp9event b{color:#eaffef}.hp9event:hover b{color:#031008}.hp9event.unread{box-shadow:inset 3px 0 #bddbc5}
+.hp9term{border:1px solid #31533b;background:#000;padding:9px;min-height:145px;font-size:7px;line-height:1.6;white-space:pre-wrap;margin-top:7px}
+.hp9actions{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:7px}.hp9actions button,.hp9nav button{border:1px solid #31533b;background:#031008;color:#caffda;padding:9px;font:700 7px "Courier New";cursor:pointer}.hp9actions button:hover,.hp9nav button:hover{background:#bddbc5;color:#031008}
+.hp9nav{display:grid;grid-template-columns:repeat(6,1fr);margin-top:7px}
+.hp9modal{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:2147483636;display:flex;align-items:center;justify-content:center;padding:10px}.hp9win{width:min(820px,96vw);max-height:90vh;overflow:auto;border:2px solid #688f72;background:#020b05}.hp9bar{display:flex;justify-content:space-between;background:#bddbc5;color:#031008;padding:7px;font-size:8px;font-weight:900}.hp9bar button{border:0;background:#031008;color:#fff}.hp9content{padding:14px;font-size:9px;line-height:1.7;white-space:pre-wrap}
+#hp9Launch{position:fixed;right:8px;top:314px;z-index:2147483632;background:#010805;color:#b7ffd1;border:1px solid #6d9a78;padding:8px 10px;font:900 8px "Courier New";cursor:pointer}
+@media(max-width:880px){.hp9layout{grid-template-columns:1fr}.hp9stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.hp9systems,.hp9actions,.hp9nav{grid-template-columns:1fr}}
+</style>
+<script id="hospital-pc-phase9-js">
+(function(){"use strict";
+const KEY="vetgods_hospital_pc_phase9";
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{minute:0,events:[],read:[],generated:[],shiftStarted:false,rounds:0,printer:0}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+const sequence=[
+{id:"e01",at:2,src:"VET-ADMIN-01",kind:"SESSION",title:"Recovered session changes state",body:`SESSION WATCH
+
+VET-ADMIN-01 reports keyboard-idle state cleared for 0.8 seconds.
+No keypress was received by the browser.
+Operating-system input source is not exposed to this simulation.
+
+The event is recorded without interpretation.`},
+{id:"e02",at:5,src:"PRN04",kind:"PRINT",title:"Unrequested print job enters queue",body:`HOSP-VET-PRN04
+JOB RECEIVED: 03:17_REPRINT.PRN
+OWNER: [BLANK]
+SOURCE: 10.44.7.117
+PAGES: 1
+
+Header text recovered from spool:
+CASE 1149
+RECOVERY-04
+03117
+
+The source address corresponds to the unregistered network host.`},
+{id:"e03",at:8,src:"RECOVERY-04",kind:"DEVICE",title:"Legacy recovery route becomes active",body:`RECOVERY ROUTER EVENT
+
+Alias: RECOVERY-04
+State: HANDSHAKE
+Assigned patient: NONE
+Source host: RX04-03117
+
+No current patient is assigned to this route.
+The clinical census has not been altered.`},
+{id:"e04",at:12,src:"BASEMENT-SVC",kind:"SECURITY",title:"Basement door reports transition",body:`FACILITIES EVENT
+
+BASEMENT-SVC
+Door sensor: CLOSED > OPEN > CLOSED
+Duration: 4.2 seconds
+Badge event: NONE
+Camera: NOT INSTALLED
+
+A door-sensor transition does not establish who or what moved the door.`},
+{id:"e05",at:16,src:"VET-RAD-02",kind:"TIME",title:"Imaging clock offset changes",body:`VET-RAD-02 TIME SERVICE
+
+Previous offset: +00:11
+Current offset: +00:17
+
+At the same moment, PRN04 spool metadata reports 03:17.
+
+The systems disagree about absolute time. No single clock is treated as authoritative for the incident.`},
+{id:"e06",at:21,src:"ADMIN MSG",kind:"MESSAGE",title:"Message arrives for Mercer account",body:`INTERNAL MESSAGE
+TO: A. MERCER / VETERINARY MEDICINE
+FROM: FACILITIES AUTO-ROUTER
+
+Ticket #8841 has reopened automatically.
+Reason:
+"Monitored condition returned."
+
+Condition field:
+VM-03117 PRESENT
+
+There is no active employee with that credential in the current personnel directory.`},
+{id:"e07",at:27,src:"RX04-03117",kind:"NETWORK",title:"Unregistered host opens printer service",body:`NETWORK OBSERVATION
+
+Host: RX04-03117
+Address: 10.44.7.117
+Port 9100: OPEN
+Port 443: OPEN
+Unknown service: RESPONDING
+
+Application banner fragment:
+"RECOVERY 04 / WAITING"
+
+Physical identity remains unknown.`},
+{id:"e08",at:34,src:"ARCHIVE",kind:"RECORD",title:"Archive index exposes missing Mercer result",body:`DEEP ARCHIVE INDEX CHANGE
+
+Mercer's historical request originally listed seven opened results.
+Only six filenames were visible.
+
+A seventh catalog pointer has appeared:
+MERCER_RESULT_07
+Storage class: OFFLINE PAPER INDEX
+Reference: V-03117 / LOWER STORAGE
+
+The underlying document remains unavailable.`},
+{id:"e09",at:42,src:"ICU",kind:"TELEMETRY",title:"Recovery monitor reports an empty bed",body:`ICU TELEMETRY ALERT
+
+Channel: RECOVERY-04
+Bed assignment: NONE
+Patient MRN: NONE
+Signal state: ACTIVE
+Duration: 46 seconds
+
+The telemetry packet contains no physiological values.
+It is a device-presence signal, not evidence of a patient.`},
+{id:"e10",at:51,src:"PRN04",kind:"PRINT",title:"Printer produces final night-shift page",body:`PRINT SPOOL CAPTURE
+
+JOB: INCIDENT_HANDOFF.PRN
+SOURCE: RX04-03117
+OWNER: [BLANK]
+
+PAGE TEXT:
+
+"IF THIS IS STILL OPEN,
+CHECK THE LOWER STORAGE INDEX.
+DO NOT MERGE 03117 WITH A PATIENT.
+— A.M."
+
+Authenticity of the text is not established by the spool record.`}
+];
+function modal(ev){let d=document.createElement("div");d.className="hp9modal";d.innerHTML='<div class="hp9win"><div class="hp9bar"><span>'+E(ev.src+" // "+ev.kind)+'</span><button>CLOSE [X]</button></div><div class="hp9content">'+E(ev.body)+'</div></div>';d.querySelector("button").onclick=()=>d.remove();document.body.appendChild(d)}
+function generate(){
+ let x=get();sequence.forEach(ev=>{if(x.minute>=ev.at&&!x.generated.includes(ev.id)){x.generated.push(ev.id);x.events.unshift({...ev,time:clock(x.minute)});if(ev.kind==="PRINT")x.printer++}});put(x)
+}
+function clock(min){let h=3+Math.floor((17+min)/60),m=(17+min)%60;return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")}
+function advance(n){
+ let x=get();x.shiftStarted=true;x.minute=Math.min(60,x.minute+n);x.rounds++;put(x);generate();render()
+}
+function read(id){let x=get(),ev=x.events.find(e=>e.id===id);if(!ev)return;if(!x.read.includes(id))x.read.push(id);put(x);modal(ev);render()}
+function render(){
+ let m=document.querySelector("#main"),x=get();if(!m)return;generate();x=get();try{page="nightShift";nav()}catch(e){}
+ let unread=x.events.filter(e=>!x.read.includes(e.id)).length,next=sequence.find(e=>!x.generated.includes(e.id));
+ m.innerHTML='<div id="hp9"><header class="hp9head"><small>NCRH // VETERINARY MEDICINE // AFTER-HOURS OPERATIONS</small><h1>NIGHT SHIFT EVENT CONSOLE</h1><div style="font-size:8px;color:#8cad94">The hospital systems now react to investigation progress and simulated night-shift time. Events are recorded as system observations, not supernatural conclusions.</div><div class="hp9alert">AFTER-HOURS WATCH // VET-ADMIN-01 remains attached to Adrian Mercer’s recovered session while clinical, security, archive, network and printer events continue to accumulate.</div></header>'+
+ '<div class="hp9stats"><div><small>SHIFT CLOCK</small><b>'+clock(x.minute)+'</b></div><div><small>EVENTS</small><b>'+x.events.length+'/10</b></div><div><small>UNREAD</small><b>'+unread+'</b></div><div><small>PRINTER JOBS</small><b>'+x.printer+'</b></div><div><small>ROUNDS</small><b>'+x.rounds+'</b></div><div><small>NEXT EVENT</small><b>'+(next?clock(next.at):"SHIFT END")+'</b></div></div>'+
+ '<div class="hp9layout"><section class="hp9panel"><h2>AFTER-HOURS SYSTEM WATCH</h2><div class="hp9body"><div class="hp9clock"><small>VETERINARY DEPARTMENT LOCAL SHIFT TIME</small><b>'+clock(x.minute)+'</b><small>03:17 baseline · simulated progression</small></div>'+
+ '<div class="hp9systems">'+sys("VET-ADMIN-01","RECOVERED SESSION",true)+sys("HOSP-VET-PRN04",x.printer+" NEW JOB(S)",x.printer>0)+sys("RECOVERY-04",x.minute>=8?"ROUTE ACTIVE":"IDLE",x.minute>=8)+sys("BASEMENT-SVC",x.minute>=12?"EVENT RECORDED":"MONITORING",x.minute>=12)+sys("VET-RAD-02",x.minute>=16?"+00:17 OFFSET":"+00:11 OFFSET",true)+sys("RX04-03117",x.minute>=27?"SERVICES OPEN":"LIVE / NO INVENTORY",true)+'</div>'+
+ '<div class="hp9actions"><button id="hp9Plus1">ADVANCE 1 MIN</button><button id="hp9Plus5">ADVANCE 5 MIN</button><button id="hp9Round">RUN SYSTEM ROUND</button></div>'+
+ '<div class="hp9term">WATCH CONSOLE\n\n'+E(x.events.length?x.events.slice(0,6).map(e=>e.time+" "+e.src+" :: "+e.title).join("\n"):"No after-hours events generated yet. Advance the simulated shift clock.")+'</div></div></section>'+
+ '<section class="hp9panel"><h2>INCIDENT / MESSAGE STREAM</h2><div class="hp9body"><div class="hp9events">'+(x.events.length?x.events.map(e=>'<div class="hp9event '+(!x.read.includes(e.id)?"unread":"")+'" data-hp9event="'+e.id+'"><span>'+E(e.time)+'</span><b>'+E(e.title)+'</b><span>'+E(e.kind)+'</span></div>').join(""):'<div class="hp9event"><span>03:17</span><b>Waiting for system activity</b><span>IDLE</span></div>')+'</div>'+
+ '<div class="hp9nav"><button id="hp9PC">HOSPITAL PC</button><button id="hp9Clinical">CLINICAL</button><button id="hp9Net">NETWORK</button><button id="hp9Archive">ARCHIVE</button><button id="hp9Mercer">MERCER</button><button id="hp9Awards">CREDENTIALS</button></div></div></section></div></div>';
+ function sys(n,s,hot){return '<div class="hp9sys '+(hot?"hot":"")+'"><b>'+E(n)+'</b><small>'+E(s)+'</small></div>'}
+ m.querySelectorAll("[data-hp9event]").forEach(b=>b.onclick=()=>read(b.dataset.hp9event));
+ document.querySelector("#hp9Plus1").onclick=()=>advance(1);document.querySelector("#hp9Plus5").onclick=()=>advance(5);document.querySelector("#hp9Round").onclick=()=>advance(3+Math.floor(Math.random()*5));
+ document.querySelector("#hp9PC").onclick=()=>window.VetGodsHospitalPC?.render?.();
+ document.querySelector("#hp9Clinical").onclick=()=>window.VetGodsHospitalClinicalOS?.render?.("census");
+ document.querySelector("#hp9Net").onclick=()=>window.VetGodsHospitalNetwork?.render?.();
+ document.querySelector("#hp9Archive").onclick=()=>window.VetGodsDeepArchive?.render?.();
+ document.querySelector("#hp9Mercer").onclick=()=>window.VetGodsMercerInvestigation?.render?.();
+ document.querySelector("#hp9Awards").onclick=()=>window.VetGodsAdminAuthority?.render?.();
+}
+function launch(){let b=document.querySelector("#hp9Launch");if(!b){b=document.createElement("button");b.id="hp9Launch";b.textContent="☾ NIGHT SHIFT";b.onclick=render;document.body.appendChild(b)}}
+window.VetGodsNightShift={render,state:get};
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();
+setInterval(launch,2500);
+})();
+</script>
+<script id="hospital-pc-phase9-bridge">
+(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__phase9){let old=p.render;p.render=function(){old();setTimeout(function(){let area=document.querySelector(".hpActions");if(area&&!document.querySelector("#hp9Desk")){let b=document.createElement("button");b.id="hp9Desk";b.textContent="OPEN NIGHT SHIFT EVENT CONSOLE";b.onclick=function(){VetGodsNightShift.render()};area.appendChild(b)}},0)};p.__phase9=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
+</script>
+
+
+<style id="hospital-pc-phase10-css">
+#hp10{min-height:100%;background:radial-gradient(circle at 50% 0,rgba(61,115,76,.20),transparent 35%),repeating-linear-gradient(0deg,rgba(190,255,210,.02) 0 1px,transparent 1px 4px),#010403;color:#caffda;font-family:"Courier New",monospace;padding:8px}
+.hp10head{border:1px solid #6a9675;background:#041008;padding:14px}.hp10head small{font-size:7px;color:#789680;letter-spacing:2px}.hp10head h1{margin:4px 0;font-size:clamp(24px,5vw,42px)}
+.hp10alert{border:1px solid #89624e;background:#170904;color:#ffd6c0;padding:9px;margin-top:7px;font-size:8px}
+.hp10stats{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid #31533b;margin:7px 0}.hp10stats div{padding:7px;border-right:1px dotted #31533b}.hp10stats small{display:block;font-size:6px;color:#68826f}.hp10stats b{font-size:9px}
+.hp10layout{display:grid;grid-template-columns:.72fr 1.28fr;gap:7px}.hp10panel{border:1px solid #31533b;background:#020a05}.hp10panel h2{margin:0;padding:7px;background:#bddbc5;color:#031008;font-size:9px}.hp10body{padding:8px}
+.hp10sources{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}.hp10source{border:1px solid #31533b;padding:8px;min-height:78px;cursor:pointer}.hp10source:hover{background:#bddbc5;color:#031008}.hp10source b{font-size:8px}.hp10source small{display:block;font-size:6px;color:#6d8c75;margin-top:4px}.hp10source.ok{box-shadow:inset 0 0 17px #173d22}.hp10source.hot{border-color:#805d4c}
+.hp10board{border:1px solid #31533b;background:#000803;padding:10px}.hp10chain{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.hp10node{border:1px solid #31533b;padding:9px;min-height:80px}.hp10node b{font-size:8px}.hp10node small{display:block;font-size:6px;color:#6d8c75;margin-top:4px}.hp10node.center{border:2px solid #805d4c;box-shadow:inset 0 0 20px #391b13}
+.hp10choices{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:7px}.hp10choice{border:1px solid #31533b;background:#031008;color:#caffda;padding:10px;text-align:left;font:700 7px "Courier New";cursor:pointer}.hp10choice:hover,.hp10choice.on{background:#bddbc5;color:#031008}.hp10choice small{display:block;font-size:6px;color:#6d8c75;margin-top:4px}
+.hp10actions{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:7px}.hp10actions button,.hp10nav button{border:1px solid #31533b;background:#031008;color:#caffda;padding:9px;font:700 7px "Courier New";cursor:pointer}.hp10actions button:hover,.hp10nav button:hover{background:#bddbc5;color:#031008}
+.hp10term{border:1px solid #31533b;background:#000;padding:10px;min-height:150px;font-size:7px;line-height:1.6;white-space:pre-wrap;margin-top:7px}
+.hp10nav{display:grid;grid-template-columns:repeat(6,1fr);margin-top:7px}
+.hp10modal{position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:2147483637;display:flex;align-items:center;justify-content:center;padding:10px}.hp10win{width:min(850px,96vw);max-height:90vh;overflow:auto;border:2px solid #688f72;background:#020b05}.hp10bar{display:flex;justify-content:space-between;background:#bddbc5;color:#031008;padding:7px;font-size:8px;font-weight:900}.hp10bar button{border:0;background:#031008;color:#fff}.hp10content{padding:14px;font-size:9px;line-height:1.7;white-space:pre-wrap}
+#hp10Launch{position:fixed;right:8px;top:348px;z-index:2147483631;background:#010805;color:#b7ffd1;border:1px solid #6d9a78;padding:8px 10px;font:900 8px "Courier New";cursor:pointer}
+@media(max-width:900px){.hp10layout{grid-template-columns:1fr}.hp10stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.hp10sources,.hp10chain,.hp10choices,.hp10actions,.hp10nav{grid-template-columns:1fr}}
+</style>
+<script id="hospital-pc-phase10-js">
+(function(){"use strict";
+const KEY="vetgods_hospital_pc_phase10";
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{reviewed:[],finding:null,closed:false,caseNo:"INC-VET-03117",prints:0,notes:[]}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+function status(){
+ let s={};
+ try{s.mercer=(window.VetGodsMercerInvestigation?.state?.().evidence||{});s.mercerN=Object.keys(s.mercer).length}catch(e){s.mercerN=0}
+ try{s.archive=window.VetGodsDeepArchive?.state?.();s.archiveN=s.archive.opened?.length||0}catch(e){s.archiveN=0}
+ try{s.net=window.VetGodsHospitalNetwork?.state?.();s.netN=s.net.visited?.length||0;s.ghost=!!s.net.ghostSeen}catch(e){s.netN=0}
+ try{s.clin=window.VetGodsClinicalInvestigation?.state?.();s.clinN=s.clin.globalEvidence?.length||0}catch(e){s.clinN=0}
+ try{s.night=window.VetGodsNightShift?.state?.();s.nightN=s.night.events?.length||0}catch(e){s.nightN=0}
+ try{s.auth=window.VetGodsAdminAuthority?.state?.();s.awards=Object.keys(s.auth.issued||{}).length}catch(e){s.awards=0}
+ try{s.anom=window.VetGodsRecordAnomalies?.state?.();s.cross=s.anom.crosscheck||0}catch(e){s.cross=0}
+ return s
+}
+const sources=[
+{id:"mercer",n:"MERCER INVESTIGATION",d:"Recovered administrator files and Case 1149 research."},
+{id:"archive",n:"DEEP ARCHIVE",d:"1977–current historical index and migration artifacts."},
+{id:"network",n:"NETWORK TOPOLOGY",d:"RX04-03117 live host with no inventory match."},
+{id:"clinical",n:"CLINICAL WORKUPS",d:"Patient care generated independent systems evidence."},
+{id:"night",n:"NIGHT SHIFT",d:"Printer, recovery, facilities and archive events."},
+{id:"anomaly",n:"RECORD ANOMALIES",d:"Conflicting identifiers, locations and metadata."}
+];
+function modal(title,body){let d=document.createElement("div");d.className="hp10modal";d.innerHTML='<div class="hp10win"><div class="hp10bar"><span>'+E(title)+'</span><button>CLOSE [X]</button></div><div class="hp10content">'+E(body)+'</div></div>';d.querySelector("button").onclick=()=>d.remove();document.body.appendChild(d)}
+function review(id){
+ let x=get(),s=status();if(!x.reviewed.includes(id))x.reviewed.push(id);put(x);
+ let bodies={
+ mercer:`MERCER CORRELATION\n\nAdrian Mercer searched 03117, RX-04, Recovery Bay 4, Case 1149 and unattended printer activity.\n\nCurrent evidence does not establish that Mercer created the anomaly. His files show he was investigating it.`,
+ archive:`HISTORICAL CORRELATION\n\nSimilar identifiers occur in surviving records from decades before the current network.\n\nThis establishes historical reuse/recurrence of the identifiers, not continuity of a single patient or machine.`,
+ network:`NETWORK CORRELATION\n\nRX04-03117 responds on the current Veterinary Medicine subnet while hospital inventories return no matching asset.\n\nA live endpoint is established. Its physical identity is not.`,
+ clinical:`CLINICAL CORRELATION\n\n${s.clinN} clinical evidence entries have been recorded.\n\nPatient findings remain separated from systems anomalies. No animal identity is automatically merged with Case 1149.`,
+ night:`AFTER-HOURS CORRELATION\n\n${s.nightN} night-shift events are present.\n\nThe event stream links the unregistered host to printer/recovery activity, while authenticity and physical causation remain unresolved.`,
+ anomaly:`RECORD-INTEGRITY CORRELATION\n\n${s.cross} cross-check operations have been completed.\n\nThe evidence supports a persistent data-integrity problem spanning identifiers, device routes and imported records.`
+ };modal(sources.find(q=>q.id===id).n,bodies[id]);render()
+}
+function conclusionText(k){
+ if(k==="migration")return "PRIMARY FINDING: Legacy-data contamination and identifier reuse are the strongest documented explanation. Historical fields survived multiple migrations and may be propagating into modern systems. The live unregistered host remains a separate unresolved infrastructure issue.";
+ if(k==="device")return "PRIMARY FINDING: Undocumented legacy equipment is the strongest documented explanation. RX-04 terminology, basement transfer records and the current RX04-03117 endpoint form a plausible equipment lineage, but the physical device has not been verified.";
+ return "PRIMARY FINDING: INCONCLUSIVE. The evidence establishes recurring identifiers, a live unregistered endpoint, historical migration anomalies and after-hours system activity. It does not establish one continuous patient, one continuous device, or a supernatural cause. Preserve evidence and continue investigation.";
+}
+function choose(k){let x=get();x.finding=k;x.notes.unshift(new Date().toLocaleString()+" finding selected: "+k);put(x);render()}
+function closeCase(){let x=get();if(x.reviewed.length<6){alert("Review all six evidence divisions before finalizing the incident dossier.");return}if(!x.finding){alert("Select a documented finding posture first.");return}x.closed=true;x.notes.unshift(new Date().toLocaleString()+" incident dossier finalized");put(x);render()}
+function printDossier(){
+ let x=get(),s=status();if(!x.finding){alert("Select a finding posture before printing the final dossier.");return}
+ x.prints++;put(x);let w=window.open("","_blank","width=1000,height=850");if(!w){alert("Allow pop-ups for this local HTML file, then try again.");return}
+ let finding=conclusionText(x.finding);
+ w.document.write(`<!doctype html><html><head><title>${x.caseNo} Final Dossier</title><style>body{font-family:Arial;color:#111;padding:28px}.sheet{max-width:900px;margin:auto;border:8px double #173823;padding:32px}h1{text-align:center}.stamp{text-align:center;font-weight:bold;letter-spacing:3px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:20px 0}.box{border:1px solid #444;padding:10px;font-size:12px}.finding{border:2px solid #111;padding:15px;line-height:1.55}.sig{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:45px}.sig div{border-top:1px solid #111;padding-top:6px;font-size:11px}.print{padding:12px}@media print{.print{display:none}.sheet{border-width:5px}}</style></head><body><button class="print" onclick="window.print()">PRINT FINAL DOSSIER</button><div class="sheet"><div class="stamp">NORTH CASCADE REGIONAL HOSPITAL · VETERINARY MEDICINE</div><h1>INCIDENT COMMAND FINAL DOSSIER</h1><p><b>Case:</b> ${x.caseNo}<br><b>Status:</b> ${x.closed?"FINALIZED":"OPEN / REVIEWED"}<br><b>Printed:</b> ${new Date().toLocaleString()}</p><div class="grid"><div class="box"><b>Mercer evidence</b><br>${s.mercerN} indexed item(s)</div><div class="box"><b>Archive records opened</b><br>${s.archiveN}</div><div class="box"><b>Network nodes visited</b><br>${s.netN}</div><div class="box"><b>Clinical evidence</b><br>${s.clinN}</div><div class="box"><b>Night events</b><br>${s.nightN}</div><div class="box"><b>Record cross-checks</b><br>${s.cross}</div></div><div class="finding"><b>FINAL FINDING</b><br><br>${E(finding)}</div><h3>Preservation / Handoff</h3><p>Preserve raw archive records, printer spool metadata, network logs, clinical chart boundaries and facilities records. Do not merge 03117 with a patient identity without independent identifying evidence.</p><div class="sig"><div>Veterinary Department Administration</div><div>Incident Command Review</div></div></div></body></html>`);w.document.close()
+}
+function printMaster(){
+ let x=get();printDossier();
+ setTimeout(()=>{try{window.VetGodsAdminAuthority?.render?.()}catch(e){}},250)
+}
+function render(){
+ let m=document.querySelector("#main"),x=get(),s=status();if(!m)return;try{page="incidentCommand";nav()}catch(e){}
+ let readiness=Math.min(100,Math.round((x.reviewed.length/6)*55 + (s.archiveN?8:0)+(s.ghost?8:0)+(s.clinN?8:0)+(s.nightN>=5?8:0)+(x.finding?13:0)));
+ m.innerHTML='<div id="hp10"><header class="hp10head"><small>NCRH // VETERINARY MEDICINE // INCIDENT COMMAND</small><h1>CASE 03117 — FINAL COMMAND BOARD</h1><div style="font-size:8px;color:#8cad94">All ten overhaul phases converge here: clinical records, Mercer, Case 1149, RX-04, the unregistered host, Deep Archive, night events and administrator authority.</div><div class="hp10alert">FINAL REVIEW // The dossier separates established observations from interpretation. You choose the administrative finding; the system does not turn ambiguous evidence into certainty.</div></header>'+
+ '<div class="hp10stats"><div><small>CASE</small><b>'+x.caseNo+'</b></div><div><small>DIVISIONS REVIEWED</small><b>'+x.reviewed.length+'/6</b></div><div><small>READINESS</small><b>'+readiness+'%</b></div><div><small>ARCHIVE OPENED</small><b>'+s.archiveN+'</b></div><div><small>CLINICAL EVIDENCE</small><b>'+s.clinN+'</b></div><div><small>STATUS</small><b>'+(x.closed?"FINALIZED":"OPEN")+'</b></div></div>'+
+ '<div class="hp10layout"><section class="hp10panel"><h2>EVIDENCE DIVISIONS</h2><div class="hp10body"><div class="hp10sources">'+sources.map(q=>'<div class="hp10source '+(x.reviewed.includes(q.id)?"ok ":"")+(["network","night"].includes(q.id)?"hot":"")+'" data-hp10src="'+q.id+'"><b>'+(x.reviewed.includes(q.id)?"✓ ":"? ")+E(q.n)+'</b><small>'+E(q.d)+'</small></div>').join("")+'</div>'+
+ '<div class="hp10term">INCIDENT COMMAND SUMMARY\n\n1977+   03117 appears in legacy material\n1983    RX-04 transferred toward basement storage\n2002    Case 1149 contains conflicting device field\n2008    03117 repopulates during data migration\n2015    RX04-03117 responds without inventory match\nCURRENT Unregistered endpoint and after-hours events persist\n\nThe chain is substantial. Its meaning remains an administrative finding, not an automatic fact.</div></div></section>'+
+ '<section class="hp10panel"><h2>CORRELATION / FINAL FINDING</h2><div class="hp10body"><div class="hp10board"><div class="hp10chain">'+node("CASE 1149","Historical patient record",false)+node("RX-04","Legacy recovery equipment",false)+node("03117","Recurring identifier",true)+node("MERCER","Later investigator",false)+node("RX04-03117","Live unregistered endpoint",true)+node("CURRENT PATIENTS","Identity kept separate",false)+'</div></div>'+
+ '<div class="hp10choices"><button class="hp10choice '+(x.finding==="migration"?"on":"")+'" data-hp10find="migration">LEGACY DATA / IDENTIFIER REUSE<small>Historical contamination is primary; live host remains unresolved.</small></button><button class="hp10choice '+(x.finding==="device"?"on":"")+'" data-hp10find="device">UNDOCUMENTED LEGACY EQUIPMENT<small>Equipment lineage is plausible but physical verification is missing.</small></button><button class="hp10choice '+(x.finding==="open"?"on":"")+'" data-hp10find="open">KEEP CASE INCONCLUSIVE<small>Preserve competing explanations and continue investigation.</small></button></div>'+
+ '<div class="hp10term">'+E(x.finding?conclusionText(x.finding):"No final finding selected.\n\nReview the six evidence divisions and choose the posture that should appear in the permanent incident dossier.")+'</div>'+
+ '<div class="hp10actions"><button id="hp10Finalize">'+(x.closed?"✓ DOSSIER FINALIZED":"FINALIZE INCIDENT DOSSIER")+'</button><button id="hp10Print">PRINT FINAL DOSSIER</button><button id="hp10Portfolio">OPEN 500-AWARD PRINT REGISTRY</button></div>'+
+ '<div class="hp10nav"><button id="hp10PC">HOSPITAL PC</button><button id="hp10Clinical">CLINICAL</button><button id="hp10Net">NETWORK</button><button id="hp10Archive">ARCHIVE</button><button id="hp10Night">NIGHT SHIFT</button><button id="hp10Awards">CREDENTIALS</button></div></div></section></div></div>';
+ function node(n,d,c){return '<div class="hp10node '+(c?"center":"")+'"><b>'+E(n)+'</b><small>'+E(d)+'</small></div>'}
+ m.querySelectorAll("[data-hp10src]").forEach(b=>b.onclick=()=>review(b.dataset.hp10src));
+ m.querySelectorAll("[data-hp10find]").forEach(b=>b.onclick=()=>choose(b.dataset.hp10find));
+ document.querySelector("#hp10Finalize").onclick=closeCase;
+ document.querySelector("#hp10Print").onclick=printDossier;
+ document.querySelector("#hp10Portfolio").onclick=()=>window.VetGodsAdminAuthority?.render?.();
+ document.querySelector("#hp10PC").onclick=()=>window.VetGodsHospitalPC?.render?.();
+ document.querySelector("#hp10Clinical").onclick=()=>window.VetGodsClinicalInvestigation?.render?.();
+ document.querySelector("#hp10Net").onclick=()=>window.VetGodsHospitalNetwork?.render?.();
+ document.querySelector("#hp10Archive").onclick=()=>window.VetGodsDeepArchive?.render?.();
+ document.querySelector("#hp10Night").onclick=()=>window.VetGodsNightShift?.render?.();
+ document.querySelector("#hp10Awards").onclick=()=>window.VetGodsAdminAuthority?.render?.();
+}
+function launch(){let b=document.querySelector("#hp10Launch");if(!b){b=document.createElement("button");b.id="hp10Launch";b.textContent="★ INCIDENT COMMAND";b.onclick=render;document.body.appendChild(b)}}
+window.VetGodsIncidentCommand={render,state:get,printDossier:printDossier};
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();
+setInterval(launch,2500);
+})();
+</script>
+<script id="hospital-pc-phase10-bridge">
+(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__phase10){let old=p.render;p.render=function(){old();setTimeout(function(){let area=document.querySelector(".hpActions");if(area&&!document.querySelector("#hp10Desk")){let b=document.createElement("button");b.id="hp10Desk";b.textContent="OPEN INCIDENT COMMAND / FINAL DOSSIER";b.onclick=function(){VetGodsIncidentCommand.render()};area.appendChild(b)}},0)};p.__phase10=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
+</script>
+
+</body></html>`);
+ w.document.close()
+}
+function printPortfolio(){
+ let x=get(),issued=awards.filter(a=>x.issued[a.id]);if(!issued.length){alert("Issue at least one credential first.");return}
+ let w=window.open("","_blank","width=1000,height=800");if(!w){alert("Allow pop-ups for this local HTML file, then try again.");return}
+ x.printCount++;put(x);
+ let rows=issued.map(a=>`<tr><td>${a.id}</td><td>${E(a.title)}</td><td>${E(a.type)}</td><td>${E(x.issued[a.id].serial)}</td><td>${E(x.issued[a.id].date)}</td></tr>`).join("");
+ w.document.write(`<!doctype html><html><head><title>Veterinary Administration Portfolio</title><style>body{font-family:Arial;padding:28px;color:#111}h1{text-align:center}table{width:100%;border-collapse:collapse;font-size:11px}th,td{border:1px solid #333;padding:6px;text-align:left}.print{padding:12px;margin-bottom:15px}@media print{.print{display:none}}</style></head><body><button class="print" onclick="window.print()">PRINT COMPLETE PORTFOLIO</button><h1>Veterinary Department Credential Portfolio</h1><p>North Cascade Regional Hospital · Veterinary Medicine</p><p>Issued records: ${issued.length} / 500</p><table><thead><tr><th>ID</th><th>Credential / Award</th><th>Type</th><th>Registration</th><th>Issued</th></tr></thead><tbody>${rows}</tbody></table></body></html>`);w.document.close()
+}
+function render(){
+ let m=document.querySelector("#main"),x=get();if(!m)return;try{page="adminAuthority";nav()}catch(e){}
+ let filtered=awards.filter(a=>(x.cat==="ALL"||a.cat===x.cat)&&(!x.search||(`${a.id} ${a.title} ${a.type} ${a.cat}`).toLowerCase().includes(x.search.toLowerCase())));
+ let a=awards.find(z=>z.id===x.selected)||filtered[0]||awards[0],rec=x.issued[a.id],issuedCount=Object.keys(x.issued).length;
+ m.innerHTML='<div id="hp8"><header class="hp8head"><small>NCRH // VETERINARY MEDICINE // ADMINISTRATIVE AUTHORITY & CREDENTIALING</small><h1>DEPARTMENT CREDENTIAL REGISTRY</h1><div style="font-size:8px;color:#8cad94">500 individually addressable hospital-program awards, badges, qualifications, commendations and administrative credentials. Issued records persist locally and can be reprinted at any time.</div></header>'+
+ '<div class="hp8stats"><div><small>REGISTRY</small><b>500 RECORDS</b></div><div><small>ISSUED</small><b>'+issuedCount+'</b></div><div><small>AVAILABLE</small><b>'+(500-issuedCount)+'</b></div><div><small>PRINT JOBS</small><b>'+x.printCount+'</b></div><div><small>SELECTED</small><b>'+E(a.id)+'</b></div><div><small>PRINTER</small><b>PRN04 ONLINE</b></div></div>'+
+ '<div class="hp8layout"><section class="hp8panel"><h2>CREDENTIAL CATALOG</h2><div class="hp8body"><div class="hp8folders"><button class="hp8folder '+(x.cat==="ALL"?"on":"")+'" data-hp8cat="ALL"><span>▦</span>ALL 500<small>Complete registry</small></button>'+cats.map(c=>'<button class="hp8folder '+(x.cat===c[0]?"on":"")+'" data-hp8cat="'+E(c[0])+'"><span>'+c[2]+'</span>'+E(c[0])+'<small>50 records</small></button>').join("")+'</div><div class="hp8search"><input id="hp8Search" value="'+E(x.search)+'" placeholder="Search VG-003, diagnostics, badge..."><button id="hp8Go">SEARCH</button></div></div></section>'+
+ '<section class="hp8panel"><h2>SELECTED CREDENTIAL / PRINT CONTROL</h2><div class="hp8body"><div class="hp8preview"><div class="hp8seal">'+a.icon+'</div><div class="hp8serial">'+E(a.cat)+' · '+E(a.type)+' · '+E(a.id)+'</div><h3>'+E(a.title)+'</h3><div class="hp8desc">'+E(a.desc)+'</div><div class="hp8serial">REGISTRATION: '+E(rec?rec.serial:serial(a))+' · STATUS: '+(rec?"ISSUED "+E(rec.date):"AVAILABLE")+'</div></div>'+
+ '<div class="hp8actions"><button id="hp8Issue">'+(rec?"✓ ISSUED / KEEP RECORD":"ISSUE TO MY REGISTRY")+'</button><button id="hp8Cert">PRINT CERTIFICATE</button><button id="hp8Badge">PRINT BADGE</button><button id="hp8Portfolio">PRINT COMPLETE PORTFOLIO</button><button id="hp8IssueCat">ISSUE CATEGORY ('+E(a.cat)+')</button><button id="hp8IssueAll">ISSUE ALL 500</button></div>'+
+ '<div class="hp8list" style="margin-top:7px">'+filtered.map(z=>{let r=x.issued[z.id];return '<div class="hp8award '+(z.id===a.id?"on":"")+'" data-hp8award="'+z.id+'"><code>'+z.id+'</code><div><b>'+E(z.title)+'</b><small>'+E(z.cat)+' · '+E(z.type)+'</small></div><strong>'+(r?"ISSUED":"AVAILABLE")+'</strong></div>'}).join("")+'</div>'+
+ '<h2 style="margin-top:8px">MY PERMANENT CREDENTIAL WALLET</h2><div class="hp8wallet">'+(issuedCount?awards.filter(z=>x.issued[z.id]).slice().reverse().map(z=>'<div><code>'+z.id+'</code><b>'+E(z.title)+'</b><span>'+E(x.issued[z.id].serial)+'</span></div>').join(""):'<div><code>—</code><b>No credentials issued yet</b><span>—</span></div>')+'</div>'+
+ '<div class="hp8nav"><button id="hp8PC">HOSPITAL PC</button><button id="hp8Clinical">CLINICAL OS</button><button id="hp8Mystery">MYSTERY WORKUP</button><button id="hp8Archive">DEEP ARCHIVE</button><button id="hp8OldAdmin">LEGACY PRINT OFFICE</button></div></div></section></div></div>';
+ m.querySelectorAll("[data-hp8cat]").forEach(b=>b.onclick=()=>{x.cat=b.dataset.hp8cat;x.search="";put(x);render()});
+ m.querySelectorAll("[data-hp8award]").forEach(b=>b.onclick=()=>{x.selected=b.dataset.hp8award;put(x);render()});
+ document.querySelector("#hp8Go").onclick=()=>{x.search=document.querySelector("#hp8Search").value;x.cat="ALL";put(x);render()};document.querySelector("#hp8Search").onkeydown=e=>{if(e.key==="Enter")document.querySelector("#hp8Go").click()};
+ document.querySelector("#hp8Issue").onclick=()=>issue(a);
+ document.querySelector("#hp8Cert").onclick=()=>printAward(a,"certificate");
+ document.querySelector("#hp8Badge").onclick=()=>printAward(a,"badge");
+ document.querySelector("#hp8Portfolio").onclick=printPortfolio;
+ document.querySelector("#hp8IssueCat").onclick=()=>{awards.filter(z=>z.cat===a.cat).forEach(z=>{if(!x.issued[z.id])x.issued[z.id]={date:new Date().toLocaleDateString(),serial:serial(z),prints:0}});put(x);render()};
+ document.querySelector("#hp8IssueAll").onclick=()=>{if(confirm("Issue all 500 registry records to the local credential wallet?")){awards.forEach(z=>{if(!x.issued[z.id])x.issued[z.id]={date:new Date().toLocaleDateString(),serial:serial(z),prints:0}});put(x);render()}};
+ document.querySelector("#hp8PC").onclick=()=>window.VetGodsHospitalPC?.render?.();
+ document.querySelector("#hp8Clinical").onclick=()=>window.VetGodsHospitalClinicalOS?.render?.("census");
+ document.querySelector("#hp8Mystery").onclick=()=>window.VetGodsClinicalInvestigation?.render?.();
+ document.querySelector("#hp8Archive").onclick=()=>window.VetGodsDeepArchive?.render?.();
+ document.querySelector("#hp8OldAdmin").onclick=()=>window.VetGodsAdminPrintRepair?.render?.();
+}
+function launch(){let b=document.querySelector("#hp8Launch");if(!b){b=document.createElement("button");b.id="hp8Launch";b.textContent="🏆 CREDENTIAL REGISTRY";b.onclick=render;document.body.appendChild(b)}}
+window.VetGodsAdminAuthority={render,state:get,awards:awards,printAward:printAward};
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();
+setInterval(launch,2500);
+})();
+</script>
+<script id="hospital-pc-phase8-bridge">
+(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__phase8){let old=p.render;p.render=function(){old();setTimeout(function(){["awards","admin"].forEach(function(id){let a=document.querySelector('[data-happ="'+id+'"]');if(a){a.onclick=function(){VetGodsAdminAuthority.render()};let s=a.querySelector("small");if(s)s.textContent="500-record credential registry / printing"}})},0)};p.__phase8=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
+</script>
+
+</body></html>`
 }
 function openPrint(c,name){
  let w=window.open("","_blank");
