@@ -7151,7 +7151,7 @@ try{localStorage.removeItem("vetgods_hard_yellow_loop_v1")}catch(e){}
 document.querySelector("#vgHardGuideBtn")?.remove();
 document.querySelector("#vgHardGuidePanel")?.remove();
 const stages=["PATIENT","INTAKE","EXAM","DIAGNOSE","STABILIZE","TREAT","RECOVER","DISPOSITION","CERTIFICATE","NEW PATIENT"];
-function load(){try{return Object.assign({step:0,open:true,loops:0,msg:"READY — YELLOW WILL VERIFY EACH STEP BEFORE ADVANCING."},JSON.parse(localStorage.getItem(KEY))||{})}catch(e){return{step:0,open:true,loops:0,msg:"READY."}}}
+function load(){try{return Object.assign({step:0,open:true,loops:0,coachMode:"SHOW",msg:"READY — YELLOW WILL VERIFY EACH STEP BEFORE ADVANCING."},JSON.parse(localStorage.getItem(KEY))||{})}catch(e){return{step:0,open:true,loops:0,coachMode:"SHOW",msg:"READY."}}}
 function saveBrain(d){localStorage.setItem(KEY,JSON.stringify(d))}
 function A(){return state.animals?.[state.active]||null}
 function gameSave(){try{if(typeof save==="function")save()}catch(e){}}
@@ -7164,7 +7164,7 @@ function setDefaultName(){
  if(!state.playerProfile.lastName)state.playerProfile.lastName="Smith";
  state.certName=state.certName||"John Smith";gameSave();
 }
-function pass(d,msg){d.step++;d.msg="✓ "+msg+" // NEXT: "+stages[d.step];saveBrain(d);setTimeout(mount,60)}
+function pass(d,msg){d.step++;d.coachMode="SHOW";d.msg="✓ "+msg+" // NEXT: "+stages[d.step];saveBrain(d);setTimeout(mount,60)}
 function fail(d,msg){d.msg="NOT ADVANCED: "+msg;saveBrain(d);mount()}
 
 function run(){
@@ -7308,14 +7308,14 @@ function mount(){
  w.innerHTML='<div class="vgBH">YELLOW GUIDE // PHASE 1 OF 3 // VERIFIED BRAIN</div><div class="vgBB"><b>'+d.msg+'</b>'+
  'PATIENT: '+(a?.name||"NONE")+' // STEP '+(d.step+1)+' OF '+stages.length+'<br>CURRENT: '+stages[d.step]+
  '<div class="vgBRoute">'+stages.map((n,i)=>'<span class="'+(i<d.step?"done":i===d.step?"now":"")+'">'+(i+1)+' '+n+'</span>').join("")+'</div>'+
- '<button id="vgBrainDo">🟨 DO '+stages[d.step]+' → VERIFY → ADVANCE</button>'+
+ '<button id="vgBrainDo">'+(d.coachMode==="DO"?"🟨 DO "+stages[d.step]+" FOR ME → ADVANCE":"🟨 SHOW ME "+stages[d.step])+'</button>'+
  '<button id="vgBrainReset">RESET GUIDE TO PATIENT</button></div>';
  document.body.appendChild(w);
  w.querySelector("#vgBrainDo").onclick=run;
- w.querySelector("#vgBrainReset").onclick=()=>{saveBrain({step:0,open:true,loops:d.loops,msg:"RESET TO PATIENT."});mount()};
+ w.querySelector("#vgBrainReset").onclick=()=>{saveBrain({step:0,open:true,loops:d.loops,coachMode:"SHOW",msg:"RESET TO PATIENT."});mount()};
 }
 setDefaultName();setTimeout(mount,700);
-window.VetGodsYellowBrain={run,mount,reset:function(){saveBrain({step:0,open:true,loops:0,msg:"RESET."});mount()}};
+window.VetGodsYellowBrain={run,mount,reset:function(){saveBrain({step:0,open:true,loops:0,coachMode:"SHOW",msg:"RESET."});mount()}};
 })();
 </script>
 
@@ -7555,6 +7555,94 @@ function enforceYellowOff(){
 setTimeout(enforceYellowOff,250);
 setInterval(enforceYellowOff,500);
 window.VetGodsYellowOffEnforcer=enforceYellowOff;
+})();
+</script>
+
+<style id="vg-yellow-phase2-showfirst-css">
+.vgYellowAhead{
+ outline:5px solid #ffe600!important;outline-offset:4px!important;
+ animation:vgYellowAheadBlink .55s steps(2,end) 8!important;
+ box-shadow:0 0 26px rgba(255,230,0,.95)!important;
+ position:relative!important;z-index:2147483000!important
+}
+@keyframes vgYellowAheadBlink{
+ 0%,49%{outline-color:#ffe600;box-shadow:0 0 28px rgba(255,230,0,1)}
+ 50%,100%{outline-color:#555;box-shadow:0 0 5px rgba(255,230,0,.1)}
+}
+#vgAheadNote{position:fixed;left:50%;top:10px;transform:translateX(-50%);z-index:2147483647;
+ width:min(92vw,500px);background:#050505;color:#ffe600;border:3px double #ffe600;
+ padding:8px;text-align:center;font:900 9px "Courier New",monospace}
+.vgYellowOff #vgAheadNote{display:none!important}
+</style>
+<script id="vg-yellow-phase2-showfirst-js">
+(function(){
+"use strict";
+const BKEY="vetgods_yellow_brain_phase1_v1";
+const labels=[
+ ["PATIENT",/ADMIT|SELECT PATIENT|NEW CASE|START CASE/i],
+ ["INTAKE",/INTAKE|ACCEPT CASE|ADMIT/i],
+ ["EXAM",/PHYSICAL EXAM|EXAM PATIENT|RUN EXAM/i],
+ ["DIAGNOSE",/BIO SCAN|LAB|DIAGNOST|IMAGING/i],
+ ["STABILIZE",/OXYGEN SUPPORT|OFFER WATER|IV FLUID|PAIN CONTROL|STABIL/i],
+ ["TREAT",/PRIMARY TREATMENT|BEGIN TREATMENT|TREAT PATIENT/i],
+ ["RECOVER",/SEND TO RECOVERY|RECOVERY/i],
+ ["DISPOSITION",/DISCHARGE|SEND HOME|SANCTUARY|ADOPT|KEEP.*PET/i],
+ ["CERTIFICATE",/CERTIFICATE|BADGE|AWARD|PRINT/i],
+ ["NEW PATIENT",/NEW PATIENT|NEXT PATIENT|ADMIT|NEW CASE/i]
+];
+function get(){try{return Object.assign({step:0,open:true,coachMode:"SHOW"},JSON.parse(localStorage.getItem(BKEY))||{})}catch(e){return{step:0,open:true,coachMode:"SHOW"}}}
+function put(q){localStorage.setItem(BKEY,JSON.stringify(q))}
+function vis(x){if(!x)return false;let r=x.getBoundingClientRect(),c=getComputedStyle(x);return c.display!=="none"&&c.visibility!=="hidden"&&r.width>0&&r.height>0}
+function route(step){
+ try{
+  if(step===0||step===9)program("clinic");
+  else if(step===1){section=0;page="care";program("care")}
+  else if(step===2||step===3){section=1;page="care";program("care")}
+  else if(step===4){section=2;page="care";program("care")}
+  else if(step===5){section=3;page="care";program("care")}
+  else if(step===6){section=4;page="care";program("care")}
+  else if(step===7)program("records");
+  else if(step===8){section=2;program("certs")}
+ }catch(e){}
+}
+function target(step){
+ let rx=labels[step]?.[1];if(!rx)return null;
+ return [...document.querySelectorAll("button,a,[role=button],input[type=button],input[type=submit]")]
+ .filter(vis).filter(x=>!x.closest("#vgBrain,#vgAheadNote,#vgBottomLeftDock,#vgBottomRightDock"))
+ .find(x=>rx.test((x.textContent||x.value||"").trim()))||null;
+}
+function note(t){document.querySelector("#vgAheadNote")?.remove();let n=document.createElement("div");n.id="vgAheadNote";n.textContent=t;document.body.appendChild(n);setTimeout(()=>n.remove(),5000)}
+function show(step){
+ document.querySelectorAll(".vgYellowAhead").forEach(x=>x.classList.remove("vgYellowAhead"));
+ route(step);
+ setTimeout(()=>{
+   let t=target(step),name=labels[step]?.[0]||"NEXT";
+   if(t){t.classList.add("vgYellowAhead");try{t.scrollIntoView({behavior:"smooth",block:"center"})}catch(e){}}
+   else{let x=document.querySelector("#main")||document.querySelector(".content");if(x)x.classList.add("vgYellowAhead")}
+   note("🟨 "+name+" IS SHOWN. TRY THE BLINKING CONTROL, OR PRESS THE YELLOW BUTTON AGAIN: IT NOW SAYS DO "+name+" FOR ME.");
+   /* Re-render yellow AFTER route() so the second-press button definitely exists on the new page. */
+   setTimeout(()=>window.VetGodsYellowBrain?.mount?.(),100);
+ },160);
+}
+function click(e){
+ let b=e.target.closest("#vgBrainDo");if(!b)return;
+ e.preventDefault();e.stopImmediatePropagation();
+ let q=get(),step=Number.isInteger(q.step)?q.step:0;
+ if(q.coachMode!=="DO"){
+   q.coachMode="DO";
+   q.msg="LOOK FOR THE BLINKING "+(labels[step]?.[0]||"CONTROL")+" — OR PRESS YELLOW AGAIN AND I WILL DO IT.";
+   put(q);
+   show(step);
+   return;
+ }
+ /* Second press is never another SHOW. It is an explicit DO. */
+ q.coachMode="SHOW";put(q);
+ document.querySelectorAll(".vgYellowAhead").forEach(x=>x.classList.remove("vgYellowAhead"));
+ document.querySelector("#vgAheadNote")?.remove();
+ if(window.VetGodsYellowBrain?.run)window.VetGodsYellowBrain.run();
+}
+document.addEventListener("click",click,true);
+window.VetGodsYellowShowAhead={show:function(){let q=get();q.coachMode="DO";put(q);show(q.step||0)}};
 })();
 </script>
 </body></html>
