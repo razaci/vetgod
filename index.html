@@ -7153,7 +7153,7 @@ document.addEventListener("change",function(e){
 /* Restore identity after old game screens/save loaders rewrite state. */
 preserve();
 setTimeout(preserve,300);
-setInterval(preserve,1500);
+/* freeze fix: preserve interval removed; identity persists on actual changes */
 
 window.VetGodsPlayerIdentity={
   preserve,
@@ -7214,7 +7214,7 @@ function arrange(){
  });
 }
 setTimeout(arrange,900);
-setInterval(arrange,1200);
+/* freeze fix: layout polling removed */
 window.VetGodsArrangeBottomButtons=arrange;
 })();
 </script>
@@ -7238,7 +7238,7 @@ function sync(){
  }catch(e){}
 }
 setTimeout(sync,500);
-setInterval(sync,700);
+/* freeze fix: yellow cleaner polling removed */
 window.VetGodsYellowTrueOff=sync;
 })();
 </script>
@@ -7269,7 +7269,7 @@ function enforceYellowOff(){
   }
 }
 setTimeout(enforceYellowOff,250);
-setInterval(enforceYellowOff,500);
+/* freeze fix: yellow-off polling removed */
 window.VetGodsYellowOffEnforcer=enforceYellowOff;
 })();
 </script>
@@ -7506,7 +7506,7 @@ function mount(){
 }
 setTimeout(mount,2300);
 document.addEventListener("click",()=>setTimeout(mount,380),false);
-setInterval(mount,1600);
+/* freeze fix: DOS phase1 polling removed */
 window.VetGodsDOSPhase1={mount};
 })();
 </script>
@@ -7593,7 +7593,7 @@ function colorButtons(){
 function mount(){injectTelemetry();lamps();colorButtons()}
 setTimeout(mount,2500);
 document.addEventListener("click",()=>setTimeout(mount,420),false);
-setInterval(mount,1800);
+/* freeze fix: DOS phase2 polling removed */
 window.VetGodsDOSPhase2={mount};
 })();
 </script>
@@ -7737,7 +7737,7 @@ function highlightCurrent(){
 function mount(){deck();rails();updateScanner();updateRails();highlightCurrent();draw()}
 setTimeout(mount,2700);
 document.addEventListener("click",()=>setTimeout(mount,450),false);
-setInterval(()=>{phase=(phase+1)%14;updateRails();updateScanner();highlightCurrent()},650);
+/* freeze fix: scanner animation interval removed; updates occur on interactions */
 window.VetGodsDOSPhase3={mount};
 })();
 </script>
@@ -7822,7 +7822,7 @@ function mount(){
 const oldSave=window.save;
 if(typeof oldSave==="function")window.save=function(){let r=oldSave.apply(this,arguments);setTimeout(mount,40);return r};
 document.addEventListener("click",()=>setTimeout(mount,140),false);
-setTimeout(mount,800);setInterval(mount,2200);
+setTimeout(mount,800);/* freeze fix: normal-flow polling removed */
 window.VetGodsNormalFlow={mount,stage,go,normalize};
 })();
 </script>
@@ -12227,7 +12227,7 @@ function boot(){
 
 window.addEventListener("beforeunload",()=>persist(currentArea));
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")persist(currentArea)});
-setInterval(()=>persist(currentArea),30000);
+/* freeze fix: periodic full persist removed; pagehide/beforeunload retained */
 
 setTimeout(function(){
  restore();integrateMenu();
@@ -12694,7 +12694,7 @@ function completeOnce(k,t){
  if(d?.complete)return;
  complete(k,t)
 }
-setInterval(sync,5000);
+/* freeze fix: continuity polling removed */
 window.addEventListener("beforeunload",sync);
 window.VetGodsPatientContinuityP3={visit,complete,sync,folder};
 })();
@@ -13167,7 +13167,7 @@ function install(){
  };
  window.VetGodsDepartments._missionP8=true
 }
-install();setTimeout(install,1000);setInterval(sync,4000);
+install();setTimeout(install,1000);/* freeze fix: mission polling removed */
 window.addEventListener("beforeunload",sync);
 window.VetGodsMissionLoopP8={read,mission,advance,sync};
 })();
@@ -13350,7 +13350,7 @@ function install(){
  wrapAll()
 }
 setTimeout(install,1200);
-setInterval(()=>persist("AUTOSAVE"),20000);
+/* freeze fix: periodic autosave removed; event persistence retained */
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")persist("BACKGROUND");else{restore();setTimeout(wrapAll,50)}});
 window.addEventListener("beforeunload",()=>persist("CLOSE"));
 window.VetGodsFinalIntegrationP10={persist,restore,route,healthStrip,wrapAll};
@@ -15101,7 +15101,7 @@ function install(){
  window.VetGodsPersistenceP9={capture,restore,health,dashboard,playerName,lockPlayer,blankGuard};
  document.addEventListener("click",()=>setTimeout(()=>{try{capture();blankGuard()}catch(e){}},180),true);
  window.addEventListener("pagehide",capture);window.addEventListener("beforeunload",capture);
- setInterval(()=>{try{capture()}catch(e){}},30000);
+ /* freeze fix: periodic safety capture removed */
  if(!document.querySelector("#vgSafetyButtonP9")){
    let b=document.createElement("button");b.id="vgSafetyButtonP9";b.type="button";b.textContent="SAVE / SAFETY";
    b.style.cssText="position:fixed;right:8px;bottom:142px;z-index:2147482998;background:#050606;color:#4cff7a;border:1px solid #4cff7a;padding:7px 9px;font:900 8px 'Courier New',monospace";
@@ -15329,7 +15329,7 @@ function install(){
  document.addEventListener("keydown",e=>{if(e.key==="Escape")closeAll()});
  /* The old nav remains in DOM for compatibility but is no longer a competing visual menu. */
  window.VetGodsDosMenuR2={route,closeAll,updateStatus,build};
- setInterval(updateStatus,5000)
+ /* freeze fix: status polling removed */
 }
 setTimeout(install,3200);
 })();
@@ -15740,7 +15740,7 @@ function install(){
  input?.addEventListener("keydown",e=>{if(e.key==="Enter")setTimeout(()=>capture(),180)},false);
  window.addEventListener("pagehide",()=>capture());
  window.addEventListener("beforeunload",()=>capture());
- setInterval(()=>{if(Date.now()-lastSaved>12000)capture()},15000);
+ /* freeze fix: periodic memory capture removed */
  window.VetGodsDosMemoryR6={read,capture,restore,restorePatient};
  /* First boot of this layer should not resurrect legacy credential auto-open.
     Only restore after the new memory store has existed once. */
@@ -15844,7 +15844,7 @@ function install(){
  else document.querySelector(".frame")?.appendChild(bar);
  render();
  document.addEventListener("click",()=>setTimeout(render,160),true);
- setInterval(render,5000);
+ /* freeze fix: status-strip polling removed */
  window.VetGodsStatusStripR7={render,patient,caseStage,funds,mission};
 }
 setTimeout(install,3750);
@@ -15960,7 +15960,7 @@ function install(){
  neutralizeRedundantIntervals();
  installClickCoalescing();
  /* One lightweight shell heartbeat instead of adding several more timers. */
- setInterval(()=>{smartStatus();queueSave("heartbeat")},12000);
+ /* freeze fix: heartbeat removed */
  window.addEventListener("pagehide",()=>{try{window.VetGodsDosMemoryR6?.capture?.();window.VetGodsPersistenceP9?.capture?.(true)}catch(e){}});
  window.VetGodsSpeedKernelR8={stats,queueSave,smartStatus,report};
  /* PERF command without touching the older command parser. */
@@ -16288,7 +16288,7 @@ function calm(){
 
 function install(){
  stabilizeDecorator();stabilizeGuard();watchMain();stopHotClicks();calm();
- setInterval(calm,2000);
+ /* freeze fix: blink polling removed */
  window.VetGodsBlinkFix={calm,stabilizeDecorator,stabilizeGuard};
 }
 setTimeout(install,4400);
@@ -16420,7 +16420,7 @@ function nextOrder(a,p){if(!a)return 'Open MY ANIMALS or CLINIC and select/admit
 function addMenu(){
  let menus=[document.querySelector('#vgDosShellP1 .dosMenu'),document.querySelector('.nav')].filter(Boolean);menus.forEach(menu=>{if(menu.querySelector('#vg10TopButton'))return;let b=document.createElement('button');b.id='vg10TopButton';b.type='button';b.textContent='[10] OVERHAUL';b.onclick=render;menu.appendChild(b)})
 }
-function install(){addMenu();setTimeout(addMenu,900);setInterval(addMenu,5000);let input=document.querySelector('#input');input?.addEventListener('keydown',e=>{let v=String(input.value||'').trim().toUpperCase();if(e.key==='Enter'&&['OVERHAUL','PHASES','PHASE10','MAP'].includes(v)){e.preventDefault();e.stopImmediatePropagation();input.value='';render()}},true);window.VetGodsFierceOverhaul10={render,route,doneMap};try{localStorage.setItem(KEY,JSON.stringify({installed:true,version:10,updated:Date.now()}))}catch(e){}}
+function install(){addMenu();setTimeout(addMenu,900);/* freeze fix: menu polling removed */let input=document.querySelector('#input');input?.addEventListener('keydown',e=>{let v=String(input.value||'').trim().toUpperCase();if(e.key==='Enter'&&['OVERHAUL','PHASES','PHASE10','MAP'].includes(v)){e.preventDefault();e.stopImmediatePropagation();input.value='';render()}},true);window.VetGodsFierceOverhaul10={render,route,doneMap};try{localStorage.setItem(KEY,JSON.stringify({installed:true,version:10,updated:Date.now()}))}catch(e){}}
 setTimeout(install,4700);
 })();
 </script>
@@ -17336,7 +17336,7 @@ function step(){
 function activity(d,x){let map={RECEPTION:"Intake / callbacks",EXAM:"Physical examinations",ICU:"Continuous monitoring",SURGERY:"Procedure readiness",IMAGING:"Studies / archive review",LAB:"Specimen processing",PHARMACY:"Medication reconciliation",RECOVERY:"Comfort / discharge checks",RECORDS:"Chart integrity",ADMIN:"Credentials / incidents",IT:"Network / EMR support",MAINTENANCE:"Equipment / utilities"};return map[d]||"Operations"}
 function resolve(id){let x=get(),q=x.events.find(e=>e.id===id);if(!q)return;q.status="RESOLVED";x.resolved++;x.log.unshift(clock(x)+" // RESOLVED // "+q.title);put(x);render()}
 function toggle(){let x=get();x.running=!x.running;put(x);render();runner()}
-function runner(){clearInterval(window._d10Timer);let x=get();if(x.running)window._d10Timer=setInterval(()=>step(),Math.max(700,3000/x.speed))}
+function runner(){if(window._d10Timer){clearInterval(window._d10Timer);clearTimeout(window._d10Timer);window._d10Timer=null}let x=get();if(x.running){x.running=false;put(x)} /* freeze fix: Living World uses manual +15 MINUTES stepping; no background render timer */}
 function speed(){let x=get();x.speed=x.speed===1?2:x.speed===2?4:1;put(x);render();runner()}
 function render(){
  let m=document.querySelector("#main"),x=get();if(!m)return;ensure(x);put(x);let ev=evo(),list=animals();try{page="livingWorld";nav()}catch(e){}
@@ -17466,7 +17466,7 @@ if(window.__VG_STABILITY_FINAL__) return;
 window.__VG_STABILITY_FINAL__=true;
 document.addEventListener("visibilitychange",function(){
   if(document.hidden && window._d10Timer){
-    clearInterval(window._d10Timer);
+    clearInterval(window._d10Timer);clearTimeout(window._d10Timer);
     window._d10Timer=null;
   } else if(!document.hidden) {
     try{
@@ -17482,9 +17482,23 @@ window.addEventListener("afterprint",function(){
   document.querySelectorAll("#vgPrintRoot,#vg80PrintRoot").forEach(n=>n.remove());
 });
 window.addEventListener("pagehide",function(){
-  if(window._d10Timer){clearInterval(window._d10Timer);window._d10Timer=null;}
+  if(window._d10Timer){clearInterval(window._d10Timer);clearTimeout(window._d10Timer);window._d10Timer=null;}
 });
 })();
 </script>
 
+
+<style id="vg-freeze-fix-status-css">
+#vgFreezeFixStatus{position:fixed;right:8px;top:8px;z-index:2147483641;background:#031008;color:#9cffb4;border:1px solid #477953;padding:5px 7px;font:700 7px "Courier New",monospace;pointer-events:none;opacity:.86}
+</style>
+<script id="vg-freeze-fix-status-js">
+(function(){
+"use strict";
+if(window.__VG_FREEZE_FIX__)return;window.__VG_FREEZE_FIX__=true;
+function badge(){if(document.querySelector("#vgFreezeFixStatus"))return;let b=document.createElement("div");b.id="vgFreezeFixStatus";b.textContent="STABLE MODE · BACKGROUND POLLING OFF";document.body.appendChild(b);setTimeout(()=>b.remove(),6000)}
+window.addEventListener("error",function(e){try{localStorage.setItem("vetgods_last_runtime_error",JSON.stringify({time:new Date().toISOString(),message:e.message,source:e.filename,line:e.lineno,col:e.colno}))}catch(_){}});
+window.addEventListener("unhandledrejection",function(e){try{localStorage.setItem("vetgods_last_runtime_error",JSON.stringify({time:new Date().toISOString(),message:String(e.reason||"promise rejection")}))}catch(_){}});
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",badge,{once:true});else badge();
+})();
+</script>
 </body></html>
