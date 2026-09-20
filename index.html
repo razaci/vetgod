@@ -19027,7 +19027,7 @@ function launch(){
 }
 window.VetGodsHospitalPC={render,openFile,state:get};
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();
-setInterval(launch,2500);
+/* stability: launch polling removed */
 })();
 </script>
 
@@ -19348,7 +19348,7 @@ function launch(){
 }
 window.VetGodsMercerInvestigation={render,openDoc,state:get};
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();
-setInterval(launch,2500);
+/* stability: launch polling removed */
 })();
 </script>
 <script id="hospital-pc-phase3-bridge">
@@ -19470,7 +19470,7 @@ function render(){
 function launch(){let b=document.querySelector("#hp4Launch");if(!b){b=document.createElement("button");b.id="hp4Launch";b.textContent="⚠ RECORD ANOMALIES";b.onclick=render;document.body.appendChild(b)}}
 window.VetGodsRecordAnomalies={render,state:get};
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();
-setInterval(launch,2500);
+/* stability: launch polling removed */
 })();
 </script>
 <script id="hospital-pc-phase4-bridge">
@@ -19621,7 +19621,7 @@ Inventory state: ACTIVE`);
 function launch(){let b=document.querySelector("#hp5Launch");if(!b){b=document.createElement("button");b.id="hp5Launch";b.textContent="⌁ HOSPITAL NETWORK";b.onclick=render;document.body.appendChild(b)}}
 window.VetGodsHospitalNetwork={render,state:get};
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();
-setInterval(launch,2500);
+/* stability: launch polling removed */
 })();
 </script>
 <script id="hospital-pc-phase5-bridge">
@@ -19844,7 +19844,7 @@ function render(mode,searchIds){
 function launch(){let b=document.querySelector("#hp6Launch");if(!b){b=document.createElement("button");b.id="hp6Launch";b.textContent="▤ DEEP ARCHIVE";b.onclick=()=>render();document.body.appendChild(b)}}
 window.VetGodsDeepArchive={render,state:get};
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();
-setInterval(launch,2500);
+/* stability: launch polling removed */
 })();
 </script>
 <script id="hospital-pc-phase6-bridge">
@@ -19967,7 +19967,7 @@ function render(){
 function launch(){let b=document.querySelector("#hp7Launch");if(!b){b=document.createElement("button");b.id="hp7Launch";b.textContent="⚕ CLINICAL MYSTERY";b.onclick=render;document.body.appendChild(b)}}
 window.VetGodsClinicalInvestigation={render,state:get};
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();
-setInterval(launch,2500);
+/* stability: launch polling removed */
 })();
 </script>
 <script id="hospital-pc-phase7-bridge">
@@ -20187,7 +20187,7 @@ function render(){
 function launch(){let b=document.querySelector("#hp9Launch");if(!b){b=document.createElement("button");b.id="hp9Launch";b.textContent="☾ NIGHT SHIFT";b.onclick=render;document.body.appendChild(b)}}
 window.VetGodsNightShift={render,state:get};
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();
-setInterval(launch,2500);
+/* stability: launch polling removed */
 })();
 </script>
 <script id="hospital-pc-phase9-bridge">
@@ -20344,12 +20344,10 @@ function render(){
 }
 function launch(){let b=document.querySelector("#d1Launch");if(!b){b=document.createElement("button");b.id="d1Launch";b.textContent="⏱ REAL HOSPITAL SHIFT";b.onclick=render;document.body.appendChild(b)}}
 window.VetGodsRealHospitalShift={render,state:get};
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();setInterval(launch,2500);
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();/* stability: launch polling removed */
 })();
 </script>
-<script id="depth-phase1-bridge">
-(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__depth1){let old=p.render;p.render=function(){old();setTimeout(function(){let area=document.querySelector(".hpActions");if(area&&!document.querySelector("#d1Desk")){let b=document.createElement("button");b.id="d1Desk";b.textContent="CLOCK IN / REAL HOSPITAL SHIFT";b.onclick=function(){VetGodsRealHospitalShift.render()};area.prepend(b)}},0)};p.__depth1=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
-</script>
+
 
 
 <style id="depth-phase2-css">
@@ -20511,12 +20509,10 @@ function render(){
 }
 function launch(){let b=document.querySelector("#d3Launch");if(!b){b=document.createElement("button");b.id="d3Launch";b.textContent="♥ TREATMENT ENGINE";b.onclick=render;document.body.appendChild(b)}}
 window.VetGodsTreatmentConsequences={render,state:get};
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();setInterval(launch,2500);
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();/* stability: launch polling removed */
 })();
 </script>
-<script id="depth-phase3-bridge">
-(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__depth3){let old=p.render;p.render=function(){old();setTimeout(function(){let area=document.querySelector(".hpActions");if(area&&!document.querySelector("#d3Desk")){let b=document.createElement("button");b.id="d3Desk";b.textContent="OPEN TREATMENT CONSEQUENCE ENGINE";b.onclick=function(){VetGodsTreatmentConsequences.render()};area.prepend(b)}},0)};p.__depth3=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
-</script>
+
 
 
 <style id="depth-phase4-css">
@@ -20623,12 +20619,10 @@ function render(){
 }
 function launch(){let b=document.querySelector("#d4Launch");if(!b){b=document.createElement("button");b.id="d4Launch";b.textContent="♟ HOSPITAL STAFF";b.onclick=render;document.body.appendChild(b)}}
 window.VetGodsHospitalStaff={render,state:get};
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();setInterval(launch,2500);
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();/* stability: launch polling removed */
 })();
 </script>
-<script id="depth-phase4-bridge">
-(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__depth4){let old=p.render;p.render=function(){old();setTimeout(function(){let area=document.querySelector(".hpActions");if(area&&!document.querySelector("#d4Desk")){let b=document.createElement("button");b.id="d4Desk";b.textContent="OPEN HOSPITAL STAFF DIRECTORY";b.onclick=function(){VetGodsHospitalStaff.render()};area.prepend(b)}},0)};p.__depth4=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
-</script>
+
 
 
 <style id="depth-phase5-css">
@@ -20692,12 +20686,10 @@ function render(){
 }
 function launch(){let b=document.querySelector("#d5Launch");if(!b){b=document.createElement("button");b.id="d5Launch";b.textContent="⌂ HOSPITAL MAP";b.onclick=render;document.body.appendChild(b)}}
 window.VetGodsPhysicalHospital={render,state:get};
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();setInterval(launch,2500);
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();/* stability: launch polling removed */
 })();
 </script>
-<script id="depth-phase5-bridge">
-(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__depth5){let old=p.render;p.render=function(){old();setTimeout(function(){let area=document.querySelector(".hpActions");if(area&&!document.querySelector("#d5Desk")){let b=document.createElement("button");b.id="d5Desk";b.textContent="OPEN PHYSICAL HOSPITAL MAP";b.onclick=function(){VetGodsPhysicalHospital.render()};area.prepend(b)}},0)};p.__depth5=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
-</script>
+
 
 
 <style id="depth-phase6-css">
@@ -20799,12 +20791,10 @@ function cmd(raw,w){let c=raw.trim(),u=c.toUpperCase(),x=get(),out="";if(u==="HE
 function drag(w){let bar=w.querySelector(".d6title"),down=false,ox=0,oy=0;bar.onpointerdown=e=>{if(innerWidth<700)return;down=true;ox=e.clientX-w.offsetLeft;oy=e.clientY-w.offsetTop;bar.setPointerCapture(e.pointerId)};bar.onpointermove=e=>{if(!down)return;w.style.left=Math.max(0,Math.min(innerWidth-w.offsetWidth,e.clientX-ox))+"px";w.style.top=Math.max(0,Math.min(innerHeight-w.offsetHeight-35,e.clientY-oy))+"px"};bar.onpointerup=()=>down=false}
 function launch(){let b=document.querySelector("#d6Launch");if(!b){b=document.createElement("button");b.id="d6Launch";b.textContent="▣ DEEP COMPUTER";b.style.cssText="position:fixed;left:8px;bottom:183px;z-index:2147483625;background:#010805;color:#b7ffd1;border:1px solid #6d9a78;padding:9px 11px;font:900 8px Courier New;cursor:pointer";b.onclick=shell;document.body.appendChild(b)}}
 window.VetGodsDeepComputer={open:shell,state:get};
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();setInterval(launch,2500);
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();/* stability: launch polling removed */
 })();
 </script>
-<script id="depth-phase6-bridge">
-(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__depth6){let old=p.render;p.render=function(){old();setTimeout(function(){let area=document.querySelector(".hpActions");if(area&&!document.querySelector("#d6DeskBtn")){let b=document.createElement("button");b.id="d6DeskBtn";b.textContent="BOOT DEEP VET-ADMIN-01 DESKTOP";b.onclick=function(){VetGodsDeepComputer.open()};area.prepend(b)}},0)};p.__depth6=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
-</script>
+
 
 
 <style id="depth-phase7-css">
@@ -20885,12 +20875,10 @@ function render(){
 }
 function launch(){let b=document.querySelector("#d7Launch");if(!b){b=document.createElement("button");b.id="d7Launch";b.textContent="📌 EVIDENCE WALL";b.onclick=render;document.body.appendChild(b)}}
 window.VetGodsEvidenceWall={render,state:get};
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();setInterval(launch,2500);
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();/* stability: launch polling removed */
 })();
 </script>
-<script id="depth-phase7-bridge">
-(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__depth7){let old=p.render;p.render=function(){old();setTimeout(function(){let area=document.querySelector(".hpActions");if(area&&!document.querySelector("#d7DeskBtn")){let b=document.createElement("button");b.id="d7DeskBtn";b.textContent="OPEN INCIDENT EVIDENCE WALL";b.onclick=function(){VetGodsEvidenceWall.render()};area.prepend(b)}},0)};p.__depth7=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
-</script>
+
 
 
 <style id="depth-phase8-css">
@@ -21004,12 +20992,10 @@ function render(){
 }
 function launch(){let b=document.querySelector("#d8Launch");if(!b){b=document.createElement("button");b.id="d8Launch";b.textContent="🐾 LONG-TERM RESIDENTS";b.onclick=render;document.body.appendChild(b)}}
 window.VetGodsLongTermResidents={render,state:get};
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();setInterval(launch,2500);
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();/* stability: launch polling removed */
 })();
 </script>
-<script id="depth-phase8-bridge">
-(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__depth8){let old=p.render;p.render=function(){old();setTimeout(function(){let area=document.querySelector(".hpActions");if(area&&!document.querySelector("#d8DeskBtn")){let b=document.createElement("button");b.id="d8DeskBtn";b.textContent="OPEN LONG-TERM RESIDENT RECORDS";b.onclick=function(){VetGodsLongTermResidents.render()};area.prepend(b)}},0)};p.__depth8=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
-</script>
+
 
 
 <style id="depth-phase9-css">
@@ -21077,12 +21063,10 @@ function render(){
 }
 function launch(){let b=document.querySelector("#d9Launch");if(!b){b=document.createElement("button");b.id="d9Launch";b.textContent="🏥 HOSPITAL EVOLUTION";b.onclick=render;document.body.appendChild(b)}}
 window.VetGodsHospitalEvolution={render,state:get};
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();setInterval(launch,2500);
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();/* stability: launch polling removed */
 })();
 </script>
-<script id="depth-phase9-bridge">
-(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__depth9){let old=p.render;p.render=function(){old();setTimeout(function(){let area=document.querySelector(".hpActions");if(area&&!document.querySelector("#d9DeskBtn")){let b=document.createElement("button");b.id="d9DeskBtn";b.textContent="OPEN HOSPITAL EVOLUTION COMMAND";b.onclick=function(){VetGodsHospitalEvolution.render()};area.prepend(b)}},0)};p.__depth9=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
-</script>
+
 
 
 <style id="depth-phase10-css">
@@ -21140,12 +21124,10 @@ function render(){
 }
 function launch(){let b=document.querySelector("#d10Launch");if(!b){b=document.createElement("button");b.id="d10Launch";b.textContent="◉ LIVING HOSPITAL";b.onclick=render;document.body.appendChild(b)}runner()}
 window.VetGodsLivingWorld={render,state:get,step};
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();setInterval(()=>{let b=document.querySelector("#d10Launch");if(!b)launch()},2500);
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();/* stability: launch polling removed */
 })();
 </script>
-<script id="depth-phase10-bridge">
-(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__depth10){let old=p.render;p.render=function(){old();setTimeout(function(){let area=document.querySelector(".hpActions");if(area&&!document.querySelector("#d10DeskBtn")){let b=document.createElement("button");b.id="d10DeskBtn";b.textContent="OPEN LIVING HOSPITAL COMMAND";b.onclick=function(){VetGodsLivingWorld.render()};area.prepend(b)}},0)};p.__depth10=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
-</script>
+
 
 
 <style id="vg-premium-award-css">
@@ -21192,12 +21174,12 @@ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",
    let r=document.createElement("div");r.id="vgPrintRoot";r.style.display="none";
    r.innerHTML=(which==="cert"||which==="both"?cert(x):"")+(which==="badge"||which==="both"?badge(x):"");
    document.body.appendChild(r);
-   setTimeout(()=>{window.print();setTimeout(()=>r.remove(),1000)},80);
+   setTimeout(()=>{window.print();setTimeout(()=>{if(r&&r.isConnected)r.remove()},250)},80);
  }
  function launch(){if(document.querySelector("#vgAwardLaunch"))return;let b=document.createElement("button");b.id="vgAwardLaunch";b.textContent="🏆 PLAYER AWARD";b.onclick=hub;document.body.appendChild(b)}
  window.VetGodsPremierAward={open:hub,printAward,state};
  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();
- setInterval(launch,2500);
+ /* stability: launch polling removed */
 })();
 </script>
 
@@ -21231,7 +21213,7 @@ function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
 function serial(a){let x=get();if(!x.issued[a.id]){x.issued[a.id]={serial:"VG-"+String(a.id).padStart(3,"0")+"-"+String(Date.now()).slice(-7),date:new Date().toLocaleDateString()};put(x)}return x.issued[a.id]}
 function earn(id){let x=get();x.earned[id]=true;put(x);hub()}
 function cert(a,x){let m=serial(a);return '<section class="vg80cert"><div class="top">VET GODS · VETERINARY HOSPITAL · PLAYER HONORS</div><h1>CERTIFICATE OF DISTINCTION</h1><div class="line"></div><div class="award">'+esc(a.title).toUpperCase()+'</div><div class="present">PRESENTED TO</div><div class="name">'+esc(x.name)+'</div><div class="desc">'+esc(a.desc)+' This honor is recorded as part of the player’s permanent Vet Gods achievement history.</div><div class="seal">VG<br>'+String(a.id).padStart(2,"0")+'<br>HONOR</div><div class="sigs"><div class="sig"><i>Hospital Administration</i><br>Program Administrator</div><div class="sig"><i>Veterinary Command</i><br>Clinical Operations</div></div><div class="meta"><span>AWARD '+String(a.id).padStart(2,"0")+' / 80 · ISSUED '+esc(m.date)+'</span><span>'+esc(m.serial)+'</span></div></section>'}
-function printIds(ids){let x=get();x.name=(document.querySelector("#vg80Name")?.value||x.name).trim()||"Veterinary Champion";put(x);let chosen=AWARDS.filter(a=>ids.includes(a.id));if(!chosen.length)return alert("No awards selected.");let r=document.querySelector("#vg80PrintRoot");if(r)r.remove();r=document.createElement("div");r.id="vg80PrintRoot";r.innerHTML=chosen.map(a=>cert(a,x)).join("");document.body.appendChild(r);setTimeout(()=>{window.print();setTimeout(()=>r.remove(),1200)},100)}
+function printIds(ids){let x=get();x.name=(document.querySelector("#vg80Name")?.value||x.name).trim()||"Veterinary Champion";put(x);let chosen=AWARDS.filter(a=>ids.includes(a.id));if(!chosen.length)return alert("No awards selected.");let r=document.querySelector("#vg80PrintRoot");if(r)r.remove();r=document.createElement("div");r.id="vg80PrintRoot";r.innerHTML=chosen.map(a=>cert(a,x)).join("");document.body.appendChild(r);setTimeout(()=>{window.print();setTimeout(()=>{if(r&&r.isConnected)r.remove()},250)},80)}
 function hub(){
  document.querySelector("#vg80Hub")?.remove();let x=get(),d=document.createElement("div");d.id="vg80Hub";
  d.innerHTML='<div class="vg80wrap"><div class="vg80head"><div><div style="font-size:10px;letter-spacing:3px;color:#899c8d">VET GODS // 80-HONOR ARCHIVE</div><h1>Grand Award Registry</h1></div><button class="vg80btn" id="vg80Close">CLOSE</button></div>'+
@@ -21248,7 +21230,119 @@ function hub(){
 }
 function launch(){if(document.querySelector("#vg80Launch"))return;let b=document.createElement("button");b.id="vg80Launch";b.textContent="🏆 80 AWARDS";b.onclick=hub;document.body.appendChild(b)}
 window.VetGods80Awards={open:hub,state:get,printAll:function(){let x=get();printIds(AWARDS.filter(a=>x.earned[a.id]).map(a=>a.id))}};
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();setInterval(launch,2500);
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();/* stability: launch polling removed */
+})();
+</script>
+
+
+<script id="vetgods-stability-manager">
+(function(){
+"use strict";
+if(window.__VetGodsStableRuntime) return;
+window.__VetGodsStableRuntime = true;
+
+const Runtime = {
+  livingTimer: null,
+  lastVisibility: document.visibilityState,
+  stopLiving(){
+    if(window._d10Timer){ clearInterval(window._d10Timer); window._d10Timer=null; }
+    if(this.livingTimer){ clearInterval(this.livingTimer); this.livingTimer=null; }
+  },
+  resumeLiving(){
+    try{
+      const s = window.VetGodsLivingWorld?.state?.();
+      if(!s || !s.running || document.hidden) return;
+      this.stopLiving();
+      const delay = Math.max(900, 3500 / Math.max(1, s.speed || 1));
+      this.livingTimer = setInterval(function(){
+        if(document.hidden) return;
+        try{ window.VetGodsLivingWorld?.step?.(); }catch(e){ console.warn("Living world tick paused:",e); Runtime.stopLiving(); }
+      }, delay);
+    }catch(e){}
+  },
+  cleanup(){
+    // Remove orphaned print roots after print jobs.
+    document.querySelectorAll("#vgPrintRoot,#vg80PrintRoot").forEach(function(n){
+      if(n && n.style.display==="none") n.remove();
+    });
+  }
+};
+window.VetGodsRuntime = Runtime;
+
+// Browser tabs should do essentially no game work while hidden.
+document.addEventListener("visibilitychange", function(){
+  if(document.hidden) Runtime.stopLiving();
+  else Runtime.resumeLiving();
+});
+
+// Avoid accumulating print DOM.
+window.addEventListener("afterprint", function(){ Runtime.cleanup(); });
+
+// Pause timers cleanly when navigating away/reloading.
+window.addEventListener("pagehide", function(){ Runtime.stopLiving(); });
+
+// One bounded maintenance pass instead of dozens of polling loops.
+setTimeout(Runtime.cleanup.bind(Runtime), 3000);
+
+// Hook Living World controls without permanent polling.
+function hookLiving(){
+  const api = window.VetGodsLivingWorld;
+  if(!api || api.__stableHook) return;
+  api.__stableHook = true;
+  const oldRender = api.render;
+  if(oldRender) api.render = function(){ const r=oldRender.apply(this,arguments); return r; };
+}
+if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", hookLiving);
+else hookLiving();
+
+console.info("VET GODS stable runtime active: background launch polling disabled.");
+})();
+</script>
+
+<script id="vetgods-livingworld-stable-runner">
+(function(){
+function install(){
+  if(!window.VetGodsLivingWorld || window.VetGodsLivingWorld.__stableRunner) return;
+  window.VetGodsLivingWorld.__stableRunner=true;
+
+  // Stop any timer created by the legacy runner.
+  if(window._d10Timer){ clearInterval(window._d10Timer); window._d10Timer=null; }
+
+  // Patch setInterval behavior only for the known legacy living-world timer by
+  // stopping it whenever the page is hidden. The central runtime resumes it.
+  document.addEventListener("visibilitychange",function(){
+    if(document.hidden && window._d10Timer){
+      clearInterval(window._d10Timer); window._d10Timer=null;
+    }
+  });
+}
+if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",()=>setTimeout(install,0));
+else setTimeout(install,0);
+})();
+</script>
+
+<script id="vetgods-event-driven-launch-repair">
+(function(){
+let queued=false;
+function repair(){
+  queued=false;
+  // Award launchers
+  if(window.VetGodsPremierAward && !document.querySelector("#vgAwardLaunch")){
+    let b=document.createElement("button"); b.id="vgAwardLaunch"; b.textContent="🏆 PLAYER AWARD";
+    b.onclick=()=>window.VetGodsPremierAward.open(); document.body.appendChild(b);
+  }
+  if(window.VetGods80Awards && !document.querySelector("#vg80Launch")){
+    let b=document.createElement("button"); b.id="vg80Launch"; b.textContent="🏆 80 AWARDS";
+    b.onclick=()=>window.VetGods80Awards.open(); document.body.appendChild(b);
+  }
+}
+function queueRepair(){
+  if(queued) return; queued=true;
+  requestAnimationFrame(repair);
+}
+document.addEventListener("click",queueRepair,{passive:true});
+document.addEventListener("DOMContentLoaded",queueRepair,{once:true});
+window.addEventListener("pageshow",queueRepair);
 })();
 </script>
 
@@ -21273,12 +21367,10 @@ function render(){
 }
 function launch(){let b=document.querySelector("#d2Launch");if(!b){b=document.createElement("button");b.id="d2Launch";b.textContent="▤ PATIENT CHARTS";b.onclick=render;document.body.appendChild(b)}}
 window.VetGodsPatientCharts={render,state:get};
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();setInterval(launch,2500);
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();/* stability: launch polling removed */
 })();
 </script>
-<script id="depth-phase2-bridge">
-(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__depth2){let old=p.render;p.render=function(){old();setTimeout(function(){let area=document.querySelector(".hpActions");if(area&&!document.querySelector("#d2Desk")){let b=document.createElement("button");b.id="d2Desk";b.textContent="OPEN PERSISTENT PATIENT CHARTS";b.onclick=function(){VetGodsPatientCharts.render()};area.prepend(b)}},0)};p.__depth2=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
-</script>
+
 
 </body></html>`);w.document.close()
 }
@@ -21314,7 +21406,7 @@ function render(){
 function launch(){let b=document.querySelector("#hp10Launch");if(!b){b=document.createElement("button");b.id="hp10Launch";b.textContent="★ INCIDENT COMMAND";b.onclick=render;document.body.appendChild(b)}}
 window.VetGodsIncidentCommand={render,state:get,printDossier:printDossier};
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();
-setInterval(launch,2500);
+/* stability: launch polling removed */
 })();
 </script>
 <script id="hospital-pc-phase10-bridge">
@@ -21361,7 +21453,7 @@ function render(){
 function launch(){let b=document.querySelector("#hp8Launch");if(!b){b=document.createElement("button");b.id="hp8Launch";b.textContent="🏆 CREDENTIAL REGISTRY";b.onclick=render;document.body.appendChild(b)}}
 window.VetGodsAdminAuthority={render,state:get,awards:awards,printAward:printAward};
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();
-setInterval(launch,2500);
+/* stability: launch polling removed */
 })();
 </script>
 <script id="hospital-pc-phase8-bridge">
@@ -21400,7 +21492,7 @@ function launch(){
 }
 window.VetGodsAdminPrintRepair={render,openPrint,packet};
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();
-setInterval(launch,2500);
+/* stability: launch polling removed */
 })();
 </script>
 
