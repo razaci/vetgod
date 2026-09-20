@@ -20260,7 +20260,1027 @@ function printDossier(){
  let x=get(),s=status();if(!x.finding){alert("Select a finding posture before printing the final dossier.");return}
  x.prints++;put(x);let w=window.open("","_blank","width=1000,height=850");if(!w){alert("Allow pop-ups for this local HTML file, then try again.");return}
  let finding=conclusionText(x.finding);
- w.document.write(`<!doctype html><html><head><title>${x.caseNo} Final Dossier</title><style>body{font-family:Arial;color:#111;padding:28px}.sheet{max-width:900px;margin:auto;border:8px double #173823;padding:32px}h1{text-align:center}.stamp{text-align:center;font-weight:bold;letter-spacing:3px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:20px 0}.box{border:1px solid #444;padding:10px;font-size:12px}.finding{border:2px solid #111;padding:15px;line-height:1.55}.sig{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:45px}.sig div{border-top:1px solid #111;padding-top:6px;font-size:11px}.print{padding:12px}@media print{.print{display:none}.sheet{border-width:5px}}</style></head><body><button class="print" onclick="window.print()">PRINT FINAL DOSSIER</button><div class="sheet"><div class="stamp">NORTH CASCADE REGIONAL HOSPITAL · VETERINARY MEDICINE</div><h1>INCIDENT COMMAND FINAL DOSSIER</h1><p><b>Case:</b> ${x.caseNo}<br><b>Status:</b> ${x.closed?"FINALIZED":"OPEN / REVIEWED"}<br><b>Printed:</b> ${new Date().toLocaleString()}</p><div class="grid"><div class="box"><b>Mercer evidence</b><br>${s.mercerN} indexed item(s)</div><div class="box"><b>Archive records opened</b><br>${s.archiveN}</div><div class="box"><b>Network nodes visited</b><br>${s.netN}</div><div class="box"><b>Clinical evidence</b><br>${s.clinN}</div><div class="box"><b>Night events</b><br>${s.nightN}</div><div class="box"><b>Record cross-checks</b><br>${s.cross}</div></div><div class="finding"><b>FINAL FINDING</b><br><br>${E(finding)}</div><h3>Preservation / Handoff</h3><p>Preserve raw archive records, printer spool metadata, network logs, clinical chart boundaries and facilities records. Do not merge 03117 with a patient identity without independent identifying evidence.</p><div class="sig"><div>Veterinary Department Administration</div><div>Incident Command Review</div></div></div></body></html>`);w.document.close()
+ w.document.write(`<!doctype html><html><head><title>${x.caseNo} Final Dossier</title><style>body{font-family:Arial;color:#111;padding:28px}.sheet{max-width:900px;margin:auto;border:8px double #173823;padding:32px}h1{text-align:center}.stamp{text-align:center;font-weight:bold;letter-spacing:3px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:20px 0}.box{border:1px solid #444;padding:10px;font-size:12px}.finding{border:2px solid #111;padding:15px;line-height:1.55}.sig{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:45px}.sig div{border-top:1px solid #111;padding-top:6px;font-size:11px}.print{padding:12px}@media print{.print{display:none}.sheet{border-width:5px}}</style></head><body><button class="print" onclick="window.print()">PRINT FINAL DOSSIER</button><div class="sheet"><div class="stamp">NORTH CASCADE REGIONAL HOSPITAL · VETERINARY MEDICINE</div><h1>INCIDENT COMMAND FINAL DOSSIER</h1><p><b>Case:</b> ${x.caseNo}<br><b>Status:</b> ${x.closed?"FINALIZED":"OPEN / REVIEWED"}<br><b>Printed:</b> ${new Date().toLocaleString()}</p><div class="grid"><div class="box"><b>Mercer evidence</b><br>${s.mercerN} indexed item(s)</div><div class="box"><b>Archive records opened</b><br>${s.archiveN}</div><div class="box"><b>Network nodes visited</b><br>${s.netN}</div><div class="box"><b>Clinical evidence</b><br>${s.clinN}</div><div class="box"><b>Night events</b><br>${s.nightN}</div><div class="box"><b>Record cross-checks</b><br>${s.cross}</div></div><div class="finding"><b>FINAL FINDING</b><br><br>${E(finding)}</div><h3>Preservation / Handoff</h3><p>Preserve raw archive records, printer spool metadata, network logs, clinical chart boundaries and facilities records. Do not merge 03117 with a patient identity without independent identifying evidence.</p><div class="sig"><div>Veterinary Department Administration</div><div>Incident Command Review</div></div></div>
+<style id="depth-phase1-css">
+#d1{min-height:100%;background:radial-gradient(circle at 65% 0,rgba(65,120,78,.18),transparent 36%),repeating-linear-gradient(0deg,rgba(190,255,210,.018) 0 1px,transparent 1px 4px),#010403;color:#caffda;font-family:"Courier New",monospace;padding:8px}
+.d1head{border:1px solid #638c6d;background:#041008;padding:13px}.d1head small{font-size:7px;color:#789680;letter-spacing:2px}.d1head h1{font-size:clamp(24px,5vw,42px);margin:4px 0}.d1alert{border:1px solid #89624e;background:#170904;color:#ffd6c0;padding:8px;margin-top:7px;font-size:8px}
+.d1stats{display:grid;grid-template-columns:repeat(7,1fr);border:1px solid #31533b;margin:7px 0}.d1stats div{padding:7px;border-right:1px dotted #31533b}.d1stats small{display:block;font-size:6px;color:#68826f}.d1stats b{font-size:9px}
+.d1layout{display:grid;grid-template-columns:.72fr 1.28fr;gap:7px}.d1panel{border:1px solid #31533b;background:#020a05}.d1panel h2{margin:0;padding:7px;background:#bddbc5;color:#031008;font-size:9px}.d1body{padding:8px}
+.d1clock{border:1px solid #31533b;background:#000;padding:12px;text-align:center}.d1clock b{font-size:34px;letter-spacing:4px}.d1clock small{display:block;font-size:7px;color:#6d8c75}
+.d1queue{border:1px solid #31533b;max-height:460px;overflow:auto}.d1patient{display:grid;grid-template-columns:40px 1fr 75px;gap:7px;align-items:center;padding:8px;border-bottom:1px dotted #31533b;cursor:pointer}.d1patient:hover,.d1patient.on{background:#bddbc5;color:#031008}.d1patient span{font-size:28px}.d1patient b{font-size:8px;color:#eaffef}.d1patient:hover b,.d1patient.on b{color:#031008}.d1patient small{display:block;font-size:6px;color:#6d8c75}.d1patient strong{font-size:7px;text-align:right}
+.d1board{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.d1card{border:1px solid #31533b;padding:9px;min-height:88px}.d1card b{font-size:8px}.d1card small{display:block;font-size:6px;color:#6d8c75;margin-top:4px;line-height:1.4}.d1card.hot{border-color:#89624e;box-shadow:inset 0 0 17px #3a1b13}.d1card.done{box-shadow:inset 0 0 17px #173d22}
+.d1actions{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:7px}.d1actions button,.d1nav button{border:1px solid #31533b;background:#031008;color:#caffda;padding:9px;font:700 7px "Courier New";cursor:pointer}.d1actions button:hover,.d1nav button:hover{background:#bddbc5;color:#031008}
+.d1log{border:1px solid #31533b;background:#000;padding:9px;min-height:130px;max-height:230px;overflow:auto;font-size:7px;line-height:1.55;white-space:pre-wrap;margin-top:7px}
+.d1nav{display:grid;grid-template-columns:repeat(6,1fr);margin-top:7px}.d1handoff{border:1px solid #31533b;margin-top:7px;padding:9px;font-size:7px;line-height:1.55}
+.d1modal{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:2147483638;display:flex;align-items:center;justify-content:center;padding:10px}.d1win{width:min(830px,96vw);max-height:90vh;overflow:auto;border:2px solid #688f72;background:#020b05}.d1bar{display:flex;justify-content:space-between;background:#bddbc5;color:#031008;padding:7px;font-size:8px;font-weight:900}.d1bar button{border:0;background:#031008;color:#fff}.d1content{padding:14px;font-size:9px;line-height:1.7;white-space:pre-wrap}
+#d1Launch{position:fixed;left:8px;bottom:8px;z-index:2147483630;background:#010805;color:#b7ffd1;border:1px solid #6d9a78;padding:9px 11px;font:900 8px "Courier New";cursor:pointer}
+@media(max-width:900px){.d1layout{grid-template-columns:1fr}.d1stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.d1board,.d1actions,.d1nav{grid-template-columns:1fr}}
+</style>
+<script id="depth-phase1-js">
+(function(){"use strict";
+const KEY="vetgods_depth_phase1_shift";
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function animals(){try{return state.animals||[]}catch(e){return[]}}
+function fresh(){return{active:false,shiftNo:0,minute:0,startDate:null,selected:null,patients:{},interrupts:[],resolved:[],log:[],handoffs:[],completed:0,emergencies:0,rounds:0}}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||fresh()}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+function clock(min){let h=7+Math.floor(min/60),m=min%60;return String(h%24).padStart(2,"0")+":"+String(m).padStart(2,"0")}
+function mrn(a){let n=String(a?.id??0).replace(/\D/g,"");return "VET-"+String(n||Math.abs(String(a?.name||"PATIENT").split("").reduce((q,c)=>q*31+c.charCodeAt(0),7))).padStart(6,"0").slice(-6)}
+function ensurePatients(x){
+ animals().slice(0,15).forEach((a,i)=>{let id=String(a.id);if(!x.patients[id])x.patients[id]={status:i<8?"WAITING":"SCHEDULED",priority:i%7===0?"URGENT":i%3===0?"PRIORITY":"ROUTINE",steps:[],arrive:15+i*17,disposition:null}});
+}
+const interruptions=[
+{id:"int1",at:38,title:"ICU requests administrator authorization",kind:"ADMIN",body:"ICU requests authorization to move a recovering patient to monitored holding while a recovery bay is serviced."},
+{id:"int2",at:76,title:"Emergency intake arriving",kind:"EMERGENCY",body:"Reception reports an unstable animal arriving without a complete history. A rapid clinical workup is requested."},
+{id:"int3",at:123,title:"VET-RAD-02 service warning",kind:"EQUIPMENT",body:"Imaging reports a time-service fault. Current studies remain available, but metadata review is requested."},
+{id:"int4",at:171,title:"Pharmacy reconciliation request",kind:"PHARMACY",body:"Pharmacy requests end-of-block medication and supply reconciliation before the next procedure."},
+{id:"int5",at:229,title:"Owner callback waiting",kind:"COMMUNICATION",body:"Reception has an owner waiting for an update on a hospitalized animal."},
+{id:"int6",at:286,title:"Recovery monitor route fault",kind:"EQUIPMENT",body:"A recovery monitor briefly reports a legacy route label. Patient care remains active; systems review is requested."},
+{id:"int7",at:351,title:"Late emergency transfer",kind:"EMERGENCY",body:"A transfer case is arriving near shift handoff. Stabilization and a clear handoff will be needed."}
+];
+function start(){
+ let x=get();if(x.active)return render();x.active=true;x.shiftNo++;x.minute=0;x.startDate=new Date().toLocaleString();x.log.unshift("07:00 SHIFT "+x.shiftNo+" CLOCK-IN");ensurePatients(x);put(x);render()
+}
+function generate(x){interruptions.forEach(i=>{if(x.minute>=i.at&&!x.interrupts.some(q=>q.id===i.id)){x.interrupts.push({...i,status:"OPEN",time:clock(i.at)});x.log.unshift(clock(i.at)+" INTERRUPTION: "+i.title);if(i.kind==="EMERGENCY")x.emergencies++}})}
+function advance(n){let x=get();if(!x.active)return start();x.minute=Math.min(480,x.minute+n);x.rounds++;ensurePatients(x);generate(x);put(x);render()}
+function patientAction(type){
+ let x=get(),a=animals().find(z=>String(z.id)===String(x.selected));if(!a)return;let p=x.patients[String(a.id)];if(!p)return;
+ if(type==="intake"){if(!p.steps.includes("INTAKE"))p.steps.push("INTAKE");p.status="IN CARE"}
+ if(type==="diagnostics"){if(!p.steps.includes("INTAKE"))return alert("Complete intake first.");if(!p.steps.includes("DIAGNOSTICS"))p.steps.push("DIAGNOSTICS")}
+ if(type==="treat"){if(!p.steps.includes("DIAGNOSTICS"))return alert("Complete diagnostics first.");if(!p.steps.includes("TREATMENT"))p.steps.push("TREATMENT");p.status="TREATMENT"}
+ if(type==="recover"){if(!p.steps.includes("TREATMENT"))return alert("Complete treatment first.");if(!p.steps.includes("RECOVERY"))p.steps.push("RECOVERY");p.status="RECOVERY"}
+ if(type==="discharge"){if(!p.steps.includes("RECOVERY"))return alert("Complete recovery first.");if(!p.steps.includes("DISPOSITION"))p.steps.push("DISPOSITION");p.status="COMPLETE";p.disposition="DISCHARGED";x.completed++}
+ x.minute=Math.min(480,x.minute+({intake:8,diagnostics:16,treat:22,recover:18,discharge:9}[type]||5));generate(x);x.log.unshift(clock(x.minute)+" "+mrn(a)+" "+type.toUpperCase());put(x);render()
+}
+function resolveInt(id){let x=get(),q=x.interrupts.find(z=>z.id===id);if(!q)return;q.status="RESOLVED";if(!x.resolved.includes(id))x.resolved.push(id);x.minute=Math.min(480,x.minute+8);x.log.unshift(clock(x.minute)+" RESOLVED: "+q.title);put(x);modal(q.title,"Resolution entered into shift log.\n\n"+q.body+"\n\nStatus: RESOLVED");render()}
+function handoff(){
+ let x=get();if(!x.active)return;let open=x.interrupts.filter(q=>q.status!=="RESOLVED"),pending=Object.values(x.patients).filter(p=>p.status!=="COMPLETE").length;
+ let h={date:new Date().toLocaleString(),shift:x.shiftNo,completed:x.completed,pending,open:open.length,emergencies:x.emergencies,summary:`Shift ${x.shiftNo}: ${x.completed} patient(s) completed, ${pending} remain active/scheduled, ${open.length} interruption(s) unresolved, ${x.emergencies} emergency arrival(s).`};
+ x.handoffs.unshift(h);x.log.unshift(clock(x.minute)+" SHIFT HANDOFF CREATED");x.active=false;put(x);modal("SHIFT HANDOFF",h.summary+"\n\nThis handoff is stored and will remain available when the next shift begins.");render()
+}
+function modal(t,b){let d=document.createElement("div");d.className="d1modal";d.innerHTML='<div class="d1win"><div class="d1bar"><span>'+E(t)+'</span><button>CLOSE [X]</button></div><div class="d1content">'+E(b)+'</div></div>';d.querySelector("button").onclick=()=>d.remove();document.body.appendChild(d)}
+function render(){
+ let m=document.querySelector("#main"),x=get();if(!m)return;ensurePatients(x);generate(x);put(x);let ls=animals(),a=ls.find(z=>String(z.id)===String(x.selected))||ls[0];if(a&&!x.selected){x.selected=a.id;put(x)}let p=a?x.patients[String(a.id)]:null,open=x.interrupts.filter(q=>q.status!=="RESOLVED");
+ try{page="realHospitalShift";nav()}catch(e){}
+ m.innerHTML='<div id="d1"><header class="d1head"><small>NCRH // VETERINARY MEDICINE // DEPTH OVERHAUL 01</small><h1>REAL HOSPITAL SHIFT COMMAND</h1><div style="font-size:8px;color:#8cad94">Clock in, manage the veterinary census, respond to interruptions, move patients through care, and leave a persistent handoff for the next shift.</div><div class="d1alert">SHIFT STATE PERSISTS // Patient progress, interruptions, completed cases and handoffs remain stored between visits to this HTML.</div></header>'+
+ '<div class="d1stats"><div><small>SHIFT</small><b>#'+x.shiftNo+'</b></div><div><small>STATUS</small><b>'+(x.active?"ON DUTY":"OFF DUTY")+'</b></div><div><small>TIME</small><b>'+clock(x.minute)+'</b></div><div><small>COMPLETED</small><b>'+x.completed+'</b></div><div><small>OPEN EVENTS</small><b>'+open.length+'</b></div><div><small>EMERGENCIES</small><b>'+x.emergencies+'</b></div><div><small>HANDOFFS</small><b>'+x.handoffs.length+'</b></div></div>'+
+ '<div class="d1layout"><section class="d1panel"><h2>SHIFT / PATIENT CENSUS</h2><div class="d1body"><div class="d1clock"><small>DEPARTMENT SHIFT CLOCK</small><b>'+clock(x.minute)+'</b><small>'+(x.active?"CLOCKED IN "+E(x.startDate):"CLOCK IN TO BEGIN")+'</small></div>'+
+ '<div class="d1actions"><button id="d1Start">'+(x.active?"SHIFT ACTIVE":"CLOCK IN / START SHIFT")+'</button><button id="d1Plus15">+15 MIN</button><button id="d1Round">RUN HOSPITAL ROUND</button><button id="d1Handoff">CREATE HANDOFF</button></div>'+
+ '<h2 style="margin-top:7px">PATIENT WORKLIST</h2><div class="d1queue">'+(ls.length?ls.slice(0,15).map(z=>{let q=x.patients[String(z.id)]||{};return '<div class="d1patient '+(a&&String(a.id)===String(z.id)?"on":"")+'" data-d1patient="'+E(z.id)+'"><span>'+E(z.icon||"🐾")+'</span><div><b>'+E(z.name)+'</b><small>'+E(z.species||"ANIMAL")+' · '+mrn(z)+'</small></div><strong>'+E(q.status||"WAITING")+'</strong></div>'}).join(""):'<div class="d1alert">No animal records are currently loaded.</div>')+'</div></div></section>'+
+ '<section class="d1panel"><h2>ACTIVE WORK / INTERRUPTIONS</h2><div class="d1body">'+(a&&p?'<div class="d1board">'+card("PATIENT",a.name+" · "+mrn(a),false,p.status==="COMPLETE")+card("PRIORITY",p.priority,p.priority==="URGENT",false)+card("STATUS",p.status,false,p.status==="COMPLETE")+card("INTAKE",p.steps.includes("INTAKE")?"COMPLETE":"PENDING",false,p.steps.includes("INTAKE"))+card("DIAGNOSTICS",p.steps.includes("DIAGNOSTICS")?"COMPLETE":"PENDING",false,p.steps.includes("DIAGNOSTICS"))+card("TREATMENT / RECOVERY",p.steps.includes("RECOVERY")?"RECOVERY COMPLETE":p.steps.includes("TREATMENT")?"TREATMENT COMPLETE":"PENDING",false,p.steps.includes("RECOVERY"))+'</div>'+
+ '<div class="d1actions"><button data-d1act="intake">INTAKE / EXAM</button><button data-d1act="diagnostics">DIAGNOSTICS</button><button data-d1act="treat">TREATMENT</button><button data-d1act="recover">RECOVERY</button><button data-d1act="discharge">DISCHARGE / DISPOSITION</button><button id="d1Clinical">OPEN FULL CLINICAL OS</button><button id="d1Mystery">MYSTERY WORKUP</button><button id="d1Chart">PATIENT RECORD</button></div>':'')+
+ '<h2 style="margin-top:7px">LIVE SHIFT INTERRUPTIONS</h2><div class="d1queue">'+(x.interrupts.length?x.interrupts.slice().reverse().map(q=>'<div class="d1patient '+(q.status==="RESOLVED"?"":"on")+'" data-d1int="'+q.id+'"><span>'+(q.kind==="EMERGENCY"?"⚠":"▣")+'</span><div><b>'+E(q.title)+'</b><small>'+E(q.time)+' · '+E(q.kind)+'</small></div><strong>'+E(q.status)+'</strong></div>').join(""):'<div class="d1patient"><span>✓</span><div><b>No interruptions yet</b><small>Events appear as the shift advances.</small></div><strong>CLEAR</strong></div>')+'</div>'+
+ '<div class="d1log">SHIFT EVENT LOG\n\n'+E(x.log.slice(0,14).join("\n")||"Clock in to begin the hospital shift.")+'</div>'+
+ (x.handoffs.length?'<div class="d1handoff"><b>LATEST HANDOFF</b><br>'+E(x.handoffs[0].summary)+'<br><small>'+E(x.handoffs[0].date)+'</small></div>':'')+
+ '<div class="d1nav"><button id="d1PC">HOSPITAL PC</button><button id="d1Incident">INCIDENT COMMAND</button><button id="d1Night">NIGHT SHIFT</button><button id="d1Awards">CREDENTIALS</button><button id="d1Net">NETWORK</button><button id="d1Archive">ARCHIVE</button></div></div></section></div></div>';
+ function card(n,d,hot,done){return '<div class="d1card '+(hot?"hot ":"")+(done?"done":"")+'"><b>'+E(n)+'</b><small>'+E(d)+'</small></div>'}
+ m.querySelectorAll("[data-d1patient]").forEach(b=>b.onclick=()=>{x.selected=b.dataset.d1patient;put(x);render()});
+ m.querySelectorAll("[data-d1act]").forEach(b=>b.onclick=()=>patientAction(b.dataset.d1act));
+ m.querySelectorAll("[data-d1int]").forEach(b=>b.onclick=()=>{let q=x.interrupts.find(z=>z.id===b.dataset.d1int);if(q.status==="RESOLVED")modal(q.title,q.body+"\n\nStatus: RESOLVED");else resolveInt(q.id)});
+ document.querySelector("#d1Start").onclick=start;document.querySelector("#d1Plus15").onclick=()=>advance(15);document.querySelector("#d1Round").onclick=()=>advance(20+Math.floor(Math.random()*16));document.querySelector("#d1Handoff").onclick=handoff;
+ document.querySelector("#d1Clinical").onclick=()=>window.VetGodsHospitalClinicalOS?.render?.("census");document.querySelector("#d1Mystery").onclick=()=>window.VetGodsClinicalInvestigation?.render?.();
+ document.querySelector("#d1Chart").onclick=()=>window.VetGodsRecordAnomalies?.render?.();
+ document.querySelector("#d1PC").onclick=()=>window.VetGodsHospitalPC?.render?.();document.querySelector("#d1Incident").onclick=()=>window.VetGodsIncidentCommand?.render?.();document.querySelector("#d1Night").onclick=()=>window.VetGodsNightShift?.render?.();document.querySelector("#d1Awards").onclick=()=>window.VetGodsAdminAuthority?.render?.();document.querySelector("#d1Net").onclick=()=>window.VetGodsHospitalNetwork?.render?.();document.querySelector("#d1Archive").onclick=()=>window.VetGodsDeepArchive?.render?.();
+}
+function launch(){let b=document.querySelector("#d1Launch");if(!b){b=document.createElement("button");b.id="d1Launch";b.textContent="⏱ REAL HOSPITAL SHIFT";b.onclick=render;document.body.appendChild(b)}}
+window.VetGodsRealHospitalShift={render,state:get};
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();setInterval(launch,2500);
+})();
+</script>
+<script id="depth-phase1-bridge">
+(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__depth1){let old=p.render;p.render=function(){old();setTimeout(function(){let area=document.querySelector(".hpActions");if(area&&!document.querySelector("#d1Desk")){let b=document.createElement("button");b.id="d1Desk";b.textContent="CLOCK IN / REAL HOSPITAL SHIFT";b.onclick=function(){VetGodsRealHospitalShift.render()};area.prepend(b)}},0)};p.__depth1=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
+</script>
+
+
+<style id="depth-phase2-css">
+#d2{min-height:100%;background:radial-gradient(circle at 80% 0,rgba(62,115,77,.18),transparent 36%),repeating-linear-gradient(0deg,rgba(190,255,210,.018) 0 1px,transparent 1px 4px),#010403;color:#caffda;font-family:"Courier New",monospace;padding:8px}
+.d2head{border:1px solid #638c6d;background:#041008;padding:13px}.d2head small{font-size:7px;color:#789680;letter-spacing:2px}.d2head h1{font-size:clamp(24px,5vw,42px);margin:4px 0}
+.d2stats{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid #31533b;margin:7px 0}.d2stats div{padding:7px;border-right:1px dotted #31533b}.d2stats small{display:block;font-size:6px;color:#68826f}.d2stats b{font-size:9px}
+.d2layout{display:grid;grid-template-columns:.58fr 1.42fr;gap:7px}.d2panel{border:1px solid #31533b;background:#020a05}.d2panel h2{margin:0;padding:7px;background:#bddbc5;color:#031008;font-size:9px}.d2body{padding:8px}
+.d2patients{max-height:680px;overflow:auto}.d2patient{display:grid;grid-template-columns:42px 1fr 76px;gap:7px;align-items:center;padding:8px;border-bottom:1px dotted #31533b;cursor:pointer}.d2patient:hover,.d2patient.on{background:#bddbc5;color:#031008}.d2patient span{font-size:29px}.d2patient b{font-size:8px;color:#eaffef}.d2patient:hover b,.d2patient.on b{color:#031008}.d2patient small{display:block;font-size:6px;color:#6d8c75}.d2patient strong{font-size:7px;text-align:right}
+.d2banner{display:grid;grid-template-columns:78px 1fr;gap:10px;align-items:center;border:1px solid #31533b;background:#000803;padding:10px}.d2icon{font-size:62px;text-align:center}.d2banner h3{font-size:19px;margin:0}.d2muted{font-size:7px;color:#789680;line-height:1.55}
+.d2tabs{display:grid;grid-template-columns:repeat(6,1fr);margin-top:7px}.d2tabs button{border:1px solid #31533b;background:#031008;color:#caffda;padding:8px 3px;font:700 6px "Courier New";cursor:pointer}.d2tabs button.on,.d2tabs button:hover{background:#bddbc5;color:#031008}
+.d2sheet{border:1px solid #31533b;margin-top:7px;background:#000803;padding:10px;min-height:360px}.d2grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.d2box{border:1px solid #31533b;padding:8px;min-height:70px}.d2box b{font-size:8px}.d2box small{display:block;color:#789680;font-size:6px;margin-top:4px;line-height:1.5}
+.d2timeline{border:1px solid #31533b;max-height:340px;overflow:auto}.d2event{display:grid;grid-template-columns:105px 90px 1fr;gap:6px;padding:7px;border-bottom:1px dotted #31533b;font-size:7px}.d2event b{color:#eaffef}.d2event small{color:#789680}
+.d2actions{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:7px}.d2actions button,.d2nav button{border:1px solid #31533b;background:#031008;color:#caffda;padding:9px;font:700 7px "Courier New";cursor:pointer}.d2actions button:hover,.d2nav button:hover{background:#bddbc5;color:#031008}
+.d2note{width:100%;min-height:90px;box-sizing:border-box;background:#000;color:#caffda;border:1px solid #31533b;padding:8px;font:8px "Courier New";margin-top:7px}
+.d2nav{display:grid;grid-template-columns:repeat(6,1fr);margin-top:7px}
+#d2Launch{position:fixed;left:8px;bottom:43px;z-index:2147483629;background:#010805;color:#b7ffd1;border:1px solid #6d9a78;padding:9px 11px;font:900 8px "Courier New";cursor:pointer}
+@media(max-width:900px){.d2layout{grid-template-columns:1fr}.d2stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){.d2tabs{grid-template-columns:repeat(3,1fr)}.d2grid,.d2actions,.d2nav{grid-template-columns:1fr}.d2event{grid-template-columns:70px 65px 1fr}}
+@media print{body *{visibility:hidden!important}#d2Print,#d2Print *{visibility:visible!important}#d2Print{visibility:visible!important;display:block!important;position:absolute!important;left:0;top:0;width:100%;background:#fff!important;color:#000!important}}
+</style>
+<script id="depth-phase2-js">
+(function(){"use strict";
+const KEY="vetgods_depth_phase2_charts";
+const tabs=["SUMMARY","HISTORY","VITALS","DIAGNOSTICS","MEDICATIONS","PROCEDURES","RECOVERY","FINANCIAL","INVESTIGATION","TIMELINE","NOTES","DISCHARGE"];
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function animals(){try{return state.animals||[]}catch(e){return[]}}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{selected:null,tab:"SUMMARY",charts:{}}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+function mrn(a){let n=String(a?.id??0).replace(/\D/g,"");return "VET-"+String(n||Math.abs(String(a?.name||"PATIENT").split("").reduce((q,c)=>q*31+c.charCodeAt(0),7))).padStart(6,"0").slice(-6)}
+function ensure(x,a,i){
+ let id=String(a.id);if(!x.charts[id])x.charts[id]={
+ created:new Date().toLocaleString(),history:["Initial veterinary record created.","Prior history pending record reconciliation."],
+ vitals:[{time:new Date().toLocaleTimeString(),hr:82+(i*7)%54,rr:18+(i*3)%22,temp:(100.1+(i%7)*.3).toFixed(1),spo2:94+(i%6),pain:i%5,hydration:92-(i%4)*4}],
+ diagnostics:[],medications:[],procedures:[],recovery:[],financial:[{item:"Chart creation / intake record",amount:0}],investigation:[],notes:[],timeline:[{time:new Date().toLocaleString(),type:"CHART",text:"Persistent patient chart initialized."}],discharge:null,owner:"Owner / guardian information on file",allergies:"No charted allergy entered",status:"ACTIVE"
+ };return x.charts[id]
+}
+function addEvent(c,type,text){c.timeline.unshift({time:new Date().toLocaleString(),type,text})}
+function sync(a,c){
+ try{let s=window.VetGodsRealHospitalShift?.state?.(),p=s?.patients?.[String(a.id)];if(p){let sig="SHIFT:"+p.steps.join(",")+":"+p.status;if(!c._shiftSig||c._shiftSig!==sig){c._shiftSig=sig;addEvent(c,"SHIFT","Hospital shift status: "+p.status+" / "+(p.steps.join(" → ")||"no completed steps"));}}}catch(e){}
+ try{let q=window.VetGodsClinicalInvestigation?.state?.().work?.[String(a.id)];if(q){(q.evidence||[]).forEach(ev=>{if(!c.investigation.includes(ev)){c.investigation.push(ev);addEvent(c,"INVESTIGATION",ev)}})}}catch(e){}
+}
+function act(kind,a,c){
+ if(kind==="vital"){let n=c.vitals.length;c.vitals.unshift({time:new Date().toLocaleTimeString(),hr:78+(n*11)%58,rr:16+(n*5)%24,temp:(100.0+(n%8)*.25).toFixed(1),spo2:94+(n%6),pain:n%5,hydration:96-(n%5)*3});addEvent(c,"VITALS","New nursing vital set recorded.")}
+ if(kind==="lab"){let s="CBC/Chemistry panel "+String(c.diagnostics.length+1).padStart(2,"0")+" — simulated values reviewed.";c.diagnostics.unshift(s);addEvent(c,"DIAGNOSTIC",s)}
+ if(kind==="image"){let s="Diagnostic imaging study "+String(c.diagnostics.length+1).padStart(2,"0")+" — study attached to chart.";c.diagnostics.unshift(s);addEvent(c,"IMAGING",s)}
+ if(kind==="med"){let s="Pain-control medication administration documented (simulation).";c.medications.unshift({time:new Date().toLocaleString(),text:s});addEvent(c,"MEDICATION",s)}
+ if(kind==="procedure"){let s="Veterinary procedure / treatment session "+String(c.procedures.length+1).padStart(2,"0")+" completed.";c.procedures.unshift({time:new Date().toLocaleString(),text:s});addEvent(c,"PROCEDURE",s)}
+ if(kind==="recovery"){let s="Recovery assessment: monitoring continued; comfort and hydration reassessed.";c.recovery.unshift({time:new Date().toLocaleString(),text:s});addEvent(c,"RECOVERY",s)}
+ let x=get();x.charts[String(a.id)]=c;put(x);render()
+}
+function saveNote(a,c){let t=document.querySelector("#d2Note")?.value.trim();if(!t)return;c.notes.unshift({time:new Date().toLocaleString(),text:t});addEvent(c,"NOTE",t);let x=get();x.charts[String(a.id)]=c;put(x);render()}
+function discharge(a,c){c.discharge={time:new Date().toLocaleString(),instructions:"Continue prescribed home care, nutrition, hydration, comfort monitoring and scheduled follow-up as documented by the game.",status:"DISCHARGED"};c.status="DISCHARGED";addEvent(c,"DISCHARGE","Patient discharge summary finalized.");let x=get();x.charts[String(a.id)]=c;put(x);render()}
+function section(tab,a,c){
+ let last=c.vitals[0]||{};
+ if(tab==="SUMMARY")return '<div class="d2grid">'+box("CHART STATUS",c.status+" · "+mrn(a))+box("OWNER / GUARDIAN",c.owner)+box("ALLERGIES",c.allergies)+box("LATEST VITALS","HR "+last.hr+" · RR "+last.rr+" · TEMP "+last.temp+"°F · SpO₂ "+last.spo2+"%")+box("DIAGNOSTICS",c.diagnostics.length+" study / result entries")+box("MEDICATIONS",c.medications.length+" administrations")+box("PROCEDURES",c.procedures.length+" treatment entries")+box("INVESTIGATION",c.investigation.length+" separated evidence entries")+'</div>';
+ if(tab==="HISTORY")return list(c.history,"MEDICAL / SOCIAL HISTORY");
+ if(tab==="VITALS")return '<div class="d2timeline">'+c.vitals.map(v=>'<div class="d2event"><small>'+E(v.time)+'</small><b>VITAL SET</b><span>HR '+v.hr+' · RR '+v.rr+' · '+v.temp+'°F · SpO₂ '+v.spo2+'% · Pain '+v.pain+'/10 · Hydration '+v.hydration+'%</span></div>').join("")+'</div>';
+ if(tab==="DIAGNOSTICS")return list(c.diagnostics,"DIAGNOSTIC RESULT");
+ if(tab==="MEDICATIONS")return objlist(c.medications,"MEDICATION");
+ if(tab==="PROCEDURES")return objlist(c.procedures,"PROCEDURE");
+ if(tab==="RECOVERY")return objlist(c.recovery,"RECOVERY NOTE");
+ if(tab==="FINANCIAL")return '<div class="d2timeline">'+c.financial.map(q=>'<div class="d2event"><small>GAME CREDITS</small><b>'+E(q.item)+'</b><span>'+Number(q.amount||0).toLocaleString()+'</span></div>').join("")+'</div>';
+ if(tab==="INVESTIGATION")return list(c.investigation,"SEPARATE EVIDENCE");
+ if(tab==="TIMELINE")return '<div class="d2timeline">'+c.timeline.map(q=>'<div class="d2event"><small>'+E(q.time)+'</small><b>'+E(q.type)+'</b><span>'+E(q.text)+'</span></div>').join("")+'</div>';
+ if(tab==="NOTES")return '<textarea id="d2Note" class="d2note" placeholder="Enter persistent patient chart note..."></textarea><div class="d2actions"><button id="d2SaveNote">SAVE NOTE TO CHART</button></div>'+objlist(c.notes,"CHART NOTE");
+ if(tab==="DISCHARGE")return c.discharge?'<div class="d2box"><b>DISCHARGED '+E(c.discharge.time)+'</b><small>'+E(c.discharge.instructions)+'</small></div>':'<div class="d2box"><b>NO FINAL DISCHARGE SUMMARY</b><small>Complete care and create the discharge record when ready.</small></div>';
+ return "";
+ function box(n,d){return '<div class="d2box"><b>'+E(n)+'</b><small>'+E(d)+'</small></div>'}
+ function list(arr,n){return '<div class="d2timeline">'+(arr.length?arr.map((q,i)=>'<div class="d2event"><small>#'+String(i+1).padStart(2,"0")+'</small><b>'+E(n)+'</b><span>'+E(q)+'</span></div>').join(""):'<div class="d2event"><small>—</small><b>NONE</b><span>No entries recorded.</span></div>')+'</div>'}
+ function objlist(arr,n){return '<div class="d2timeline">'+(arr.length?arr.map(q=>'<div class="d2event"><small>'+E(q.time)+'</small><b>'+E(n)+'</b><span>'+E(q.text)+'</span></div>').join(""):'<div class="d2event"><small>—</small><b>NONE</b><span>No entries recorded.</span></div>')+'</div>'}
+}
+function printChart(a,c){
+ let w=window.open("","_blank","width=1000,height=850");if(!w){alert("Allow pop-ups for this local HTML file, then try again.");return}
+ let rows=c.timeline.map(q=>`<tr><td>${E(q.time)}</td><td>${E(q.type)}</td><td>${E(q.text)}</td></tr>`).join("");
+ w.document.write(`<!doctype html><html><head><title>${E(a.name)} Medical Chart</title><style>body{font-family:Arial;padding:28px;color:#111}h1{margin-bottom:3px}.meta{border:1px solid #333;padding:12px;margin:15px 0}table{width:100%;border-collapse:collapse;font-size:11px}th,td{border:1px solid #444;padding:6px;text-align:left}.print{padding:12px}@media print{.print{display:none}}</style></head><body><button class="print" onclick="window.print()">PRINT COMPLETE PATIENT CHART</button><h1>${E(a.name)}</h1><div>${E(a.species||"Animal")} · ${mrn(a)}</div><div class="meta"><b>Status:</b> ${E(c.status)}<br><b>Chart created:</b> ${E(c.created)}<br><b>Owner/guardian:</b> ${E(c.owner)}<br><b>Allergies:</b> ${E(c.allergies)}</div><h2>Chronological Patient Record</h2><table><tr><th>Date / Time</th><th>Record Type</th><th>Entry</th></tr>${rows}</table>
+<style id="depth-phase3-css">
+#d3{min-height:100%;background:radial-gradient(circle at 65% 0,rgba(60,116,77,.20),transparent 36%),repeating-linear-gradient(0deg,rgba(190,255,210,.018) 0 1px,transparent 1px 4px),#010403;color:#caffda;font-family:"Courier New",monospace;padding:8px}
+.d3head{border:1px solid #638c6d;background:#041008;padding:13px}.d3head small{font-size:7px;color:#789680;letter-spacing:2px}.d3head h1{font-size:clamp(24px,5vw,42px);margin:4px 0}.d3warn{border:1px solid #89624e;background:#170904;color:#ffd6c0;padding:8px;margin-top:7px;font-size:8px}
+.d3stats{display:grid;grid-template-columns:repeat(7,1fr);border:1px solid #31533b;margin:7px 0}.d3stats div{padding:7px;border-right:1px dotted #31533b}.d3stats small{display:block;font-size:6px;color:#68826f}.d3stats b{font-size:9px}
+.d3layout{display:grid;grid-template-columns:.62fr 1.38fr;gap:7px}.d3panel{border:1px solid #31533b;background:#020a05}.d3panel h2{margin:0;padding:7px;background:#bddbc5;color:#031008;font-size:9px}.d3body{padding:8px}
+.d3patients{max-height:590px;overflow:auto}.d3patient{display:grid;grid-template-columns:42px 1fr 80px;gap:7px;align-items:center;padding:8px;border-bottom:1px dotted #31533b;cursor:pointer}.d3patient:hover,.d3patient.on{background:#bddbc5;color:#031008}.d3patient span{font-size:28px}.d3patient b{font-size:8px;color:#eaffef}.d3patient:hover b,.d3patient.on b{color:#031008}.d3patient small{display:block;font-size:6px;color:#6d8c75}.d3patient strong{font-size:7px;text-align:right}
+.d3monitor{border:1px solid #31533b;background:#000;padding:10px}.d3animal{display:grid;grid-template-columns:80px 1fr;gap:10px;align-items:center}.d3icon{font-size:62px;text-align:center}.d3animal h3{margin:0;font-size:19px}.d3muted{font-size:7px;color:#789680;line-height:1.55}
+.d3gauges{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:8px}.d3g{border:1px solid #31533b;padding:7px}.d3g b{font-size:7px}.d3g strong{display:block;font-size:17px;margin:3px 0}.d3bar{height:6px;background:#07140b;border:1px solid #31533b}.d3bar i{display:block;height:100%;background:currentColor}.d3g small{font-size:6px;color:#789680}.d3g.bad{border-color:#89624e;color:#ffd0b8}.d3g.good{box-shadow:inset 0 0 14px #173d22}
+.d3actions{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:7px}.d3act{border:1px solid #31533b;background:#031008;color:#caffda;padding:9px;text-align:left;font:700 7px "Courier New";cursor:pointer;min-height:68px}.d3act:hover{background:#bddbc5;color:#031008}.d3act small{display:block;font-size:6px;color:#789680;margin-top:4px}.d3act.lock{opacity:.45}
+.d3timeline{border:1px solid #31533b;background:#000;padding:9px;min-height:130px;max-height:230px;overflow:auto;font-size:7px;line-height:1.55;white-space:pre-wrap;margin-top:7px}
+.d3comp{border:1px solid #89624e;background:#170904;padding:8px;margin-top:7px;font-size:7px;line-height:1.5}.d3stable{border-color:#31533b;background:#031008}
+.d3nav{display:grid;grid-template-columns:repeat(6,1fr);margin-top:7px}.d3nav button{border:1px solid #31533b;background:#031008;color:#caffda;padding:9px;font:700 7px "Courier New";cursor:pointer}.d3nav button:hover{background:#bddbc5;color:#031008}
+#d3Launch{position:fixed;left:8px;bottom:78px;z-index:2147483628;background:#010805;color:#b7ffd1;border:1px solid #6d9a78;padding:9px 11px;font:900 8px "Courier New";cursor:pointer}
+@media(max-width:900px){.d3layout{grid-template-columns:1fr}.d3stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:580px){.d3gauges{grid-template-columns:repeat(2,1fr)}.d3actions,.d3nav{grid-template-columns:1fr}}
+</style>
+<script id="depth-phase3-js">
+(function(){"use strict";
+const KEY="vetgods_depth_phase3_treatment";
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function animals(){try{return state.animals||[]}catch(e){return[]}}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{selected:null,patients:{}}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+function mrn(a){let n=String(a?.id??0).replace(/\D/g,"");return "VET-"+String(n||Math.abs(String(a?.name||"PATIENT").split("").reduce((q,c)=>q*31+c.charCodeAt(0),7))).padStart(6,"0").slice(-6)}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function ensure(x,a,i){let id=String(a.id);if(!x.patients[id])x.patients[id]={minute:0,oxygen:88+(i%8),hydration:62+(i%6)*4,nutrition:48+(i%7)*5,pain:7-(i%4),stress:74-(i%5)*6,temp:103.2-(i%5)*.35,conscious:82-(i%4)*8,mobility:48+(i%5)*8,comfort:35+(i%6)*5,actions:[],log:["00:00 Treatment consequence episode opened."],complications:[],diagnosed:false,iv:false,oxygenOn:false,painControlled:false,fed:false,recovery:false};return x.patients[id]}
+function severity(p){let n=0;if(p.oxygen<92)n+=2;if(p.hydration<70)n+=2;if(p.pain>6)n+=2;if(p.stress>75)n++;if(p.temp>103.5)n++;if(p.conscious<60)n+=2;return n>=6?"CRITICAL":n>=3?"GUARDED":n?"WATCH":"STABLE"}
+function tick(p,min){
+ p.minute+=min;
+ if(p.oxygenOn)p.oxygen=clamp(p.oxygen+min*.18,0,99);else p.oxygen=clamp(p.oxygen-min*.025,70,100);
+ if(p.iv)p.hydration=clamp(p.hydration+min*.12,0,100);else p.hydration=clamp(p.hydration-min*.018,0,100);
+ p.nutrition=clamp(p.nutrition-min*.018,0,100);
+ p.stress=clamp(p.stress+(p.pain>5?.04:-.025)*min,0,100);
+ p.comfort=clamp(p.comfort+(p.painControlled?.05:-.018)*min,0,100);
+ if(p.painControlled)p.pain=clamp(p.pain-min*.025,0,10);
+ if(p.oxygen<88)p.conscious=clamp(p.conscious-min*.12,20,100);
+ if(p.hydration<55)p.mobility=clamp(p.mobility-min*.05,0,100);
+ detect(p)
+}
+function detect(p){
+ function add(s){if(!p.complications.includes(s)){p.complications.push(s);p.log.unshift(tm(p)+" COMPLICATION: "+s)}}
+ if(p.oxygen<88)add("Hypoxemia trend requires respiratory support.");
+ if(p.hydration<55)add("Dehydration is impairing recovery.");
+ if(p.pain>=8)add("Severe uncontrolled pain is increasing stress.");
+ if(p.stress>88)add("Extreme stress is interfering with recovery.");
+ if(p.conscious<50)add("Reduced consciousness requires close monitoring.");
+}
+function tm(p){return String(Math.floor(p.minute/60)).padStart(2,"0")+":"+String(Math.round(p.minute%60)).padStart(2,"0")}
+function chart(a,type,text){
+ try{let x=window.VetGodsPatientCharts?.state?.();let c=x?.charts?.[String(a.id)];if(c){c.timeline.unshift({time:new Date().toLocaleString(),type,text});localStorage.setItem("vetgods_depth_phase2_charts",JSON.stringify(x))}}catch(e){}
+}
+function action(k,a,p){
+ let msg="",mins=8;
+ if(k==="exam"){p.diagnosed=true;msg="Focused reassessment completed; treatment priorities established.";mins=6}
+ if(k==="oxygen"){p.oxygenOn=true;p.oxygen=clamp(p.oxygen+5,0,99);p.stress=clamp(p.stress-3,0,100);msg="Supplemental oxygen started; SpO₂ begins improving over time.";mins=5}
+ if(k==="fluids"){if(!p.diagnosed)return alert("Perform the focused reassessment before starting IV fluids.");p.iv=true;p.hydration=clamp(p.hydration+4,0,100);msg="IV fluid support started; hydration now changes gradually with time.";mins=8}
+ if(k==="pain"){if(!p.diagnosed)return alert("Assess the patient before pain control.");p.painControlled=true;p.pain=clamp(p.pain-2,0,10);p.stress=clamp(p.stress-6,0,100);msg="Pain control administered in the simulation; pain and stress begin falling.";mins=7}
+ if(k==="food"){if(p.conscious<65)return alert("Patient consciousness is too low for oral feeding in this simulation.");p.fed=true;p.nutrition=clamp(p.nutrition+14,0,100);p.comfort=clamp(p.comfort+5,0,100);msg="Nutrition offered and tolerated; nutrition and comfort improved.";mins=12}
+ if(k==="comfort"){p.stress=clamp(p.stress-10,0,100);p.comfort=clamp(p.comfort+12,0,100);msg="Low-stimulation comfort care provided.";mins=10}
+ if(k==="warm"){p.temp=clamp(p.temp+.25,95,106);msg="Active warming applied; temperature increased gradually.";mins=8}
+ if(k==="cool"){p.temp=clamp(p.temp-.25,95,106);msg="Cooling support applied; temperature decreased gradually.";mins=8}
+ if(k==="mobility"){if(p.pain>5)return alert("Pain remains too high for a mobility trial.");p.mobility=clamp(p.mobility+8,0,100);p.stress=clamp(p.stress-3,0,100);msg="Guarded mobility trial completed.";mins=12}
+ if(k==="recover"){if(p.oxygen<92||p.hydration<70||p.pain>5)return alert("Stabilize oxygen, hydration and pain before moving to recovery.");p.recovery=true;p.comfort=clamp(p.comfort+8,0,100);msg="Patient moved into active recovery monitoring.";mins=15}
+ tick(p,mins);p.actions.push(k);p.log.unshift(tm(p)+" "+msg);chart(a,"TREATMENT",msg+" [simulated clinical gameplay]");let x=get();x.patients[String(a.id)]=p;put(x);render()
+}
+function advance(a,p,n){tick(p,n);p.log.unshift(tm(p)+" Time advanced "+n+" minutes; physiologic trends recalculated.");chart(a,"MONITORING","Treatment engine advanced "+n+" minutes; simulated trends recalculated.");let x=get();x.patients[String(a.id)]=p;put(x);render()}
+function render(){
+ let m=document.querySelector("#main"),x=get(),ls=animals();if(!m)return;let a=ls.find(z=>String(z.id)===String(x.selected))||ls[0];if(a&&!x.selected)x.selected=a.id;let idx=Math.max(0,ls.indexOf(a)),p=a?ensure(x,a,idx):null;put(x);try{page="treatmentConsequences";nav()}catch(e){}
+ m.innerHTML='<div id="d3"><header class="d3head"><small>NCRH // VETERINARY MEDICINE // DEPTH OVERHAUL 03</small><h1>TREATMENT CONSEQUENCE ENGINE</h1><div style="font-size:8px;color:#8cad94">Care actions now change simulated physiology over time. Sequencing matters: assess, stabilize, control pain, support hydration/nutrition, then recover.</div><div class="d3warn">SIMULATED GAMEPLAY // Values and responses are fictional game mechanics, not veterinary dosing or real-world treatment instructions.</div></header>'+
+ '<div class="d3stats"><div><small>PATIENT</small><b>'+E(a?mrn(a):"NONE")+'</b></div><div><small>STATUS</small><b>'+E(p?severity(p):"—")+'</b></div><div><small>ELAPSED</small><b>'+(p?tm(p):"00:00")+'</b></div><div><small>ACTIONS</small><b>'+(p?p.actions.length:0)+'</b></div><div><small>COMPLICATIONS</small><b>'+(p?p.complications.length:0)+'</b></div><div><small>OXYGEN</small><b>'+(p&&p.oxygenOn?"ACTIVE":"OFF")+'</b></div><div><small>IV SUPPORT</small><b>'+(p&&p.iv?"ACTIVE":"OFF")+'</b></div></div>'+
+ '<div class="d3layout"><section class="d3panel"><h2>PATIENTS</h2><div class="d3patients">'+ls.map((z,i)=>{let q=ensure(x,z,i);return '<div class="d3patient '+(a&&String(z.id)===String(a.id)?"on":"")+'" data-d3patient="'+E(z.id)+'"><span>'+E(z.icon||"🐾")+'</span><div><b>'+E(z.name)+'</b><small>'+E(z.species||"ANIMAL")+' · '+mrn(z)+'</small></div><strong>'+severity(q)+'</strong></div>'}).join("")+'</div></section>'+
+ '<section class="d3panel"><h2>ACTIVE TREATMENT BAY</h2><div class="d3body">'+(a&&p?'<div class="d3monitor"><div class="d3animal"><div class="d3icon">'+E(a.icon||"🐾")+'</div><div><h3>'+E(a.name)+'</h3><div class="d3muted">'+E(a.species||"ANIMAL")+' · '+mrn(a)+' · '+severity(p)+'<br>Elapsed '+tm(p)+' · Recovery '+(p.recovery?"ACTIVE":"NOT YET")+'</div></div></div>'+
+ '<div class="d3gauges">'+g("SpO₂",p.oxygen.toFixed(0)+"%",p.oxygen,92,100)+g("Hydration",p.hydration.toFixed(0)+"%",p.hydration,70,100)+g("Nutrition",p.nutrition.toFixed(0)+"%",p.nutrition,65,100)+g("Pain",p.pain.toFixed(1)+"/10",100-p.pain*10,50,100)+g("Stress",p.stress.toFixed(0)+"%",100-p.stress,30,100)+g("Conscious",p.conscious.toFixed(0)+"%",p.conscious,65,100)+g("Mobility",p.mobility.toFixed(0)+"%",p.mobility,55,100)+g("Comfort",p.comfort.toFixed(0)+"%",p.comfort,60,100)+'</div></div>'+
+ '<div class="d3actions">'+act("exam","FOCUSED REASSESSMENT","Unlock stabilization sequence",false)+act("oxygen","START OXYGEN","Improves SpO₂ over time",false)+act("fluids","START IV FLUIDS","Requires reassessment",!p.diagnosed)+act("pain","PAIN CONTROL","Requires reassessment",!p.diagnosed)+act("food","OFFER NUTRITION","Requires adequate consciousness",p.conscious<65)+act("comfort","COMFORT / QUIET","Reduces stress",false)+act("warm","ACTIVE WARMING","+ temperature support",false)+act("cool","COOLING SUPPORT","− temperature support",false)+act("mobility","MOBILITY TRIAL","Pain must be controlled",p.pain>5)+act("recover","MOVE TO RECOVERY","Requires stabilization",p.oxygen<92||p.hydration<70||p.pain>5)+'</div>'+
+ '<div class="d3actions"><button class="d3act" id="d3Plus10">ADVANCE 10 MIN<small>Let active supports work</small></button><button class="d3act" id="d3Plus30">ADVANCE 30 MIN<small>Recalculate all trends</small></button></div>'+
+ (p.complications.length?'<div class="d3comp"><b>ACTIVE / HISTORICAL COMPLICATION FLAGS</b><br>'+p.complications.map(E).join("<br>")+'</div>':'<div class="d3comp d3stable"><b>MONITORING</b><br>No complication flags have been generated for this treatment episode.</div>')+
+ '<div class="d3timeline">TREATMENT TIMELINE\n\n'+E(p.log.slice(0,16).join("\n"))+'</div>'+
+ '<div class="d3nav"><button id="d3Charts">PATIENT CHART</button><button id="d3Shift">SHIFT COMMAND</button><button id="d3Clinical">CLINICAL OS</button><button id="d3Mystery">MYSTERY</button><button id="d3PC">HOSPITAL PC</button><button id="d3Awards">CREDENTIALS</button></div>':'')+'</div></section></div></div>';
+ function g(n,val,pct,min,max){let good=pct>=min;return '<div class="d3g '+(good?"good":"bad")+'"><b>'+n+'</b><strong>'+val+'</strong><div class="d3bar"><i style="width:'+clamp(pct,0,100)+'%"></i></div><small>'+(good?"within gameplay target":"attention needed")+'</small></div>'}
+ function act(k,n,d,lock){return '<button class="d3act '+(lock?"lock":"")+'" data-d3act="'+k+'">'+n+'<small>'+d+'</small></button>'}
+ if(!a)return;
+ m.querySelectorAll("[data-d3patient]").forEach(b=>b.onclick=()=>{x.selected=b.dataset.d3patient;put(x);render()});
+ m.querySelectorAll("[data-d3act]").forEach(b=>b.onclick=()=>action(b.dataset.d3act,a,p));
+ document.querySelector("#d3Plus10").onclick=()=>advance(a,p,10);document.querySelector("#d3Plus30").onclick=()=>advance(a,p,30);
+ document.querySelector("#d3Charts").onclick=()=>window.VetGodsPatientCharts?.render?.();document.querySelector("#d3Shift").onclick=()=>window.VetGodsRealHospitalShift?.render?.();document.querySelector("#d3Clinical").onclick=()=>window.VetGodsHospitalClinicalOS?.render?.("census");document.querySelector("#d3Mystery").onclick=()=>window.VetGodsClinicalInvestigation?.render?.();document.querySelector("#d3PC").onclick=()=>window.VetGodsHospitalPC?.render?.();document.querySelector("#d3Awards").onclick=()=>window.VetGodsAdminAuthority?.render?.();
+}
+function launch(){let b=document.querySelector("#d3Launch");if(!b){b=document.createElement("button");b.id="d3Launch";b.textContent="♥ TREATMENT ENGINE";b.onclick=render;document.body.appendChild(b)}}
+window.VetGodsTreatmentConsequences={render,state:get};
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();setInterval(launch,2500);
+})();
+</script>
+<script id="depth-phase3-bridge">
+(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__depth3){let old=p.render;p.render=function(){old();setTimeout(function(){let area=document.querySelector(".hpActions");if(area&&!document.querySelector("#d3Desk")){let b=document.createElement("button");b.id="d3Desk";b.textContent="OPEN TREATMENT CONSEQUENCE ENGINE";b.onclick=function(){VetGodsTreatmentConsequences.render()};area.prepend(b)}},0)};p.__depth3=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
+</script>
+
+
+<style id="depth-phase4-css">
+#d4{min-height:100%;background:radial-gradient(circle at 45% 0,rgba(66,120,80,.19),transparent 38%),repeating-linear-gradient(0deg,rgba(190,255,210,.018) 0 1px,transparent 1px 4px),#010403;color:#caffda;font-family:"Courier New",monospace;padding:8px}
+.d4head{border:1px solid #638c6d;background:#041008;padding:13px}.d4head small{font-size:7px;color:#789680;letter-spacing:2px}.d4head h1{font-size:clamp(24px,5vw,42px);margin:4px 0}
+.d4stats{display:grid;grid-template-columns:repeat(7,1fr);border:1px solid #31533b;margin:7px 0}.d4stats div{padding:7px;border-right:1px dotted #31533b}.d4stats small{display:block;font-size:6px;color:#68826f}.d4stats b{font-size:9px}
+.d4layout{display:grid;grid-template-columns:.7fr 1.3fr;gap:7px}.d4panel{border:1px solid #31533b;background:#020a05}.d4panel h2{margin:0;padding:7px;background:#bddbc5;color:#031008;font-size:9px}.d4body{padding:8px}
+.d4filter{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:6px}.d4filter button,.d4actions button,.d4nav button{border:1px solid #31533b;background:#031008;color:#caffda;padding:8px;font:700 7px "Courier New";cursor:pointer}.d4filter button:hover,.d4filter button.on,.d4actions button:hover,.d4nav button:hover{background:#bddbc5;color:#031008}
+.d4staff{max-height:610px;overflow:auto;border:1px solid #31533b}.d4person{display:grid;grid-template-columns:42px 1fr 72px;gap:7px;align-items:center;padding:8px;border-bottom:1px dotted #31533b;cursor:pointer}.d4person:hover,.d4person.on{background:#bddbc5;color:#031008}.d4person span{font-size:27px}.d4person b{font-size:8px;color:#eaffef}.d4person:hover b,.d4person.on b{color:#031008}.d4person small{display:block;font-size:6px;color:#789680}.d4person strong{font-size:6px;text-align:right}
+.d4profile{border:1px solid #31533b;background:#000803;padding:10px}.d4profileTop{display:grid;grid-template-columns:76px 1fr;gap:10px;align-items:center}.d4avatar{font-size:58px;text-align:center}.d4profile h3{margin:0;font-size:19px}.d4muted{font-size:7px;color:#789680;line-height:1.55}
+.d4cards{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:7px}.d4card{border:1px solid #31533b;padding:8px;min-height:76px}.d4card b{font-size:7px}.d4card small{display:block;font-size:6px;color:#789680;line-height:1.45;margin-top:4px}.d4card.hot{border-color:#89624e}.d4card.good{box-shadow:inset 0 0 15px #173d22}
+.d4messages{border:1px solid #31533b;max-height:250px;overflow:auto;margin-top:7px}.d4msg{padding:8px;border-bottom:1px dotted #31533b;font-size:7px;line-height:1.45;cursor:pointer}.d4msg:hover{background:#bddbc5;color:#031008}.d4msg b{display:block;color:#eaffef}.d4msg:hover b{color:#031008}.d4msg small{color:#789680}
+.d4actions{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:7px}.d4log{border:1px solid #31533b;background:#000;padding:9px;max-height:180px;overflow:auto;font-size:7px;line-height:1.55;white-space:pre-wrap;margin-top:7px}
+.d4nav{display:grid;grid-template-columns:repeat(6,1fr);margin-top:7px}
+#d4Launch{position:fixed;left:8px;bottom:113px;z-index:2147483627;background:#010805;color:#b7ffd1;border:1px solid #6d9a78;padding:9px 11px;font:900 8px "Courier New";cursor:pointer}
+@media(max-width:900px){.d4layout{grid-template-columns:1fr}.d4stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){.d4cards,.d4actions,.d4nav{grid-template-columns:1fr}.d4filter{grid-template-columns:repeat(2,1fr)}}
+</style>
+<script id="depth-phase4-js">
+(function(){"use strict";
+const KEY="vetgods_depth_phase4_staff";
+const roster=[
+["S01","Dr. Mara Voss","Veterinarian","Emergency / Critical Care","DAY","🩺","Direct, calm under pressure","Worked the 2015 network outage; remembers Recovery-04 as a routing label."],
+["S02","Dr. Elias Chen","Veterinarian","Internal Medicine","DAY","🩺","Methodical, skeptical","Keeps meticulous differential lists and dislikes unsupported conclusions."],
+["S03","Dr. Nia Okafor","Surgeon","Soft Tissue Surgery","SWING","⚕️","Focused, dry humor","Found an obsolete RX-04 equipment tag during an old OR inventory."],
+["S04","Dr. Rowan Hale","Veterinarian","Exotics / Wildlife","SWING","🦉","Patient, observant","Frequently receives unusual species transfers after hours."],
+["S05","Dr. Lena Ortiz","Veterinarian","Neurology / Rehabilitation","DAY","🧠","Analytical, gentle","Reviews mobility cases and historical neuro records."],
+["S06","Avery Knox","Lead Veterinary Technician","ICU / Recovery","NIGHT","💉","Protective, practical","Says Recovery-04 sometimes appears on monitors after resets."],
+["S07","Mina Patel","Veterinary Technician","Anesthesia","DAY","💉","Precise, fast","Maintains anesthesia machine checks and procedure logs."],
+["S08","Jordan Bell","Veterinary Technician","Emergency","SWING","💉","Energetic, blunt","Usually first to meet incoming emergency transfers."],
+["S09","Theo Grant","Veterinary Technician","Inpatient Care","NIGHT","💉","Quiet, observant","Has documented unexplained device-route labels without speculating about them."],
+["S10","Cass Reed","Veterinary Assistant","Treatment Ward","DAY","🐾","Warm, organized","Tracks food, water, bedding and comfort rounds."],
+["S11","Priya Shah","Imaging Technologist","Radiology","DAY","☢️","Technical, exact","Maintains VET-RAD-02 and its time-service tickets."],
+["S12","Owen Pike","Imaging Technologist","CT / Ultrasound","SWING","📡","Curious, cautious","Noticed old accession numbers reappearing after archive imports."],
+["S13","Sofia Alvarez","Laboratory Scientist","Clinical Pathology","DAY","🧪","Fastidious, reserved","Flags specimen-ID conflicts before results enter charts."],
+["S14","Malik Brooks","Laboratory Technician","Hematology","NIGHT","🧪","Friendly, meticulous","Runs overnight CBC queues and instrument controls."],
+["S15","Erin Vale","Pharmacy Coordinator","Veterinary Pharmacy","DAY","💊","No-nonsense","Controls medication reconciliation and locked inventory."],
+["S16","June Park","Pharmacy Technician","Dispensing","SWING","💊","Efficient, witty","Knows which legacy cabinets were removed during renovation."],
+["S17","Rhea Morgan","Reception Supervisor","Client Services","DAY","☎️","Unflappable","Remembers names, callbacks and owner histories."],
+["S18","Samir Das","Reception Specialist","Emergency Intake","NIGHT","☎️","Empathetic, alert","Routes late arrivals and records incomplete histories."],
+["S19","Adrian Mercer","Systems Administrator","Veterinary IT / Records","ARCHIVE","🖥️","Historical account","Recovered records show Mercer investigated 03117; current employment is not implied."],
+["S20","Iris Cole","Systems Analyst","Clinical Applications","DAY","🖥️","Logical, persistent","Maintains EMR integrations and migration reports."],
+["S21","Noah Finch","Network Engineer","Hospital Infrastructure","ON CALL","🌐","Cautious, terse","Investigates hosts that answer without asset inventory entries."],
+["S22","Tessa Ward","Records Administrator","Health Information","DAY","🗄️","Detail-driven","Controls chart merges and refuses identity matches without evidence."],
+["S23","Victor Lane","Facilities Supervisor","Plant Operations","DAY","🔧","Practical, skeptical","Maintains basement service corridors and equipment disposal records."],
+["S24","Mae Torres","Maintenance Technician","Electrical / Biomedical","NIGHT","🔧","Inventive, fearless","Has traced abandoned cabling behind the former veterinary recovery wing."],
+["S25","Caleb Ross","Biomedical Technician","Monitoring Equipment","ON CALL","🛠️","Measured, technical","Can distinguish a route-name fault from an actual patient signal."],
+["S26","Dana Wells","Security Supervisor","Hospital Security","SWING","🔐","Procedural, watchful","Reviews badge events, door sensors and camera coverage gaps."],
+["S27","Imani Price","Security Officer","Patrol","NIGHT","🔐","Steady, observant","Performs basement and loading-dock rounds."],
+["S28","Helena Frost","Department Administrator","Veterinary Medicine","DAY","📋","Formal, decisive","Signs departmental credentials and incident handoffs."],
+["S29","Gavin Moore","Supply Coordinator","Materials Management","DAY","📦","Resourceful","Tracks oxygen, food, fluids, bedding and clinical supplies."],
+["S30","Yuki Tan","Recovery Coordinator","ICU / Rehabilitation","SWING","♥️","Calm, patient","Owns recovery handoff quality and discharge readiness."]
+];
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{selected:"S01",filter:"ALL",staff:{},messages:[],log:[],day:1}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+function ensure(x){roster.forEach((r,i)=>{if(!x.staff[r[0]])x.staff[r[0]]={trust:48+(i*7)%43,fatigue:12+(i*9)%38,cases:0,messages:0,status:r[4]==="ARCHIVE"?"ARCHIVED":(r[4]==="ON CALL"?"ON CALL":"AVAILABLE"),history:[]}})}
+function person(id){return roster.find(r=>r[0]===id)}
+function shiftActive(r){if(r[4]==="ARCHIVE")return false;let h=new Date().getHours();return r[4]==="ON CALL"||r[4]==="DAY"&&h>=7&&h<16||r[4]==="SWING"&&h>=15&&h<24||r[4]==="NIGHT"&&(h>=23||h<8)}
+const templates=[
+["CLINICAL","Patient status review requested.","Please review the active patient chart before the next treatment decision."],
+["ICU","Recovery handoff needs attention.","A recovery patient has pending comfort, hydration or monitoring documentation."],
+["IMAGING","Imaging queue update.","A study is ready for chart correlation; verify patient identity before attaching results."],
+["LAB","Laboratory result review.","A result has posted with a request for clinical correlation."],
+["PHARMACY","Medication reconciliation.","Pharmacy requests confirmation that the simulated medication record matches the chart."],
+["FACILITIES","Equipment service note.","A device route or service ticket needs administrative review."],
+["SECURITY","After-hours event review.","Security logged a sensor event. Badge and physical-cause evidence should be reviewed separately."],
+["RECORDS","Record integrity question.","A legacy identifier overlaps a modern field. Do not merge records without independent identity evidence."]
+];
+function sendFrom(id){
+ let x=get(),r=person(id),s=x.staff[id];if(!r||r[4]==="ARCHIVE")return;
+ let t=templates[(x.messages.length+roster.indexOf(r))%templates.length];
+ let msg={id:"M"+Date.now(),from:id,time:new Date().toLocaleString(),subject:t[1],body:t[2],kind:t[0],read:false};
+ x.messages.unshift(msg);s.messages++;x.log.unshift(msg.time+" MESSAGE from "+r[1]+": "+msg.subject);put(x);render()
+}
+function consult(id){
+ let x=get(),r=person(id),s=x.staff[id];if(!r||r[4]==="ARCHIVE")return;
+ s.cases++;s.fatigue=Math.min(100,s.fatigue+5);s.trust=Math.min(100,s.trust+2);s.history.unshift(new Date().toLocaleString()+" Consulted on active veterinary workflow.");
+ x.log.unshift(new Date().toLocaleString()+" CONSULT "+r[1]+" / "+r[3]);put(x);render()
+}
+function round(){
+ let x=get();x.day++;roster.forEach((r,i)=>{let s=x.staff[r[0]];if(r[4]!=="ARCHIVE"){s.fatigue=Math.max(0,s.fatigue-(r[4]==="ON CALL"?4:2));if((x.day+i)%9===0)s.status="BUSY";else s.status=shiftActive(r)?"AVAILABLE":"OFF SHIFT"}});
+ let candidates=roster.filter(r=>r[4]!=="ARCHIVE");let r=candidates[x.day%candidates.length];let t=templates[x.day%templates.length];let msg={id:"M"+Date.now(),from:r[0],time:new Date().toLocaleString(),subject:t[1],body:t[2],kind:t[0],read:false};x.messages.unshift(msg);x.staff[r[0]].messages++;x.log.unshift(msg.time+" STAFF ROUND: "+r[1]+" sent "+msg.subject);put(x);render()
+}
+function openMsg(id){let x=get(),q=x.messages.find(m=>m.id===id);if(!q)return;q.read=true;put(x);let r=person(q.from);modal((r?r[1]:"STAFF")+" // "+q.kind,"SUBJECT: "+q.subject+"\n\n"+q.body+"\n\n"+q.time);render()}
+function modal(t,b){let d=document.createElement("div");d.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:2147483639;display:flex;align-items:center;justify-content:center;padding:10px";d.innerHTML='<div style="width:min(820px,96vw);max-height:90vh;overflow:auto;border:2px solid #688f72;background:#020b05"><div style="display:flex;justify-content:space-between;background:#bddbc5;color:#031008;padding:8px;font:900 8px Courier New"><span>'+E(t)+'</span><button id="d4Close" style="background:#031008;color:#fff;border:0">CLOSE [X]</button></div><div style="padding:15px;color:#caffda;font:9px/1.7 Courier New;white-space:pre-wrap">'+E(b)+'</div></div>';document.body.appendChild(d);d.querySelector("#d4Close").onclick=()=>d.remove()}
+function render(){
+ let m=document.querySelector("#main"),x=get();if(!m)return;ensure(x);let r=person(x.selected)||roster[0],s=x.staff[r[0]],filters=["ALL","CLINICAL","SUPPORT","ADMIN"];let shown=roster.filter(q=>x.filter==="ALL"||x.filter==="CLINICAL"&&["Veterinarian","Surgeon","Veterinary Technician","Veterinary Assistant"].includes(q[2])||x.filter==="SUPPORT"&&["Imaging Technologist","Laboratory Scientist","Laboratory Technician","Pharmacy Coordinator","Pharmacy Technician","Recovery Coordinator"].includes(q[2])||x.filter==="ADMIN"&&!["Veterinarian","Surgeon","Veterinary Technician","Veterinary Assistant","Imaging Technologist","Laboratory Scientist","Laboratory Technician","Pharmacy Coordinator","Pharmacy Technician","Recovery Coordinator"].includes(q[2]));
+ let unread=x.messages.filter(q=>!q.read).length,on=roster.filter(q=>shiftActive(q)).length;try{page="staffSimulation";nav()}catch(e){}
+ m.innerHTML='<div id="d4"><header class="d4head"><small>NCRH // VETERINARY MEDICINE // DEPTH OVERHAUL 04</small><h1>HOSPITAL STAFF SIMULATION</h1><div style="font-size:8px;color:#8cad94">Thirty persistent staff records now occupy the hospital: clinicians, technicians, diagnostics, pharmacy, reception, IT, records, facilities, security, administration and supply.</div></header>'+
+ '<div class="d4stats"><div><small>ROSTER</small><b>30</b></div><div><small>ON / CALL NOW</small><b>'+on+'</b></div><div><small>UNREAD</small><b>'+unread+'</b></div><div><small>MESSAGES</small><b>'+x.messages.length+'</b></div><div><small>STAFF ROUNDS</small><b>'+x.day+'</b></div><div><small>SELECTED</small><b>'+E(r[0])+'</b></div><div><small>DEPARTMENT</small><b>VET MED</b></div></div>'+
+ '<div class="d4layout"><section class="d4panel"><h2>PERSONNEL DIRECTORY</h2><div class="d4body"><div class="d4filter">'+filters.map(f=>'<button class="'+(x.filter===f?"on":"")+'" data-d4filter="'+f+'">'+f+'</button>').join("")+'</div><div class="d4staff">'+shown.map(q=>{let z=x.staff[q[0]];return '<div class="d4person '+(q[0]===r[0]?"on":"")+'" data-d4person="'+q[0]+'"><span>'+q[5]+'</span><div><b>'+E(q[1])+'</b><small>'+E(q[2])+' · '+E(q[3])+'</small></div><strong>'+E(z.status)+'</strong></div>'}).join("")+'</div></div></section>'+
+ '<section class="d4panel"><h2>PERSONNEL / COMMUNICATION CONSOLE</h2><div class="d4body"><div class="d4profile"><div class="d4profileTop"><div class="d4avatar">'+r[5]+'</div><div><h3>'+E(r[1])+'</h3><div class="d4muted">'+E(r[2])+' · '+E(r[3])+'<br>Shift: '+E(r[4])+' · Current: '+E(s.status)+'</div></div></div>'+
+ '<div class="d4cards">'+card("WORK STYLE",r[6],false)+card("HOSPITAL MEMORY",r[7],r[7].includes("03117")||r[7].includes("RX-04")||r[7].includes("Recovery-04"))+card("RELATIONSHIP","Trust "+s.trust+"% · "+s.cases+" consult(s)",false)+card("FATIGUE",s.fatigue+"%",s.fatigue>70)+card("MESSAGES",s.messages+" sent",false)+card("PERSONNEL STATUS",s.status,false)+'</div></div>'+
+ '<div class="d4actions"><button id="d4Consult">REQUEST CONSULT</button><button id="d4Message">GENERATE STAFF MESSAGE</button><button id="d4Round">ADVANCE STAFF ROUND</button><button id="d4File">OPEN PERSONNEL FILE</button></div>'+
+ '<h2 style="margin-top:7px">INTERNAL MESSAGE CENTER</h2><div class="d4messages">'+(x.messages.length?x.messages.slice(0,20).map(q=>{let pr=person(q.from);return '<div class="d4msg" data-d4msg="'+q.id+'"><b>'+(q.read?"":"● ")+E(q.subject)+'</b><small>'+E(pr?pr[1]:q.from)+' · '+E(q.kind)+' · '+E(q.time)+'</small></div>'}).join(""):'<div class="d4msg"><b>No internal messages yet.</b><small>Run a staff round or request a message.</small></div>')+'</div>'+
+ '<div class="d4log">STAFF ACTIVITY LOG\n\n'+E(x.log.slice(0,14).join("\n")||"Personnel simulation ready.")+'</div>'+
+ '<div class="d4nav"><button id="d4Shift">SHIFT COMMAND</button><button id="d4Charts">PATIENT CHARTS</button><button id="d4Treat">TREATMENT</button><button id="d4PC">HOSPITAL PC</button><button id="d4Incident">INCIDENT</button><button id="d4Awards">CREDENTIALS</button></div></div></section></div></div>';
+ function card(n,d,hot){return '<div class="d4card '+(hot?"hot":"good")+'"><b>'+E(n)+'</b><small>'+E(d)+'</small></div>'}
+ m.querySelectorAll("[data-d4filter]").forEach(b=>b.onclick=()=>{x.filter=b.dataset.d4filter;put(x);render()});
+ m.querySelectorAll("[data-d4person]").forEach(b=>b.onclick=()=>{x.selected=b.dataset.d4person;put(x);render()});
+ m.querySelectorAll("[data-d4msg]").forEach(b=>b.onclick=()=>openMsg(b.dataset.d4msg));
+ document.querySelector("#d4Consult").onclick=()=>consult(r[0]);document.querySelector("#d4Message").onclick=()=>sendFrom(r[0]);document.querySelector("#d4Round").onclick=round;document.querySelector("#d4File").onclick=()=>modal("PERSONNEL FILE // "+r[0],r[1]+"\n"+r[2]+"\nSpecialty: "+r[3]+"\nShift: "+r[4]+"\n\nWork style:\n"+r[6]+"\n\nDocumented hospital memory:\n"+r[7]+"\n\nConsults: "+s.cases+"\nTrust: "+s.trust+"%\nFatigue: "+s.fatigue+"%\n\nActivity:\n"+(s.history.join("\n")||"No consult history."));
+ document.querySelector("#d4Shift").onclick=()=>window.VetGodsRealHospitalShift?.render?.();document.querySelector("#d4Charts").onclick=()=>window.VetGodsPatientCharts?.render?.();document.querySelector("#d4Treat").onclick=()=>window.VetGodsTreatmentConsequences?.render?.();document.querySelector("#d4PC").onclick=()=>window.VetGodsHospitalPC?.render?.();document.querySelector("#d4Incident").onclick=()=>window.VetGodsIncidentCommand?.render?.();document.querySelector("#d4Awards").onclick=()=>window.VetGodsAdminAuthority?.render?.();
+}
+function launch(){let b=document.querySelector("#d4Launch");if(!b){b=document.createElement("button");b.id="d4Launch";b.textContent="♟ HOSPITAL STAFF";b.onclick=render;document.body.appendChild(b)}}
+window.VetGodsHospitalStaff={render,state:get};
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();setInterval(launch,2500);
+})();
+</script>
+<script id="depth-phase4-bridge">
+(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__depth4){let old=p.render;p.render=function(){old();setTimeout(function(){let area=document.querySelector(".hpActions");if(area&&!document.querySelector("#d4Desk")){let b=document.createElement("button");b.id="d4Desk";b.textContent="OPEN HOSPITAL STAFF DIRECTORY";b.onclick=function(){VetGodsHospitalStaff.render()};area.prepend(b)}},0)};p.__depth4=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
+</script>
+
+
+<style id="depth-phase5-css">
+#d5{min-height:100%;background:radial-gradient(circle at 50% 0,rgba(61,117,78,.2),transparent 38%),repeating-linear-gradient(0deg,rgba(190,255,210,.018) 0 1px,transparent 1px 4px),#010403;color:#caffda;font-family:"Courier New",monospace;padding:8px}
+.d5head,.d5panel{border:1px solid #31533b;background:#020a05}.d5head{padding:13px}.d5head small{font-size:7px;color:#789680;letter-spacing:2px}.d5head h1{font-size:clamp(24px,5vw,42px);margin:4px 0}.d5stats{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid #31533b;margin:7px 0}.d5stats div{padding:7px;border-right:1px dotted #31533b}.d5stats small{display:block;font-size:6px;color:#68826f}.d5stats b{font-size:9px}.d5layout{display:grid;grid-template-columns:1.15fr .85fr;gap:7px}.d5panel h2{margin:0;padding:7px;background:#bddbc5;color:#031008;font-size:9px}.d5body{padding:8px}
+.d5map{position:relative;border:1px solid #45694f;background:#000;min-height:560px;padding:8px;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(5,1fr);gap:5px}.d5room{border:1px solid #31533b;background:#041008;color:#caffda;padding:8px;font:700 7px "Courier New";cursor:pointer;text-align:left;position:relative}.d5room:hover,.d5room.on{background:#bddbc5;color:#031008}.d5room small{display:block;font-size:6px;color:#789680;margin-top:4px}.d5room.lock{border-color:#76584a;background:#120804}.d5room.found:after{content:"●";position:absolute;right:6px;top:4px}.d5corridor{grid-column:1/5;border:1px dashed #31533b;display:flex;align-items:center;justify-content:center;font-size:7px;color:#617a68;letter-spacing:3px}
+.d5scene{border:1px solid #31533b;background:#000;padding:10px;min-height:210px}.d5scene h3{margin:0 0 5px;font-size:18px}.d5scene p{font-size:7px;line-height:1.6;color:#9bbca4}.d5objects{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;margin-top:7px}.d5obj,.d5actions button,.d5nav button{border:1px solid #31533b;background:#031008;color:#caffda;padding:9px;font:700 7px "Courier New";cursor:pointer}.d5obj:hover,.d5actions button:hover,.d5nav button:hover{background:#bddbc5;color:#031008}.d5obj small{display:block;color:#789680;font-size:6px;margin-top:4px}.d5obj.done{box-shadow:inset 0 0 14px #173d22}.d5actions{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:7px}.d5log{border:1px solid #31533b;background:#000;padding:9px;max-height:220px;overflow:auto;font-size:7px;line-height:1.55;white-space:pre-wrap;margin-top:7px}.d5nav{display:grid;grid-template-columns:repeat(6,1fr);margin-top:7px}
+#d5Launch{position:fixed;left:8px;bottom:148px;z-index:2147483626;background:#010805;color:#b7ffd1;border:1px solid #6d9a78;padding:9px 11px;font:900 8px "Courier New";cursor:pointer}
+@media(max-width:900px){.d5layout{grid-template-columns:1fr}.d5stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:580px){.d5map{grid-template-columns:repeat(2,1fr);grid-template-rows:auto}.d5corridor{grid-column:1/3}.d5objects,.d5actions,.d5nav{grid-template-columns:1fr}}
+</style>
+<script id="depth-phase5-js">
+(function(){"use strict";
+const KEY="vetgods_depth_phase5_hospital";
+const rooms=[
+["reception","RECEPTION","☎️","Main veterinary intake, callbacks and owner communication.","PUBLIC",["Intake Desk","Callback Board","Waiting Census"]],
+["exam","EXAM ROOMS","🩺","Four compact examination rooms connect intake to treatment.","CLINICAL",["Exam Cart","Wall Monitor","Supply Drawer"]],
+["icu","ICU / RECOVERY","♥️","Continuous monitoring, oxygen support and recovery handoffs.","CLINICAL",["Recovery Monitor","Oxygen Manifold","Handoff Clipboard"]],
+["surgery","SURGERY","⚕️","Procedure theater, anesthesia equipment and sterile storage.","RESTRICTED",["Anesthesia Console","Procedure Log","Sterile Cabinet"]],
+["imaging","IMAGING","☢️","Radiology and ultrasound workstations including VET-RAD-02.","RESTRICTED",["VET-RAD-02","Image Archive","Service Panel"]],
+["lab","LABORATORY","🧪","Clinical pathology benches and specimen accession systems.","RESTRICTED",["CBC Analyzer","Specimen Queue","Accession Log"]],
+["pharmacy","PHARMACY","💊","Medication reconciliation and controlled clinical inventory.","RESTRICTED",["Dispensing Terminal","Inventory Cabinet","Reconciliation Log"]],
+["records","MEDICAL RECORDS","🗄️","Current charts, migrated indexes and protected legacy references.","ADMIN",["Chart Terminal","Migration Index","Paper Locator"]],
+["admin","ADMINISTRATION","📋","Credentials, incident reports and departmental operations.","ADMIN",["Credential Printer","Incident Cabinet","Shift Handoffs"]],
+["it","VETERINARY IT","🖥️","Clinical systems support, network monitoring and recovered accounts.","ADMIN",["VET-ADMIN-01","Network Rack","Mercer Archive"]],
+["maintenance","MAINTENANCE","🔧","Plant systems, biomedical storage and service-ticket records.","SERVICE",["Work Orders","Cable Map","Equipment Tags"]],
+["loading","LOADING DOCK","🚚","Supply deliveries, transfers and retired equipment movements.","SERVICE",["Transfer Ledger","Dock Camera","Crate Labels"]],
+["basement","BASEMENT SERVICE","🔦","Utility corridor beneath the veterinary wing.","SERVICE",["Door Sensor","Old Conduit","Wall Directory"]],
+["oldwing","OLD VETERINARY WING","🏚️","A decommissioned corridor still represented on several legacy plans.","LOCKED",["Faded Room Board","Abandoned Desk","Recovery Sign"]],
+["storage","SEALED STORAGE","🔒","Lower storage referenced by historical equipment-transfer paperwork.","LOCKED",["Inventory Cage","Paper Boxes","Covered Equipment"]]
+];
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{room:"reception",visited:["reception"],objects:{},access:1,log:["Hospital exploration map initialized."],discoveries:[]}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+function R(id){return rooms.find(r=>r[0]===id)}
+function allowed(r,x){if(r[4]!=="LOCKED")return true;if(r[0]==="oldwing")return x.visited.includes("basement")&&x.objects["basement:Wall Directory"];if(r[0]==="storage")return x.visited.includes("oldwing")&&x.objects["oldwing:Recovery Sign"];return false}
+function visit(id){let x=get(),r=R(id);if(!r)return;if(!allowed(r,x)){alert("Access route not established yet. Explore the service areas and documented clues first.");return}x.room=id;if(!x.visited.includes(id))x.visited.push(id);x.log.unshift(new Date().toLocaleTimeString()+" ENTERED "+r[1]);put(x);render()}
+function inspect(obj){let x=get(),r=R(x.room),k=x.room+":"+obj;if(x.objects[k])return; x.objects[k]=true;let msg="";
+ if(k==="imaging:VET-RAD-02")msg="VET-RAD-02 service history includes clock-offset tickets already seen elsewhere in the hospital systems.";
+ else if(k==="it:Mercer Archive")msg="Mercer's recovered account is indexed here as historical evidence, not an active employee session.";
+ else if(k==="basement:Wall Directory")msg="A faded directory shows an older veterinary recovery corridor beyond the present basement service route. OLD VETERINARY WING access is now mapped.";
+ else if(k==="oldwing:Recovery Sign")msg="A damaged sign reads RECOVERY 04. A handwritten storage arrow points toward LOWER STORAGE. SEALED STORAGE access is now mapped.";
+ else if(k==="storage:Covered Equipment")msg="Under a cover is retired monitoring hardware carrying an RX-04 asset tag. This establishes physical legacy equipment, but not that it is the current RX04-03117 network host.";
+ else if(k==="storage:Paper Boxes")msg="Paper transfer records reference Case 1149 and equipment movement. Patient identity and equipment identifiers remain separate fields.";
+ else msg=obj+" inspected. Its condition and local records have been added to the exploration log.";
+ x.discoveries.unshift({time:new Date().toLocaleString(),room:r[1],object:obj,text:msg});x.log.unshift(new Date().toLocaleTimeString()+" INSPECTED "+r[1]+" / "+obj);put(x);render()
+}
+function render(){
+ let m=document.querySelector("#main"),x=get(),r=R(x.room);if(!m)return;try{page="physicalHospital";nav()}catch(e){}
+ let inspected=r[5].filter(o=>x.objects[r[0]+":"+o]).length;
+ m.innerHTML='<div id="d5"><header class="d5head"><small>NCRH // VETERINARY MEDICINE // DEPTH OVERHAUL 05</small><h1>PHYSICAL HOSPITAL EXPLORATION</h1><div style="font-size:8px;color:#8cad94">The veterinary department is now a navigable place. Move room to room, inspect equipment and records, unlock older areas, and carry discoveries back into the hospital systems.</div></header>'+
+ '<div class="d5stats"><div><small>ROOMS</small><b>15</b></div><div><small>VISITED</small><b>'+x.visited.length+'/15</b></div><div><small>CURRENT</small><b>'+E(r[1])+'</b></div><div><small>ROOM OBJECTS</small><b>'+inspected+'/3</b></div><div><small>DISCOVERIES</small><b>'+x.discoveries.length+'</b></div><div><small>ACCESS</small><b>'+E(r[4])+'</b></div></div>'+
+ '<div class="d5layout"><section class="d5panel"><h2>VETERINARY HOSPITAL FLOOR / SERVICE MAP</h2><div class="d5body"><div class="d5map">'+
+ rooms.slice(0,4).map(roomButton).join("")+'<div class="d5corridor">CLINICAL CORRIDOR</div>'+rooms.slice(4,8).map(roomButton).join("")+'<div class="d5corridor">DIAGNOSTIC / ADMIN CORRIDOR</div>'+rooms.slice(8,12).map(roomButton).join("")+'<div class="d5corridor">SERVICE ACCESS ↓</div>'+rooms.slice(12).map(roomButton).join("")+'</div></div></section>'+
+ '<section class="d5panel"><h2>ROOM EXPLORATION</h2><div class="d5body"><div class="d5scene"><h3>'+r[2]+' '+E(r[1])+'</h3><p>'+E(r[3])+'</p><div class="d5objects">'+r[5].map(o=>'<button class="d5obj '+(x.objects[r[0]+":"+o]?"done":"")+'" data-d5obj="'+E(o)+'">'+(x.objects[r[0]+":"+o]?"✓ ":"")+"INSPECT "+E(o)+'<small>'+ (x.objects[r[0]+":"+o]?"Recorded in exploration log":"Open / examine this object")+'</small></button>').join("")+'</div></div>'+
+ '<div class="d5actions"><button id="d5Staff">CALL STAFF DIRECTORY</button><button id="d5Chart">OPEN PATIENT CHARTS</button><button id="d5Treat">OPEN TREATMENT BAY</button></div>'+
+ '<div class="d5log">EXPLORATION / DISCOVERY LOG\n\n'+E(x.discoveries.slice(0,8).map(q=>q.time+" // "+q.room+" / "+q.object+"\n"+q.text).join("\n\n")||x.log.slice(0,12).join("\n"))+'</div>'+
+ '<div class="d5nav"><button id="d5Shift">SHIFT</button><button id="d5PC">HOSPITAL PC</button><button id="d5Net">NETWORK</button><button id="d5Archive">ARCHIVE</button><button id="d5Incident">INCIDENT</button><button id="d5Awards">CREDENTIALS</button></div></div></section></div></div>';
+ function roomButton(q){let lock=!allowed(q,x);return '<button class="d5room '+(q[0]===x.room?"on ":"")+(lock?"lock ":"")+(x.visited.includes(q[0])?"found":"")+'" data-d5room="'+q[0]+'">'+q[2]+' '+E(q[1])+'<small>'+(lock?"ROUTE LOCKED":E(q[4]))+'</small></button>'}
+ m.querySelectorAll("[data-d5room]").forEach(b=>b.onclick=()=>visit(b.dataset.d5room));m.querySelectorAll("[data-d5obj]").forEach(b=>b.onclick=()=>inspect(b.dataset.d5obj));
+ document.querySelector("#d5Staff").onclick=()=>window.VetGodsHospitalStaff?.render?.();document.querySelector("#d5Chart").onclick=()=>window.VetGodsPatientCharts?.render?.();document.querySelector("#d5Treat").onclick=()=>window.VetGodsTreatmentConsequences?.render?.();document.querySelector("#d5Shift").onclick=()=>window.VetGodsRealHospitalShift?.render?.();document.querySelector("#d5PC").onclick=()=>window.VetGodsHospitalPC?.render?.();document.querySelector("#d5Net").onclick=()=>window.VetGodsHospitalNetwork?.render?.();document.querySelector("#d5Archive").onclick=()=>window.VetGodsDeepArchive?.render?.();document.querySelector("#d5Incident").onclick=()=>window.VetGodsIncidentCommand?.render?.();document.querySelector("#d5Awards").onclick=()=>window.VetGodsAdminAuthority?.render?.();
+}
+function launch(){let b=document.querySelector("#d5Launch");if(!b){b=document.createElement("button");b.id="d5Launch";b.textContent="⌂ HOSPITAL MAP";b.onclick=render;document.body.appendChild(b)}}
+window.VetGodsPhysicalHospital={render,state:get};
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();setInterval(launch,2500);
+})();
+</script>
+<script id="depth-phase5-bridge">
+(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__depth5){let old=p.render;p.render=function(){old();setTimeout(function(){let area=document.querySelector(".hpActions");if(area&&!document.querySelector("#d5Desk")){let b=document.createElement("button");b.id="d5Desk";b.textContent="OPEN PHYSICAL HOSPITAL MAP";b.onclick=function(){VetGodsPhysicalHospital.render()};area.prepend(b)}},0)};p.__depth5=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
+</script>
+
+
+<style id="depth-phase6-css">
+#d6Shell{position:fixed;inset:0;z-index:2147483640;background:#06120b;color:#d6ffe2;font-family:"Courier New",monospace;overflow:hidden}
+#d6Desk{position:absolute;inset:0 0 35px;background:
+radial-gradient(circle at 75% 18%,rgba(83,151,99,.18),transparent 28%),
+linear-gradient(135deg,#06120b,#010403 68%);padding:12px;overflow:auto}
+.d6water{position:absolute;right:4%;bottom:8%;font-size:clamp(34px,8vw,110px);font-weight:900;letter-spacing:-6px;color:rgba(168,255,192,.035);pointer-events:none}
+.d6icons{display:grid;grid-template-columns:repeat(auto-fill,84px);gap:8px;width:min(470px,100%);position:relative;z-index:2}
+.d6icon{height:82px;border:1px solid transparent;background:transparent;color:#d6ffe2;font:700 7px "Courier New";cursor:pointer;text-align:center;padding:5px}
+.d6icon:hover{border-color:#5c8065;background:rgba(190,255,210,.08)}.d6icon span{display:block;font-size:29px;margin-bottom:4px}.d6icon small{font-size:6px;color:#7f9d87}
+.d6task{position:absolute;left:0;right:0;bottom:0;height:35px;background:#07100a;border-top:1px solid #55705c;display:flex;align-items:center;gap:4px;padding:3px 5px;z-index:20}
+.d6start,.d6task button{height:27px;border:1px solid #47634f;background:#0a1a10;color:#d6ffe2;font:700 7px "Courier New";cursor:pointer}.d6start{padding:0 12px}.d6task button:hover,.d6start:hover{background:#bddbc5;color:#031008}.d6clock{margin-left:auto;font-size:7px;padding:0 7px}
+.d6window{position:absolute;left:8%;top:7%;width:min(880px,88vw);height:min(650px,80vh);background:#020a05;border:2px solid #6b8f74;box-shadow:0 12px 50px #000;z-index:10;display:flex;flex-direction:column}
+.d6title{background:#bddbc5;color:#031008;padding:6px 8px;font-size:8px;font-weight:900;display:flex;align-items:center;justify-content:space-between;cursor:move}.d6title button{border:0;background:#031008;color:#fff;min-width:28px;height:20px}
+.d6toolbar{display:flex;gap:4px;padding:5px;border-bottom:1px solid #31533b;background:#041008}.d6toolbar button,.d6btn{border:1px solid #31533b;background:#031008;color:#caffda;padding:7px;font:700 7px "Courier New";cursor:pointer}.d6toolbar button:hover,.d6btn:hover{background:#bddbc5;color:#031008}
+.d6content{flex:1;overflow:auto;padding:8px}.d6grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.d6card{border:1px solid #31533b;background:#000803;padding:8px;min-height:76px;cursor:pointer}.d6card:hover{background:#bddbc5;color:#031008}.d6card b{font-size:8px}.d6card small{display:block;color:#789680;font-size:6px;line-height:1.45;margin-top:4px}
+.d6split{display:grid;grid-template-columns:.72fr 1.28fr;gap:7px;height:100%}.d6list{border:1px solid #31533b;overflow:auto}.d6row{padding:8px;border-bottom:1px dotted #31533b;font-size:7px;cursor:pointer}.d6row:hover,.d6row.on{background:#bddbc5;color:#031008}.d6row b{display:block;color:#eaffef}.d6row:hover b,.d6row.on b{color:#031008}.d6row small{color:#789680}
+.d6view{border:1px solid #31533b;background:#000;padding:10px;font-size:8px;line-height:1.6;white-space:pre-wrap;overflow:auto}
+.d6term{background:#000;color:#b9ffd0;border:1px solid #31533b;padding:9px;min-height:270px;white-space:pre-wrap;font-size:8px;line-height:1.55}
+.d6input{width:100%;box-sizing:border-box;background:#000;color:#caffda;border:1px solid #31533b;padding:8px;font:8px "Courier New";margin-top:6px}
+.d6status{border-top:1px solid #31533b;padding:5px 8px;font-size:6px;color:#789680}
+.d6note{background:#e7e0a0;color:#201d08;padding:14px;min-height:260px;font-family:Arial;box-shadow:4px 5px 0 rgba(0,0,0,.4)}
+.d6alert{border:1px solid #865f4c;background:#170904;color:#ffd6c0;padding:8px;font-size:7px;margin-bottom:7px}
+@media(max-width:700px){.d6window{left:2%;top:3%;width:96vw;height:86vh}.d6grid{grid-template-columns:repeat(2,1fr)}.d6split{grid-template-columns:1fr}.d6icons{grid-template-columns:repeat(4,1fr);width:100%}.d6icon{width:auto}.d6title{cursor:default}}
+</style>
+<script id="depth-phase6-js">
+(function(){"use strict";
+const KEY="vetgods_depth_phase6_desktop";
+const apps=[
+["files","📁","FILE EXPLORER","Hospital drives / recovered files"],
+["mail","✉️","INTERNAL MAIL","Staff and system messages"],
+["emr","🐾","PATIENT EMR","Persistent animal charts"],
+["print","🖨️","PRINT QUEUE","Awards / reports / spool"],
+["network","🌐","NETWORK TOOLS","Hosts / routes / diagnostics"],
+["calendar","📅","SHIFT CALENDAR","Rounds / handoffs / events"],
+["notes","🗒️","STICKY NOTES","Local administrator notes"],
+["recycle","♻️","RECYCLE BIN","Deleted / recovered artifacts"],
+["drives","💾","RECOVERED DRIVES","Legacy media indexes"],
+["terminal","⌨️","TERMINAL","Simulated hospital shell"],
+["staff","♟️","STAFF DIRECTORY","Personnel / internal messaging"],
+["map","⌂","HOSPITAL MAP","Physical veterinary department"],
+["credentials","🏆","CREDENTIALS","500-record print registry"],
+["incident","★","INCIDENT COMMAND","Case 03117 command board"]
+];
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{opened:[],selectedMail:null,notes:"03:17 — verify printer route before morning handoff.\n\nDo not merge 03117 with a patient identity.",terminal:["NCRH Veterinary Systems shell ready.","Type HELP for commands."],deleted:[],fileReads:[],driveReads:[]}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+function physical(){try{return window.VetGodsPhysicalHospital?.state?.()||{visited:[],objects:{},discoveries:[]}}catch(e){return{visited:[],objects:{},discoveries:[]}}}
+function night(){try{return window.VetGodsNightShift?.state?.()||{events:[]}}catch(e){return{events:[]}}}
+function staff(){try{return window.VetGodsHospitalStaff?.state?.()||{messages:[]}}catch(e){return{messages:[]}}}
+function charts(){try{return window.VetGodsPatientCharts?.state?.()||{charts:{}}}catch(e){return{charts:{}}}
+function shift(){try{return window.VetGodsRealHospitalShift?.state?.()||{handoffs:[],interrupts:[]}}catch(e){return{handoffs:[],interrupts:[]}}}
+function unlocked(tag){let p=physical();if(tag==="oldwing")return p.visited?.includes("oldwing");if(tag==="storage")return p.visited?.includes("storage");if(tag==="covered")return !!p.objects?.["storage:Covered Equipment"];if(tag==="paper")return !!p.objects?.["storage:Paper Boxes"];return true}
+const files=[
+["C:\\VETMED\\README.TXT","SYSTEM","Veterinary Medicine workstation image. Clinical, administrative and legacy indexes are mounted read-only in this simulation.",null],
+["C:\\VETMED\\SHIFT\\HANDOFF.LOG","SHIFT","Current and prior handoffs are generated by the Real Hospital Shift system.","dynamic-handoff"],
+["C:\\VETMED\\PRINTERS\\PRN04.INI","PRINT","QUEUE=HOSP-VET-PRN04\nPORT=9100\nLEGACY_ALIAS=RECOVERY-04\nOWNER=VETERINARY MEDICINE",null],
+["C:\\VETMED\\ARCHIVE\\MERCER_INDEX.TXT","ARCHIVE","Recovered account index: ADRIAN MERCER / Veterinary IT & Records.\nSearch terms include 03117, RX-04, Recovery Bay 4 and Case 1149.",null],
+["C:\\VETMED\\NETWORK\\UNREGISTERED.HOST","NETWORK","Host RX04-03117 answers on the veterinary subnet but lacks a current asset-inventory match.",null],
+["D:\\OLDWING\\ROOM_DIRECTORY.TXT","LEGACY","Recovered room directory includes RECOVERY 04 and a lower-storage arrow.","oldwing"],
+["D:\\LOWER_STORAGE\\TRANSFER_1149.IDX","LEGACY","Paper locator: CASE 1149 / retired recovery equipment transfer. Patient and equipment identifiers remain separate.","paper"],
+["D:\\LOWER_STORAGE\\RX04_ASSET.TXT","LEGACY","Retired monitoring hardware bears an RX-04 asset tag. This does not establish that the retired unit is the live RX04-03117 endpoint.","covered"],
+["E:\\RECOVERED\\MERCER_RESULT_07.PTR","RECOVERED","Offline pointer: V-03117 / LOWER STORAGE / paper index. Underlying original remains represented only by the in-game discovery chain.","storage"]
+];
+function openApp(id){let x=get();if(!x.opened.includes(id))x.opened.push(id);put(x);if(["emr","staff","map","credentials","incident"].includes(id)){closeShell();if(id==="emr")return window.VetGodsPatientCharts?.render?.();if(id==="staff")return window.VetGodsHospitalStaff?.render?.();if(id==="map")return window.VetGodsPhysicalHospital?.render?.();if(id==="credentials")return window.VetGodsAdminAuthority?.render?.();if(id==="incident")return window.VetGodsIncidentCommand?.render?.()}win(id)}
+function shell(){if(document.querySelector("#d6Shell"))return;let d=document.createElement("div");d.id="d6Shell";d.innerHTML='<div id="d6Desk"><div class="d6water">VET-ADMIN-01</div><div class="d6icons">'+apps.map(a=>'<button class="d6icon" data-d6app="'+a[0]+'"><span>'+a[1]+'</span>'+E(a[2])+'<small>'+E(a[3])+'</small></button>').join("")+'</div></div><div class="d6task"><button class="d6start" id="d6Start">▣ NCRH</button><button id="d6Home">DESKTOP</button><button id="d6Exit">EXIT PC</button><span class="d6clock" id="d6Clock"></span></div>';document.body.appendChild(d);d.querySelectorAll("[data-d6app]").forEach(b=>b.onclick=()=>openApp(b.dataset.d6app));d.querySelector("#d6Exit").onclick=closeShell;d.querySelector("#d6Home").onclick=()=>document.querySelectorAll(".d6window").forEach(w=>w.remove());d.querySelector("#d6Start").onclick=()=>win("start");clock();window._d6clock=setInterval(clock,1000)}
+function closeShell(){document.querySelector("#d6Shell")?.remove();clearInterval(window._d6clock)}
+function clock(){let c=document.querySelector("#d6Clock");if(c)c.textContent=new Date().toLocaleString()}
+function win(id){
+ document.querySelectorAll(".d6window").forEach(w=>w.remove());let a=apps.find(q=>q[0]===id)||["start","▣","NCRH START","Applications"];let w=document.createElement("div");w.className="d6window";w.innerHTML='<div class="d6title"><span>'+a[1]+' '+E(a[2])+'</span><button class="d6x">X</button></div><div class="d6content">'+content(id)+'</div><div class="d6status">NCRH VETERINARY MEDICINE // VET-ADMIN-01 // LOCAL SIMULATION</div>';document.querySelector("#d6Shell").appendChild(w);w.querySelector(".d6x").onclick=()=>w.remove();bind(id,w);drag(w)
+}
+function content(id){
+ let x=get();
+ if(id==="start")return '<div class="d6grid">'+apps.map(a=>'<div class="d6card" data-open="'+a[0]+'"><b>'+a[1]+' '+E(a[2])+'</b><small>'+E(a[3])+'</small></div>').join("")+'</div>';
+ if(id==="files")return '<div class="d6split"><div class="d6list">'+files.map((f,i)=>{let lock=f[3]&&!String(f[3]).startsWith("dynamic")&&!unlocked(f[3]);return '<div class="d6row" data-file="'+i+'"><b>'+(lock?"🔒 ":"📄 ")+E(f[0])+'</b><small>'+E(f[1])+(lock?" · DISCOVERY REQUIRED":"")+'</small></div>'}).join("")+'</div><div class="d6view" id="d6FileView">Select a file. Some legacy files become readable only after physically discovering their source area.</div></div>';
+ if(id==="mail"){let msgs=[...(staff().messages||[]),...(night().events||[]).map(q=>({id:q.id,from:q.src,time:q.time,subject:q.title,body:q.body,kind:q.kind}))];return '<div class="d6split"><div class="d6list">'+(msgs.length?msgs.slice(0,40).map((q,i)=>'<div class="d6row" data-mail="'+i+'"><b>'+E(q.subject||q.title||"Message")+'</b><small>'+E(q.from||q.src||"SYSTEM")+' · '+E(q.time||"")+'</small></div>').join(""):'<div class="d6row">No messages available.</div>')+'</div><div class="d6view" id="d6MailView">Select a message.</div></div>';
+ if(id==="print"){let n=night(), issued=0;try{issued=Object.keys(window.VetGodsAdminAuthority?.state?.().issued||{}).length}catch(e){}return '<div class="d6alert">PRINT SERVICES // Browser print dialogs remain the final output path.</div><div class="d6grid"><div class="d6card"><b>HOSP-VET-PRN04</b><small>'+((n.events||[]).filter(e=>e.kind==="PRINT").length)+' captured night-shift spool event(s).</small></div><div class="d6card" data-jump="credentials"><b>CREDENTIAL PRINTING</b><small>'+issued+' issued record(s). Open registry for certificate / badge printing.</small></div><div class="d6card" data-jump="incident"><b>INCIDENT DOSSIER</b><small>Open Incident Command for the printable final dossier.</small></div></div>';
+ if(id==="network")return '<div class="d6term">NETWORK UTILITIES\n\nKnown veterinary endpoints:\nVET-ADMIN-01     workstation\nVET-RAD-02       imaging\nHOSP-VET-PRN04   printer\nRX04-03117       LIVE / NO INVENTORY MATCH\n\nUse the full Network application for investigation controls.</div><button class="d6btn" data-net>OPEN FULL NETWORK TOPOLOGY</button>';
+ if(id==="calendar"){let s=shift();return '<div class="d6grid"><div class="d6card"><b>TODAY / SHIFT OPERATIONS</b><small>Clock-in, rounds, emergency interruptions and handoff.</small></div><div class="d6card"><b>HANDOFFS</b><small>'+(s.handoffs?.length||0)+' persistent handoff(s).</small></div><div class="d6card"><b>OPEN INTERRUPTIONS</b><small>'+((s.interrupts||[]).filter(q=>q.status!=="RESOLVED").length)+' unresolved.</small></div></div><button class="d6btn" data-shift>OPEN SHIFT COMMAND</button>';
+ if(id==="notes")return '<div class="d6note"><textarea id="d6Note" style="width:100%;height:240px;background:transparent;border:0;resize:none;font:15px Arial;color:#201d08">'+E(x.notes)+'</textarea></div><button class="d6btn" id="d6SaveNote">SAVE STICKY NOTE</button>';
+ if(id==="recycle")return '<div class="d6view">RECYCLE BIN\n\n'+(x.deleted.length?E(x.deleted.join("\n")):"No user-deleted files. System recovery artifacts are preserved outside this bin.")+'</div>';
+ if(id==="drives")return '<div class="d6grid"><div class="d6card" data-drive="C"><b>💾 C: CURRENT SYSTEM</b><small>Clinical / administrative workstation files.</small></div><div class="d6card" data-drive="D"><b>💾 D: OLDWING</b><small>'+(unlocked("oldwing")?"Mounted from discoveries.":"Not mounted — physical discovery required.")+'</small></div><div class="d6card" data-drive="E"><b>💾 E: RECOVERED</b><small>'+(unlocked("storage")?"Recovered index mounted.":"Offline — lower storage not yet reached.")+'</small></div></div><div class="d6view" id="d6DriveView" style="margin-top:7px">Select a drive.</div>';
+ if(id==="terminal")return '<div class="d6term" id="d6Term">'+E(x.terminal.join("\n"))+'</div><input class="d6input" id="d6Cmd" placeholder="HELP, DIR, STATUS, PING RX04-03117, PRINTQ, WHOAMI, CLEAR">';
+ return '<div class="d6view">Application unavailable in this window.</div>'
+}
+function bind(id,w){
+ w.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>openApp(b.dataset.open));
+ w.querySelectorAll("[data-jump]").forEach(b=>b.onclick=()=>openApp(b.dataset.jump));
+ if(id==="files")w.querySelectorAll("[data-file]").forEach(b=>b.onclick=()=>{let f=files[+b.dataset.file],v=w.querySelector("#d6FileView");if(f[3]&&!String(f[3]).startsWith("dynamic")&&!unlocked(f[3]))return v.textContent="ACCESS DENIED\n\nThe file index exists, but the source has not been discovered in the physical hospital yet.";let body=f[2];if(f[3]==="dynamic-handoff"){let h=shift().handoffs||[];body=h.length?h.map(q=>q.date+" // "+q.summary).join("\n"):"No handoffs recorded yet."}v.textContent=f[0]+"\nTYPE: "+f[1]+"\n\n"+body;let x=get();if(!x.fileReads.includes(f[0]))x.fileReads.push(f[0]);put(x)});
+ if(id==="mail"){let msgs=[...(staff().messages||[]),...(night().events||[]).map(q=>({from:q.src,time:q.time,subject:q.title,body:q.body,kind:q.kind}))];w.querySelectorAll("[data-mail]").forEach(b=>b.onclick=()=>{let q=msgs[+b.dataset.mail];w.querySelector("#d6MailView").textContent="FROM: "+(q.from||"SYSTEM")+"\nDATE: "+(q.time||"")+"\nTYPE: "+(q.kind||"MESSAGE")+"\nSUBJECT: "+(q.subject||"")+"\n\n"+(q.body||"Open the staff system for the full communication record.")})}
+ if(id==="network"){let b=w.querySelector("[data-net]");if(b)b.onclick=()=>{closeShell();window.VetGodsHospitalNetwork?.render?.()}}
+ if(id==="calendar"){let b=w.querySelector("[data-shift]");if(b)b.onclick=()=>{closeShell();window.VetGodsRealHospitalShift?.render?.()}}
+ if(id==="notes"){w.querySelector("#d6SaveNote").onclick=()=>{let x=get();x.notes=w.querySelector("#d6Note").value;put(x);alert("Sticky note saved locally.")}}
+ if(id==="drives")w.querySelectorAll("[data-drive]").forEach(b=>b.onclick=()=>{let d=b.dataset.drive,v=w.querySelector("#d6DriveView");if(d==="C")v.textContent="C:\\ mounted\nVETMED\nSYSTEM\nPRINTERS\nNETWORK\nARCHIVE";if(d==="D")v.textContent=unlocked("oldwing")?"D:\\ mounted\nOLDWING\nLOWER_STORAGE pointer\nLegacy room directory available.":"D:\\ NOT MOUNTED\nExplore the old veterinary wing first.";if(d==="E")v.textContent=unlocked("storage")?"E:\\ mounted read-only\nRECOVERED\nMERCER_RESULT_07.PTR":"E:\\ OFFLINE\nReach lower storage to mount recovered index."});
+ if(id==="terminal"){let inp=w.querySelector("#d6Cmd");inp.onkeydown=e=>{if(e.key==="Enter"){cmd(inp.value,w);inp.value=""}}}
+}
+function cmd(raw,w){let c=raw.trim(),u=c.toUpperCase(),x=get(),out="";if(u==="HELP")out="Commands: HELP, DIR, STATUS, WHOAMI, PING RX04-03117, PRINTQ, MAP, SHIFT, CLEAR";else if(u==="DIR")out="C:\\VETMED\\\n  SHIFT\n  PRINTERS\n  ARCHIVE\n  NETWORK\n"+(unlocked("oldwing")?"D:\\OLDWING\\ [MOUNTED]":"D:\\ [NOT MOUNTED]")+"\n"+(unlocked("storage")?"E:\\RECOVERED\\ [MOUNTED]":"E:\\ [OFFLINE]");else if(u==="STATUS")out="VET-ADMIN-01 ONLINE\nClinical systems available\nRX04-03117 unresolved endpoint\nPhysical rooms visited: "+(physical().visited?.length||0)+"/15";else if(u==="WHOAMI")out="VET-ADMIN-01\\LOCAL_ADMIN\nVeterinary Medicine workstation simulation";else if(u==="PING RX04-03117")out="Reply from RX04-03117: simulated endpoint responding\nAsset inventory match: NONE\nPhysical identity: UNVERIFIED";else if(u==="PRINTQ")out="HOSP-VET-PRN04 READY\nNight spool events: "+((night().events||[]).filter(e=>e.kind==="PRINT").length);else if(u==="MAP"){closeShell();return window.VetGodsPhysicalHospital?.render?.()}else if(u==="SHIFT"){closeShell();return window.VetGodsRealHospitalShift?.render?.()}else if(u==="CLEAR"){x.terminal=[];put(x);w.querySelector("#d6Term").textContent="";return}else out="Unknown command. Type HELP.";x.terminal.push("> "+c,out);x.terminal=x.terminal.slice(-60);put(x);w.querySelector("#d6Term").textContent=x.terminal.join("\n");w.querySelector("#d6Term").scrollTop=99999}
+function drag(w){let bar=w.querySelector(".d6title"),down=false,ox=0,oy=0;bar.onpointerdown=e=>{if(innerWidth<700)return;down=true;ox=e.clientX-w.offsetLeft;oy=e.clientY-w.offsetTop;bar.setPointerCapture(e.pointerId)};bar.onpointermove=e=>{if(!down)return;w.style.left=Math.max(0,Math.min(innerWidth-w.offsetWidth,e.clientX-ox))+"px";w.style.top=Math.max(0,Math.min(innerHeight-w.offsetHeight-35,e.clientY-oy))+"px"};bar.onpointerup=()=>down=false}
+function launch(){let b=document.querySelector("#d6Launch");if(!b){b=document.createElement("button");b.id="d6Launch";b.textContent="▣ DEEP COMPUTER";b.style.cssText="position:fixed;left:8px;bottom:183px;z-index:2147483625;background:#010805;color:#b7ffd1;border:1px solid #6d9a78;padding:9px 11px;font:900 8px Courier New;cursor:pointer";b.onclick=shell;document.body.appendChild(b)}}
+window.VetGodsDeepComputer={open:shell,state:get};
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();setInterval(launch,2500);
+})();
+</script>
+<script id="depth-phase6-bridge">
+(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__depth6){let old=p.render;p.render=function(){old();setTimeout(function(){let area=document.querySelector(".hpActions");if(area&&!document.querySelector("#d6DeskBtn")){let b=document.createElement("button");b.id="d6DeskBtn";b.textContent="BOOT DEEP VET-ADMIN-01 DESKTOP";b.onclick=function(){VetGodsDeepComputer.open()};area.prepend(b)}},0)};p.__depth6=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
+</script>
+
+
+<style id="depth-phase7-css">
+#d7{min-height:100%;background:radial-gradient(circle at 52% 0,rgba(93,126,76,.19),transparent 34%),repeating-linear-gradient(90deg,rgba(207,255,210,.015) 0 1px,transparent 1px 28px),#030503;color:#dcffe4;font-family:"Courier New",monospace;padding:8px}
+.d7head,.d7panel{border:1px solid #526c56;background:#080c08}.d7head{padding:13px}.d7head small{font-size:7px;color:#819284;letter-spacing:2px}.d7head h1{font-size:clamp(24px,5vw,42px);margin:4px 0}.d7stats{display:grid;grid-template-columns:repeat(7,1fr);border:1px solid #526c56;margin:7px 0}.d7stats div{padding:7px;border-right:1px dotted #526c56}.d7stats small{display:block;font-size:6px;color:#78847a}.d7stats b{font-size:9px}.d7layout{display:grid;grid-template-columns:.65fr 1.35fr;gap:7px}.d7panel h2{margin:0;padding:7px;background:#c9dbc9;color:#071008;font-size:9px}.d7body{padding:8px}
+.d7sources{max-height:690px;overflow:auto}.d7filter{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:6px}.d7filter button,.d7btn,.d7nav button{border:1px solid #526c56;background:#0a130c;color:#dcffe4;padding:8px;font:700 7px "Courier New";cursor:pointer}.d7filter button.on,.d7filter button:hover,.d7btn:hover,.d7nav button:hover{background:#c9dbc9;color:#071008}
+.d7source{border:1px solid #364b3a;padding:8px;margin-bottom:5px;cursor:pointer;background:#050805}.d7source:hover{background:#c9dbc9;color:#071008}.d7source b{font-size:8px}.d7source small{display:block;font-size:6px;color:#7f9082;margin-top:3px}.d7source em{font-style:normal;font-size:6px;border:1px solid #526c56;padding:2px 4px;float:right}
+.d7board{position:relative;min-height:590px;border:1px solid #526c56;background:linear-gradient(rgba(255,255,255,.018),rgba(255,255,255,.018)),#120d08;overflow:auto;padding:12px}.d7board:before{content:"CASE 03117 // VETERINARY INCIDENT EVIDENCE";position:absolute;right:12px;top:8px;color:rgba(255,255,255,.06);font-size:20px;font-weight:900}
+.d7pins{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;position:relative;z-index:2}.d7pin{min-height:120px;padding:9px;background:#ddd4b6;color:#17140e;box-shadow:4px 5px 0 rgba(0,0,0,.35);transform:rotate(-.4deg);cursor:pointer;position:relative}.d7pin:nth-child(even){transform:rotate(.6deg);background:#c8d8c6}.d7pin:before{content:"●";position:absolute;top:-8px;left:50%;font-size:16px}.d7pin b{font-size:8px}.d7pin small{display:block;font-size:6px;margin-top:5px;line-height:1.45}.d7pin strong{display:block;font-size:6px;margin-top:7px;border-top:1px solid #6f6958;padding-top:4px}
+.d7links{margin-top:8px;border:1px solid #526c56;background:#020402;max-height:230px;overflow:auto}.d7link{display:grid;grid-template-columns:1fr 100px 1fr;gap:6px;padding:7px;border-bottom:1px dotted #526c56;font-size:7px;align-items:center}.d7link span:nth-child(2){text-align:center;font-weight:900}.d7-confirmed{color:#baffc8}.d7-conflicting{color:#ffd1a8}.d7-probable{color:#fff3a6}.d7-unexplained{color:#c7d8ff}.d7-disproven{color:#999;text-decoration:line-through}
+.d7hyp{display:grid;grid-template-columns:1fr 150px;gap:5px;margin-top:7px}.d7input,.d7select{background:#000;color:#dcffe4;border:1px solid #526c56;padding:8px;font:8px "Courier New";width:100%;box-sizing:border-box}.d7timeline{border:1px solid #526c56;background:#000;padding:9px;max-height:200px;overflow:auto;font-size:7px;line-height:1.55;white-space:pre-wrap;margin-top:7px}.d7nav{display:grid;grid-template-columns:repeat(6,1fr);margin-top:7px}
+#d7Launch{position:fixed;left:8px;bottom:218px;z-index:2147483624;background:#090d09;color:#d9ffe3;border:1px solid #6d8a71;padding:9px 11px;font:900 8px "Courier New";cursor:pointer}
+@media(max-width:900px){.d7layout{grid-template-columns:1fr}.d7stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:620px){.d7pins{grid-template-columns:1fr}.d7filter,.d7nav{grid-template-columns:repeat(2,1fr)}.d7link{grid-template-columns:1fr}.d7hyp{grid-template-columns:1fr}}
+</style>
+<script id="depth-phase7-js">
+(function(){"use strict";
+const KEY="vetgods_depth_phase7_evidence";
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{pins:[],links:[],hypotheses:[],filter:"ALL",log:["Evidence wall initialized. No conclusion is treated as proven without supporting records."]}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+function phys(){try{return window.VetGodsPhysicalHospital?.state?.()||{visited:[],objects:{},discoveries:[]}}catch(e){return{visited:[],objects:{},discoveries:[]}}}
+function staff(){try{return window.VetGodsHospitalStaff?.state?.()||{messages:[]}}catch(e){return{messages:[]}}}
+function pc(){try{return window.VetGodsDeepComputer?.state?.()||{fileReads:[]}}catch(e){return{fileReads:[]}}}
+function sources(){
+ let p=phys(), s=staff(), d=pc(), a=[
+ ["E01","DEVICE","RX04-03117","Network endpoint responds but lacks a current asset-inventory match.","UNEXPLAINED",true],
+ ["E02","ROOM","RECOVERY 04","Old veterinary-wing signage documents a historical Recovery 04 room.","CONFIRMED",!!p.objects?.["oldwing:Recovery Sign"]],
+ ["E03","DEVICE","RX-04 ASSET TAG","Retired monitoring hardware in lower storage bears an RX-04 tag.","CONFIRMED",!!p.objects?.["storage:Covered Equipment"]],
+ ["E04","RECORD","CASE 1149","Paper transfer records reference Case 1149 and retired equipment movement.","CONFIRMED",!!p.objects?.["storage:Paper Boxes"]],
+ ["E05","PERSON","ADRIAN MERCER","Recovered records identify Mercer as a historical Veterinary IT / Records account.","CONFIRMED",true],
+ ["E06","SYSTEM","VET-RAD-02","Imaging workstation has historical clock-offset service tickets.","CONFIRMED",!!p.objects?.["imaging:VET-RAD-02"]],
+ ["E07","PRINTER","HOSP-VET-PRN04","Veterinary printer queue uses a legacy alias referencing Recovery-04.","CONFIRMED",true],
+ ["E08","FILE","MERCER_INDEX.TXT","Recovered index groups search terms 03117, RX-04, Recovery Bay 4 and Case 1149.","CONFIRMED",d.fileReads?.some(q=>q.includes("MERCER_INDEX"))],
+ ["E09","FILE","TRANSFER_1149.IDX","Lower-storage transfer locator becomes readable after the paper source is discovered.","CONFIRMED",d.fileReads?.some(q=>q.includes("TRANSFER_1149"))],
+ ["E10","FILE","RX04_ASSET.TXT","Digital note documents the retired RX-04 hardware without equating it to the live endpoint.","CONFIRMED",d.fileReads?.some(q=>q.includes("RX04_ASSET"))],
+ ["E11","LOCATION","LOWER STORAGE","Physical exploration establishes a sealed lower-storage area beneath the old wing.","CONFIRMED",p.visited?.includes("storage")],
+ ["E12","CLAIM","RX-04 = RX04-03117","Similar names alone do not establish that the retired device and live network endpoint are the same object.","DISPROVEN",!!p.objects?.["storage:Covered Equipment"]],
+ ["E13","CLAIM","03117 = PATIENT ID","Current evidence does not establish 03117 as an animal identity.","DISPROVEN",true],
+ ["E14","CLAIM","MERCER IS CURRENTLY ON SHIFT","Personnel records represent Mercer as historical/archived, not a current shift worker.","DISPROVEN",true]
+ ];
+ (s.messages||[]).slice(0,5).forEach((m,i)=>a.push(["M"+i,"MESSAGE",m.subject||"STAFF MESSAGE",(m.body||"Internal staff communication."),"UNEXPLAINED",true]));
+ return a
+}
+function pin(id){let x=get(),q=sources().find(z=>z[0]===id);if(!q||!q[5])return alert("That evidence has not been discovered yet.");if(!x.pins.includes(id)){x.pins.push(id);x.log.unshift(new Date().toLocaleString()+" PINNED "+q[2])}put(x);render()}
+function unlink(i){let x=get();x.links.splice(i,1);put(x);render()}
+function autoLink(){
+ let x=get(), have=id=>x.pins.includes(id), add=(a,b,status,why)=>{if(have(a)&&have(b)&&!x.links.some(q=>q.a===a&&q.b===b)){x.links.push({a,b,status,why})}};
+ add("E02","E03","PROBABLE","Recovery 04 and RX-04 occur in the same legacy physical environment, but identity is not established.");
+ add("E03","E12","DISPROVEN","The asset tag proves retired RX-04 hardware exists; it does not prove equivalence with the live endpoint.");
+ add("E04","E09","CONFIRMED","The paper transfer record and recovered digital locator refer to the same Case 1149 transfer index.");
+ add("E05","E08","CONFIRMED","Mercer's historical account is directly represented by the recovered Mercer index.");
+ add("E01","E03","CONFLICTING","The live endpoint and retired asset share naming elements, while current inventory fails to match them.");
+ add("E02","E07","CONFIRMED","Printer configuration explicitly preserves RECOVERY-04 as a legacy alias.");
+ add("E01","E13","DISPROVEN","No discovered record establishes 03117 as a patient identity.");
+ x.log.unshift(new Date().toLocaleString()+" AUTO-CORRELATION completed using pinned evidence only.");put(x);render()
+}
+function hypothesis(){
+ let inp=document.querySelector("#d7Hyp"),sel=document.querySelector("#d7HypStatus");if(!inp||!inp.value.trim())return;let x=get();x.hypotheses.unshift({text:inp.value.trim(),status:sel.value,time:new Date().toLocaleString()});x.log.unshift(new Date().toLocaleString()+" HYPOTHESIS "+sel.value+": "+inp.value.trim());put(x);render()
+}
+function render(){
+ let m=document.querySelector("#main"),x=get(),all=sources();if(!m)return;try{page="evidenceWall";nav()}catch(e){}
+ let available=all.filter(q=>q[5]),shown=available.filter(q=>x.filter==="ALL"||q[1]===x.filter),pins=x.pins.map(id=>all.find(q=>q[0]===id)).filter(Boolean);
+ let count=s=>x.links.filter(q=>q.status===s).length;
+ m.innerHTML='<div id="d7"><header class="d7head"><small>NCRH // VETERINARY MEDICINE // DEPTH OVERHAUL 07</small><h1>INCIDENT EVIDENCE WALL</h1><div style="font-size:8px;color:#91a395">Pin only discovered evidence, correlate records, and keep confirmed facts separate from conflicts, probabilities, unexplained links and disproven assumptions.</div></header>'+
+ '<div class="d7stats"><div><small>AVAILABLE</small><b>'+available.length+'</b></div><div><small>PINNED</small><b>'+pins.length+'</b></div><div><small>LINKS</small><b>'+x.links.length+'</b></div><div><small>CONFIRMED</small><b>'+count("CONFIRMED")+'</b></div><div><small>CONFLICTING</small><b>'+count("CONFLICTING")+'</b></div><div><small>UNEXPLAINED</small><b>'+count("UNEXPLAINED")+'</b></div><div><small>HYPOTHESES</small><b>'+x.hypotheses.length+'</b></div></div>'+
+ '<div class="d7layout"><section class="d7panel"><h2>EVIDENCE SOURCE TRAY</h2><div class="d7body"><div class="d7filter">'+["ALL","DEVICE","ROOM","RECORD","PERSON","FILE","CLAIM"].map(f=>'<button class="'+(x.filter===f?"on":"")+'" data-d7filter="'+f+'">'+f+'</button>').join("")+'</div><div class="d7sources">'+shown.map(q=>'<div class="d7source" data-d7pin="'+q[0]+'"><em>'+E(q[4])+'</em><b>'+E(q[2])+'</b><small>'+E(q[1])+' // '+E(q[3])+'</small></div>').join("")+'</div></div></section>'+
+ '<section class="d7panel"><h2>CASE BOARD</h2><div class="d7body"><div class="d7board"><div class="d7pins">'+(pins.length?pins.map(q=>'<div class="d7pin"><b>'+E(q[2])+'</b><small>'+E(q[3])+'</small><strong>'+E(q[1])+' // SOURCE STATUS: '+E(q[4])+'</strong></div>').join(""):'<div class="d7pin"><b>EMPTY BOARD</b><small>Select discovered evidence from the source tray to pin it here.</small><strong>CASE 03117</strong></div>')+'</div></div>'+
+ '<button class="d7btn" id="d7Auto" style="margin-top:7px">RUN EVIDENCE-ONLY CORRELATION</button>'+
+ '<div class="d7links">'+(x.links.length?x.links.map((q,i)=>{let A=all.find(z=>z[0]===q.a),B=all.find(z=>z[0]===q.b);return '<div class="d7link"><span>'+E(A?.[2]||q.a)+'</span><span class="d7-'+q.status.toLowerCase()+'">'+E(q.status)+'</span><span>'+E(B?.[2]||q.b)+'<br><small>'+E(q.why)+'</small> <button data-d7unlink="'+i+'">×</button></span></div>'}).join(""):'<div class="d7link"><span>No correlations yet.</span><span>—</span><span>Pin evidence, then run correlation.</span></div>')+'</div>'+
+ '<div class="d7hyp"><input id="d7Hyp" class="d7input" placeholder="Write your own case hypothesis..."><select id="d7HypStatus" class="d7select"><option>UNEXPLAINED</option><option>PROBABLE</option><option>CONFLICTING</option><option>CONFIRMED</option><option>DISPROVEN</option></select></div><button class="d7btn" id="d7SaveHyp" style="margin-top:5px">SAVE HYPOTHESIS</button>'+
+ '<div class="d7timeline">CASE ANALYSIS LOG\n\n'+E(x.hypotheses.slice(0,8).map(q=>q.time+" // "+q.status+"\n"+q.text).join("\n\n")||x.log.slice(0,14).join("\n"))+'</div>'+
+ '<div class="d7nav"><button id="d7PC">DEEP COMPUTER</button><button id="d7Map">HOSPITAL MAP</button><button id="d7Staff">STAFF</button><button id="d7Archive">ARCHIVE</button><button id="d7Incident">INCIDENT</button><button id="d7Awards">CREDENTIALS</button></div></div></section></div></div>';
+ m.querySelectorAll("[data-d7filter]").forEach(b=>b.onclick=()=>{x.filter=b.dataset.d7filter;put(x);render()});
+ m.querySelectorAll("[data-d7pin]").forEach(b=>b.onclick=()=>pin(b.dataset.d7pin));
+ m.querySelectorAll("[data-d7unlink]").forEach(b=>b.onclick=()=>unlink(+b.dataset.d7unlink));
+ document.querySelector("#d7Auto").onclick=autoLink;document.querySelector("#d7SaveHyp").onclick=hypothesis;
+ document.querySelector("#d7PC").onclick=()=>window.VetGodsDeepComputer?.open?.();document.querySelector("#d7Map").onclick=()=>window.VetGodsPhysicalHospital?.render?.();document.querySelector("#d7Staff").onclick=()=>window.VetGodsHospitalStaff?.render?.();document.querySelector("#d7Archive").onclick=()=>window.VetGodsDeepArchive?.render?.();document.querySelector("#d7Incident").onclick=()=>window.VetGodsIncidentCommand?.render?.();document.querySelector("#d7Awards").onclick=()=>window.VetGodsAdminAuthority?.render?.();
+}
+function launch(){let b=document.querySelector("#d7Launch");if(!b){b=document.createElement("button");b.id="d7Launch";b.textContent="📌 EVIDENCE WALL";b.onclick=render;document.body.appendChild(b)}}
+window.VetGodsEvidenceWall={render,state:get};
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();setInterval(launch,2500);
+})();
+</script>
+<script id="depth-phase7-bridge">
+(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__depth7){let old=p.render;p.render=function(){old();setTimeout(function(){let area=document.querySelector(".hpActions");if(area&&!document.querySelector("#d7DeskBtn")){let b=document.createElement("button");b.id="d7DeskBtn";b.textContent="OPEN INCIDENT EVIDENCE WALL";b.onclick=function(){VetGodsEvidenceWall.render()};area.prepend(b)}},0)};p.__depth7=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
+</script>
+
+
+<style id="depth-phase8-css">
+#d8{min-height:100%;background:radial-gradient(circle at 65% 0,rgba(72,128,89,.2),transparent 36%),repeating-linear-gradient(0deg,rgba(200,255,214,.018) 0 1px,transparent 1px 4px),#010403;color:#d9ffe4;font-family:"Courier New",monospace;padding:8px}
+.d8head,.d8panel{border:1px solid #42614a;background:#020a05}.d8head{padding:13px}.d8head small{font-size:7px;color:#7d9884;letter-spacing:2px}.d8head h1{font-size:clamp(24px,5vw,42px);margin:4px 0}.d8stats{display:grid;grid-template-columns:repeat(7,1fr);border:1px solid #42614a;margin:7px 0}.d8stats div{padding:7px;border-right:1px dotted #42614a}.d8stats small{display:block;font-size:6px;color:#6f8875}.d8stats b{font-size:9px}.d8layout{display:grid;grid-template-columns:.62fr 1.38fr;gap:7px}.d8panel h2{margin:0;padding:7px;background:#c4dec9;color:#031008;font-size:9px}.d8body{padding:8px}
+.d8residents{max-height:700px;overflow:auto}.d8resident{display:grid;grid-template-columns:46px 1fr 85px;gap:7px;align-items:center;padding:9px;border-bottom:1px dotted #42614a;cursor:pointer}.d8resident:hover,.d8resident.on{background:#c4dec9;color:#031008}.d8resident span{font-size:31px}.d8resident b{font-size:8px;color:#effff3}.d8resident:hover b,.d8resident.on b{color:#031008}.d8resident small{display:block;font-size:6px;color:#7c9682}.d8resident strong{text-align:right;font-size:6px}
+.d8hero{display:grid;grid-template-columns:90px 1fr;gap:12px;align-items:center;border:1px solid #42614a;background:#000803;padding:11px}.d8hero .ico{font-size:70px;text-align:center}.d8hero h3{font-size:20px;margin:0}.d8muted{font-size:7px;color:#7d9884;line-height:1.55}
+.d8cards{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:7px}.d8card{border:1px solid #42614a;padding:8px;min-height:74px}.d8card b{font-size:7px}.d8card small{display:block;font-size:6px;color:#7d9884;line-height:1.5;margin-top:4px}.d8card.hot{border-color:#8a6652;background:#140905}
+.d8tabs{display:grid;grid-template-columns:repeat(6,1fr);margin-top:7px}.d8tabs button,.d8actions button,.d8nav button{border:1px solid #42614a;background:#031008;color:#d9ffe4;padding:8px;font:700 7px "Courier New";cursor:pointer}.d8tabs button.on,.d8tabs button:hover,.d8actions button:hover,.d8nav button:hover{background:#c4dec9;color:#031008}
+.d8view{border:1px solid #42614a;background:#000;padding:9px;min-height:250px;margin-top:7px;max-height:380px;overflow:auto}.d8event{padding:8px;border-bottom:1px dotted #42614a;font-size:7px;line-height:1.5}.d8event b{display:block;color:#effff3}.d8event small{color:#7d9884}.d8actions{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:7px}.d8nav{display:grid;grid-template-columns:repeat(6,1fr);margin-top:7px}
+.d8memory{border-left:3px solid #71927a;padding-left:8px}.d8callback{border:1px solid #81604d;background:#130905;padding:8px;margin:6px 0;font-size:7px}.d8good{border:1px solid #42614a;background:#031008;padding:8px;margin:6px 0;font-size:7px}
+#d8Launch{position:fixed;left:8px;bottom:253px;z-index:2147483623;background:#010805;color:#d9ffe4;border:1px solid #71927a;padding:9px 11px;font:900 8px "Courier New";cursor:pointer}
+@media(max-width:900px){.d8layout{grid-template-columns:1fr}.d8stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:580px){.d8cards,.d8actions,.d8nav{grid-template-columns:1fr}.d8tabs{grid-template-columns:repeat(3,1fr)}}
+</style>
+<script id="depth-phase8-js">
+(function(){"use strict";
+const KEY="vetgods_depth_phase8_residents", tabs=["LIFE RECORD","ADMISSIONS","RECOVERY","STAFF MEMORY","OWNER CONTACT","CHANGES","RETURN VISITS","MYSTERY LINKS"];
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function animals(){try{return state.animals||[]}catch(e){return[]}}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{selected:null,tab:"LIFE RECORD",day:1,residents:{},log:[]}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+function mrn(a){let n=String(a?.id??0).replace(/\D/g,"");return "VET-"+String(n||Math.abs(String(a?.name||"PATIENT").split("").reduce((q,c)=>q*31+c.charCodeAt(0),7))).padStart(6,"0").slice(-6)}
+function ensure(x,a,i){
+ let id=String(a.id);if(!x.residents[id])x.residents[id]={firstSeen:new Date().toLocaleString(),admissions:1,daysKnown:0,status:"ACTIVE",bond:35+(i*7)%50,ownerTrust:42+(i*9)%45,staffMemories:[],ownerContacts:[],changes:[],returns:[],recovery:[],mystery:[],life:[{day:1,type:"INTAKE",text:"Long-term resident record created from the existing animal roster."}],scar:i%4===0?"Small healed treatment scar documented in the fictional record.":"No persistent visible treatment change recorded.",favorite:["quiet bedding","soft food","window light","slow walks","warm blankets"][i%5],fear:["loud carts","metal doors","rapid handling","alarm tones","unfamiliar rooms"][i%5]};
+ return x.residents[id]
+}
+function chartInfo(a){try{return window.VetGodsPatientCharts?.state?.().charts?.[String(a.id)]||null}catch(e){return null}}
+function treatmentInfo(a){try{return window.VetGodsTreatmentConsequences?.state?.().patients?.[String(a.id)]||null}catch(e){return null}}
+function staffState(){try{return window.VetGodsHospitalStaff?.state?.()||{staff:{}}}catch(e){return{staff:{}}}
+function addLife(r,type,text,x){r.life.unshift({day:x.day,type,text})}
+function staffRemember(a,r,x){
+ let names=["Dr. Mara Voss","Avery Knox","Cass Reed","Yuki Tan","Dr. Rowan Hale"], who=names[(r.staffMemories.length+x.day)%names.length];
+ let memory=who+" remembers "+a.name+" and notes that "+(r.favorite)+" helps settle the patient; avoid "+r.fear+" when possible.";
+ r.staffMemories.unshift({day:x.day,who,text:memory});r.bond=Math.min(100,r.bond+5);addLife(r,"STAFF MEMORY",memory,x);x.log.unshift("DAY "+x.day+" // "+memory)
+}
+function ownerCall(a,r,x){
+ let lines=[
+ "Owner callback: reports "+a.name+" is eating and resting better at home.",
+ "Owner callback: asks whether the previous recovery routine should be repeated during the next simulated visit.",
+ "Owner callback: reports a familiar behavior change and requests a follow-up appointment.",
+ "Owner callback: sends an update that "+a.name+" still prefers "+r.favorite+"."
+ ], text=lines[(r.ownerContacts.length+x.day)%lines.length];
+ r.ownerContacts.unshift({day:x.day,text});r.ownerTrust=Math.min(100,r.ownerTrust+4);addLife(r,"OWNER CONTACT",text,x)
+}
+function recordChange(a,r,x){
+ let changes=[
+ "Coat / feather condition improved after sustained recovery care.",
+ "Mobility confidence increased compared with the prior admission.",
+ "Persistent preference recorded: "+r.favorite+".",
+ "Handling plan updated because the patient remains wary of "+r.fear+".",
+ r.scar
+ ], text=changes[(r.changes.length+x.day)%changes.length];
+ r.changes.unshift({day:x.day,text});addLife(r,"LONG-TERM CHANGE",text,x)
+}
+function returnVisit(a,r,x){
+ r.admissions++;let reason=["scheduled recovery recheck","new minor injury assessment","nutrition and hydration follow-up","mobility reassessment","owner-requested wellness return"][r.returns.length%5];
+ let text="Return admission #"+r.admissions+": "+reason+". Prior chart history, staff memories and persistent preferences were carried forward.";
+ r.returns.unshift({day:x.day,text});addLife(r,"RETURN VISIT",text,x);
+ let c=chartInfo(a);if(c){c.timeline.unshift({time:new Date().toLocaleString(),type:"RETURN VISIT",text});localStorage.setItem("vetgods_depth_phase2_charts",JSON.stringify(window.VetGodsPatientCharts.state()))}
+}
+function mysteryLink(a,r,x){
+ let options=[
+ "A return-visit timestamp overlaps a historical printer event. Correlation only; no causal link established.",
+ "An old room code appears in a copied handoff attached to this resident's historical chart. The code may refer to location rather than patient.",
+ "A legacy accession field resembles an incident identifier. Identity remains unverified.",
+ "A staff recollection places this animal's earlier recovery in the renovated wing, but no evidence ties the animal itself to Case 03117."
+ ], text=options[r.mystery.length%options.length];
+ r.mystery.unshift({day:x.day,status:"UNEXPLAINED",text});addLife(r,"MYSTERY LINK",text,x)
+}
+function advance(){
+ let x=get();x.day+=30;animals().forEach((a,i)=>{let r=ensure(x,a,i);r.daysKnown+=30;if((x.day+i)%2===0)recordChange(a,r,x);if((x.day+i)%3===0)ownerCall(a,r,x);if((x.day+i)%4===0)staffRemember(a,r,x);if((x.day+i)%5===0)r.recovery.unshift({day:x.day,text:"Long-term recovery review: comfort, mobility and home routine reassessed."})});x.log.unshift("SIMULATED CALENDAR advanced to day "+x.day+".");put(x);render()
+}
+function view(tab,a,r,x){
+ const list=(arr,label)=>'<div>'+((arr&&arr.length)?arr.map(q=>'<div class="d8event"><b>'+E(label)+' // DAY '+E(q.day)+'</b><small>'+E(q.who? q.who+" // ":"")+E(q.text)+'</small></div>').join(""):'<div class="d8event"><b>NO ENTRIES YET</b><small>This part of the resident record will grow as time and care continue.</small></div>')+'</div>';
+ if(tab==="LIFE RECORD")return list(r.life,"LIFE EVENT");
+ if(tab==="ADMISSIONS")return '<div class="d8good"><b>TOTAL ADMISSIONS: '+r.admissions+'</b><br>First recorded: '+E(r.firstSeen)+'<br>Known in simulation: '+r.daysKnown+' days</div>'+list(r.returns,"ADMISSION / RETURN");
+ if(tab==="RECOVERY"){let t=treatmentInfo(a);return '<div class="d8good">CURRENT CARRY-FORWARD<br>Favorite comfort: '+E(r.favorite)+'<br>Handling concern: '+E(r.fear)+'<br>Persistent change: '+E(r.scar)+(t?'<br>Latest treatment engine: oxygen '+Math.round(t.oxygen)+'%, hydration '+Math.round(t.hydration)+'%, pain '+Number(t.pain).toFixed(1)+'/10':'')+'</div>'+list(r.recovery,"RECOVERY REVIEW")}
+ if(tab==="STAFF MEMORY")return list(r.staffMemories,"STAFF MEMORY");
+ if(tab==="OWNER CONTACT")return list(r.ownerContacts,"OWNER / GUARDIAN CONTACT");
+ if(tab==="CHANGES")return '<div class="d8good">The long-term record preserves fictional visible/behavioral recovery changes without overwriting the animal identity.</div>'+list(r.changes,"PERSISTENT CHANGE");
+ if(tab==="RETURN VISITS")return list(r.returns,"RETURN VISIT");
+ if(tab==="MYSTERY LINKS")return '<div class="d8callback"><b>CASE-INTEGRITY RULE</b><br>Resident coincidences are stored as leads only. They do not automatically make an animal part of Case 03117.</div>'+list(r.mystery,"UNEXPLAINED LINK");
+ return ""
+}
+function act(kind,a,r,x){
+ if(kind==="memory")staffRemember(a,r,x);
+ if(kind==="call")ownerCall(a,r,x);
+ if(kind==="change")recordChange(a,r,x);
+ if(kind==="return")returnVisit(a,r,x);
+ if(kind==="mystery")mysteryLink(a,r,x);
+ put(x);render()
+}
+function render(){
+ let m=document.querySelector("#main"),x=get(),ls=animals();if(!m)return;let a=ls.find(z=>String(z.id)===String(x.selected))||ls[0];if(a&&!x.selected)x.selected=a.id;let idx=Math.max(0,ls.indexOf(a)),r=a?ensure(x,a,idx):null;put(x);try{page="longTermResidents";nav()}catch(e){}
+ let total=Object.values(x.residents).reduce((n,q)=>n+q.admissions,0), callbacks=Object.values(x.residents).reduce((n,q)=>n+q.ownerContacts.length,0), memories=Object.values(x.residents).reduce((n,q)=>n+q.staffMemories.length,0);
+ m.innerHTML='<div id="d8"><header class="d8head"><small>NCRH // VETERINARY MEDICINE // DEPTH OVERHAUL 08</small><h1>LONG-TERM RESIDENT & CASE CONTINUITY</h1><div style="font-size:8px;color:#8eaa95">Animals now carry history forward across simulated months: admissions, recovery changes, staff recognition, owner callbacks, return visits, preferences, fears and carefully separated mystery leads.</div></header>'+
+ '<div class="d8stats"><div><small>RESIDENTS</small><b>'+ls.length+'</b></div><div><small>SIM DAY</small><b>'+x.day+'</b></div><div><small>ADMISSIONS</small><b>'+total+'</b></div><div><small>OWNER CONTACTS</small><b>'+callbacks+'</b></div><div><small>STAFF MEMORIES</small><b>'+memories+'</b></div><div><small>SELECTED</small><b>'+E(a?mrn(a):"NONE")+'</b></div><div><small>STATUS</small><b>'+E(r?r.status:"—")+'</b></div></div>'+
+ '<div class="d8layout"><section class="d8panel"><h2>RESIDENT INDEX</h2><div class="d8residents">'+ls.map((z,i)=>{let q=ensure(x,z,i);return '<div class="d8resident '+(a&&String(z.id)===String(a.id)?"on":"")+'" data-d8resident="'+E(z.id)+'"><span>'+E(z.icon||"🐾")+'</span><div><b>'+E(z.name)+'</b><small>'+E(z.species||"ANIMAL")+' · '+mrn(z)+'<br>'+q.daysKnown+' simulated days known</small></div><strong>'+q.admissions+' ADMIT<br>BOND '+q.bond+'%</strong></div>'}).join("")+'</div></section>'+
+ '<section class="d8panel"><h2>LONGITUDINAL RESIDENT RECORD</h2><div class="d8body">'+(a&&r?'<div class="d8hero"><div class="ico">'+E(a.icon||"🐾")+'</div><div><h3>'+E(a.name)+'</h3><div class="d8muted">'+E(a.species||"ANIMAL")+' · '+mrn(a)+'<br>Known '+r.daysKnown+' simulated days · '+r.admissions+' admission(s) · staff bond '+r.bond+'% · owner trust '+r.ownerTrust+'%</div></div></div>'+
+ '<div class="d8cards">'+card("REMEMBERS / PREFERS",r.favorite,false)+card("HANDLING CONCERN",r.fear,true)+card("PERSISTENT BODY RECORD",r.scar,false)+card("STAFF RECOGNITION",r.staffMemories.length+" memory entries",false)+card("OWNER CONTINUITY",r.ownerContacts.length+" callback entries",false)+card("RETURN HISTORY",r.returns.length+" return visit(s)",false)+'</div>'+
+ '<div class="d8tabs">'+tabs.map(t=>'<button class="'+(x.tab===t?"on":"")+'" data-d8tab="'+t+'">'+t+'</button>').join("")+'</div><div class="d8view">'+view(x.tab,a,r,x)+'</div>'+
+ '<div class="d8actions"><button data-d8act="memory">STAFF REMEMBERS PATIENT</button><button data-d8act="call">OWNER CALLBACK</button><button data-d8act="change">RECORD LONG-TERM CHANGE</button><button data-d8act="return">CREATE RETURN VISIT</button><button data-d8act="mystery">ADD MYSTERY LEAD</button><button id="d8Advance">ADVANCE 30 SIMULATED DAYS</button></div>'+
+ '<div class="d8nav"><button id="d8Chart">PATIENT CHART</button><button id="d8Treat">TREATMENT</button><button id="d8Staff">STAFF</button><button id="d8Map">HOSPITAL</button><button id="d8Evidence">EVIDENCE WALL</button><button id="d8Awards">CREDENTIALS</button></div>':'')+'</div></section></div></div>';
+ function card(n,d,hot){return '<div class="d8card '+(hot?"hot":"")+'"><b>'+E(n)+'</b><small>'+E(d)+'</small></div>'}
+ if(!a)return;
+ m.querySelectorAll("[data-d8resident]").forEach(b=>b.onclick=()=>{x.selected=b.dataset.d8resident;put(x);render()});
+ m.querySelectorAll("[data-d8tab]").forEach(b=>b.onclick=()=>{x.tab=b.dataset.d8tab;put(x);render()});
+ m.querySelectorAll("[data-d8act]").forEach(b=>b.onclick=()=>act(b.dataset.d8act,a,r,x));
+ document.querySelector("#d8Advance").onclick=advance;
+ document.querySelector("#d8Chart").onclick=()=>window.VetGodsPatientCharts?.render?.();document.querySelector("#d8Treat").onclick=()=>window.VetGodsTreatmentConsequences?.render?.();document.querySelector("#d8Staff").onclick=()=>window.VetGodsHospitalStaff?.render?.();document.querySelector("#d8Map").onclick=()=>window.VetGodsPhysicalHospital?.render?.();document.querySelector("#d8Evidence").onclick=()=>window.VetGodsEvidenceWall?.render?.();document.querySelector("#d8Awards").onclick=()=>window.VetGodsAdminAuthority?.render?.();
+}
+function launch(){let b=document.querySelector("#d8Launch");if(!b){b=document.createElement("button");b.id="d8Launch";b.textContent="🐾 LONG-TERM RESIDENTS";b.onclick=render;document.body.appendChild(b)}}
+window.VetGodsLongTermResidents={render,state:get};
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();setInterval(launch,2500);
+})();
+</script>
+<script id="depth-phase8-bridge">
+(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__depth8){let old=p.render;p.render=function(){old();setTimeout(function(){let area=document.querySelector(".hpActions");if(area&&!document.querySelector("#d8DeskBtn")){let b=document.createElement("button");b.id="d8DeskBtn";b.textContent="OPEN LONG-TERM RESIDENT RECORDS";b.onclick=function(){VetGodsLongTermResidents.render()};area.prepend(b)}},0)};p.__depth8=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
+</script>
+
+
+<style id="depth-phase9-css">
+#d9{min-height:100%;background:radial-gradient(circle at 55% 0,rgba(77,143,94,.22),transparent 36%),repeating-linear-gradient(0deg,rgba(195,255,210,.018) 0 1px,transparent 1px 4px),#010403;color:#d9ffe4;font-family:"Courier New",monospace;padding:8px}
+.d9head,.d9panel{border:1px solid #41624a;background:#020a05}.d9head{padding:13px}.d9head small{font-size:7px;color:#7e9985;letter-spacing:2px}.d9head h1{font-size:clamp(24px,5vw,42px);margin:4px 0}.d9stats{display:grid;grid-template-columns:repeat(8,1fr);border:1px solid #41624a;margin:7px 0}.d9stats div{padding:7px;border-right:1px dotted #41624a}.d9stats small{display:block;font-size:6px;color:#708b77}.d9stats b{font-size:9px}.d9layout{display:grid;grid-template-columns:.8fr 1.2fr;gap:7px}.d9panel h2{margin:0;padding:7px;background:#c5dfcb;color:#031008;font-size:9px}.d9body{padding:8px}
+.d9map{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.d9room{border:1px solid #41624a;background:#041008;padding:9px;min-height:90px;position:relative}.d9room b{font-size:8px}.d9room small{display:block;font-size:6px;color:#789580;line-height:1.45;margin-top:5px}.d9room.lv2{box-shadow:inset 0 0 18px rgba(126,210,148,.13)}.d9room.lv3{border-width:2px;box-shadow:inset 0 0 25px rgba(126,210,148,.22)}.d9room strong{position:absolute;right:6px;top:5px;font-size:6px}
+.d9projects{max-height:610px;overflow:auto}.d9project{border:1px solid #41624a;background:#000803;padding:9px;margin-bottom:6px}.d9project h3{font-size:9px;margin:0 0 4px}.d9project p{font-size:6px;color:#7e9985;line-height:1.5;margin:4px 0}.d9project .cost{font-size:14px;font-weight:900}.d9project button,.d9actions button,.d9nav button{border:1px solid #41624a;background:#031008;color:#d9ffe4;padding:8px;font:700 7px "Courier New";cursor:pointer}.d9project button:hover,.d9actions button:hover,.d9nav button:hover{background:#c5dfcb;color:#031008}.d9project button:disabled{opacity:.35;cursor:not-allowed}.d9bar{height:7px;border:1px solid #41624a;margin:5px 0}.d9bar i{display:block;height:100%;background:#bce9c7}
+.d9log{border:1px solid #41624a;background:#000;padding:9px;max-height:210px;overflow:auto;font-size:7px;line-height:1.55;white-space:pre-wrap;margin-top:7px}.d9actions{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:7px}.d9nav{display:grid;grid-template-columns:repeat(6,1fr);margin-top:7px}
+#d9Launch{position:fixed;left:8px;bottom:288px;z-index:2147483622;background:#010805;color:#d9ffe4;border:1px solid #71927a;padding:9px 11px;font:900 8px "Courier New";cursor:pointer}
+@media(max-width:900px){.d9layout{grid-template-columns:1fr}.d9stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:620px){.d9map{grid-template-columns:repeat(2,1fr)}.d9actions,.d9nav{grid-template-columns:1fr}}
+</style>
+<script id="depth-phase9-js">
+(function(){"use strict";
+const KEY="vetgods_depth_phase9_evolution";
+const projects=[
+["icu","ICU EXPANSION","♥️",2500,"Add oxygen ports, monitoring stations and two simulated recovery bays.",["ICU / RECOVERY","Oxygen capacity +2","Recovery capacity +2"]],
+["surgery","SURGERY THEATER II","⚕️",4200,"Renovate a second procedure theater with anesthesia and sterile support.",["SURGERY","Procedure capacity +1","Anesthesia readiness +15"]],
+["imaging","ADVANCED IMAGING","☢️",3600,"Upgrade radiology workflow with improved ultrasound and archive terminals.",["IMAGING","Diagnostic throughput +20","Evidence quality +5"]],
+["lab","LAB AUTOMATION","🧪",2800,"Add automated hematology and chemistry processing.",["LABORATORY","Lab throughput +25","Result delay -10"]],
+["pharmacy","PHARMACY EXPANSION","💊",1900,"Expand dispensing storage and medication reconciliation capacity.",["PHARMACY","Inventory +20","Medication readiness +10"]],
+["habitat","RECOVERY HABITATS","🌿",3200,"Build species-sensitive quiet recovery habitats with adjustable light and sound.",["ICU / RECOVERY","Comfort +20","Stress reduction +15"]],
+["exotics","EXOTICS WARD","🦉",5000,"Open a dedicated exotics and wildlife treatment wing.",["EXAM ROOMS","Exotics capacity +4","Specialist demand +1"]],
+["rehab","REHABILITATION CENTER","🐾",4600,"Create mobility lanes, hydrotherapy simulation and long-term rehabilitation rooms.",["ICU / RECOVERY","Mobility recovery +20","Long-term capacity +3"]],
+["staff","SPECIALIST HIRING","♟️",3000,"Fund additional specialist coverage across surgery, exotics, ICU and rehabilitation.",["ADMINISTRATION","Staff capacity +4","Coverage +20"]],
+["records","DIGITAL RECORDS VAULT","🗄️",2200,"Improve longitudinal chart storage, migration review and audit tools.",["MEDICAL RECORDS","Record integrity +20","Archive access +10"]],
+["security","SECURITY / ACCESS MODERNIZATION","🔐",2400,"Upgrade badge readers, door sensors and service-corridor monitoring.",["ADMINISTRATION","Security +20","Access logging +25"]],
+["oldwing","RESTORE OLD VETERINARY WING","🏚️",8500,"Convert the decommissioned wing into usable clinical and investigation space.",["OLD VETERINARY WING","New ward +6","Legacy access stabilized"]],
+["storage","LOWER STORAGE ARCHIVE LAB","💾",6200,"Turn sealed storage into a controlled equipment-history and digital-forensics workspace.",["SEALED STORAGE","Archive lab +1","Investigation capacity +25"]],
+["power","BACKUP POWER / LIFE SUPPORT","⚡",7200,"Add redundant simulated power for ICU, surgery, imaging and hospital computing.",["MAINTENANCE","Resilience +30","Outage risk -20"]],
+["nutrition","CLINICAL NUTRITION KITCHEN","🥣",2700,"Build species-aware food preparation and nutrition support.",["EXAM ROOMS","Nutrition readiness +20","Recovery support +10"]],
+["sanctuary","RESIDENT SANCTUARY DECK","🌙",10000,"Create a major long-term resident environment tied to persistent animal histories.",["ICU / RECOVERY","Resident capacity +10","Comfort +25"]]
+];
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{funds:18000,rep:12,level:1,built:{},staff:30,capacity:8,log:["Hospital Evolution program opened with 18,000 simulated departmental credits."],history:[]}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+function phys(){try{return window.VetGodsPhysicalHospital?.state?.()||{visited:[]}}catch(e){return{visited:[]}}}
+function residents(){try{return window.VetGodsLongTermResidents?.state?.()||{residents:{}}}catch(e){return{residents:{}}}
+function roomLevel(name,x){let n=1;projects.forEach(p=>{if(x.built[p[0]]&&p[5][0]===name)n++});return Math.min(3,n)}
+function available(p,x){if(x.built[p[0]])return false;if(p[0]==="oldwing"&&!phys().visited?.includes("oldwing"))return false;if(p[0]==="storage"&&!phys().visited?.includes("storage"))return false;if(p[0]==="sanctuary"&&Object.keys(residents().residents||{}).length<3)return false;return true}
+function build(id){
+ let x=get(),p=projects.find(q=>q[0]===id);if(!p||x.built[id])return;
+ if(!available(p,x))return alert("Prerequisite not met yet. Explore the relevant hospital area or develop more long-term residents first.");
+ if(x.funds<p[3])return alert("Not enough simulated departmental credits.");
+ x.funds-=p[3];x.built[id]={time:new Date().toLocaleString(),cost:p[3]};x.rep+=3;x.level=1+Math.floor(Object.keys(x.built).length/4);
+ if(id==="staff")x.staff+=4;if(["icu","habitat","rehab","exotics","oldwing","sanctuary"].includes(id))x.capacity+=id==="sanctuary"?10:id==="oldwing"?6:3;
+ x.log.unshift(new Date().toLocaleString()+" COMPLETED "+p[1]+" // -"+p[3]+" credits.");
+ x.history.unshift({time:new Date().toLocaleString(),project:p[1],cost:p[3]});put(x);render()
+}
+function grant(){
+ let x=get(),amt=500+Math.min(2500,x.rep*25);x.funds+=amt;x.log.unshift(new Date().toLocaleString()+" CARE OUTCOME FUNDING // +"+amt+" simulated credits.");put(x);render()
+}
+function render(){
+ let m=document.querySelector("#main"),x=get();if(!m)return;try{page="hospitalEvolution";nav()}catch(e){}
+ let built=Object.keys(x.built).length, spent=Object.values(x.built).reduce((n,q)=>n+q.cost,0);
+ let rooms=["RECEPTION","EXAM ROOMS","ICU / RECOVERY","SURGERY","IMAGING","LABORATORY","PHARMACY","MEDICAL RECORDS","ADMINISTRATION","VETERINARY IT","MAINTENANCE","OLD VETERINARY WING","SEALED STORAGE"];
+ m.innerHTML='<div id="d9"><header class="d9head"><small>NCRH // VETERINARY MEDICINE // DEPTH OVERHAUL 09</small><h1>HOSPITAL EVOLUTION COMMAND</h1><div style="font-size:8px;color:#8fa995">Care outcomes and exploration now reshape the facility. Renovate rooms, expand capacity, hire specialists, restore legacy areas and build a hospital that reflects the history of your animals.</div></header>'+
+ '<div class="d9stats"><div><small>FUNDS</small><b>'+x.funds.toLocaleString()+'</b></div><div><small>FACILITY LEVEL</small><b>'+x.level+'</b></div><div><small>PROJECTS</small><b>'+built+'/16</b></div><div><small>SPENT</small><b>'+spent.toLocaleString()+'</b></div><div><small>REPUTATION</small><b>'+x.rep+'</b></div><div><small>STAFF CAPACITY</small><b>'+x.staff+'</b></div><div><small>PATIENT CAPACITY</small><b>'+x.capacity+'</b></div><div><small>STATUS</small><b>'+ (built>=12?"MAJOR CENTER":built>=6?"EXPANDING":"DEVELOPING") +'</b></div></div>'+
+ '<div class="d9layout"><section class="d9panel"><h2>EVOLVING FACILITY MAP</h2><div class="d9body"><div class="d9map">'+rooms.map(n=>{let lv=roomLevel(n,x);return '<div class="d9room lv'+lv+'"><strong>LV '+lv+'</strong><b>'+E(n)+'</b><small>'+ (lv===1?"BASELINE FACILITY":lv===2?"RENOVATED / EXPANDED":"ADVANCED CENTER") +'</small><div class="d9bar"><i style="width:'+(lv/3*100)+'%"></i></div></div>'}).join("")+'</div>'+
+ '<div class="d9actions"><button id="d9Grant">PROCESS CARE-OUTCOME FUNDING</button><button id="d9Map">WALK HOSPITAL</button><button id="d9Residents">LONG-TERM RESIDENTS</button><button id="d9Staff">STAFF DIRECTORY</button></div>'+
+ '<div class="d9log">FACILITY DEVELOPMENT LOG\n\n'+E(x.log.slice(0,18).join("\n"))+'</div></div></section>'+
+ '<section class="d9panel"><h2>CAPITAL PROJECTS / RENOVATIONS</h2><div class="d9body"><div class="d9projects">'+projects.map(p=>{let done=!!x.built[p[0]],ok=available(p,x),can=x.funds>=p[3]&&ok&&!done;return '<div class="d9project"><h3>'+p[2]+' '+E(p[1])+'</h3><p>'+E(p[4])+'</p><div class="cost">'+p[3].toLocaleString()+' CR</div><p>'+E(p[5].slice(1).join(" · "))+'</p><button data-d9build="'+p[0]+'" '+(!can?"disabled":"")+'>'+(done?"✓ COMPLETED":!ok?"PREREQUISITE LOCKED":x.funds<p[3]?"INSUFFICIENT FUNDS":"AUTHORIZE PROJECT")+'</button></div>'}).join("")+'</div>'+
+ '<div class="d9nav"><button id="d9Shift">SHIFT</button><button id="d9Charts">CHARTS</button><button id="d9Treatment">TREATMENT</button><button id="d9PC">COMPUTER</button><button id="d9Evidence">EVIDENCE</button><button id="d9Awards">CREDENTIALS</button></div></div></section></div></div>';
+ m.querySelectorAll("[data-d9build]").forEach(b=>b.onclick=()=>build(b.dataset.d9build));
+ document.querySelector("#d9Grant").onclick=grant;document.querySelector("#d9Map").onclick=()=>window.VetGodsPhysicalHospital?.render?.();document.querySelector("#d9Residents").onclick=()=>window.VetGodsLongTermResidents?.render?.();document.querySelector("#d9Staff").onclick=()=>window.VetGodsHospitalStaff?.render?.();document.querySelector("#d9Shift").onclick=()=>window.VetGodsRealHospitalShift?.render?.();document.querySelector("#d9Charts").onclick=()=>window.VetGodsPatientCharts?.render?.();document.querySelector("#d9Treatment").onclick=()=>window.VetGodsTreatmentConsequences?.render?.();document.querySelector("#d9PC").onclick=()=>window.VetGodsDeepComputer?.open?.();document.querySelector("#d9Evidence").onclick=()=>window.VetGodsEvidenceWall?.render?.();document.querySelector("#d9Awards").onclick=()=>window.VetGodsAdminAuthority?.render?.();
+}
+function launch(){let b=document.querySelector("#d9Launch");if(!b){b=document.createElement("button");b.id="d9Launch";b.textContent="🏥 HOSPITAL EVOLUTION";b.onclick=render;document.body.appendChild(b)}}
+window.VetGodsHospitalEvolution={render,state:get};
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();setInterval(launch,2500);
+})();
+</script>
+<script id="depth-phase9-bridge">
+(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__depth9){let old=p.render;p.render=function(){old();setTimeout(function(){let area=document.querySelector(".hpActions");if(area&&!document.querySelector("#d9DeskBtn")){let b=document.createElement("button");b.id="d9DeskBtn";b.textContent="OPEN HOSPITAL EVOLUTION COMMAND";b.onclick=function(){VetGodsHospitalEvolution.render()};area.prepend(b)}},0)};p.__depth9=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
+</script>
+
+
+<style id="depth-phase10-css">
+#d10{min-height:100%;background:radial-gradient(circle at 50% 0,rgba(73,139,90,.22),transparent 38%),repeating-linear-gradient(0deg,rgba(200,255,214,.018) 0 1px,transparent 1px 4px),#010403;color:#dcffe6;font-family:"Courier New",monospace;padding:8px}
+.d10head,.d10panel{border:1px solid #46684f;background:#020a05}.d10head{padding:13px}.d10head small{font-size:7px;color:#809b87;letter-spacing:2px}.d10head h1{font-size:clamp(24px,5vw,42px);margin:4px 0}.d10stats{display:grid;grid-template-columns:repeat(8,1fr);border:1px solid #46684f;margin:7px 0}.d10stats div{padding:7px;border-right:1px dotted #46684f}.d10stats small{display:block;font-size:6px;color:#708a77}.d10stats b{font-size:9px}.d10layout{display:grid;grid-template-columns:1.05fr .95fr;gap:7px}.d10panel h2{margin:0;padding:7px;background:#c7e0cd;color:#031008;font-size:9px}.d10body{padding:8px}
+.d10hospital{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.d10dept{border:1px solid #46684f;background:#041008;padding:8px;min-height:95px;position:relative}.d10dept b{font-size:8px}.d10dept small{display:block;font-size:6px;color:#809b87;line-height:1.45;margin-top:4px}.d10dept strong{position:absolute;right:6px;top:5px;font-size:6px}.d10dept.busy{box-shadow:inset 0 0 22px rgba(175,255,194,.18)}.d10dept.alert{border-color:#8e644e;background:#160904}
+.d10flow{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:7px}.d10animal{border:1px solid #46684f;padding:7px;background:#000803;font-size:7px}.d10animal span{font-size:24px;display:block}.d10animal small{display:block;color:#809b87;font-size:6px}
+.d10controls{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:7px}.d10controls button,.d10nav button{border:1px solid #46684f;background:#031008;color:#dcffe6;padding:8px;font:700 7px "Courier New";cursor:pointer}.d10controls button:hover,.d10nav button:hover{background:#c7e0cd;color:#031008}
+.d10event{border:1px solid #46684f;background:#000;padding:8px;margin-bottom:6px;font-size:7px;line-height:1.5}.d10event b{display:block;color:#effff3}.d10event small{color:#809b87}.d10event.urgent{border-color:#98634d;background:#170904}.d10event.good{border-color:#4f805c}.d10queue{max-height:450px;overflow:auto}.d10log{border:1px solid #46684f;background:#000;padding:9px;max-height:210px;overflow:auto;font-size:7px;line-height:1.55;white-space:pre-wrap;margin-top:7px}.d10nav{display:grid;grid-template-columns:repeat(8,1fr);margin-top:7px}.d10bar{height:7px;border:1px solid #46684f;margin-top:5px}.d10bar i{display:block;height:100%;background:#c2edcc}
+#d10Launch{position:fixed;left:8px;bottom:323px;z-index:2147483621;background:#010805;color:#dcffe6;border:1px solid #71927a;padding:9px 11px;font:900 8px "Courier New";cursor:pointer}
+@media(max-width:950px){.d10layout{grid-template-columns:1fr}.d10stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:620px){.d10hospital{grid-template-columns:repeat(2,1fr)}.d10flow{grid-template-columns:1fr}.d10controls,.d10nav{grid-template-columns:repeat(2,1fr)}}
+</style>
+<script id="depth-phase10-js">
+(function(){"use strict";
+const KEY="vetgods_depth_phase10_living_world";
+const depts=["RECEPTION","EXAM","ICU","SURGERY","IMAGING","LAB","PHARMACY","RECOVERY","RECORDS","ADMIN","IT","MAINTENANCE"];
+function E(v){return String(v??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function animals(){try{return state.animals||[]}catch(e){return[]}}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{day:1,hour:7,minute:0,running:false,speed:1,events:[],log:["Living World Engine initialized. Hospital clock begins at 07:00."],departments:{},animalFlow:{},tickCount:0,emergencies:0,resolved:0,failures:0}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+function evo(){try{return window.VetGodsHospitalEvolution?.state?.()||{built:{},staff:30,capacity:8,level:1}}catch(e){return{built:{},staff:30,capacity:8,level:1}}}
+function ensure(x){depts.forEach((d,i)=>{if(!x.departments[d])x.departments[d]={load:(i*7)%32,status:"READY",activity:"Routine operations"}});animals().forEach((a,i)=>{let id=String(a.id);if(!x.animalFlow[id])x.animalFlow[id]={dept:["EXAM","ICU","RECOVERY"][i%3],since:x.tickCount,status:"STABLE"}})}
+function clock(x){return "DAY "+x.day+" "+String(x.hour).padStart(2,"0")+":"+String(x.minute).padStart(2,"0")}
+function addEvent(x,type,title,body,urgent=false){x.events.unshift({id:"W"+Date.now()+Math.random(),time:clock(x),type,title,body,urgent,status:"OPEN"});x.events=x.events.slice(0,80);x.log.unshift(clock(x)+" // "+type+" // "+title)}
+function step(){
+ let x=get();ensure(x);x.tickCount++;x.minute+=15;if(x.minute>=60){x.minute=0;x.hour++}if(x.hour>=24){x.hour=0;x.day++}
+ let ev=evo(),built=ev.built||{},phase=x.hour>=23||x.hour<7?"NIGHT":x.hour<15?"DAY":"SWING";
+ depts.forEach((d,i)=>{let q=x.departments[d],wave=(x.tickCount*7+i*13)%28;q.load=Math.max(3,Math.min(98,18+wave+(d==="ICU"?15:0)-(built.icu&&d==="ICU"?12:0)-(built.lab&&d==="LAB"?10:0)-(built.imaging&&d==="IMAGING"?8:0)));q.status=q.load>78?"HIGH LOAD":q.load>55?"BUSY":"READY";q.activity=activity(d,x)});
+ let list=animals();list.forEach((a,i)=>{let f=x.animalFlow[String(a.id)],age=x.tickCount-f.since;if(age>2){let route=["RECEPTION","EXAM","IMAGING","LAB","ICU","RECOVERY"],idx=route.indexOf(f.dept);if(idx<0)idx=1;if((x.tickCount+i)%4===0){f.dept=route[Math.min(route.length-1,idx+1)];f.since=x.tickCount;f.status=f.dept==="RECOVERY"?"IMPROVING":"IN CARE"}}});
+ if(x.tickCount%7===0){x.emergencies++;addEvent(x,"EMERGENCY","New veterinary emergency arrival","Reception reports an incoming animal requiring triage. Current ICU load: "+x.departments.ICU.load+"%.",true)}
+ if(x.tickCount%11===0){x.failures++;let d=["IMAGING","LAB","IT","MAINTENANCE"][x.tickCount%4];addEvent(x,"EQUIPMENT",d+" service interruption","A simulated equipment/service fault requires staff attention. Facility upgrades can reduce operational load.",true)}
+ if(x.tickCount%9===0)addEvent(x,"OWNER","Owner callback received","A long-term resident owner has called with a recovery update.",false);
+ if(x.tickCount%13===0)addEvent(x,"MYSTERY","Legacy-system event","An old veterinary identifier appeared in a routine system log. It remains an unexplained lead until correlated with evidence.",false);
+ if(x.tickCount%8===0)addEvent(x,"STAFF","Shift activity","The "+phase+" team completed a departmental round and updated handoff notes.",false);
+ put(x);render()
+}
+function activity(d,x){let map={RECEPTION:"Intake / callbacks",EXAM:"Physical examinations",ICU:"Continuous monitoring",SURGERY:"Procedure readiness",IMAGING:"Studies / archive review",LAB:"Specimen processing",PHARMACY:"Medication reconciliation",RECOVERY:"Comfort / discharge checks",RECORDS:"Chart integrity",ADMIN:"Credentials / incidents",IT:"Network / EMR support",MAINTENANCE:"Equipment / utilities"};return map[d]||"Operations"}
+function resolve(id){let x=get(),q=x.events.find(e=>e.id===id);if(!q)return;q.status="RESOLVED";x.resolved++;x.log.unshift(clock(x)+" // RESOLVED // "+q.title);put(x);render()}
+function toggle(){let x=get();x.running=!x.running;put(x);render();runner()}
+function runner(){clearInterval(window._d10Timer);let x=get();if(x.running)window._d10Timer=setInterval(()=>step(),Math.max(700,3000/x.speed))}
+function speed(){let x=get();x.speed=x.speed===1?2:x.speed===2?4:1;put(x);render();runner()}
+function render(){
+ let m=document.querySelector("#main"),x=get();if(!m)return;ensure(x);put(x);let ev=evo(),list=animals();try{page="livingWorld";nav()}catch(e){}
+ let open=x.events.filter(q=>q.status==="OPEN").length, phase=x.hour>=23||x.hour<7?"NIGHT":x.hour<15?"DAY":"SWING";
+ m.innerHTML='<div id="d10"><header class="d10head"><small>NCRH // VETERINARY MEDICINE // DEPTH OVERHAUL 10</small><h1>HOSPITAL LIVING WORLD ENGINE</h1><div style="font-size:8px;color:#91aa97">The hospital now runs as a persistent simulated system: time advances, departments work simultaneously, animals move through care, emergencies arrive, staff rounds occur, equipment can fail, owners call, and legacy events surface while you are doing other work.</div></header>'+
+ '<div class="d10stats"><div><small>HOSPITAL CLOCK</small><b>'+clock(x)+'</b></div><div><small>SHIFT</small><b>'+phase+'</b></div><div><small>ENGINE</small><b>'+(x.running?"RUNNING":"PAUSED")+'</b></div><div><small>SPEED</small><b>'+x.speed+'×</b></div><div><small>OPEN EVENTS</small><b>'+open+'</b></div><div><small>EMERGENCIES</small><b>'+x.emergencies+'</b></div><div><small>RESOLVED</small><b>'+x.resolved+'</b></div><div><small>FACILITY LV</small><b>'+ev.level+'</b></div></div>'+
+ '<div class="d10layout"><section class="d10panel"><h2>LIVE DEPARTMENT STATUS</h2><div class="d10body"><div class="d10hospital">'+depts.map(d=>{let q=x.departments[d];return '<div class="d10dept '+(q.load>78?"alert":q.load>55?"busy":"")+'"><strong>'+q.status+'</strong><b>'+E(d)+'</b><small>'+E(q.activity)+'<br>Operational load '+q.load+'%</small><div class="d10bar"><i style="width:'+q.load+'%"></i></div></div>'}).join("")+'</div>'+
+ '<h2 style="margin-top:7px">ANIMALS MOVING THROUGH THE HOSPITAL</h2><div class="d10flow">'+list.slice(0,10).map(a=>{let f=x.animalFlow[String(a.id)];return '<div class="d10animal"><span>'+E(a.icon||"🐾")+'</span><b>'+E(a.name)+'</b><small>'+E(a.species||"ANIMAL")+'<br>'+E(f.dept)+' · '+E(f.status)+'</small></div>'}).join("")+'</div>'+
+ '<div class="d10controls"><button id="d10Toggle">'+(x.running?"PAUSE WORLD":"START WORLD")+'</button><button id="d10Step">+15 MINUTES</button><button id="d10Speed">SPEED '+x.speed+'×</button><button id="d10Evolve">HOSPITAL EVOLUTION</button><button id="d10Residents">RESIDENTS</button></div>'+
+ '<div class="d10log">MASTER HOSPITAL COMMAND LOG\n\n'+E(x.log.slice(0,24).join("\n"))+'</div></div></section>'+
+ '<section class="d10panel"><h2>LIVE EVENT / INTERRUPTION QUEUE</h2><div class="d10body"><div class="d10queue">'+(x.events.length?x.events.slice(0,30).map(q=>'<div class="d10event '+(q.urgent&&q.status==="OPEN"?"urgent":q.status==="RESOLVED"?"good":"")+'"><b>'+E(q.time)+' // '+E(q.type)+' // '+E(q.title)+'</b><small>'+E(q.body)+'</small><br><button class="d10controls" style="display:inline-block;margin-top:5px" data-d10resolve="'+E(q.id)+'" '+(q.status==="RESOLVED"?"disabled":"")+'>'+q.status+'</button></div>').join(""):'<div class="d10event"><b>QUEUE CLEAR</b><small>Start the world or advance time to generate hospital activity.</small></div>')+'</div>'+
+ '<div class="d10nav"><button id="d10Shift">SHIFT</button><button id="d10Charts">CHARTS</button><button id="d10Treat">TREATMENT</button><button id="d10Staff">STAFF</button><button id="d10Map">MAP</button><button id="d10PC">COMPUTER</button><button id="d10Evidence">EVIDENCE</button><button id="d10Awards">AWARDS</button></div></div></section></div></div>';
+ m.querySelectorAll("[data-d10resolve]").forEach(b=>b.onclick=()=>resolve(b.dataset.d10resolve));document.querySelector("#d10Toggle").onclick=toggle;document.querySelector("#d10Step").onclick=step;document.querySelector("#d10Speed").onclick=speed;
+ document.querySelector("#d10Evolve").onclick=()=>window.VetGodsHospitalEvolution?.render?.();document.querySelector("#d10Residents").onclick=()=>window.VetGodsLongTermResidents?.render?.();document.querySelector("#d10Shift").onclick=()=>window.VetGodsRealHospitalShift?.render?.();document.querySelector("#d10Charts").onclick=()=>window.VetGodsPatientCharts?.render?.();document.querySelector("#d10Treat").onclick=()=>window.VetGodsTreatmentConsequences?.render?.();document.querySelector("#d10Staff").onclick=()=>window.VetGodsHospitalStaff?.render?.();document.querySelector("#d10Map").onclick=()=>window.VetGodsPhysicalHospital?.render?.();document.querySelector("#d10PC").onclick=()=>window.VetGodsDeepComputer?.open?.();document.querySelector("#d10Evidence").onclick=()=>window.VetGodsEvidenceWall?.render?.();document.querySelector("#d10Awards").onclick=()=>window.VetGodsAdminAuthority?.render?.();
+}
+function launch(){let b=document.querySelector("#d10Launch");if(!b){b=document.createElement("button");b.id="d10Launch";b.textContent="◉ LIVING HOSPITAL";b.onclick=render;document.body.appendChild(b)}runner()}
+window.VetGodsLivingWorld={render,state:get,step};
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();setInterval(()=>{let b=document.querySelector("#d10Launch");if(!b)launch()},2500);
+})();
+</script>
+<script id="depth-phase10-bridge">
+(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__depth10){let old=p.render;p.render=function(){old();setTimeout(function(){let area=document.querySelector(".hpActions");if(area&&!document.querySelector("#d10DeskBtn")){let b=document.createElement("button");b.id="d10DeskBtn";b.textContent="OPEN LIVING HOSPITAL COMMAND";b.onclick=function(){VetGodsLivingWorld.render()};area.prepend(b)}},0)};p.__depth10=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
+</script>
+
+
+<style id="vg-premium-award-css">
+#vgAwardLaunch{position:fixed;right:8px;bottom:8px;z-index:2147483640;border:1px solid #d7b65c;background:#07110b;color:#ffe7a1;padding:10px 13px;font:900 9px Georgia,serif;cursor:pointer}
+#vgAwardHub{position:fixed;inset:0;z-index:2147483645;background:#050806ee;color:#eef8ef;overflow:auto;padding:18px;font-family:Arial,sans-serif}
+.vga-wrap{max-width:1000px;margin:auto}.vga-top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:14px}.vga-top h1{font:700 28px Georgia,serif;margin:0;color:#f2d47e}.vga-btn{border:1px solid #b89543;background:#101912;color:#ffe8a3;padding:10px 14px;font-weight:800;cursor:pointer}
+.vga-card{border:1px solid #806c39;background:#0a100c;padding:16px;margin:12px 0}.vga-card h2{font:700 20px Georgia,serif;color:#f2d47e;margin:0 0 8px}.vga-input{width:100%;box-sizing:border-box;padding:10px;background:#020503;border:1px solid #6d744f;color:white;font-size:15px}
+.vga-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+#vgCertificate,#vgBadgeSheet{display:none}
+@media print{
+ body *{visibility:hidden!important}
+ #vgPrintRoot,#vgPrintRoot *{visibility:visible!important}
+ #vgPrintRoot{display:block!important;position:absolute!important;left:0;top:0;width:100%;background:white}
+ @page{size:landscape;margin:0}
+}
+.vg-cert{width:10.35in;height:7.85in;box-sizing:border-box;margin:0 auto;background:#fffdf5;color:#15120b;padding:.28in;border:.08in double #1b2d21;position:relative;font-family:Georgia,"Times New Roman",serif}
+.vg-cert:before{content:"";position:absolute;inset:.12in;border:2px solid #b38a2d;pointer-events:none}.vg-cert:after{content:"V  G";position:absolute;inset:0;display:grid;place-items:center;font-size:155px;font-weight:900;color:rgba(20,45,29,.035);letter-spacing:24px;pointer-events:none}
+.vg-cert .kicker{text-align:center;font:700 10px Arial;letter-spacing:4px;color:#263d2e;margin-top:.13in}.vg-cert h1{text-align:center;font-size:42px;letter-spacing:2px;margin:.12in 0 0;color:#15281c}.vg-cert .rule{height:2px;background:linear-gradient(90deg,transparent,#b38a2d 18%,#b38a2d 82%,transparent);margin:.12in .65in}.vg-cert .award{text-align:center;font-size:29px;letter-spacing:4px;color:#8c681c;margin:.15in 0}.vg-cert .present{text-align:center;font:700 10px Arial;letter-spacing:3px}.vg-cert .name{text-align:center;font-size:38px;font-style:italic;margin:.16in auto .1in;border-bottom:1px solid #9d7b31;width:75%;padding-bottom:.08in}.vg-cert .copy{text-align:center;font-size:15px;line-height:1.55;max-width:8.2in;margin:.12in auto}.vg-cert .values{text-align:center;font:700 10px Arial;letter-spacing:4px;margin:.18in}.vg-cert .foot{display:grid;grid-template-columns:1fr 1.1fr 1fr;align-items:end;gap:.2in;position:absolute;left:.7in;right:.7in;bottom:.55in}.vg-cert .sig{text-align:center;border-top:1px solid #262015;padding-top:5px;font-size:11px}.vg-seal{width:1.05in;height:1.05in;border-radius:50%;border:5px double #a47a22;display:grid;place-items:center;text-align:center;margin:auto;font:bold 9px Arial;color:#173020;box-shadow:inset 0 0 0 4px #e8d79e}.vg-cert .serial{position:absolute;right:.42in;bottom:.24in;font:8px "Courier New";color:#4d493d}.vg-cert .date{position:absolute;left:.42in;bottom:.24in;font:8px "Courier New";color:#4d493d}
+.vg-badgepage{width:8in;height:10.3in;margin:auto;background:white;color:#111;display:grid;place-items:center;font-family:Georgia,serif}.vg-badge{width:4.9in;height:6.5in;box-sizing:border-box;border:8px double #b38a2d;background:radial-gradient(circle,#fffdf3 0,#eee3bd 72%,#d3bd72);padding:.28in;text-align:center;position:relative}.vg-badge .crest{width:2.3in;height:2.3in;border:9px double #173020;border-radius:50%;margin:.15in auto;display:grid;place-items:center;background:#0c2417;color:#e8c76a;font-size:62px;box-shadow:0 0 0 6px #b38a2d}.vg-badge h1{font-size:29px;margin:.1in 0;color:#173020}.vg-badge h2{font-size:17px;letter-spacing:2px;color:#7d5c16}.vg-badge .who{font-size:25px;font-style:italic;border-bottom:1px solid #80631e;padding:.1in}.vg-badge p{font-size:12px;line-height:1.5}.vg-badge .id{font:9px "Courier New";margin-top:.2in}
+</style>
+<script id="vg-premium-award-js">
+(function(){
+ const KEY="vetgods_single_premium_award";
+ function esc(s){return String(s||"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+ function state(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{name:"Veterinary Champion",issued:false,serial:"VG-AOE-"+String(Date.now()).slice(-8),date:new Date().toLocaleDateString()}}
+ function save(x){localStorage.setItem(KEY,JSON.stringify(x))}
+ function hub(){
+   document.querySelector("#vgAwardHub")?.remove();
+   let x=state(),d=document.createElement("div");d.id="vgAwardHub";
+   d.innerHTML='<div class="vga-wrap"><div class="vga-top"><div><div style="font-size:11px;letter-spacing:3px;color:#8ca395">VET GODS // PLAYER HONORS</div><h1>Premier Award Office</h1></div><button class="vga-btn" id="vgaClose">CLOSE</button></div>'+
+   '<div class="vga-card"><h2>One Badge. One Award. Permanent.</h2><p>This replaces the cluttered award idea with one polished player honor: the <b>Award of Excellence</b> and its matching <b>Veterinary Excellence Badge</b>. Once issued, it stays saved in this browser and can be printed again at any time.</p><label>PLAYER / RECIPIENT NAME</label><input class="vga-input" id="vgaName" value="'+esc(x.name)+'"><div class="vga-actions"><button class="vga-btn" id="vgaIssue">'+(x.issued?"UPDATE SAVED NAME":"ISSUE PLAYER HONOR")+'</button><button class="vga-btn" id="vgaCert">PRINT AWARD OF EXCELLENCE</button><button class="vga-btn" id="vgaBadge">PRINT MATCHING BADGE</button><button class="vga-btn" id="vgaBoth">PRINT AWARD + BADGE</button></div><p style="font-size:12px;color:#91a598">Saved serial: '+esc(x.serial)+' · Issued: '+esc(x.date)+'</p></div></div>';
+   document.body.appendChild(d);
+   d.querySelector("#vgaClose").onclick=()=>d.remove();
+   d.querySelector("#vgaIssue").onclick=()=>{let q=state();q.name=d.querySelector("#vgaName").value.trim()||"Veterinary Champion";q.issued=true;q.date=new Date().toLocaleDateString();save(q);hub()};
+   d.querySelector("#vgaCert").onclick=()=>printAward("cert");
+   d.querySelector("#vgaBadge").onclick=()=>printAward("badge");
+   d.querySelector("#vgaBoth").onclick=()=>printAward("both");
+ }
+ function cert(x){return '<section class="vg-cert"><div class="kicker">VET GODS · VETERINARY HOSPITAL</div><h1>VET GODS</h1><div class="rule"></div><div class="award">AWARD OF EXCELLENCE</div><div class="present">PRESENTED TO</div><div class="name">'+esc(x.name)+'</div><div class="copy">In recognition of exceptional dedication to animal care, sound judgment, compassion, persistence, and service throughout the Vet Gods hospital. This distinction represents the highest player honor awarded by the program.</div><div class="values">CARE · KNOWLEDGE · SERVICE · IMPACT</div><div class="foot"><div class="sig"><i>Hospital Administration</i><br>Program Administrator</div><div class="vg-seal">VG<br>EXCELLENCE<br>SEAL</div><div class="sig"><i>Veterinary Command</i><br>Clinical Operations</div></div><div class="date">ISSUED '+esc(x.date)+'</div><div class="serial">RECORD '+esc(x.serial)+'</div></section>'}
+ function badge(x){return '<section class="vg-badgepage"><div class="vg-badge"><div style="font-size:10px;letter-spacing:3px">VET GODS · HOSPITAL HONORS</div><div class="crest">V<br>🐾</div><h1>VETERINARY EXCELLENCE</h1><h2>PREMIER BADGE</h2><div class="who">'+esc(x.name)+'</div><p>Awarded for distinguished service, compassionate animal care, hospital stewardship and completion of the Vet Gods player program.</p><p><b>CARE · KNOWLEDGE · SERVICE · IMPACT</b></p><div class="id">'+esc(x.serial)+'<br>ISSUED '+esc(x.date)+'</div></div></section>'}
+ function printAward(which){
+   let x=state(); if(!x.issued){x.issued=true;save(x)}
+   document.querySelector("#vgPrintRoot")?.remove();
+   let r=document.createElement("div");r.id="vgPrintRoot";r.style.display="none";
+   r.innerHTML=(which==="cert"||which==="both"?cert(x):"")+(which==="badge"||which==="both"?badge(x):"");
+   document.body.appendChild(r);
+   setTimeout(()=>{window.print();setTimeout(()=>r.remove(),1000)},80);
+ }
+ function launch(){if(document.querySelector("#vgAwardLaunch"))return;let b=document.createElement("button");b.id="vgAwardLaunch";b.textContent="🏆 PLAYER AWARD";b.onclick=hub;document.body.appendChild(b)}
+ window.VetGodsPremierAward={open:hub,printAward,state};
+ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();
+ setInterval(launch,2500);
+})();
+</script>
+
+
+<style id="vg80-css">
+#vg80Launch{position:fixed;right:8px;bottom:50px;z-index:2147483640;border:1px solid #d9b957;background:#07110b;color:#ffe9a6;padding:10px 13px;font:900 9px Georgia,serif;cursor:pointer}
+#vg80Hub{position:fixed;inset:0;z-index:2147483646;background:#030604f4;color:#edf8ef;overflow:auto;padding:14px;font-family:Arial,sans-serif}
+.vg80wrap{max-width:1120px;margin:auto}.vg80head{display:flex;justify-content:space-between;gap:10px;align-items:center;border-bottom:1px solid #826d36;padding-bottom:10px}.vg80head h1{font:700 28px Georgia,serif;color:#f0d27a;margin:0}
+.vg80btn{border:1px solid #a98a3d;background:#101912;color:#ffe7a0;padding:9px 12px;font-weight:800;cursor:pointer}.vg80controls{display:grid;grid-template-columns:1fr repeat(3,auto);gap:6px;margin:10px 0}.vg80input{background:#020503;color:#fff;border:1px solid #64705b;padding:10px;font-size:14px}
+.vg80grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.vg80item{border:1px solid #5c654d;background:#09100b;padding:9px;min-height:128px;display:flex;flex-direction:column}.vg80item.earned{border-color:#b28e3d;box-shadow:inset 0 0 20px rgba(218,186,94,.08)}.vg80num{font:700 10px Georgia;color:#d5b55c}.vg80item h3{font:700 15px Georgia;color:#f3df9e;margin:4px 0}.vg80item p{font-size:11px;line-height:1.35;color:#9caf9f;flex:1}.vg80item small{font:9px "Courier New";color:#758779}.vg80actions{display:flex;gap:4px;margin-top:6px}.vg80actions button{flex:1;border:1px solid #665b39;background:#11170f;color:#f7e2a0;padding:6px;font-size:9px;font-weight:bold}
+#vg80PrintRoot{display:none}
+@media(max-width:850px){.vg80grid{grid-template-columns:repeat(2,1fr)}.vg80controls{grid-template-columns:1fr 1fr}}@media(max-width:500px){.vg80grid{grid-template-columns:1fr}}
+@media print{
+ body *{visibility:hidden!important}
+ #vg80PrintRoot,#vg80PrintRoot *{visibility:visible!important}
+ #vg80PrintRoot{display:block!important;position:absolute!important;left:0;top:0;width:100%;background:white}
+ @page{size:landscape;margin:0}
+ .vg80cert{break-after:page;page-break-after:always}
+}
+.vg80cert{width:10.35in;height:7.85in;box-sizing:border-box;margin:0 auto;background:#fffdf5;color:#15120b;padding:.28in;border:.08in double #193021;position:relative;font-family:Georgia,"Times New Roman",serif}
+.vg80cert:before{content:"";position:absolute;inset:.12in;border:2px solid #b58a2c}.vg80cert:after{content:"VG";position:absolute;inset:0;display:grid;place-items:center;font-size:190px;font-weight:900;color:rgba(20,45,29,.035);letter-spacing:20px}
+.vg80cert .top{text-align:center;font:700 9px Arial;letter-spacing:4px;color:#294331;margin-top:.12in}.vg80cert h1{text-align:center;font-size:37px;margin:.13in 0 .05in;color:#15291d}.vg80cert .award{text-align:center;font-size:27px;letter-spacing:2px;color:#8b671c;margin:.12in .3in}.vg80cert .line{height:2px;background:linear-gradient(90deg,transparent,#b58a2c 20%,#b58a2c 80%,transparent);margin:.1in .7in}.vg80cert .present{text-align:center;font:700 9px Arial;letter-spacing:3px}.vg80cert .name{text-align:center;font-size:36px;font-style:italic;margin:.13in auto;border-bottom:1px solid #9b7a31;width:75%;padding-bottom:.06in}.vg80cert .desc{text-align:center;font-size:15px;line-height:1.5;max-width:8.1in;margin:.12in auto}.vg80cert .seal{width:1in;height:1in;border:5px double #a47a22;border-radius:50%;display:grid;place-items:center;text-align:center;margin:.2in auto;font:bold 9px Arial;color:#173020;box-shadow:inset 0 0 0 4px #ead9a0}.vg80cert .sigs{display:grid;grid-template-columns:1fr 1fr;gap:1.1in;position:absolute;left:1in;right:1in;bottom:.55in}.vg80cert .sig{text-align:center;border-top:1px solid #282117;padding-top:5px;font-size:10px}.vg80cert .meta{position:absolute;bottom:.22in;left:.4in;right:.4in;display:flex;justify-content:space-between;font:8px "Courier New";color:#4c493f}
+</style>
+<script id="vg80-js">
+(function(){
+const AWARDS=[{"id": 1, "title": "Clinical Excellence", "desc": "Mastery of careful animal assessment, stabilization, treatment and recovery."}, {"id": 2, "title": "Diagnostic Excellence", "desc": "Exceptional use of examination, imaging, laboratory evidence and clinical reasoning."}, {"id": 3, "title": "Emergency Response", "desc": "Calm, effective action during urgent veterinary admissions and changing conditions."}, {"id": 4, "title": "Critical Care Stewardship", "desc": "Distinguished management of intensive monitoring, oxygenation, hydration and comfort."}, {"id": 5, "title": "Recovery Champion", "desc": "Outstanding commitment to guiding patients from crisis toward safe recovery."}, {"id": 6, "title": "Compassion in Care", "desc": "Consistent humane attention to comfort, stress reduction, trust and dignity."}, {"id": 7, "title": "Patient Advocate", "desc": "Persistent protection of each animal's welfare throughout the hospital journey."}, {"id": 8, "title": "Hospital Administrator", "desc": "Exceptional stewardship of veterinary hospital operations and player command."}, {"id": 9, "title": "Clinical Operations", "desc": "Outstanding coordination of active departments, cases, resources and care flow."}, {"id": 10, "title": "Veterinary Leadership", "desc": "Leadership demonstrated through sound decisions, service and animal-centered care."}, {"id": 11, "title": "Surgical Readiness", "desc": "Excellence in preparation, monitoring and safe procedural workflow."}, {"id": 12, "title": "Anesthesia Watch", "desc": "Exceptional attention to simulated anesthesia readiness and patient monitoring."}, {"id": 13, "title": "Imaging Specialist", "desc": "Distinguished work with diagnostic imaging and evidence interpretation."}, {"id": 14, "title": "Laboratory Specialist", "desc": "Excellence in laboratory workflow, specimen review and diagnostic support."}, {"id": 15, "title": "Pharmacy Steward", "desc": "Careful medication readiness, reconciliation and hospital pharmacy management."}, {"id": 16, "title": "Nutrition Advocate", "desc": "Outstanding attention to species-aware nutrition, feeding and recovery support."}, {"id": 17, "title": "Hydration Guardian", "desc": "Excellence in recognizing and supporting patient hydration needs."}, {"id": 18, "title": "Pain Control Advocate", "desc": "Distinguished commitment to identifying and reducing simulated patient pain."}, {"id": 19, "title": "Oxygen Response", "desc": "Outstanding response to oxygenation needs and respiratory monitoring."}, {"id": 20, "title": "Mobility Recovery", "desc": "Exceptional support of rehabilitation, movement and functional recovery."}, {"id": 21, "title": "Exotics Care", "desc": "Distinguished service to exotic, wildlife and unusual veterinary patients."}, {"id": 22, "title": "Wildlife Guardian", "desc": "Outstanding protection and treatment of wildlife patients."}, {"id": 23, "title": "Companion Animal Care", "desc": "Exceptional care of companion animals across the hospital."}, {"id": 24, "title": "Long-Term Resident Care", "desc": "Dedication to animals requiring continuing, longitudinal support."}, {"id": 25, "title": "Continuity of Care", "desc": "Excellence in preserving history across admissions, callbacks and return visits."}, {"id": 26, "title": "Return Visit Specialist", "desc": "Outstanding management of repeat admissions and prior clinical history."}, {"id": 27, "title": "Owner Communication", "desc": "Exceptional continuity through clear simulated owner callbacks and updates."}, {"id": 28, "title": "Staff Collaboration", "desc": "Distinguished cooperation with the hospital's simulated clinical team."}, {"id": 29, "title": "Shift Commander", "desc": "Excellence in rounds, handoffs, interruptions and shift-level decision making."}, {"id": 30, "title": "Night Shift Excellence", "desc": "Outstanding service during the hospital's simulated night operations."}, {"id": 31, "title": "Day Shift Excellence", "desc": "Outstanding service during high-activity daytime hospital operations."}, {"id": 32, "title": "Swing Shift Excellence", "desc": "Outstanding service during transitional evening hospital operations."}, {"id": 33, "title": "Triage Excellence", "desc": "Exceptional prioritization and response during veterinary intake."}, {"id": 34, "title": "Admissions Excellence", "desc": "Distinguished handling of patient intake and hospital admission."}, {"id": 35, "title": "Discharge Excellence", "desc": "Outstanding preparation of patients for safe completion of care."}, {"id": 36, "title": "Medical Records Excellence", "desc": "Exceptional maintenance of persistent patient history and clinical records."}, {"id": 37, "title": "Chart Integrity", "desc": "Distinguished attention to complete, chronological patient documentation."}, {"id": 38, "title": "Records Archivist", "desc": "Outstanding preservation and retrieval of hospital history."}, {"id": 39, "title": "Hospital IT Operator", "desc": "Exceptional stewardship of the veterinary workstation and hospital systems."}, {"id": 40, "title": "Network Investigator", "desc": "Distinguished investigation of simulated veterinary network events."}, {"id": 41, "title": "Systems Reliability", "desc": "Outstanding attention to operational continuity and technical readiness."}, {"id": 42, "title": "Printer Operations", "desc": "Excellence in managing hospital print workflows and permanent player honors."}, {"id": 43, "title": "Evidence Analyst", "desc": "Exceptional separation of confirmed facts, conflicts, probabilities and unknowns."}, {"id": 44, "title": "Incident Investigator", "desc": "Distinguished investigation of hospital incidents and unresolved records."}, {"id": 45, "title": "Case 03117 Investigator", "desc": "Persistent, evidence-centered work on the hospital's central mystery."}, {"id": 46, "title": "Archive Investigator", "desc": "Outstanding exploration of recovered records and legacy hospital material."}, {"id": 47, "title": "Old Wing Explorer", "desc": "Recognition for uncovering the decommissioned veterinary wing."}, {"id": 48, "title": "Lower Storage Explorer", "desc": "Recognition for reaching and documenting sealed lower-storage areas."}, {"id": 49, "title": "Legacy Systems Research", "desc": "Excellence in investigating historical equipment and computer records."}, {"id": 50, "title": "Mercer Archive Research", "desc": "Recognition for careful investigation of the historical Mercer record trail."}, {"id": 51, "title": "Recovery 04 Research", "desc": "Recognition for documenting the historical Recovery 04 references."}, {"id": 52, "title": "RX-04 Evidence Review", "desc": "Recognition for keeping retired hardware evidence separate from unsupported conclusions."}, {"id": 53, "title": "Clinical Mystery Scholar", "desc": "Outstanding pursuit of hospital lore while preserving evidence integrity."}, {"id": 54, "title": "Hospital Historian", "desc": "Distinguished reconstruction of the veterinary department's evolving history."}, {"id": 55, "title": "Facility Development", "desc": "Exceptional investment in hospital growth and patient capacity."}, {"id": 56, "title": "ICU Expansion", "desc": "Recognition for expanding intensive-care capability."}, {"id": 57, "title": "Surgery Expansion", "desc": "Recognition for advancing procedural capacity."}, {"id": 58, "title": "Imaging Expansion", "desc": "Recognition for advancing diagnostic imaging capability."}, {"id": 59, "title": "Laboratory Expansion", "desc": "Recognition for advancing diagnostic laboratory capability."}, {"id": 60, "title": "Pharmacy Expansion", "desc": "Recognition for strengthening medication support."}, {"id": 61, "title": "Recovery Habitat Builder", "desc": "Recognition for creating improved species-sensitive recovery environments."}, {"id": 62, "title": "Exotics Ward Founder", "desc": "Recognition for expanding dedicated exotic-animal care."}, {"id": 63, "title": "Rehabilitation Founder", "desc": "Recognition for advancing long-term mobility and rehabilitation services."}, {"id": 64, "title": "Specialist Team Builder", "desc": "Recognition for expanding specialist coverage and staffing."}, {"id": 65, "title": "Records Vault Founder", "desc": "Recognition for strengthening longitudinal records and archive integrity."}, {"id": 66, "title": "Security Modernization", "desc": "Recognition for improving hospital access and operational logging."}, {"id": 67, "title": "Old Wing Restoration", "desc": "Recognition for returning a decommissioned hospital area to useful service."}, {"id": 68, "title": "Archive Lab Founder", "desc": "Recognition for developing controlled legacy-equipment research capacity."}, {"id": 69, "title": "Life Support Resilience", "desc": "Recognition for strengthening simulated backup power and hospital resilience."}, {"id": 70, "title": "Clinical Nutrition Founder", "desc": "Recognition for expanding species-aware nutritional support."}, {"id": 71, "title": "Resident Sanctuary Founder", "desc": "Recognition for creating a lasting environment for long-term animal residents."}, {"id": 72, "title": "Living Hospital Commander", "desc": "Exceptional command of a hospital that continues operating across departments and time."}, {"id": 73, "title": "Emergency Queue Master", "desc": "Recognition for resolving a sustained stream of hospital interruptions."}, {"id": 74, "title": "Department Coordinator", "desc": "Outstanding balancing of simultaneous veterinary department workloads."}, {"id": 75, "title": "Equipment Recovery", "desc": "Recognition for responding to simulated equipment and service interruptions."}, {"id": 76, "title": "Hospital Evolution Master", "desc": "Distinguished completion and stewardship of major facility development."}, {"id": 77, "title": "Resident Historian", "desc": "Recognition for building rich longitudinal histories for animal residents."}, {"id": 78, "title": "Trust Builder", "desc": "Exceptional progress in animal comfort, familiarity and handling trust."}, {"id": 79, "title": "Veterinary Excellence", "desc": "The premier distinction for sustained care, knowledge, service and impact."}, {"id": 80, "title": "Vet Gods Grand Laureate", "desc": "The highest cumulative in-game honor for extraordinary dedication across the entire hospital."}];
+const KEY="vetgods_80_awards";
+function esc(s){return String(s||"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+function get(){let x;try{x=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}return x||{name:"Veterinary Champion",earned:{},issued:{}}}
+function put(x){localStorage.setItem(KEY,JSON.stringify(x))}
+function serial(a){let x=get();if(!x.issued[a.id]){x.issued[a.id]={serial:"VG-"+String(a.id).padStart(3,"0")+"-"+String(Date.now()).slice(-7),date:new Date().toLocaleDateString()};put(x)}return x.issued[a.id]}
+function earn(id){let x=get();x.earned[id]=true;put(x);hub()}
+function cert(a,x){let m=serial(a);return '<section class="vg80cert"><div class="top">VET GODS · VETERINARY HOSPITAL · PLAYER HONORS</div><h1>CERTIFICATE OF DISTINCTION</h1><div class="line"></div><div class="award">'+esc(a.title).toUpperCase()+'</div><div class="present">PRESENTED TO</div><div class="name">'+esc(x.name)+'</div><div class="desc">'+esc(a.desc)+' This honor is recorded as part of the player’s permanent Vet Gods achievement history.</div><div class="seal">VG<br>'+String(a.id).padStart(2,"0")+'<br>HONOR</div><div class="sigs"><div class="sig"><i>Hospital Administration</i><br>Program Administrator</div><div class="sig"><i>Veterinary Command</i><br>Clinical Operations</div></div><div class="meta"><span>AWARD '+String(a.id).padStart(2,"0")+' / 80 · ISSUED '+esc(m.date)+'</span><span>'+esc(m.serial)+'</span></div></section>'}
+function printIds(ids){let x=get();x.name=(document.querySelector("#vg80Name")?.value||x.name).trim()||"Veterinary Champion";put(x);let chosen=AWARDS.filter(a=>ids.includes(a.id));if(!chosen.length)return alert("No awards selected.");let r=document.querySelector("#vg80PrintRoot");if(r)r.remove();r=document.createElement("div");r.id="vg80PrintRoot";r.innerHTML=chosen.map(a=>cert(a,x)).join("");document.body.appendChild(r);setTimeout(()=>{window.print();setTimeout(()=>r.remove(),1200)},100)}
+function hub(){
+ document.querySelector("#vg80Hub")?.remove();let x=get(),d=document.createElement("div");d.id="vg80Hub";
+ d.innerHTML='<div class="vg80wrap"><div class="vg80head"><div><div style="font-size:10px;letter-spacing:3px;color:#899c8d">VET GODS // 80-HONOR ARCHIVE</div><h1>Grand Award Registry</h1></div><button class="vg80btn" id="vg80Close">CLOSE</button></div>'+
+ '<div class="vg80controls"><input class="vg80input" id="vg80Name" value="'+esc(x.name)+'" placeholder="Player name"><button class="vg80btn" id="vg80Save">SAVE NAME</button><button class="vg80btn" id="vg80EarnAll">UNLOCK ALL 80</button><button class="vg80btn" id="vg80PrintEarned">PRINT ALL EARNED</button></div>'+
+ '<div style="font-size:12px;margin:7px 0;color:#aab9ad">Each honor has its own permanent award number, issue record and full landscape certificate. Earn one, print one, or print the entire earned collection.</div>'+
+ '<div class="vg80grid">'+AWARDS.map(a=>'<article class="vg80item '+(x.earned[a.id]?"earned":"")+'"><div class="vg80num">HONOR '+String(a.id).padStart(2,"0")+' / 80</div><h3>'+esc(a.title)+'</h3><p>'+esc(a.desc)+'</p><small>'+(x.earned[a.id]?"AWARDED · "+esc((x.issued[a.id]||{}).serial||"record ready"):"LOCKED / AVAILABLE")+'</small><div class="vg80actions"><button data-earn="'+a.id+'">'+(x.earned[a.id]?"AWARDED":"AWARD")+'</button><button data-print="'+a.id+'">PRINT</button></div></article>').join("")+'</div></div>';
+ document.body.appendChild(d);
+ d.querySelector("#vg80Close").onclick=()=>d.remove();
+ d.querySelector("#vg80Save").onclick=()=>{x.name=d.querySelector("#vg80Name").value.trim()||"Veterinary Champion";put(x);hub()};
+ d.querySelector("#vg80EarnAll").onclick=()=>{let q=get();AWARDS.forEach(a=>q.earned[a.id]=true);put(q);hub()};
+ d.querySelector("#vg80PrintEarned").onclick=()=>{let q=get();printIds(AWARDS.filter(a=>q.earned[a.id]).map(a=>a.id))};
+ d.querySelectorAll("[data-earn]").forEach(b=>b.onclick=()=>earn(+b.dataset.earn));
+ d.querySelectorAll("[data-print]").forEach(b=>b.onclick=()=>{let id=+b.dataset.print,q=get();q.earned[id]=true;put(q);printIds([id])});
+}
+function launch(){if(document.querySelector("#vg80Launch"))return;let b=document.createElement("button");b.id="vg80Launch";b.textContent="🏆 80 AWARDS";b.onclick=hub;document.body.appendChild(b)}
+window.VetGods80Awards={open:hub,state:get,printAll:function(){let x=get();printIds(AWARDS.filter(a=>x.earned[a.id]).map(a=>a.id))}};
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();setInterval(launch,2500);
+})();
+</script>
+
+</body></html>`);w.document.close()
+}
+function render(){
+ let m=document.querySelector("#main"),x=get(),ls=animals();if(!m)return;let a=ls.find(z=>String(z.id)===String(x.selected))||ls[0];if(a&&!x.selected)x.selected=a.id;let idx=Math.max(0,ls.indexOf(a)),c=a?ensure(x,a,idx):null;if(a)sync(a,c);put(x);try{page="patientChart";nav()}catch(e){}
+ m.innerHTML='<div id="d2"><header class="d2head"><small>NCRH // VETERINARY MEDICINE // DEPTH OVERHAUL 02</small><h1>PERSISTENT PATIENT MEDICAL RECORD</h1><div style="font-size:8px;color:#8cad94">Every animal now owns a longitudinal chart: history, vitals, diagnostics, medications, procedures, recovery, financial entries, investigation evidence, notes, discharge and a chronological audit trail.</div></header>'+
+ '<div class="d2stats"><div><small>PATIENTS</small><b>'+ls.length+'</b></div><div><small>SELECTED</small><b>'+E(a?mrn(a):"NONE")+'</b></div><div><small>CHART EVENTS</small><b>'+(c?c.timeline.length:0)+'</b></div><div><small>VITAL SETS</small><b>'+(c?c.vitals.length:0)+'</b></div><div><small>DIAGNOSTICS</small><b>'+(c?c.diagnostics.length:0)+'</b></div><div><small>STATUS</small><b>'+E(c?c.status:"—")+'</b></div></div>'+
+ '<div class="d2layout"><section class="d2panel"><h2>PATIENT INDEX</h2><div class="d2patients">'+(ls.length?ls.map((z,i)=>{let q=ensure(x,z,i);return '<div class="d2patient '+(a&&String(z.id)===String(a.id)?"on":"")+'" data-d2patient="'+E(z.id)+'"><span>'+E(z.icon||"🐾")+'</span><div><b>'+E(z.name)+'</b><small>'+E(z.species||"ANIMAL")+' · '+mrn(z)+'</small></div><strong>'+E(q.status)+'</strong></div>'}).join(""):'<div class="d2patient"><span>🐾</span><div><b>No patients loaded</b><small>Add animals through the main game.</small></div></div>')+'</div></section>'+
+ '<section class="d2panel"><h2>ACTIVE CHART</h2><div class="d2body">'+(a&&c?'<div class="d2banner"><div class="d2icon">'+E(a.icon||"🐾")+'</div><div><h3>'+E(a.name)+'</h3><div class="d2muted">'+E(a.species||"ANIMAL")+' · '+mrn(a)+'<br>Chart created '+E(c.created)+' · '+E(c.status)+'</div></div></div>'+
+ '<div class="d2tabs">'+tabs.map(t=>'<button class="'+(x.tab===t?"on":"")+'" data-d2tab="'+t+'">'+t+'</button>').join("")+'</div><div class="d2sheet">'+section(x.tab,a,c)+'</div>'+
+ '<div class="d2actions"><button data-d2act="vital">RECORD VITALS</button><button data-d2act="lab">ORDER LAB PANEL</button><button data-d2act="image">ADD IMAGING STUDY</button><button data-d2act="med">ADMINISTER PAIN CONTROL</button><button data-d2act="procedure">DOCUMENT TREATMENT</button><button data-d2act="recovery">ADD RECOVERY NOTE</button><button id="d2Discharge">FINALIZE DISCHARGE</button><button id="d2PrintBtn">PRINT COMPLETE CHART</button></div>'+
+ '<div class="d2nav"><button id="d2Shift">SHIFT COMMAND</button><button id="d2Clinical">CLINICAL OS</button><button id="d2Mystery">MYSTERY WORKUP</button><button id="d2PC">HOSPITAL PC</button><button id="d2Incident">INCIDENT COMMAND</button><button id="d2Awards">CREDENTIALS</button></div>':'')+'</div></section></div></div>';
+ if(!a)return;
+ m.querySelectorAll("[data-d2patient]").forEach(b=>b.onclick=()=>{x.selected=b.dataset.d2patient;put(x);render()});
+ m.querySelectorAll("[data-d2tab]").forEach(b=>b.onclick=()=>{x.tab=b.dataset.d2tab;put(x);render()});
+ m.querySelectorAll("[data-d2act]").forEach(b=>b.onclick=()=>act(b.dataset.d2act,a,c));
+ let sn=document.querySelector("#d2SaveNote");if(sn)sn.onclick=()=>saveNote(a,c);
+ document.querySelector("#d2Discharge").onclick=()=>discharge(a,c);document.querySelector("#d2PrintBtn").onclick=()=>printChart(a,c);
+ document.querySelector("#d2Shift").onclick=()=>window.VetGodsRealHospitalShift?.render?.();document.querySelector("#d2Clinical").onclick=()=>window.VetGodsHospitalClinicalOS?.render?.("census");document.querySelector("#d2Mystery").onclick=()=>window.VetGodsClinicalInvestigation?.render?.();document.querySelector("#d2PC").onclick=()=>window.VetGodsHospitalPC?.render?.();document.querySelector("#d2Incident").onclick=()=>window.VetGodsIncidentCommand?.render?.();document.querySelector("#d2Awards").onclick=()=>window.VetGodsAdminAuthority?.render?.();
+}
+function launch(){let b=document.querySelector("#d2Launch");if(!b){b=document.createElement("button");b.id="d2Launch";b.textContent="▤ PATIENT CHARTS";b.onclick=render;document.body.appendChild(b)}}
+window.VetGodsPatientCharts={render,state:get};
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",launch);else launch();setInterval(launch,2500);
+})();
+</script>
+<script id="depth-phase2-bridge">
+(function(){let n=0,t=setInterval(function(){n++;let p=window.VetGodsHospitalPC;if(p&&!p.__depth2){let old=p.render;p.render=function(){old();setTimeout(function(){let area=document.querySelector(".hpActions");if(area&&!document.querySelector("#d2Desk")){let b=document.createElement("button");b.id="d2Desk";b.textContent="OPEN PERSISTENT PATIENT CHARTS";b.onclick=function(){VetGodsPatientCharts.render()};area.prepend(b)}},0)};p.__depth2=true;clearInterval(t)}if(n>150)clearInterval(t)},250)})();
+</script>
+
+</body></html>`);w.document.close()
 }
 function printMaster(){
  let x=get();printDossier();
