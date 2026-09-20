@@ -17501,4 +17501,692 @@ window.addEventListener("unhandledrejection",function(e){try{localStorage.setIte
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",badge,{once:true});else badge();
 })();
 </script>
+
+
+<style id="vg-restoration-phase1-css">
+/* RESTORATION PHASE 1: preserve existing main screen and prevent overlays from replacing it */
+#main{display:block!important;visibility:visible!important;opacity:1!important}
+#vgRestoreHome{
+ position:fixed;left:8px;top:8px;z-index:2147483642;
+ padding:5px 8px;border:1px solid #52705a;background:#020805;color:#caffd5;
+ font:700 7px "Courier New",monospace;cursor:pointer
+}
+</style>
+<script id="vg-restoration-phase1-js">
+(function(){
+"use strict";
+if(window.__VG_RESTORE_PHASE1__)return;window.__VG_RESTORE_PHASE1__=true;
+function existingHome(){
+  try{
+    // Use the game's own existing navigation instead of creating another screen.
+    if(typeof window.showScreen==="function"){window.showScreen("home");return}
+    if(typeof window.goHome==="function"){window.goHome();return}
+    if(typeof window.nav==="function"){
+      if(typeof window.page!=="undefined") window.page="home";
+      window.nav();return;
+    }
+  }catch(e){}
+  // Safe fallback: reveal existing main container; do not generate replacement content.
+  const m=document.querySelector("#main");
+  if(m){m.style.display="block";m.style.visibility="visible";m.style.opacity="1"}
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function mount(){
+  // Remove leftovers created by the previous rearrangement if browser state preserved them.
+  document.querySelector("#vgDosCommandDeck")?.remove();
+  document.querySelector("#vgOfflineControls")?.remove();
+  document.body.classList.remove("vg-show-offline");
+  if(document.querySelector("#vgRestoreHome"))return;
+  let b=document.createElement("button");b.id="vgRestoreHome";b.textContent="← MAIN";
+  b.onclick=existingHome;document.body.appendChild(b);
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mount,{once:true});else mount();
+})();
+</script>
+
+
+<style id="vg-restoration-phase2-css">
+/* PHASE 2: navigation hierarchy only — no new game screens */
+#vgScreenDirectory{
+ position:fixed;left:8px;top:38px;z-index:2147483641;
+ width:min(290px,88vw);max-height:72vh;overflow:auto;
+ display:none;background:#020604;border:1px solid #52705a;
+ box-shadow:0 10px 28px #000;padding:6px;color:#caffd5;
+ font:700 7px "Courier New",monospace
+}
+body.vg-directory-open #vgScreenDirectory{display:block}
+#vgScreenDirectory .vgdir-title{padding:5px;border-bottom:1px solid #45634d;color:#a9ffbd;letter-spacing:1px}
+#vgScreenDirectory button{display:block;width:100%;text-align:left;margin:3px 0;padding:6px;border:1px solid #354b3a;background:#030a05;color:#caffd5;font:700 7px "Courier New",monospace;cursor:pointer}
+#vgScreenDirectory .vgdir-group{margin-top:6px;color:#718b78;font-size:6px;letter-spacing:1px}
+#vgRestoreDirectory{position:fixed;left:62px;top:8px;z-index:2147483642;padding:5px 8px;border:1px solid #52705a;background:#020805;color:#caffd5;font:700 7px "Courier New",monospace;cursor:pointer}
+</style>
+<script id="vg-restoration-phase2-js">
+(function(){
+"use strict";
+if(window.__VG_RESTORE_PHASE2__)return;window.__VG_RESTORE_PHASE2__=true;
+
+function call(fn){try{fn()}catch(e){console.warn("Existing screen unavailable",e)}}
+function entries(){
+ return [
+  ["ANIMAL CARE",[
+   ["Patient Charts",()=>window.VetGodsPatientCharts?.render?.()],
+   ["Treatment",()=>window.VetGodsTreatmentConsequences?.render?.()],
+   ["Long-Term Residents",()=>window.VetGodsLongTermResidents?.render?.()]
+  ]],
+  ["HOSPITAL",[
+   ["Hospital / Facility",()=>window.VetGodsPhysicalHospital?.render?.()],
+   ["Hospital Shift",()=>window.VetGodsRealHospitalShift?.render?.()],
+   ["Hospital Staff",()=>window.VetGodsHospitalStaff?.render?.()],
+   ["Hospital Evolution",()=>window.VetGodsHospitalEvolution?.render?.()],
+   ["Living Hospital",()=>window.VetGodsLivingWorld?.render?.()]
+  ]],
+  ["COMPUTER / INVESTIGATION",[
+   ["Deep Computer",()=>window.VetGodsDeepComputer?.open?.()],
+   ["Evidence Wall",()=>window.VetGodsEvidenceWall?.render?.()]
+  ]],
+  ["AWARDS / ADMINISTRATION",[
+   ["Premier Award",()=>window.VetGodsPremierAward?.open?.()],
+   ["80 Award Registry",()=>window.VetGods80Awards?.open?.()]
+  ]]
+ ];
+}
+function close(){document.body.classList.remove("vg-directory-open")}
+function mount(){
+ if(!document.querySelector("#vgRestoreDirectory")){
+   let b=document.createElement("button");b.id="vgRestoreDirectory";b.textContent="SCREENS";
+   b.onclick=()=>document.body.classList.toggle("vg-directory-open");document.body.appendChild(b)
+ }
+ if(document.querySelector("#vgScreenDirectory"))return;
+ let box=document.createElement("div");box.id="vgScreenDirectory";
+ box.innerHTML='<div class="vgdir-title">EXISTING SCREEN DIRECTORY</div>';
+ entries().forEach(group=>{
+   let h=document.createElement("div");h.className="vgdir-group";h.textContent=group[0];box.appendChild(h);
+   group[1].forEach(item=>{let b=document.createElement("button");b.textContent=item[0];b.onclick=()=>{close();call(item[1])};box.appendChild(b)})
+ });
+ document.body.appendChild(box)
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mount,{once:true});else mount();
+})();
+</script>
+
+
+<style id="vg-restoration-phase3-css">
+/* RESTORATION PHASE 3 — rearrange existing controls only */
+:root{--vg3bar-h:32px}
+
+/* Existing MAIN + SCREENS become the left side of one thin DOS control rail. */
+#vgRestoreHome,#vgRestoreDirectory{
+ position:fixed!important;top:0!important;z-index:2147483643!important;
+ height:var(--vg3bar-h)!important;box-sizing:border-box!important;
+ border-radius:0!important;margin:0!important;
+ background:#020704!important;color:#bfffd0!important;
+ border:0!important;border-right:1px solid #3e5e47!important;
+ font:700 7px "Courier New",monospace!important;
+}
+#vgRestoreHome{left:0!important;width:58px!important}
+#vgRestoreDirectory{left:58px!important;width:72px!important}
+
+/* Thin DOS identity strip fills the remainder without becoming another screen. */
+#vg3DosRail{
+ position:fixed;left:130px;right:0;top:0;height:var(--vg3bar-h);
+ z-index:2147483642;box-sizing:border-box;
+ display:flex;align-items:center;gap:8px;padding:0 8px;
+ background:linear-gradient(180deg,#07130b,#020604);
+ border-bottom:1px solid #45634d;color:#8fb99a;
+ font:700 7px "Courier New",monospace;pointer-events:none;
+}
+#vg3DosRail b{color:#c8ffd5;letter-spacing:1px}
+#vg3DosRail span:last-child{margin-left:auto;color:#66806d}
+
+/* Existing floating launch buttons are no longer postcard-like objects.
+   Keep them available, but park them in one compact bottom utility rail. */
+#d8Launch,#d9Launch,#d10Launch,#vgAwardLaunch,#vg80Launch{
+ position:static!important;inset:auto!important;
+ width:auto!important;min-width:0!important;height:25px!important;
+ margin:0!important;padding:3px 6px!important;
+ border-radius:0!important;box-shadow:none!important;
+ border:1px solid #3e5e47!important;background:#020704!important;
+ color:#bfffd0!important;font:700 6px "Courier New",monospace!important;
+}
+#vg3UtilityRail{
+ position:fixed;left:6px;right:6px;bottom:5px;z-index:2147483638;
+ display:flex;gap:3px;align-items:center;overflow-x:auto;
+ padding:3px;background:#010402e8;border:1px solid #304b37;
+ max-height:33px;
+}
+
+/* Directory opens below the DOS rail instead of on top of it. */
+#vgScreenDirectory{top:36px!important}
+
+/* Give the existing page breathing room beneath the fixed rail. */
+body{padding-top:var(--vg3bar-h)!important}
+
+@media(max-width:620px){
+ #vg3DosRail{font-size:6px;gap:4px}
+ #vg3DosRail span:last-child{display:none}
+ #vg3UtilityRail{max-height:31px}
+ #d8Launch,#d9Launch,#d10Launch,#vgAwardLaunch,#vg80Launch{
+   height:23px!important;font-size:5.5px!important;padding:2px 5px!important
+ }
+}
+</style>
+<script id="vg-restoration-phase3-js">
+(function(){
+"use strict";
+if(window.__VG_RESTORE_PHASE3__)return;window.__VG_RESTORE_PHASE3__=true;
+
+function mount(){
+ if(!document.querySelector("#vg3DosRail")){
+   let rail=document.createElement("div");rail.id="vg3DosRail";
+   rail.innerHTML='<b>NCRH://VET_DOS</b><span>RESTORED WORKSTATION</span><span>SCREEN CONTENT BELOW</span>';
+   document.body.appendChild(rail);
+ }
+ let util=document.querySelector("#vg3UtilityRail");
+ if(!util){util=document.createElement("div");util.id="vg3UtilityRail";document.body.appendChild(util)}
+ ["d8Launch","d9Launch","d10Launch","vgAwardLaunch","vg80Launch"].forEach(function(id){
+   let n=document.getElementById(id);
+   if(n&&n.parentNode!==util)util.appendChild(n);
+ });
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mount,{once:true});else mount();
+
+/* Re-arrange only after a real user click in case an existing screen recreates its own launcher.
+   No interval, no observer, no background polling. */
+document.addEventListener("click",function(){requestAnimationFrame(mount)},{passive:true});
+})();
+</script>
+
+
+<style id="vg-restoration-phase4-css">
+/* RESTORATION PHASE 4 — compact existing launcher/card clutter, delete nothing */
+.vg4-parked{
+  position:static!important;inset:auto!important;
+  width:auto!important;max-width:none!important;min-height:0!important;height:auto!important;
+  margin:0!important;padding:0!important;border:0!important;box-shadow:none!important;
+  background:transparent!important;
+}
+#vg4PanelDrawer{
+  display:none;position:fixed;left:6px;right:6px;bottom:41px;z-index:2147483637;
+  max-height:42vh;overflow:auto;padding:6px;background:#010402f2;
+  border:1px solid #38513e;box-shadow:0 -8px 25px #000;
+  color:#caffd5;font:700 7px "Courier New",monospace
+}
+body.vg4-open #vg4PanelDrawer{display:block}
+#vg4PanelDrawer .vg4-title{padding:4px 5px;border-bottom:1px solid #38513e;color:#8fb99a}
+#vg4PanelDrawer button,#vg4PanelDrawer a{
+  display:block!important;position:static!important;inset:auto!important;
+  width:100%!important;min-height:0!important;margin:3px 0!important;padding:6px!important;
+  border:1px solid #304a36!important;background:#020805!important;color:#caffd5!important;
+  font:700 7px "Courier New",monospace!important;text-align:left!important
+}
+#vg4DrawerToggle{
+  position:static!important;height:25px!important;padding:3px 7px!important;
+  border:1px solid #3e5e47!important;background:#020704!important;color:#bfffd0!important;
+  font:700 6px "Courier New",monospace!important
+}
+</style>
+<script id="vg-restoration-phase4-js">
+(function(){
+"use strict";
+if(window.__VG_RESTORE_PHASE4__)return;window.__VG_RESTORE_PHASE4__=true;
+
+function drawer(){
+ let d=document.querySelector("#vg4PanelDrawer");
+ if(!d){d=document.createElement("div");d.id="vg4PanelDrawer";d.innerHTML='<div class="vg4-title">SECONDARY EXISTING CONTROLS</div>';document.body.appendChild(d)}
+ return d;
+}
+function mount(){
+ const util=document.querySelector("#vg3UtilityRail");
+ if(util&&!document.querySelector("#vg4DrawerToggle")){
+   let b=document.createElement("button");b.id="vg4DrawerToggle";b.textContent="MORE PANELS ▴";
+   b.onclick=()=>document.body.classList.toggle("vg4-open");util.appendChild(b)
+ }
+ const d=drawer();
+
+ /* Only relocate already-existing duplicate/card launch containers when identifiable.
+    Their buttons remain live because the original DOM nodes themselves are moved. */
+ const selectors=[
+   ".quick-launch-card",".launch-card",".utility-card",".shortcut-card",
+   ".floating-card",".floating-panel",".quick-actions-card",
+   "[data-launch-panel]","[data-utility-card]"
+ ];
+ selectors.forEach(sel=>{
+   document.querySelectorAll(sel).forEach(n=>{
+     if(n.closest("#main")) return;              // never steal actual game content
+     if(n.closest("#vgScreenDirectory")) return;
+     if(n.closest("#vg3UtilityRail")) return;
+     if(n.closest("#vg4PanelDrawer")) return;
+     n.classList.add("vg4-parked");d.appendChild(n)
+   })
+ });
+
+ /* If a secondary panel contains only navigation controls and no meaningful game
+    content, compact it in place rather than removing it. */
+ document.querySelectorAll("body > .panel, body > .card").forEach(n=>{
+   if(n.id||n.closest("#main")||n.closest("#vg4PanelDrawer"))return;
+   const interactive=n.querySelectorAll("button,a").length;
+   const forms=n.querySelectorAll("input,textarea,select,canvas,svg,img").length;
+   const words=(n.textContent||"").trim().split(/\s+/).filter(Boolean).length;
+   if(interactive>0 && forms===0 && words<45){
+     n.classList.add("vg4-parked");d.appendChild(n)
+   }
+ });
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mount,{once:true});else mount();
+document.addEventListener("click",()=>requestAnimationFrame(mount),{passive:true});
+})();
+</script>
+
+
+<style id="vg-restoration-phase5-css">
+/* RESTORATION PHASE 5 — predictable routes between EXISTING screens only */
+#vg5Back{
+ position:fixed;left:130px;top:0;z-index:2147483644;
+ height:32px;box-sizing:border-box;padding:0 9px;
+ border:0;border-right:1px solid #3e5e47;background:#020704;color:#bfffd0;
+ font:700 7px "Courier New",monospace;cursor:pointer
+}
+#vg5Back:disabled{opacity:.35;cursor:default}
+#vg3DosRail{left:196px!important}
+@media(max-width:620px){#vg5Back{left:130px;width:54px;padding:0 4px}#vg3DosRail{left:184px!important}}
+</style>
+<script id="vg-restoration-phase5-js">
+(function(){
+"use strict";
+if(window.__VG_RESTORE_PHASE5__)return;window.__VG_RESTORE_PHASE5__=true;
+const stack=[];
+
+function home(){
+ try{
+   if(typeof window.showScreen==="function"){window.showScreen("home");return}
+   if(typeof window.goHome==="function"){window.goHome();return}
+   if(typeof window.nav==="function"){
+     if(typeof window.page!=="undefined")window.page="home";
+     window.nav();return
+   }
+ }catch(e){}
+ const m=document.querySelector("#main");
+ if(m){m.style.display="block";m.style.visibility="visible";m.style.opacity="1"}
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+const routes={
+ charts:()=>window.VetGodsPatientCharts?.render?.(),
+ treatment:()=>window.VetGodsTreatmentConsequences?.render?.(),
+ residents:()=>window.VetGodsLongTermResidents?.render?.(),
+ hospital:()=>window.VetGodsPhysicalHospital?.render?.(),
+ shift:()=>window.VetGodsRealHospitalShift?.render?.(),
+ staff:()=>window.VetGodsHospitalStaff?.render?.(),
+ evolution:()=>window.VetGodsHospitalEvolution?.render?.(),
+ living:()=>window.VetGodsLivingWorld?.render?.(),
+ computer:()=>window.VetGodsDeepComputer?.open?.(),
+ evidence:()=>window.VetGodsEvidenceWall?.render?.(),
+ premier:()=>window.VetGodsPremierAward?.open?.(),
+ awards:()=>window.VetGods80Awards?.open?.()
+};
+let current="home";
+function go(name,push=true){
+ const fn=routes[name];
+ if(!fn)return;
+ if(push&&current!==name)stack.push(current);
+ current=name;
+ try{fn()}catch(e){console.warn("Existing route unavailable:",name,e)}
+ update();
+}
+function back(){
+ const prev=stack.pop();
+ if(!prev||prev==="home"){current="home";home()}
+ else go(prev,false);
+ update();
+}
+function update(){
+ const b=document.querySelector("#vg5Back");
+ if(b){b.disabled=current==="home"&&stack.length===0;b.textContent="← BACK"}
+}
+function mount(){
+ if(!document.querySelector("#vg5Back")){
+   let b=document.createElement("button");b.id="vg5Back";b.textContent="← BACK";b.onclick=back;
+   document.body.appendChild(b)
+ }
+ /* Phase 2 directory remains the visible hierarchy, but its existing buttons are
+    rebound to the same existing screens through a predictable route stack. */
+ const box=document.querySelector("#vgScreenDirectory");
+ if(box&&!box.dataset.vg5bound){
+   box.dataset.vg5bound="1";
+   const map={
+    "Patient Charts":"charts","Treatment":"treatment","Long-Term Residents":"residents",
+    "Hospital / Facility":"hospital","Hospital Shift":"shift","Hospital Staff":"staff",
+    "Hospital Evolution":"evolution","Living Hospital":"living","Deep Computer":"computer",
+    "Evidence Wall":"evidence","Premier Award":"premier","80 Award Registry":"awards"
+   };
+   box.querySelectorAll("button").forEach(btn=>{
+     const key=map[btn.textContent.trim()];
+     if(key)btn.onclick=()=>{document.body.classList.remove("vg-directory-open");go(key)}
+   })
+ }
+ const main=document.querySelector("#vgRestoreHome");
+ if(main&&!main.dataset.vg5bound){
+   main.dataset.vg5bound="1";main.onclick=()=>{stack.length=0;current="home";home();update()}
+ }
+ update();
+}
+window.VetGodsRestoredNavigation={go,back,home};
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mount,{once:true});else mount();
+})();
+</script>
+
+
+<style id="vg-restoration-phase6-css">
+/* PHASE 6 — deep-screen escape repair only */
+#vg6EscapeRail{
+ position:fixed;right:8px;top:38px;z-index:2147483646;
+ display:none;gap:3px;padding:3px;background:#010402e8;border:1px solid #38513e
+}
+body.vg6-deep #vg6EscapeRail{display:flex}
+#vg6EscapeRail button{padding:5px 7px;border:1px solid #45634d;background:#020805;color:#caffd5;font:700 6px "Courier New",monospace;cursor:pointer}
+</style>
+<script id="vg-restoration-phase6-js">
+(function(){
+"use strict";
+if(window.__VG_RESTORE_PHASE6__)return;window.__VG_RESTORE_PHASE6__=true;
+
+const deepSelectors=["#d6Shell","#vgAwardHub","#vg80Hub","#d7","#d8","#d9","#d10"];
+function closeOverlay(){
+ document.querySelector("#d6Shell")?.remove();
+ document.querySelector("#vgAwardHub")?.remove();
+ document.querySelector("#vg80Hub")?.remove();
+ document.body.classList.remove("vg6-deep");
+}
+function back(){
+ closeOverlay();
+ if(window.VetGodsRestoredNavigation?.back)window.VetGodsRestoredNavigation.back();
+}
+function home(){
+ closeOverlay();
+ if(window.VetGodsRestoredNavigation?.home)window.VetGodsRestoredNavigation.home();
+}
+function detect(){
+ const deep=deepSelectors.some(sel=>document.querySelector(sel));
+ document.body.classList.toggle("vg6-deep",deep);
+}
+function mount(){
+ if(!document.querySelector("#vg6EscapeRail")){
+   let r=document.createElement("div");r.id="vg6EscapeRail";
+   r.innerHTML='<button id="vg6Back">← BACK</button><button id="vg6Home">MAIN</button><button id="vg6Close">CLOSE OVERLAY</button>';
+   document.body.appendChild(r);
+   r.querySelector("#vg6Back").onclick=back;
+   r.querySelector("#vg6Home").onclick=home;
+   r.querySelector("#vg6Close").onclick=()=>{closeOverlay();detect()};
+ }
+ detect();
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mount,{once:true});else mount();
+
+/* Only check after actual interaction/navigation. No polling. */
+document.addEventListener("click",()=>requestAnimationFrame(detect),{passive:true});
+window.addEventListener("pageshow",detect);
+window.addEventListener("keydown",e=>{
+ if(e.key==="Escape"){
+   const hasOverlay=document.querySelector("#d6Shell,#vgAwardHub,#vg80Hub");
+   if(hasOverlay){e.preventDefault();closeOverlay();detect()}
+ }
+});
+})();
+</script>
+
+
+<style id="vg-restoration-phase7-css">
+/* PHASE 7 — requested CSS correction only:
+   Career & Gameplay Credential Command text changed from white to black. */
+#careerCredentials,
+#careerCredentials *,
+.career-credentials,
+.career-credentials *,
+.credential-command,
+.credential-command *,
+[data-credential-command],
+[data-credential-command] *{
+  color:#000 !important;
+  text-shadow:none !important;
+}
+
+/* Fallback class applied only to the existing credential section found by its heading. */
+.vg7-black-credentials,
+.vg7-black-credentials *{
+  color:#000 !important;
+  text-shadow:none !important;
+}
+</style>
+<script id="vg-restoration-phase7-js">
+(function(){
+"use strict";
+if(window.__VG_RESTORE_PHASE7__)return;window.__VG_RESTORE_PHASE7__=true;
+function fix(){
+ const needle="VET GODS // CAREER & GAMEPLAY CREDENTIAL COMMAND";
+ document.querySelectorAll("h1,h2,h3,h4,div,section,header").forEach(function(n){
+   if((n.textContent||"").includes(needle)){
+     let target=n.closest("section,.panel,.card,[class*='credential']")||n;
+     target.classList.add("vg7-black-credentials");
+   }
+ });
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",fix,{once:true});else fix();
+document.addEventListener("click",()=>requestAnimationFrame(fix),{passive:true});
+})();
+</script>
+
+
+<style id="vg-restoration-phase8-css">
+/* PHASE 8 — existing awards/admin cleanup only */
+#vgAwardLaunch,#vg80Launch{
+  position:static!important;inset:auto!important;
+  width:auto!important;height:23px!important;
+  margin:0!important;padding:3px 6px!important;
+  border-radius:0!important;box-shadow:none!important;
+  font:700 6px "Courier New",monospace!important
+}
+/* Keep award overlays above the game when intentionally opened,
+   but don't let their launch cards occupy the main screen. */
+#vgAwardHub,#vg80Hub{z-index:2147483647!important}
+</style>
+<script id="vg-restoration-phase8-js">
+(function(){
+"use strict";
+if(window.__VG_RESTORE_PHASE8__)return;window.__VG_RESTORE_PHASE8__=true;
+
+function arrange(){
+ const util=document.querySelector("#vg3UtilityRail");
+ if(util){
+   ["vgAwardLaunch","vg80Launch"].forEach(id=>{
+     const n=document.getElementById(id);
+     if(n&&n.parentNode!==util)util.appendChild(n);
+   });
+ }
+ /* Keep the existing Awards / Administration entries together in the existing
+    screen directory. No new award system is created. */
+ const dir=document.querySelector("#vgScreenDirectory");
+ if(dir){
+   const buttons=[...dir.querySelectorAll("button")];
+   const premier=buttons.find(b=>b.textContent.trim()==="Premier Award");
+   const registry=buttons.find(b=>b.textContent.trim()==="80 Award Registry");
+   if(premier)premier.dataset.vg8="awards";
+   if(registry)registry.dataset.vg8="awards";
+ }
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",arrange,{once:true});else arrange();
+document.addEventListener("click",()=>requestAnimationFrame(arrange),{passive:true});
+})();
+</script>
+
+
+<style id="vg-restoration-phase9-css">
+/* RESTORATION PHASE 9 — visual consistency only. No new screens/features. */
+:root{
+ --vg9-gap:7px;
+ --vg9-edge:#3e5e47;
+ --vg9-bg:#020704;
+ --vg9-text:#caffd5;
+}
+
+/* Prevent existing screens from escaping the viewport. */
+#main,#main *{box-sizing:border-box}
+#main{max-width:100%;overflow-x:hidden}
+#main img,#main canvas,#main svg{max-width:100%}
+
+/* Normalize existing panel/card spacing without changing their content. */
+#main .panel,#main .card,#main section{
+ max-width:100%;
+}
+#main button,#main input,#main select,#main textarea{
+ max-width:100%;
+}
+
+/* Existing restoration rails use one DOS visual language. */
+#vgRestoreHome,#vgRestoreDirectory,#vg5Back,
+#vg3UtilityRail button,#vg4DrawerToggle,#vg6EscapeRail button{
+ border-color:var(--vg9-edge)!important;
+ background:var(--vg9-bg)!important;
+ color:var(--vg9-text)!important;
+ box-shadow:none!important;
+ border-radius:0!important;
+}
+
+/* Keep utility rail compact and readable instead of tall/card-like. */
+#vg3UtilityRail{
+ scrollbar-width:thin;
+ white-space:nowrap;
+}
+#vg3UtilityRail button{
+ flex:0 0 auto!important;
+}
+
+/* Directory and secondary drawer get matching proportions. */
+#vgScreenDirectory,#vg4PanelDrawer{
+ box-sizing:border-box;
+ border-color:var(--vg9-edge)!important;
+ border-radius:0!important;
+}
+#vgScreenDirectory button,#vg4PanelDrawer button{
+ line-height:1.25!important;
+}
+
+/* Deep overlays remain usable on smaller screens. */
+#vgAwardHub,#vg80Hub,#d6Shell{
+ box-sizing:border-box!important;
+ max-width:100vw!important;
+ max-height:100vh!important;
+ overflow:auto!important;
+}
+
+/* Preserve Phase 7 request: credential command stays black. */
+.vg7-black-credentials,.vg7-black-credentials *{
+ color:#000!important;
+ text-shadow:none!important;
+}
+
+@media(max-width:700px){
+ #main{padding-left:3px;padding-right:3px}
+ #vgScreenDirectory{width:min(94vw,320px)!important}
+ #vg4PanelDrawer{left:3px!important;right:3px!important}
+ #vg6EscapeRail{right:4px!important}
+}
+</style>
+<script id="vg-restoration-phase9-js">
+(function(){
+"use strict";
+if(window.__VG_RESTORE_PHASE9__)return;
+window.__VG_RESTORE_PHASE9__=true;
+
+/* One-time cleanup of inline dimensions on restoration navigation only.
+   Game content and gameplay logic are untouched. */
+function tidy(){
+ ["vgRestoreHome","vgRestoreDirectory","vg5Back","vg4DrawerToggle"].forEach(function(id){
+   const n=document.getElementById(id);
+   if(n)n.setAttribute("aria-label",n.textContent.trim());
+ });
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",tidy,{once:true});
+else tidy();
+})();
+</script>
+
+
+<style id="vg-restoration-phase10-css">
+/* FINAL RESTORATION — no new game systems */
+#vgRestoreHome,#vgRestoreDirectory,#vg5Back{display:block!important}
+#vg3UtilityRail{max-height:32px!important}
+#vg4PanelDrawer{max-height:38vh!important}
+#main{display:block;visibility:visible;opacity:1;min-height:1px}
+
+/* Main game content wins the visual hierarchy. */
+#main{position:relative;z-index:1}
+#vg3UtilityRail,#vgScreenDirectory,#vg4PanelDrawer,#vg6EscapeRail{
+  font-family:"Courier New",monospace;
+}
+
+/* Avoid giant duplicated launchers if an old screen recreates one. */
+body > #d8Launch,body > #d9Launch,body > #d10Launch,
+body > #vgAwardLaunch,body > #vg80Launch{
+  max-width:150px!important;
+  max-height:28px!important;
+  overflow:hidden!important;
+}
+</style>
+
+<script id="vg-restoration-phase10-js">
+(function(){
+"use strict";
+if(window.__VG_RESTORE_PHASE10__)return;
+window.__VG_RESTORE_PHASE10__=true;
+
+function finalRepair(){
+  const main=document.querySelector("#main");
+  if(main){
+    main.style.display="block";
+    main.style.visibility="visible";
+    main.style.opacity="1";
+  }
+
+  /* Keep exactly one copy of each restoration control. */
+  ["vgRestoreHome","vgRestoreDirectory","vg5Back","vg3UtilityRail",
+   "vgScreenDirectory","vg4PanelDrawer","vg6EscapeRail"].forEach(function(id){
+    const all=document.querySelectorAll("#"+id);
+    for(let i=1;i<all.length;i++)all[i].remove();
+  });
+
+  /* Existing award/resident/evolution launch buttons belong in the compact utility rail. */
+  const util=document.querySelector("#vg3UtilityRail");
+  if(util){
+    ["d8Launch","d9Launch","d10Launch","vgAwardLaunch","vg80Launch"].forEach(function(id){
+      const nodes=[...document.querySelectorAll("#"+id)];
+      if(nodes.length){
+        const keep=nodes[0];
+        if(keep.parentNode!==util)util.appendChild(keep);
+        nodes.slice(1).forEach(n=>n.remove());
+      }
+    });
+  }
+
+  document.body.classList.remove("vg-directory-open","vg4-open","vg6-deep");
+}
+
+/* Run once after the existing game has mounted. No polling, observer, or heartbeat. */
+if(document.readyState==="loading"){
+  document.addEventListener("DOMContentLoaded",()=>requestAnimationFrame(finalRepair),{once:true});
+}else{
+  requestAnimationFrame(finalRepair);
+}
+
+/* Repair only after actual navigation/user interaction. */
+document.addEventListener("click",()=>requestAnimationFrame(finalRepair),{passive:true});
+
+window.VetGodsFinalRestoration={
+  repair:finalRepair,
+  main:function(){
+    finalRepair();
+    if(window.VetGodsRestoredNavigation?.home)window.VetGodsRestoredNavigation.home();
+  }
+};
+})();
+</script>
+
 </body></html>
